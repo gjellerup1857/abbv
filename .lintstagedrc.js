@@ -1,10 +1,10 @@
-const { CLIEngine } = require('eslint')
+const { ESLint } = require('eslint')
 
-const cli = new CLIEngine({})
+const esLint = new ESLint({})
 
 module.exports = {
   'adblock-betafish/**/*.js': files =>
-    ['eslint --fix --max-warnings=0 ' + files.filter(file => !cli.isPathIgnored(file)).join(' '), 'git add *'],
+    ['eslint --fix --max-warnings=0 ' + files.filter(file => !esLint.isPathIgnored(file)).join(' ')],
   'adblock-betafish/**/*.{css,json,html}': files =>
-    ['prettier --write ' + files.join(' '), 'git add *']
+    ['prettier --write ' + files.join(' ')]
 }
