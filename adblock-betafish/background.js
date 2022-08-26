@@ -3,9 +3,9 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, chromeStorageSetHelper, log, License, translate,
    gabQuestion, ext, getSettings, parseUri, sessionStorageGet, setSetting,
-  blockCounts, sessionStorageSet, updateButtonUIAndContextMenus, settings,
-  storageGet, parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
-  determineUserLanguage, createFilterMetaData */
+  sessionStorageSet, updateButtonUIAndContextMenus, settings,
+  parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
+  determineUserLanguage, createFilterMetaData, migrateData */
 
 import { Prefs } from 'prefs';
 import * as info from 'info';
@@ -85,13 +85,13 @@ const isSelectorFilter = function (text) {
 const countCache = (function countCache() {
   let cache;
 
-  // Update custom filter count stored in localStorage
+  // Update custom filter count stored in storage
   const updateCustomFilterCount = function () {
     chromeStorageSetHelper('custom_filter_count', cache);
   };
 
   return {
-    // Update custom filter count cache and value stored in localStorage.
+    // Update custom filter count cache and value stored in storage.
     // Inputs: new_count_map:count map - count map to replace existing count
     // cache
     updateCustomFilterCountMap(newCountMap) {
@@ -709,7 +709,9 @@ if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
 const updateStorageKey = 'last_known_version';
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'update' || details.reason === 'install') {
-    localStorage.setItem(updateStorageKey, browser.runtime.getManifest().version);
+    migrateData(updateStorageKey).then(() => {
+      chromeStorageSetHelper(updateStorageKey, browser.runtime.getManifest().version);
+    });
   }
 });
 
@@ -799,9 +801,6 @@ const getDebugInfo = async function (callback) {
   response.otherInfo.browserVersion = TELEMETRY.browserVersion;
   response.otherInfo.osVersion = TELEMETRY.osVersion;
   response.otherInfo.os = TELEMETRY.os;
-  if (window.blockCounts) {
-    response.otherInfo.blockCounts = blockCounts.get();
-  }
   if (localStorage && localStorage.length) {
     response.otherInfo.localStorageInfo = {};
     response.otherInfo.localStorageInfo.length = localStorage.length;
@@ -809,11 +808,6 @@ const getDebugInfo = async function (callback) {
     for (const key in localStorage) {
       response.otherInfo.localStorageInfo[`key${inx}`] = key;
       inx += 1;
-    }
-    // Temporarly add Edge migration logs to debug data
-    const edgeMigrationLogs = storageGet('migrateLogMessageKey') || [];
-    if (edgeMigrationLogs || edgeMigrationLogs.length) {
-      response.otherInfo.edgeMigrationLogs = Object.assign({}, edgeMigrationLogs);
     }
   } else {
     response.otherInfo.localStorageInfo = 'no data';

@@ -1,7 +1,8 @@
 
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global ext, browser, storageGet, storageSet, log,
+/* global ext, browser, chromeStorageSetHelper, migrateData,
+   chromeStorageGetHelper, log, storageSet,
    translate, reloadOptionsPageTabs, openTab,
    emitPageBroadcast, unsubscribe,
    isTrustedSenderDomain */
@@ -186,8 +187,7 @@ export const License = (function getLicense() {
   // Should only be called during startup / initialization
   const loadFromStorage = function (callback) {
     browser.storage.local.get(licenseStorageKey).then((response) => {
-      const localLicense = storageGet(licenseStorageKey);
-      theLicense = response[licenseStorageKey] || localLicense || {};
+      theLicense = response[licenseStorageKey] || {};
       if (typeof callback === 'function') {
         callback();
       }
@@ -216,6 +216,11 @@ export const License = (function getLicense() {
       }
     }));
   };
+
+  // Clean up / remove old, unused data in localStorage
+  function cleanUpLocalStorage() {
+    storageSet(licenseStorageKey);
+  }
 
   return {
     licenseStorageKey,
@@ -252,9 +257,7 @@ export const License = (function getLicense() {
     set(newLicense) {
       if (newLicense) {
         theLicense = newLicense;
-        // store in redudant locations
         browser.storage.local.set({ license: theLicense });
-        storageSet('license', theLicense);
       }
     },
     initialize(callback) {
@@ -263,6 +266,7 @@ export const License = (function getLicense() {
           if (typeof callback === 'function') {
             callback();
           }
+          cleanUpLocalStorage();
           readyComplete();
         });
       });
@@ -367,13 +371,11 @@ export const License = (function getLicense() {
       License.update();
       browser.storage.local.get(installTimestampStorageKey).then((response) => {
         let installTimestamp = response[installTimestampStorageKey];
-        const localTimestamp = storageGet(installTimestampStorageKey);
-        const originalInstallTimestamp = installTimestamp || localTimestamp || Date.now();
-        // If the installation timestamp is missing from both storage locations,
+        const originalInstallTimestamp = installTimestamp || Date.now();
+        // If the installation timestamp is missing from storage,
         // save an updated version
-        if (!(response[installTimestampStorageKey] || localTimestamp)) {
+        if (!(response[installTimestampStorageKey])) {
           installTimestamp = Date.now();
-          storageSet(installTimestampStorageKey, installTimestamp);
           browser.storage.local.set({ install_timestamp: installTimestamp });
         }
         const originalInstallDate = new Date(originalInstallTimestamp);
@@ -393,8 +395,7 @@ export const License = (function getLicense() {
         return;
       }
       browser.storage.local.get(installTimestampStorageKey).then((response) => {
-        const localTimestamp = storageGet(installTimestampStorageKey);
-        const originalInstallTimestamp = response[installTimestampStorageKey] || localTimestamp;
+        const originalInstallTimestamp = response[installTimestampStorageKey];
         if (originalInstallTimestamp) {
           callback(new Date(originalInstallTimestamp));
         } else {
@@ -552,39 +553,46 @@ const replacedPerPage = new ext.PageMap();
 export const replacedCounts = (function getReplacedCount() {
   const adReplacedNotifier = new EventEmitter();
   const key = 'replaced_stats';
-  let data = storageGet(key);
-  if (!data) {
-    data = {};
-  }
-  if (data.start === undefined) {
-    data.start = Date.now();
-  }
-  if (data.total === undefined) {
-    data.total = 0;
-  }
-  data.version = 1;
-  storageSet(key, data);
+  migrateData(key, true).then(() => {
+    chromeStorageGetHelper(key).then((data) => {
+      let replacedCountData = data;
+      if (!data) {
+        replacedCountData = {};
+      }
+      if (replacedCountData.start === undefined) {
+        replacedCountData.start = Date.now();
+      }
+      if (replacedCountData.total === undefined) {
+        replacedCountData.total = 0;
+      }
+      replacedCountData.version = 1;
+      chromeStorageSetHelper(key, replacedCountData);
+      storageSet(key);
+    });
+  });
 
   return {
     recordOneAdReplaced(tabId) {
-      data = storageGet(key);
-      data.total += 1;
-      storageSet(key, data);
-      browser.tabs.get(tabId).then((tab) => {
-        const myPage = new ext.Page(tab);
-        let replaced = replacedPerPage.get(myPage) || 0;
-        replacedPerPage.set(myPage, replaced += 1);
-        adReplacedNotifier.emit('adReplaced', tabId, tab.url);
+      chromeStorageGetHelper(key).then((replacedCountData) => {
+        const data = replacedCountData;
+        data.total += 1;
+        chromeStorageSetHelper(key, data);
+        browser.tabs.get(tabId).then((tab) => {
+          const myPage = new ext.Page(tab);
+          let replaced = replacedPerPage.get(myPage) || 0;
+          replacedPerPage.set(myPage, replaced += 1);
+          adReplacedNotifier.emit('adReplaced', tabId, tab.url);
+        });
       });
     },
     get() {
-      return storageGet(key);
+      return chromeStorageGetHelper(key);
     },
     getTotalAdsReplaced(tabId) {
       if (tabId) {
         return replacedPerPage.get(ext.getPage(tabId));
       }
-      return this.get().total;
+      return this.get().then(data => data.total);
     },
     adReplacedNotifier,
   };

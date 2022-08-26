@@ -13,7 +13,6 @@ const LocalDataCollection = (function getLocalDataCollection() {
   const FIFTEEN_MINS = 1000 * 60 * 15;
   let intervalFN;
   const EXT_STATS_KEY = 'ext_stats_key';
-  const STORED_DATA_CLEAN = 'STORED_DATA_CLEAN';
   const REPORTING_OPTIONS = {
     filterType: 'blocking',
     includeElementHiding: false,
@@ -76,39 +75,6 @@ const LocalDataCollection = (function getLocalDataCollection() {
     }
   };
 
-  // 'clean' the stored data
-  // there was a bug that allowed blank domains ("") to be saved in the data
-  // the following code removes the blank domain
-  // this function only needs to run once
-  const cleanStoredData = function () {
-    if (storageGet(STORED_DATA_CLEAN)) {
-      return;
-    }
-    browser.storage.local.get(LocalDataCollection.EXT_STATS_KEY).then((hourlyResponse) => {
-      const savedData = hourlyResponse[LocalDataCollection.EXT_STATS_KEY] || {};
-      const parsedData = {};
-      for (const timestamp in savedData) {
-        if (!Number.isNaN(timestamp)) {
-          for (const domain in savedData[timestamp].doms) {
-            if (domain && domain.length > 1) { // check if domain is not blank
-              const domData = savedData[timestamp].doms[domain];
-              if (!parsedData[timestamp]) {
-                parsedData[timestamp] = {};
-                parsedData[timestamp].v = '1';
-                parsedData[timestamp].doms = {};
-              }
-              parsedData[timestamp].doms[domain] = {};
-              parsedData[timestamp].doms[domain].ads = domData.ads;
-              parsedData[timestamp].doms[domain].trackers = domData.trackers;
-              parsedData[timestamp].doms[domain].adsReplaced = domData.adsReplaced;
-            }
-          }
-        }
-      }
-      chromeStorageSetHelper(LocalDataCollection.EXT_STATS_KEY, parsedData);
-      storageSet(STORED_DATA_CLEAN, true);
-    });
-  };
 
   const clearCache = function () {
     dataCollectionCache = {};
@@ -150,7 +116,6 @@ const LocalDataCollection = (function getLocalDataCollection() {
       startProcessInterval();
       ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
       replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
-      cleanStoredData();
     }
   });// End of then
 
@@ -166,7 +131,6 @@ const LocalDataCollection = (function getLocalDataCollection() {
   returnObj.end = function returnObjEnd(callback) {
     clearInterval(intervalFN);
     clearCache();
-    storageSet(STORED_DATA_CLEAN);
     ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
     replacedCounts.adReplacedNotifier.off('adReplaced', adReplacedListener);
     setSetting('local_data_collection', false, callback);

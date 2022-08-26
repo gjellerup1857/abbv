@@ -2,6 +2,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, channels, createFilterMetaData,
+   chromeStorageDeleteHelper, chromeStorageGetHelper, createFilterMetaData,
    chromeStorageSetHelper, getUserFilters, Prefs, abpPrefPropertyNames,
    adblockIsDomainPaused, PubNub, adblockIsPaused,
    pausedFilterText1, pausedFilterText2,
@@ -95,15 +96,38 @@ const SyncService = (function getSyncService() {
   };
 
   const getSyncLog = function () {
-    const storedLog = JSON.parse(localStorage.getItem(syncLogMessageKey) || '[]');
-    const theReturnObj = {};
-    Object.assign(theReturnObj, storedLog);
-    return theReturnObj;
+    return new Promise((resolve) => {
+      chromeStorageGetHelper(syncLogMessageKey).then((logMsgs) => {
+        const storedLog = JSON.parse(logMsgs || '[]');
+        const theReturnObj = {};
+        Object.assign(theReturnObj, storedLog);
+        resolve(theReturnObj);
+      });
+    });
   };
 
   // TODO - when should we delete the log file???
   const deleteSyncLog = function () {
-    localStorage.removeItem(syncLogMessageKey);
+    chromeStorageDeleteHelper(syncLogMessageKey);
+  };
+
+  const migrateSyncLog = function () {
+    if (typeof window.localStorage === 'undefined') {
+      return;
+    }
+    let storedMsgs = localStorage.getItem(syncLogMessageKey);
+    if (!storedMsgs) {
+      return;
+    }
+    storedMsgs = JSON.parse(storedMsgs);
+    while (storedMsgs.length > 500) { // only keep the last 500 log entries
+      storedMsgs.shift();
+    }
+    chromeStorageSetHelper(syncLogMessageKey, JSON.stringify(storedMsgs), (error) => {
+      if (!error) {
+        localStorage.removeItem(syncLogMessageKey);
+      }
+    });
   };
 
   function debounced(delay, fn) {
@@ -260,12 +284,14 @@ const SyncService = (function getSyncService() {
   // Sync log message processing
 
   const addSyncLogText = function (msg) {
-    const storedLog = JSON.parse(localStorage.getItem(syncLogMessageKey) || '[]');
-    storedLog.push(`${new Date().toUTCString()} , ${msg}`);
-    while (storedLog.length > 500) { // only keep the last 500 log entries
-      storedLog.shift();
-    }
-    localStorage.setItem(syncLogMessageKey, JSON.stringify(storedLog));
+    chromeStorageGetHelper(syncLogMessageKey).then((logMsgs) => {
+      const storedLog = JSON.parse(logMsgs || '[]');
+      storedLog.push(`${new Date().toUTCString()} , ${msg}`);
+      while (storedLog.length > 500) { // only keep the last 500 log entries
+        storedLog.shift();
+      }
+      chromeStorageSetHelper(syncLogMessageKey, JSON.stringify(storedLog));
+    });
   };
 
   const onExtensionNamesDownloadingAddLogEntry = function () {
@@ -1119,6 +1145,7 @@ const SyncService = (function getSyncService() {
             pendingPostData = postDataResponse[syncPendingPostDataKey] || false;
             processEventChangeRequest();
             enableSync();
+            migrateSyncLog();
           });
         });
       }
@@ -1184,6 +1211,7 @@ const SyncService = (function getSyncService() {
     deleteSyncLog,
     processUserSyncRequest,
     processEventChangeRequest,
+    addSyncLogText,
   };
 }());
 
