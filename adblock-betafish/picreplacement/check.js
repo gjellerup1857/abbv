@@ -4,8 +4,7 @@
 /* global ext, browser, chromeStorageSetHelper, migrateData,
    chromeStorageGetHelper, log, storageSet,
    translate, reloadOptionsPageTabs, openTab,
-   emitPageBroadcast, unsubscribe,
-   isTrustedSenderDomain */
+   emitPageBroadcast, isTrustedSenderDomain */
 
 
 // Yes, you could hack my code to not check the license.  But please don't.
@@ -20,6 +19,8 @@ import { loadAdBlockSnippets } from '../alias/contentFiltering';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
 import { initialize } from '../alias/subscriptionInit';
 import ServerMessages from '../servermessages';
+import SubscriptionAdapter from '../subscriptionadapter';
+import postData from '../fetch-util';
 
 const licenseNotifier = new EventEmitter();
 
@@ -281,40 +282,23 @@ export const License = (function getLicense() {
     update() {
       TELEMETRY.untilLoaded((userID) => {
         licenseNotifier.emit('license.updating');
-        const postData = {};
-        postData.u = userID;
-        postData.cmd = 'license_check';
+        const postDataObj = {};
+        postDataObj.u = userID;
+        postDataObj.cmd = 'license_check';
         const licsenseStatusBefore = License.get().status;
         // license version
-        postData.v = '1';
-        $.ajax({
-          jsonp: false,
-          url: License.MAB_CONFIG.licenseURL,
-          type: 'post',
-          success(text) {
+        postDataObj.v = '1';
+        postData(License.MAB_CONFIG.licenseURL, postDataObj).then(async (response) => {
+          if (response.ok) {
+            const responseObj = await response.json();
             ajaxRetryCount = 0;
-            let updatedLicense = {};
-            if (typeof text === 'object') {
-              updatedLicense = text;
-            } else if (typeof text === 'string') {
-              try {
-                updatedLicense = JSON.parse(text);
-              } catch (e) {
-                // eslint-disable-next-line no-console
-                console.log('Something went wrong with parsing license data.');
-                // eslint-disable-next-line no-console
-                console.log('error', e);
-                // eslint-disable-next-line no-console
-                console.log(text);
-                return;
-              }
-            }
+            const updatedLicense = responseObj;
             licenseNotifier.emit('license.updated', updatedLicense);
             if (!updatedLicense) {
               return;
             }
             // merge the updated license
-            theLicense = $.extend(theLicense, updatedLicense);
+            theLicense = { ...theLicense, ...updatedLicense };
             theLicense.licenseId = theLicense.code;
             License.set(theLicense);
             // now check to see if we need to do anything because of a status change
@@ -326,9 +310,8 @@ export const License = (function getLicense() {
               License.processExpiredLicense();
               ServerMessages.recordGeneralMessage('trial_license_expired');
             }
-          },
-          error(xhr, textStatus, errorThrown) {
-            log('license server error response', xhr, textStatus, errorThrown, ajaxRetryCount);
+          } else {
+            log('license server error response', response.status, ajaxRetryCount);
             licenseNotifier.emit('license.updated.error', ajaxRetryCount);
             ajaxRetryCount += 1;
             if (ajaxRetryCount > 3) {
@@ -339,9 +322,11 @@ export const License = (function getLicense() {
             setTimeout(() => {
               License.updatePeriodically(`error${ajaxRetryCount}`);
             }, oneMinute);
-          },
-          data: postData,
-        });
+          }
+        })
+          .catch((error) => {
+            log('license server returned error: ', error);
+          });
       });
     },
     processExpiredLicense() {
@@ -349,16 +334,12 @@ export const License = (function getLicense() {
       theLicense.myadblock_enrollment = true;
       License.set(theLicense);
       setSetting('picreplacement', false);
-      if (getSettings().sync_settings) {
-        // We have to import the "sync-service" module on demand,
-        // as the "sync-service" module in turn requires this module.
-        (import('./sync-service')).disableSync();
-      }
+      licenseNotifier.emit('license.expired');
       setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
-      unsubscribe({ id: 'distraction-control-push' });
-      unsubscribe({ id: 'distraction-control-newsletter' });
-      unsubscribe({ id: 'distraction-control-survey' });
-      unsubscribe({ id: 'distraction-control-video' });
+      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-push' });
+      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-newsletter' });
+      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-survey' });
+      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-video' });
       browser.alarms.clear(licenseAlarmName);
     },
     ready() {

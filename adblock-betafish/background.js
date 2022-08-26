@@ -5,7 +5,8 @@
    gabQuestion, ext, getSettings, parseUri, sessionStorageGet, setSetting,
   sessionStorageSet, updateButtonUIAndContextMenus, settings,
   parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
-  determineUserLanguage, createFilterMetaData, migrateData */
+  determineUserLanguage, createFilterMetaData, migrateData, isEmptyObject */
+
 
 import { Prefs } from 'prefs';
 import * as info from 'info';
@@ -544,7 +545,7 @@ browser.storage.local.get(pausedKey).then((response) => {
 // all domain pause white-list entries at startup.
 browser.storage.local.get(domainPausedKey).then((response) => {
   const storedDomainPauses = response[domainPausedKey];
-  if (!jQuery.isEmptyObject(storedDomainPauses)) {
+  if (!isEmptyObject(storedDomainPauses)) {
     initialize.then(() => {
       for (const aDomain in storedDomainPauses) {
         ewe.filters.remove([`@@${aDomain}$document`]);

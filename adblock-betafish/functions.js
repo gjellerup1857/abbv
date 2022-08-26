@@ -495,7 +495,7 @@ const i18nJoin = function (...args) {
   return joined;
 };
 
-const isEmptyObject = obj => !!(Object.keys(obj).length === 0 && obj.constructor === Object);
+const isEmptyObject = obj => !!(obj && Object.keys(obj).length === 0 && obj.constructor === Object);
 
 // Sets expirable object in storage to be used in place of a cookie
 // Inputs:

@@ -2,7 +2,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, ext, chromeStorageSetHelper, adblockIsPaused,
-   adblockIsDomainPaused, parseUri, settings,
+   adblockIsDomainPaused, parseUri, settings, isEmptyObject,
    getUserFilters, Utils, replacedCounts, setSetting, storageGet, storageSet */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
@@ -82,7 +82,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   };
 
   const saveCacheData = function (callback) {
-    if (getSettings().local_data_collection && !$.isEmptyObject(dataCollectionCache.domains)) {
+    if (getSettings().local_data_collection && !isEmptyObject(dataCollectionCache.domains)) {
       const hourSnapShot = JSON.parse(JSON.stringify({
         v: '1',
         doms: dataCollectionCache.domains,

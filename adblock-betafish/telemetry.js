@@ -15,6 +15,7 @@ import CtaABManager from './ctaabmanager';
 import SubscriptionAdapter from './subscriptionadapter';
 import { getSettings } from './settings';
 import ServerMessages from './servermessages';
+import postData from './fetch-util';
 import SURVEY from './survey';
 
 
@@ -204,7 +205,7 @@ export const TELEMETRY = (function exportStats() {
   // Tell the server we exist.
   const pingNow = function () {
     let pingData = {};
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const handlePingResponse = function (responseData) {
         SURVEY.maybeSurvey(responseData);
         CtaABManager.maybeCtaAB(responseData);
@@ -230,27 +231,28 @@ export const TELEMETRY = (function exportStats() {
           }
         }
         pingData.cmd = 'ping';
-        const ajaxOptions = {
-          type: 'POST',
-          url: statsUrl,
-          data: pingData,
-          success: handlePingResponse, // TODO: Remove when we no longer do a/b
-          // tests
-          error(e) {
-            // eslint-disable-next-line no-console
-            console.log('Ping returned error: ', e.status);
-            reject(e);
-          },
+        const sendPingData = function () {
+          postData(statsUrl, pingData).then(async (response) => {
+            if (response.ok) {
+              telemetryNotifier.emit('ping.complete');
+              const text = await response.text();
+              handlePingResponse(text);
+              return;
+            }
+            log('bad response from ping', response);
+          })
+            .catch((error) => {
+              log('ping server returned error: ', error);
+            });
         };
-
         if (browser.management && browser.management.getSelf) {
           browser.management.getSelf().then((info) => {
             pingData.it = info.installType.charAt(0);
-            $.ajax(ajaxOptions);
+            sendPingData();
             telemetryNotifier.emit('ping.complete');
           });
         } else {
-          $.ajax(ajaxOptions);
+          sendPingData();
           telemetryNotifier.emit('ping.complete');
         }
 
@@ -336,34 +338,6 @@ export const TELEMETRY = (function exportStats() {
     }, 10000);
   };
 
-  // Used to rate limit .message()s. Rate limits reset at startup.
-  const throttle = {
-    // A small initial amount in case the server is bogged down.
-    // The server will tell us the correct amount.
-    maxEventsPerHour: 3, // null if no limit
-    // Called when attempting an event. If not rate limited, returns
-    // true and records the event.
-    attempt() {
-      const now = Date.now();
-      const oneHour = 1000 * 60 * 60;
-      const times = this.eventTimes;
-      const mph = this.maxEventsPerHour;
-      // Discard old or irrelevant events
-      while (times[0] && (times[0] + oneHour < now || mph === null)) {
-        times.shift();
-      }
-      if (mph === null) {
-        return true;
-      } // no limit
-      if (times.length >= mph) {
-        return false;
-      } // used our quota this hour
-      times.push(now);
-      return true;
-    },
-    eventTimes: [],
-  };
-
   return {
     userIDStorageKey,
     totalPingStorageKey,
@@ -426,42 +400,6 @@ export const TELEMETRY = (function exportStats() {
       // call itself to start the process over again.
       sleepThenPing();
       cleanUpLocalStorage();
-    },
-
-    // Record some data, if we are not rate limited.
-    msg(message) {
-      if (!throttle.attempt()) {
-        log('Rate limited:', message);
-        return;
-      }
-      const data = {
-        cmd: 'msg2',
-        m: message,
-        u: userID,
-        v: version,
-        fr: firstRun,
-        f: flavor,
-        bv: browserVersion,
-        o: os,
-        ov: osVersion,
-      };
-      if (browser.runtime.id) {
-        data.extid = browser.runtime.id;
-      }
-      $.ajax(statsUrl, {
-        type: 'POST',
-        data,
-        complete(xhr) {
-          let mph = parseInt(xhr.getResponseHeader('X-RateLimit-MPH'), 10);
-          if (typeof mph !== 'number' || Number.isNaN(mph) || mph < -1) { // Server is sick
-            mph = 1;
-          }
-          if (mph === -1) {
-            mph = null;
-          } // no rate limit
-          throttle.maxEventsPerHour = mph;
-        },
-      });
     },
   };
 }());

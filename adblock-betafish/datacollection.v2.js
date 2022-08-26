@@ -2,13 +2,13 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, chromeStorageSetHelper, adblockIsPaused,
-   adblockIsDomainPaused, parseUri,
+   adblockIsDomainPaused, parseUri, log,
    getUserFilters, */
 
 import * as info from 'info';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import SubscriptionAdapter from './subscriptionadapter';
-import ServerMessages from './servermessages';
+import postData from './fetch-util';
 import { getSettings, settings, setSetting } from './settings';
 
 import idleHandler from './idlehandler';
@@ -152,23 +152,27 @@ const DataCollectionV2 = (function getDataCollectionV2() {
                 timeLastPush = `${yearStr}-${monthStr}-${dateStr} ${hourStr}:${minStr}:00`;
               }
               data.timeOfLastPush = timeLastPush;
-              ServerMessages.postFilterStatsToLogServer(data, (text, status, xhr) => {
-                let nowTimestamp = (new Date()).toGMTString();
-                if (xhr && typeof xhr.getResponseHeader === 'function') {
-                  try {
-                    if (xhr.getResponseHeader('Date')) {
-                      nowTimestamp = xhr.getResponseHeader('Date');
+              log('sending data to log server ', data);
+              postData('https://log.getadblock.com/v2/record_log.php', data)
+                .then((postResponse) => {
+                  if (postResponse.ok) {
+                    let nowTimestamp = (new Date()).toGMTString();
+                    try {
+                      if (postResponse.headers.has('date')) {
+                        nowTimestamp = postResponse.headers.get('date');
+                      }
+                    } catch (e) {
+                      nowTimestamp = (new Date()).toGMTString();
                     }
-                  } catch (e) {
-                    nowTimestamp = (new Date()).toGMTString();
+                    chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
+                    // Reset memory cache
+                    dataCollectionCache = {};
+                    dataCollectionCache.filters = {};
+                    dataCollectionCache.domains = {};
+                    return;
                   }
-                }
-                chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
-                // Reset memory cache
-                dataCollectionCache = {};
-                dataCollectionCache.filters = {};
-                dataCollectionCache.domains = {};
-              });
+                  log('bad response from log server', postResponse);
+                });
             }); // end of TIME_LAST_PUSH_KEY
           }
         });
