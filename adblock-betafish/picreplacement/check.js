@@ -335,6 +335,11 @@ export const License = (function getLicense() {
       License.set(theLicense);
       setSetting('picreplacement', false);
       licenseNotifier.emit('license.expired');
+      if (getSettings().sync_settings) {
+        // We have to import the "sync-service" module on demand,
+        // as the "sync-service" module in turn requires this module.
+        (import('./sync-service')).disableSync();
+      }
       setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
       SubscriptionAdapter.unsubscribe({ id: 'distraction-control-push' });
       SubscriptionAdapter.unsubscribe({ id: 'distraction-control-newsletter' });
