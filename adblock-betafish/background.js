@@ -3,9 +3,9 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, chromeStorageSetHelper, log, License, translate,
    gabQuestion, ext, getSettings, parseUri, sessionStorageGet, setSetting,
-  sessionStorageSet, updateButtonUIAndContextMenus, settings,
-  parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
-  determineUserLanguage, createFilterMetaData, migrateData, isEmptyObject */
+   storageGet, parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
+   sessionStorageSet, updateButtonUIAndContextMenus, settings,
+   determineUserLanguage, createFilterMetaData, migrateData, isEmptyObject */
 
 
 import { Prefs } from 'prefs';

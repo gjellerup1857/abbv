@@ -237,11 +237,16 @@ export const TELEMETRY = (function exportStats() {
               telemetryNotifier.emit('ping.complete');
               const text = await response.text();
               handlePingResponse(text);
-              return;
+            } else {
+              ServerMessages.sendMessageToBackupLogServer('fetch_error',  response.statusText);
+              log('ping server returned error: ', response.statusText);
             }
-            log('bad response from ping', response);
           })
+          // Send any network errors during the ping fetch to a dedicated log server
+          // to help us determine why there's been a drop in ping requests
+          // See https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/136
             .catch((error) => {
+              ServerMessages.sendMessageToBackupLogServer('fetch_error', error.toString());
               log('ping server returned error: ', error);
             });
         };
@@ -399,7 +404,6 @@ export const TELEMETRY = (function exportStats() {
       // This will sleep, then ping, then schedule a new ping, then
       // call itself to start the process over again.
       sleepThenPing();
-      cleanUpLocalStorage();
     },
   };
 }());

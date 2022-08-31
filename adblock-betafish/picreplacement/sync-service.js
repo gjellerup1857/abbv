@@ -1107,28 +1107,28 @@ const SyncService = (function getSyncService() {
         }),
       },
     })
-      .then(async (response) => {
-        if (response.ok && typeof successCallback === 'function') {
-          const text = await response.text();
-          successCallback(text, response.status);
+    .then(async (response) => {
+      if (response.ok && typeof successCallback === 'function') {
+        const text = await response.text();
+        successCallback(text, response.status);
+      }
+      if (!response.ok) {
+        if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
+          setTimeout(() => {
+            requestSyncData(successCallback, errorCallback, attemptCount, shouldForce);
+          }, 1000); // wait 1 second for retry
+          return;
         }
-        if (!response.ok) {
-          if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
-            setTimeout(() => {
-              requestSyncData(successCallback, errorCallback, attemptCount, shouldForce);
-            }, 1000); // wait 1 second for retry
-            return;
-          }
-          if (typeof errorCallback === 'function') {
-            const responseObj = await response.json();
-            errorCallback(response.status, response.status, responseObj);
-          }
+        if (typeof errorCallback === 'function') {
+          const responseObj = await response.json();
+          errorCallback(response.status, response.status, responseObj);
         }
-      })
-      .catch((error) => {
-        log('message server returned error: ', error);
-        errorCallback(error.message);
-      });
+      }
+    })
+    .catch((error) => {
+      log('message server returned error: ', error);
+      errorCallback(error.message);
+    });
   };
 
   settings.onload().then(() => {
