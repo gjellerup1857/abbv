@@ -49,6 +49,7 @@ const isTrustedSenderDomain = (sender) => {
   return false;
 };
 const addCustomFilterRandomName = '';
+const adblocBetaID = 'pljaalgmajnlogcgiohkhdmgpomjcihk';
 
 Object.assign(window, {
   Prefs,
@@ -143,6 +144,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   sendResponse({ response: countCache.getCustomFilterCount(message.host) });
 });
+
+/* eslint-disable consistent-return */
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.command === 'getBlockedTotal' && isTrustedSenderDomain(sender)) {
+    sendResponse({});
+    return Promise.resolve(Stats.blocked_total);
+  }
+});
+
 
 // Add a new custom filter entry.
 // Inputs: filter:string - line of text to add to custom filters.
@@ -698,7 +708,7 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 // BETA CODE
-if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
+if (browser.runtime.id === adblocBetaID) {
   // Display beta page after each update for beta-users only
   browser.runtime.onInstalled.addListener((details) => {
     if (details.reason === 'update' || details.reason === 'install') {
@@ -715,6 +725,78 @@ browser.runtime.onInstalled.addListener((details) => {
     });
   }
 });
+if (browser.runtime.id) {
+  const getUpdatedURL = function () {
+    const encodedVersion = encodeURIComponent('5.1.2');
+    let updatedURL = `https://getadblock.com/premium/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?`;
+    updatedURL = `${updatedURL}u=${TELEMETRY.userId()}&bt=${Prefs.blocked_total}`;
+    return updatedURL;
+  };
+  const openUpdatedPage = function () {
+    const updatedURL = getUpdatedURL();
+    browser.tabs.create({ url: updatedURL });
+  };
+  const waitForUserAction = function () {
+    browser.tabs.onCreated.removeListener(waitForUserAction);
+    setTimeout(() => {
+      openUpdatedPage();
+    }, 10000); // 10 seconds
+  };
+  const shouldShowUpdate = function () {
+    const checkQueryState = async function () {
+      browser.idle.queryState(30).then((state) => {
+        if (state === 'active') {
+          openUpdatedPage();
+        } else {
+          browser.tabs.onCreated.removeListener(waitForUserAction);
+          browser.tabs.onCreated.addListener(waitForUserAction);
+        }
+      });
+    };
+    const checkLicense = function () {
+      if (!License.isActiveLicense()) {
+        checkQueryState();
+      }
+    };
+    if (browser.management && browser.management.getSelf) {
+      browser.management.getSelf().then((extensionInfo) => {
+        if (extensionInfo && extensionInfo.installType !== 'admin') {
+          License.ready().then(checkLicense);
+        }
+      });
+    } else {
+      License.ready().then(checkLicense);
+    }
+  };
+  const slashUpdateReleases = ['5.1.2'];
+  // Display updated page after each update
+  browser.runtime.onInstalled.addListener((details) => {
+    const lastKnownVersion = localStorage.getItem(updateStorageKey);
+    const currentVersion = browser.runtime.getManifest().version;
+    // don't open the /update page for Ukraine or Russian users.
+    const shouldShowUpdateForLocale = function () {
+      const language = determineUserLanguage();
+      return !(language && (language.startsWith('ru') || language.startsWith('uk')));
+    };
+
+    if (
+      details.reason === 'update'
+      && browser.runtime.id !== adblocBetaID
+      && shouldShowUpdateForLocale()
+      && slashUpdateReleases.includes(currentVersion)
+      && !slashUpdateReleases.includes(lastKnownVersion)
+    ) {
+      settings.onload().then(() => {
+        if (!getSettings().suppress_update_page) {
+          TELEMETRY.untilLoaded(() => {
+            Prefs.untilLoaded.then(shouldShowUpdate);
+          });
+        }
+      });
+    }
+    localStorage.setItem(updateStorageKey, currentVersion);
+  });
+}
 
 const openTab = function (url) {
   browser.tabs.create({ url });
@@ -756,7 +838,7 @@ const getDebugInfo = async function (callback) {
   response.otherInfo = {};
 
   // Is this installed build of AdBlock the official one?
-  if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
+  if (browser.runtime.id === adblocBetaID) {
     response.otherInfo.buildtype = ' Beta';
   } else if (browser.runtime.id === 'gighmmpiobklfepjocnamgkkbiglidom'
     || browser.runtime.id === 'aobdicepooefnbaeokijohmhjlleamfj'
