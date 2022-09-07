@@ -10,9 +10,9 @@ import { getSettings } from './settings';
 
 const LocalDataCollection = (function getLocalDataCollection() {
   const easyPrivacyURL = 'https://easylist-downloads.adblockplus.org/easyprivacy.txt';
-  const FIFTEEN_MINS = 1000 * 60 * 15;
-  let intervalFN;
+  const FIFTEEN_MINS = 15;
   const EXT_STATS_KEY = 'ext_stats_key';
+  const STATS_ALARM_NAME = 'statsalarm';
   const REPORTING_OPTIONS = {
     filterType: 'blocking',
     includeElementHiding: false,
@@ -95,7 +95,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
       });
     } else {
       if (!getSettings().local_data_collection) {
-        clearInterval(intervalFN);
+        browser.alarms.clear(STATS_ALARM_NAME);
       }
       if (typeof callback === 'function') {
         callback();
@@ -103,17 +103,20 @@ const LocalDataCollection = (function getLocalDataCollection() {
     }
   };
 
-  const startProcessInterval = function () {
-    intervalFN = window.setInterval(() => {
-      saveCacheData();
-    }, FIFTEEN_MINS);
+  const initializeAlarm = function () {
+    browser.alarms.onAlarm.addListener((alarm) => {
+      if (alarm && alarm.name === STATS_ALARM_NAME) {
+        saveCacheData();
+      }
+    });
+    browser.alarms.create(STATS_ALARM_NAME, { periodInMinutes: FIFTEEN_MINS });
   };
 
   // If enabled at startup periodic saving of memory cache &
   // sending of data to the log server
   settings.onload().then(() => {
     if (getSettings().local_data_collection) {
-      startProcessInterval();
+      initializeAlarm();
       ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
       replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
     }
@@ -125,11 +128,11 @@ const LocalDataCollection = (function getLocalDataCollection() {
     dataCollectionCache.domains = {};
     ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
     replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
-    startProcessInterval();
+    initializeAlarm();
     setSetting('local_data_collection', true, callback);
   };
   returnObj.end = function returnObjEnd(callback) {
-    clearInterval(intervalFN);
+    browser.alarms.clear(STATS_ALARM_NAME);
     clearCache();
     ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
     replacedCounts.adReplacedNotifier.off('adReplaced', adReplacedListener);

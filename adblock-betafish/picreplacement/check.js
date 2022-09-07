@@ -402,7 +402,7 @@ export const License = (function getLicense() {
         delay = 0; // 0 minutes
       }
       if (!this.licenseTimer) {
-        this.licenseTimer = window.setTimeout(() => {
+        this.licenseTimer = setTimeout(() => {
           License.updatePeriodically();
         }, delay);
       }

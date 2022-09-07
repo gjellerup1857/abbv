@@ -25,6 +25,7 @@ export const TELEMETRY = (function exportStats() {
   const userIDStorageKey = 'userid';
   const totalPingStorageKey = 'total_pings';
   const nextPingTimeStorageKey = 'next_ping_time';
+  const pingAlarmName = 'pingalarm';
   const statsUrl = 'https://ping.getadblock.com/stats/';
   const FiftyFiveMinutes = 3300000;
   let dataCorrupt = false;
@@ -292,7 +293,6 @@ export const TELEMETRY = (function exportStats() {
       } else { // Then weekly forever
         delayHours = 24 * 7;
       }
-
       const millis = 1000 * 60 * 60 * delayHours;
       const nextPingTime = Date.now() + millis;
       chromeStorageSetHelper(TELEMETRY.nextPingTimeStorageKey, nextPingTime, (error) => {
@@ -317,15 +317,14 @@ export const TELEMETRY = (function exportStats() {
       return;
     }
     // Wait 10 seconds to allow the previous 'set' to finish
-    window.setTimeout(() => {
+    setTimeout(() => {
       browser.storage.local.get(TELEMETRY.nextPingTimeStorageKey).then((response) => {
         let nextPingTime = response[TELEMETRY.nextPingTimeStorageKey];
         if (typeof nextPingTime !== 'number' || Number.isNaN(nextPingTime)) {
           nextPingTime = 0;
         }
-        // if this is the first time we've run (just installed), millisTillNextPing is 0
         if (nextPingTime === 0 && TELEMETRY.firstRun) {
-          callbackFN(0);
+          callbackFN(1000 * 60);
           return;
         }
         // if we don't have a 'next ping time', or it's not a valid number,
@@ -374,13 +373,35 @@ export const TELEMETRY = (function exportStats() {
     startPinging() {
       function sleepThenPing() {
         millisTillNextPing((delay) => {
-          window.setTimeout(() => {
-            pingNow();
-            scheduleNextPing();
-            sleepThenPing();
-          }, delay);
+          browser.alarms.create(pingAlarmName, { delayInMinutes: (delay / 1000 / 60) });
         });
       }
+      browser.alarms.onAlarm.addListener((alarm) => {
+        if (alarm && alarm.name === pingAlarmName) {
+          pingNow().then(scheduleNextPing().then(sleepThenPing));
+        }
+      });
+      // Check if the computer was woken up, and if there was a pending alarm
+      // that should fired during the sleep, then
+      // remove it, and fire the update ourselves.
+      // see - https://bugs.chromium.org/p/chromium/issues/detail?id=471524
+      browser.idle.onStateChanged.addListener(async (newState) => {
+        if (newState === 'active') {
+          const alarm = await browser.alarms.get(pingAlarmName);
+          if (alarm && Date.now() > alarm.scheduledTime) {
+            await browser.alarms.clear(pingAlarmName);
+            pingNow().then(scheduleNextPing().then(sleepThenPing));
+          } else if (alarm) {
+            // if the alarm should fire in the future,
+            // re-add the alarm so it fires at the correct time
+            const originalTime = alarm.scheduledTime;
+            const wasCleared = await browser.alarms.clear(pingAlarmName);
+            if (wasCleared) {
+              browser.alarms.create(pingAlarmName, { when: originalTime });
+            }
+          }
+        }
+      });
 
       readUserIDPromisified().then(() => {
         // Do 'stuff' when we're first installed...
