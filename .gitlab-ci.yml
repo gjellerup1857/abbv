@@ -44,7 +44,7 @@ build:
     - mv adblockfirefox-*.xpi adblockfirefox-${CI_COMMIT_SHA:0:8}.xpi
     - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHA:0:8}.tar.gz
   artifacts:
-    name: "adblock-${CI_COMMIT_SHA:0:8}-builds"
+    name: "adblock-${CI_BUILD_REF_NAME}-${CI_COMMIT_SHA:0:8}"
     paths:
       - adblock-${CI_COMMIT_SHA:0:8}.tar.gz
       - adblockchrome-${CI_COMMIT_SHA:0:8}.zip
