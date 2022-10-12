@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-sh ./noMasterCommits.sh
+sh ./noMainCommits.sh
 npx lint-staged
