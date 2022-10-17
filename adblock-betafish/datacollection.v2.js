@@ -11,8 +11,6 @@ import SubscriptionAdapter from './subscriptionadapter';
 import postData from './fetch-util';
 import { getSettings, settings, setSetting } from './settings';
 
-import idleHandler from './idlehandler';
-
 const DataCollectionV2 = (function getDataCollectionV2() {
   const HOUR_IN_MIN = 60;
   const TIME_LAST_PUSH_KEY = 'timeLastPush';
@@ -89,89 +87,87 @@ const DataCollectionV2 = (function getDataCollectionV2() {
     }
   };
 
-  const sendToServer = function () {
-    idleHandler.scheduleItemOnce(async () => {
-      const dataCollectionSetting = getSettings().data_collection_v2;
-      if (!dataCollectionSetting) {
-        browser.alarms.clear(DATA_COLLECTION_ALARM_NAME);
+  const sendToServer = async function () {
+    const dataCollectionSetting = getSettings().data_collection_v2;
+    if (!dataCollectionSetting) {
+      browser.alarms.clear(DATA_COLLECTION_ALARM_NAME);
+    }
+    if (dataCollectionSetting && Object.keys(dataCollectionCache.filters).length > 0) {
+      const subscribedSubs = [];
+      const subs = SubscriptionAdapter.getSubscriptionsMinusText();
+      for (const subscription of Object.values(subs)) {
+        if (subscription && subscription.url) {
+          subscribedSubs.push(subscription.url.substring(0, 256));
+        }
       }
-      if (dataCollectionSetting && Object.keys(dataCollectionCache.filters).length > 0) {
-        const subscribedSubs = [];
-        const subs = SubscriptionAdapter.getSubscriptionsMinusText();
-        for (const subscription of Object.values(subs)) {
-          if (subscription && subscription.url) {
-            subscribedSubs.push(subscription.url.substring(0, 256));
-          }
-        }
-        if (await getUserFilters().length) {
-          subscribedSubs.push('customlist');
-        }
-        const data = {
-          version: '5',
-          addonName: info.addonName,
-          addonVersion: info.addonVersion,
-          application: info.application,
-          applicationVersion: info.applicationVersion,
-          platform: info.platform,
-          platformVersion: info.platformVersion,
-          appLocale: browser.i18n.getUILanguage(),
-          filterListSubscriptions: subscribedSubs,
-          domains: dataCollectionCache.domains,
-          filters: dataCollectionCache.filters,
-        };
-        browser.storage.local.get(TIME_LAST_PUSH_KEY).then((response) => {
-          let timeLastPush = 'n/a';
-          if (response[TIME_LAST_PUSH_KEY]) {
-            const serverTimestamp = new Date(response[TIME_LAST_PUSH_KEY]);
-            // Format the timeLastPush
-            const yearStr = `${serverTimestamp.getUTCFullYear()}`;
-            let monthStr = `${serverTimestamp.getUTCMonth() + 1}`;
-            let dateStr = `${serverTimestamp.getUTCDate()}`;
-            let hourStr = `${serverTimestamp.getUTCHours()}`;
-            // round the minutes up to the nearest 10
-            let minStr = `${Math.floor(serverTimestamp.getUTCMinutes() / 10) * 10}`;
+      if (await getUserFilters().length) {
+        subscribedSubs.push('customlist');
+      }
+      const data = {
+        version: '5',
+        addonName: info.addonName,
+        addonVersion: info.addonVersion,
+        application: info.application,
+        applicationVersion: info.applicationVersion,
+        platform: info.platform,
+        platformVersion: info.platformVersion,
+        appLocale: browser.i18n.getUILanguage(),
+        filterListSubscriptions: subscribedSubs,
+        domains: dataCollectionCache.domains,
+        filters: dataCollectionCache.filters,
+      };
+      browser.storage.local.get(TIME_LAST_PUSH_KEY).then((response) => {
+        let timeLastPush = 'n/a';
+        if (response[TIME_LAST_PUSH_KEY]) {
+          const serverTimestamp = new Date(response[TIME_LAST_PUSH_KEY]);
+          // Format the timeLastPush
+          const yearStr = `${serverTimestamp.getUTCFullYear()}`;
+          let monthStr = `${serverTimestamp.getUTCMonth() + 1}`;
+          let dateStr = `${serverTimestamp.getUTCDate()}`;
+          let hourStr = `${serverTimestamp.getUTCHours()}`;
+          // round the minutes up to the nearest 10
+          let minStr = `${Math.floor(serverTimestamp.getUTCMinutes() / 10) * 10}`;
 
-            if (monthStr.length === 1) {
-              monthStr = `0${monthStr}`;
-            }
-            if (dateStr.length === 1) {
-              dateStr = `0${dateStr}`;
-            }
-            if (hourStr.length === 1) {
-              hourStr = `0${hourStr}`;
-            }
-            if (minStr.length === 1) {
-              minStr = `0${minStr}`;
-            }
-            if (minStr === '60') {
-              minStr = '00';
-            }
-            timeLastPush = `${yearStr}-${monthStr}-${dateStr} ${hourStr}:${minStr}:00`;
+          if (monthStr.length === 1) {
+            monthStr = `0${monthStr}`;
           }
-          data.timeOfLastPush = timeLastPush;
-          postData('https://log.getadblock.com/v2/record_log.php', data)
-            .then((postResponse) => {
-              if (postResponse.ok) {
-                let nowTimestamp = (new Date()).toGMTString();
-                try {
-                  if (postResponse.headers.has('date')) {
-                    nowTimestamp = postResponse.headers.get('date');
-                  }
-                } catch (e) {
-                  nowTimestamp = (new Date()).toGMTString();
+          if (dateStr.length === 1) {
+            dateStr = `0${dateStr}`;
+          }
+          if (hourStr.length === 1) {
+            hourStr = `0${hourStr}`;
+          }
+          if (minStr.length === 1) {
+            minStr = `0${minStr}`;
+          }
+          if (minStr === '60') {
+            minStr = '00';
+          }
+          timeLastPush = `${yearStr}-${monthStr}-${dateStr} ${hourStr}:${minStr}:00`;
+        }
+        data.timeOfLastPush = timeLastPush;
+        postData('https://log.getadblock.com/v2/record_log.php', data)
+          .then((postResponse) => {
+            if (postResponse.ok) {
+              let nowTimestamp = (new Date()).toGMTString();
+              try {
+                if (postResponse.headers.has('date')) {
+                  nowTimestamp = postResponse.headers.get('date');
                 }
-                chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
-                // Reset memory cache
-                dataCollectionCache = {};
-                dataCollectionCache.filters = {};
-                dataCollectionCache.domains = {};
-                return;
+              } catch (e) {
+                nowTimestamp = (new Date()).toGMTString();
               }
-              log('bad response from log server', postResponse);
-            });
-        }); // end of TIME_LAST_PUSH_KEY
-      }
-    });
+              chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
+              // Reset memory cache
+              dataCollectionCache = {};
+              dataCollectionCache.filters = {};
+              dataCollectionCache.domains = {};
+              return;
+            }
+            log('bad response from log server', postResponse);
+          });
+      }); // end of TIME_LAST_PUSH_KEY
+    }
   };
 
   const initializeAlarm = function () {
