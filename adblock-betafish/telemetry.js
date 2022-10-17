@@ -276,31 +276,34 @@ export const TELEMETRY = (function exportStats() {
 
   // Called just after we ping the server, to schedule our next ping.
   const scheduleNextPing = function () {
-    browser.storage.local.get(TELEMETRY.totalPingStorageKey).then((response) => {
-      let totalPings = response[TELEMETRY.totalPingStorageKey];
-      if (typeof totalPings !== 'number' || Number.isNaN(totalPings)) {
-        totalPings = 0;
-      }
-      totalPings += 1;
-      // store in redundant locations
-      chromeStorageSetHelper(TELEMETRY.totalPingStorageKey, totalPings);
-
-      let delayHours;
-      if (totalPings === 1) { // Ping one hour after install
-        delayHours = 1;
-      } else if (totalPings < 9) { // Then every day for a week
-        delayHours = 24;
-      } else { // Then weekly forever
-        delayHours = 24 * 7;
-      }
-      const millis = 1000 * 60 * 60 * delayHours;
-      const nextPingTime = Date.now() + millis;
-      chromeStorageSetHelper(TELEMETRY.nextPingTimeStorageKey, nextPingTime, (error) => {
-        if (error) {
-          dataCorrupt = true;
-        } else {
-          dataCorrupt = false;
+    return new Promise((resolve) => {
+      browser.storage.local.get(TELEMETRY.totalPingStorageKey).then((response) => {
+        let totalPings = response[TELEMETRY.totalPingStorageKey];
+        if (typeof totalPings !== 'number' || Number.isNaN(totalPings)) {
+          totalPings = 0;
         }
+        totalPings += 1;
+        // store in redundant locations
+        chromeStorageSetHelper(TELEMETRY.totalPingStorageKey, totalPings);
+
+        let delayHours;
+        if (totalPings === 1) { // Ping one hour after install
+          delayHours = 1;
+        } else if (totalPings < 9) { // Then every day for a week
+          delayHours = 24;
+        } else { // Then weekly forever
+          delayHours = 24 * 7;
+        }
+        const millis = 1000 * 60 * 60 * delayHours;
+        const nextPingTime = Date.now() + millis;
+        chromeStorageSetHelper(TELEMETRY.nextPingTimeStorageKey, nextPingTime, (error) => {
+          if (error) {
+            dataCorrupt = true;
+          } else {
+            dataCorrupt = false;
+          }
+          resolve();
+        });
       });
     });
   };
@@ -316,30 +319,27 @@ export const TELEMETRY = (function exportStats() {
       callbackFN(FiftyFiveMinutes);
       return;
     }
-    // Wait 10 seconds to allow the previous 'set' to finish
-    setTimeout(() => {
-      browser.storage.local.get(TELEMETRY.nextPingTimeStorageKey).then((response) => {
-        let nextPingTime = response[TELEMETRY.nextPingTimeStorageKey];
-        if (typeof nextPingTime !== 'number' || Number.isNaN(nextPingTime)) {
-          nextPingTime = 0;
-        }
-        if (nextPingTime === 0 && TELEMETRY.firstRun) {
-          callbackFN(1000 * 60);
-          return;
-        }
-        // if we don't have a 'next ping time', or it's not a valid number,
-        // default to 55 minute ping interval
-        if (
-          typeof nextPingTime !== 'number'
-          || nextPingTime === 0
-          || Number.isNaN(nextPingTime)
-        ) {
-          callbackFN(FiftyFiveMinutes);
-          return;
-        }
-        callbackFN(nextPingTime - Date.now());
-      }); // end of get
-    }, 10000);
+    browser.storage.local.get(TELEMETRY.nextPingTimeStorageKey).then((response) => {
+      let nextPingTime = response[TELEMETRY.nextPingTimeStorageKey];
+      if (typeof nextPingTime !== 'number' || Number.isNaN(nextPingTime)) {
+        nextPingTime = 0;
+      }
+      if (nextPingTime === 0 && TELEMETRY.firstRun) {
+        callbackFN(1000 * 60);
+        return;
+      }
+      // if we don't have a 'next ping time', or it's not a valid number,
+      // default to 55 minute ping interval
+      if (
+        typeof nextPingTime !== 'number'
+        || nextPingTime === 0
+        || Number.isNaN(nextPingTime)
+      ) {
+        callbackFN(FiftyFiveMinutes);
+        return;
+      }
+      callbackFN(nextPingTime - Date.now());
+    }); // end of get
   };
 
   return {
@@ -378,7 +378,7 @@ export const TELEMETRY = (function exportStats() {
       }
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm && alarm.name === pingAlarmName) {
-          pingNow().then(scheduleNextPing().then(sleepThenPing));
+          pingNow().then(scheduleNextPing().then(sleepThenPing()));
         }
       });
       // Check if the computer was woken up, and if there was a pending alarm
@@ -390,7 +390,7 @@ export const TELEMETRY = (function exportStats() {
           const alarm = await browser.alarms.get(pingAlarmName);
           if (alarm && Date.now() > alarm.scheduledTime) {
             await browser.alarms.clear(pingAlarmName);
-            pingNow().then(scheduleNextPing().then(sleepThenPing));
+            pingNow().then(scheduleNextPing().then(sleepThenPing()));
           } else if (alarm) {
             // if the alarm should fire in the future,
             // re-add the alarm so it fires at the correct time
