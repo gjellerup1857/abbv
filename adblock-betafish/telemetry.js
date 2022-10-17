@@ -239,7 +239,7 @@ export const TELEMETRY = (function exportStats() {
               const text = await response.text();
               handlePingResponse(text);
             } else {
-              ServerMessages.sendMessageToBackupLogServer('fetch_error',  response.statusText);
+              ServerMessages.sendMessageToBackupLogServer('fetch_error', response.statusText);
               log('ping server returned error: ', response.statusText);
             }
           })
@@ -425,6 +425,7 @@ export const TELEMETRY = (function exportStats() {
       // This will sleep, then ping, then schedule a new ping, then
       // call itself to start the process over again.
       sleepThenPing();
+      cleanUpLocalStorage();
     },
   };
 }());
