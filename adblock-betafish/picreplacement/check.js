@@ -691,6 +691,7 @@ License.ready().then(() => {
 
   if (License.isActiveLicense()) {
     loadAdBlockSnippets();
+    License.updatePeriodically();
   }
 });
 
