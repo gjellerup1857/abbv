@@ -3164,7 +3164,7 @@
     "message": "Filter list headers aren't allowed here"
   },
   "too_many_filters": {
-    "description": "Error message shown when the attempts to more custom rules than is allowed under manifest V3",
+    "description": "Error message shown when the attempts to add more custom rules than is allowed under manifest V3",
     "message": "Reached maximum amount of filters. Please remove other filters of the same type before adding new ones."
   },
   "filter_invalid": {
