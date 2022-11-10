@@ -258,6 +258,7 @@ export const TELEMETRY = (function exportStats() {
             } else {
               ServerMessages.sendMessageToBackupLogServer('fetch_error', response.statusText);
               log('ping server returned error: ', response.statusText);
+              resolve(pingData);
             }
           })
           // Send any network errors during the ping fetch to a dedicated log server
@@ -266,6 +267,7 @@ export const TELEMETRY = (function exportStats() {
             .catch((error) => {
               ServerMessages.sendMessageToBackupLogServer('fetch_error', error.toString());
               log('ping server returned error: ', error);
+              resolve(pingData);
             });
         };
         if (browser.management && browser.management.getSelf) {
@@ -278,7 +280,6 @@ export const TELEMETRY = (function exportStats() {
           sendPingData();
           telemetryNotifier.emit('ping.complete');
         }
-
 
         if (typeof LocalCDN !== 'undefined') {
           LocalCDN.getMissedVersions().then((missedVersions) => {
@@ -395,7 +396,9 @@ export const TELEMETRY = (function exportStats() {
       }
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm && alarm.name === pingAlarmName) {
-          pingNow().then(scheduleNextPing().then(sleepThenPing()));
+          pingNow()
+          .then(() => scheduleNextPing())
+          .then(() => sleepThenPing());
         }
       });
       // Check if the computer was woken up, and if there was a pending alarm
@@ -407,7 +410,9 @@ export const TELEMETRY = (function exportStats() {
           const alarm = await browser.alarms.get(pingAlarmName);
           if (alarm && Date.now() > alarm.scheduledTime) {
             await browser.alarms.clear(pingAlarmName);
-            pingNow().then(scheduleNextPing().then(sleepThenPing()));
+            pingNow()
+            .then(() => scheduleNextPing())
+            .then(() => sleepThenPing());
           } else if (alarm) {
             // if the alarm should fire in the future,
             // re-add the alarm so it fires at the correct time

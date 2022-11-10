@@ -952,7 +952,7 @@ const getDebugInfo = async function (callback) {
                 for (let i = 0; i < alarms.length; i++) {
                   const alarm = alarms[i];
                   otherInfo[`${i} Alarm Name`] = alarm.name;
-                  otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
+                  otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime).toLocaleString();
                 }
               } else {
                 otherInfo['No alarm info'] = 'No alarm info';
