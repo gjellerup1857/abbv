@@ -10,7 +10,7 @@
 import getAvailableFiles from './localFilesIndex';
 import {
   getSettings, settings,
-} from './settings';
+} from './prefs/settings';
 
 const LocalCDN = (function getLocalCDN() {
   const urlsMatchPattern = ['http://*/*', 'https://*/*'];

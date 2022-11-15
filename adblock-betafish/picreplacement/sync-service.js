@@ -20,7 +20,7 @@ import { channelsNotifier } from './channels';
 import SubscriptionAdapter from '../subscriptionadapter';
 import {
   getSettings, setSetting, settingsNotifier, settings,
-} from '../settings';
+} from '../prefs/settings';
 import ServerMessages from '../servermessages';
 import postData from '../fetch-util';
 
@@ -593,42 +593,40 @@ const SyncService = (function getSyncService() {
     requestSyncData(getSuccess, getFailure, undefined, shouldForce);
   };
 
-  const getAllExtensionNames = function (callback) {
-    syncNotifier.emit('extension.names.downloading');
-    fetch(`${License.MAB_CONFIG.syncURL}/devices/list`, {
-      method: 'GET',
-      cache: 'no-cache',
-      headers: {
-        'X-GABSYNC-PARAMS': JSON.stringify({
-          extensionGUID: TELEMETRY.userId(),
-          licenseId: License.get().licenseId,
-          extInfo: getExtensionInfo(),
-        }),
-      },
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          const responseObj = await response.json();
-          syncNotifier.emit('extension.names.downloaded', responseObj);
-          if (typeof callback === 'function') {
-            callback(responseObj);
-          }
-          return;
-        }
-        if (response.status === 404) {
-          syncNotifier.emit('extension.names.downloading.error', response.status);
-          if (typeof callback === 'function') {
-            const text = await response.text();
-            callback(text);
-          }
-          return;
-        }
-        log('sync server error: ', response);
+  const getAllExtensionNames = function () {
+    return new Promise((resolve) => {
+      syncNotifier.emit('extension.names.downloading');
+      fetch(`${License.MAB_CONFIG.syncURL}/devices/list`, {
+        method: 'GET',
+        cache: 'no-cache',
+        headers: {
+          'X-GABSYNC-PARAMS': JSON.stringify({
+            extensionGUID: TELEMETRY.userId(),
+            licenseId: License.get().licenseId,
+            extInfo: getExtensionInfo(),
+          }),
+        },
       })
-      .catch((error) => {
-        syncNotifier.emit('extension.names.downloading.error');
-        log('sync server returned error: ', error);
-      });
+        .then(async (response) => {
+          if (response.ok) {
+            const responseObj = await response.json();
+            syncNotifier.emit('extension.names.downloaded', responseObj);
+            resolve(responseObj);
+            return;
+          }
+          if (response.status === 404) {
+            syncNotifier.emit('extension.names.downloading.error', response.status);
+            const text = await response.text();
+            resolve(text);
+            return;
+          }
+          log('sync server error: ', response);
+        })
+        .catch((error) => {
+          syncNotifier.emit('extension.names.downloading.error');
+          log('sync server returned error: ', error);
+        });
+    });
   };
 
   const setCurrentExtensionName = function (newName) {
@@ -1107,28 +1105,28 @@ const SyncService = (function getSyncService() {
         }),
       },
     })
-    .then(async (response) => {
-      if (response.ok && typeof successCallback === 'function') {
-        const text = await response.text();
-        successCallback(text, response.status);
-      }
-      if (!response.ok) {
-        if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
-          setTimeout(() => {
-            requestSyncData(successCallback, errorCallback, attemptCount, shouldForce);
-          }, 1000); // wait 1 second for retry
-          return;
+      .then(async (response) => {
+        if (response.ok && typeof successCallback === 'function') {
+          const text = await response.text();
+          successCallback(text, response.status);
         }
-        if (typeof errorCallback === 'function') {
-          const responseObj = await response.json();
-          errorCallback(response.status, response.status, responseObj);
+        if (!response.ok) {
+          if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
+            setTimeout(() => {
+              requestSyncData(successCallback, errorCallback, attemptCount, shouldForce);
+            }, 1000); // wait 1 second for retry
+            return;
+          }
+          if (typeof errorCallback === 'function') {
+            const responseObj = await response.json();
+            errorCallback(response.status, response.status, responseObj);
+          }
         }
-      }
-    })
-    .catch((error) => {
-      log('message server returned error: ', error);
-      errorCallback(error.message);
-    });
+      })
+      .catch((error) => {
+        log('message server returned error: ', error);
+        errorCallback(error.message);
+      });
   };
 
   settings.onload().then(() => {
@@ -1147,34 +1145,6 @@ const SyncService = (function getSyncService() {
 
       browser.storage.local.get(syncExtensionNameKey).then((response) => {
         currentExtensionName = response[syncExtensionNameKey] || '';
-      });
-
-      browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.command === 'resetLastGetStatusCode') {
-          resetLastGetStatusCode();
-          sendResponse({});
-        }
-      });
-
-      browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.command === 'resetLastGetErrorResponse') {
-          resetLastGetErrorResponse();
-          sendResponse({});
-        }
-      });
-
-      browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.command === 'resetLastPostStatusCode') {
-          resetLastPostStatusCode();
-          sendResponse({});
-        }
-      });
-
-      browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.command === 'resetAllSyncErrors') {
-          resetAllErrors();
-          sendResponse({});
-        }
       });
     });
   });

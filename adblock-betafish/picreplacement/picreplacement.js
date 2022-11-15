@@ -337,7 +337,7 @@ const imageSwap = {
     }
 
     browser.runtime.sendMessage({
-      message: 'get_random_listing',
+      command: 'channels.getrandomlisting',
       opts: {
         width: t.x, height: t.y, type: t.type, position: t.position,
       },
@@ -685,7 +685,7 @@ const imageSwap = {
       // a forced window resize event repaints the page to correctly lay it out
       totalSwaps += 1;
       window.dispatchEvent(new Event('resize'));
-      browser.runtime.sendMessage({ message: 'recordOneAdReplaced' });
+      browser.runtime.sendMessage({ command: 'channels.recordOneAdReplaced' });
     }
   },
 }; // end imageSwap

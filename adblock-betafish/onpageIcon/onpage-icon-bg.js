@@ -4,7 +4,7 @@
 /* global browser, log,
  */
 
-import { getSettings } from '../settings';
+import { getSettings } from '../prefs/settings';
 
 const OnPageIconManager = (function initialize() {
   const MAX_MSG_TEXT_LENGTH = 280;

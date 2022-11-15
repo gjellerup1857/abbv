@@ -1,21 +1,23 @@
 
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, BG, optionalSettings, createFilterMetaData,
+/* global browser, createFilterMetaData, Prefs, settings,
 syncErrorCode, translate, checkForSyncError, isSelectorFilter, activateTab, License,
-MABPayment, DOMPurify */
+MABPayment, DOMPurify, initializeProxies, FiltersProxy, send,  */
 
 let originalCustomFilters = [];
 
-function cleanCustomFilter(filtersArg) {
+async function cleanCustomFilter(filtersArg) {
   let filters = filtersArg;
   // Remove the global pause white-list item if adblock is paused
-  if (BG.adblockIsPaused()) {
-    filters = filters.filter(element => !(element.text === BG.pausedFilterText1
-               || element.text === BG.pausedFilterText2));
+  const isPaused = await send('adblockIsPaused');
+  if (isPaused) {
+    const pausedFilterText = await send('getPausedFilterText');
+    filters = filters.filter(element => !(element.text === pausedFilterText.pausedFilterText1
+               || element.text === pausedFilterText.pausedFilterText2));
   }
   // Remove the domain pause white-list items
-  const domainPauses = BG.adblockIsDomainPaused();
+  const domainPauses = await send('adblockIsDomainPaused');
   for (const aDomain in domainPauses) {
     filters = filters.filter(element => (element.text !== `@@${aDomain}$document`));
   }
@@ -23,9 +25,9 @@ function cleanCustomFilter(filtersArg) {
 }
 
 async function showCustomRules() {
-  const userFilters = await BG.getUserFilters();
+  const userFilters = await FiltersProxy.getUserFilters();
   if (userFilters && userFilters.length) {
-    originalCustomFilters = cleanCustomFilter(userFilters);
+    originalCustomFilters = await cleanCustomFilter(userFilters);
     originalCustomFilters = originalCustomFilters.map(filter => filter.text);
     $('#txtFiltersAdvanced').val(originalCustomFilters.join('\n'));
   }
@@ -44,9 +46,9 @@ async function onFilterChange() {
     newStyle.sheet.insertRule('.btn:hover { font-weight: normal !important; cursor: unset !important; box-shadow: none !important; }', 0);
     return;
   }
-  const userFilters = await BG.getUserFilters();
+  const userFilters = await FiltersProxy.getUserFilters();
   if (userFilters && userFilters.length) {
-    originalCustomFilters = cleanCustomFilter(userFilters);
+    originalCustomFilters = await cleanCustomFilter(userFilters);
     originalCustomFilters = originalCustomFilters.map(filter => filter.text);
     $('#txtFiltersAdvanced').val(originalCustomFilters.join('\n'));
   } else {
@@ -58,7 +60,10 @@ async function onFilterChange() {
 const excludeFiltersKey = 'exclude_filters';
 
 $(async () => {
-  $('#tutorlink').attr('href', BG.Prefs.getDocLink('filterdoc'));
+  await initializeProxies();
+
+  const doclinks = await sendTypeMessage( 'app.get', { what: 'doclink', link: 'filterdoc' });
+  $('#tutorlink').attr('href', doclinks);
 
   const getExcludeFilters = function () {
     browser.storage.local.get(excludeFiltersKey).then((response) => {
@@ -107,8 +112,7 @@ $(async () => {
         newCount[host] = (newCount[host] || 0) + 1;
       }
     }
-
-    BG.updateCustomFilterCountMap(newCount);
+    send('updateCustomFilterCountMap', { countMap: newCount });
   }
 
   /**
@@ -148,10 +152,7 @@ $(async () => {
         continue;
       }
 
-      const errors = await browser.runtime.sendMessage({
-        type: 'filters.validate',
-        text: filter,
-      });
+      const errors = await FiltersProxy.validate(filter);
 
       if (errors && errors.length) {
         filterErrorMessage = translate(
@@ -172,10 +173,11 @@ $(async () => {
     } else {
       // Since we might be processing a large number of changes at once,
       // remove the filter change handler, so we don't cause a race condition
-      BG.ewe.filters.onAdded.removeListener(onFilterChange);
-      BG.ewe.filters.onChanged.removeListener(onFilterChange);
-      BG.ewe.filters.onRemoved.removeListener(onFilterChange);
-      if (BG.adblockIsPaused()) {
+      FiltersProxy.onAdded.removeListener(onFilterChange);
+      FiltersProxy.onChanged.removeListener(onFilterChange);
+      FiltersProxy.onRemoved.removeListener(onFilterChange);
+      const isPaused = await send('adblockIsPaused');
+      if (isPaused) {
         customFiltersArray.push('@@');
         customFiltersArray.push('@@^$document');
       }
@@ -183,13 +185,14 @@ $(async () => {
       /* eslint-disable-next-line max-len  */
       const uniqCustomFilters = customFiltersArray.filter((item, inx) => customFiltersArray.indexOf(item) === inx);
       let filterToAdd;
+      /* eslint-disable no-await-in-loop */
       try {
         /* eslint-disable-next-line no-await-in-loop */
         for (let i = 0; (i < uniqCustomFilters.length); i++) {
           filterToAdd = uniqCustomFilters[i];
           filterToAdd = filterToAdd.trim();
           if (!originalCustomFilters.includes(filterToAdd) && filterToAdd) {
-            await BG.ewe.filters.add([filterToAdd], createFilterMetaData('customize'));
+            await FiltersProxy.add(filterToAdd, 'customize');
           }
         }
       } catch (error) {
@@ -210,7 +213,7 @@ $(async () => {
           if (!customFiltersArray.includes(filter) && filter) {
             const filterText = filter.trim();
             if (filterText.length > 0) {
-              await BG.ewe.filters.remove([filterText]);
+              await FiltersProxy.remove(filterText);
             }
           }
         }
@@ -223,9 +226,9 @@ $(async () => {
       $('#txtFiltersAdvanced').prop('disabled', true);
       $('#spanSaveButton').hide();
       $('#btnEditAdvancedFilters').show();
-      BG.ewe.filters.onAdded.addListener(onFilterChange);
-      BG.ewe.filters.onChanged.addListener(onFilterChange);
-      BG.ewe.filters.onRemoved.addListener(onFilterChange);
+      FiltersProxy.onAdded.addListener(onFilterChange);
+      FiltersProxy.onChanged.addListener(onFilterChange);
+      FiltersProxy.onRemoved.addListener(onFilterChange);
     }
   }
 
@@ -327,7 +330,7 @@ $(async () => {
   }));
 
   // The validation functions
-  $('#txtBlacklist').on('input', checkForSyncError(() => {
+  $('#txtBlacklist').on('input', checkForSyncError(async () => {
     let blacklist = toTildePipeFormat($('#txtBlacklist').val());
 
     if (blacklist) {
@@ -337,9 +340,9 @@ $(async () => {
     let filterErrorMessage = '';
     $('#messageBlacklist').text(filterErrorMessage);
     $('#messageBlacklist').hide();
-    const result = BG.ewe.filters.validate(blacklist);
+    const result = await FiltersProxy.validate(blacklist);
 
-    if (result) {
+    if (result && result.length > 0) {
       $('#btnAddBlacklist').prop('disabled', true);
       filterErrorMessage = translate('customfilterserrormessage', [$('#txtBlacklist').val(), translate(result.type || result.reason)]);
       $('#messageBlacklist').text(filterErrorMessage);
@@ -350,7 +353,7 @@ $(async () => {
     $('#btnAddBlacklist').prop('disabled', false);
   }));
 
-  $('#divUrlBlock input[type=\'text\']').on('input', checkForSyncError(() => {
+  $('#divUrlBlock input[type=\'text\']').on('input', checkForSyncError(async () => {
     const blockUrl = $('#txtBlockUrl').val().trim();
     let blockDomain = $('#txtBlockUrlDomain').val().trim();
     if (blockDomain === '*') {
@@ -360,29 +363,29 @@ $(async () => {
     if (blockDomain) {
       blockDomain = `$domain=${blockDomain}`;
     }
-    const result = BG.ewe.filters.validate(blockUrl + blockDomain);
-    $('#btnAddUrlBlock').prop('disabled', (result) ? true : null);
+    const result = await FiltersProxy.validate(blockUrl + blockDomain);
+    $('#btnAddUrlBlock').prop('disabled', (result && result.length === 0) ? null : true);
   }));
 
-  $('#divCssBlock input[type=\'text\']').on('input', checkForSyncError(() => {
+  $('#divCssBlock input[type=\'text\']').on('input', checkForSyncError(async () => {
     const blockCss = $('#txtUserFilterCss').val().trim();
     let blockDomain = $('#txtUserFilterDomain').val().trim();
     if (blockDomain === '*') {
       blockDomain = '';
     }
 
-    const result = BG.ewe.filters.validate(`${blockDomain}##${blockCss}`);
-    $('#btnAddUserFilter').prop('disabled', (result) ? true : null);
+    const result = await FiltersProxy.validate(`${blockDomain}##${blockCss}`);
+    $('#btnAddUserFilter').prop('disabled', (result && result.length === 0) ? null : true);
   }));
 
-  $('#divExcludeBlock input[type=\'text\']').on('input', checkForSyncError(() => {
+  $('#divExcludeBlock input[type=\'text\']').on('input', checkForSyncError(async () => {
     const unblockUrl = $('#txtUnblock').val().trim();
-    let result = BG.ewe.filters.validate(`@@${unblockUrl}$document`);
+    let result = await FiltersProxy.validate(`@@${unblockUrl}$document`);
     if (!unblockUrl || isSelectorFilter(unblockUrl)) {
       result = true;
     }
 
-    $('#btnAddExcludeFilter').prop('disabled', (result) ? true : null);
+    $('#btnAddExcludeFilter').prop('disabled', (result && result.length === 0) ? null : true);
   }));
 
   // When one presses 'Enter', pretend it was a click on the 'add' button
@@ -443,7 +446,7 @@ $(async () => {
 
   $('#btnSaveExcludeAdvancedFilters').on('click', checkForSyncError(() => {
     const excludeFiltersText = $('#txtExcludeFiltersAdvanced').val();
-    BG.ExcludeFilter.setExcludeFilters(excludeFiltersText);
+    send('ExcludeFilter.setExcludeFilters', { filters: excludeFiltersText });
     $('#divAddNewFilter').slideDown();
     $('#txtExcludeFiltersAdvanced').attr('disabled', 'disabled');
     $('#spanSaveExcludeButton').hide();
@@ -453,18 +456,13 @@ $(async () => {
 
   showCustomRules();
 
-  if (optionalSettings && optionalSettings.show_advanced_options) {
+  if (settings && settings.show_advanced_options) {
     $('#divExcludeFilters').show();
   }
 
-  BG.ewe.filters.onAdded.addListener(onFilterChange);
-  BG.ewe.filters.onChanged.addListener(onFilterChange);
-  BG.ewe.filters.onRemoved.addListener(onFilterChange);
-  window.addEventListener('unload', () => {
-    BG.ewe.filters.onAdded.removeListener(onFilterChange);
-    BG.ewe.filters.onChanged.removeListener(onFilterChange);
-    BG.ewe.filters.onRemoved.removeListener(onFilterChange);
-  });
+  FiltersProxy.onAdded.addListener(onFilterChange);
+  FiltersProxy.onChanged.addListener(onFilterChange);
+  FiltersProxy.onRemoved.addListener(onFilterChange);
 
   if (!License || $.isEmptyObject(License) || !MABPayment) {
     return;

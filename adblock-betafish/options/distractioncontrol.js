@@ -1,8 +1,9 @@
 
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global BG, translate, License, MABPayment, filterNotifier,
-   activateTab, browser, storageSet, storageGet  */
+/* global translate, License, MABPayment, filterNotifier,
+   activateTab, browser, storageSet, storageGet, initializeProxies,
+   SubscriptionsProxy, SubscriptionAdapter, send   */
 
 // the elements array below are in the order they appear on the page
 const distractionControlUIitems = [
@@ -60,10 +61,10 @@ function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
     $checkBox.on('click', function clickhandler() {
       const checked = $(this).is(':checked');
       if (checked) {
-        BG.ewe.subscriptions.add(filterListUrl);
+        SubscriptionsProxy.add(filterListUrl);
       } else {
         setTimeout(() => {
-          BG.ewe.subscriptions.remove(filterListUrl);
+          SubscriptionsProxy.remove(filterListUrl);
         }, 1);
       }
     });
@@ -162,9 +163,9 @@ const prepareDCSubscriptions = function prepareDCSubscriptions(subs, isActiveLic
   }
 };
 
-const initializeDC = function initializeDC(isActiveLicense) {
+const initializeDC = async function initializeDC(isActiveLicense) {
   // Retrieves list of filter lists from the background.
-  const subs = BG.SubscriptionAdapter.getAllSubscriptionsMinusText();
+  const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
   // Initialize page using subscriptions from the background.
   // Copy from update subscription list + setsubscriptionlist
   prepareDCSubscriptions(subs, isActiveLicense);
@@ -177,13 +178,15 @@ const initializeDC = function initializeDC(isActiveLicense) {
       storageSet(dcWarningClosedKey, dcWarningClosed);
     });
     $('#dc_more_information_link').on('click', () => {
-      BG.openTab('https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control');
+      send('openTab', { urlToOpen: 'https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control' });
     });
   }
 };
 
 
-$(() => {
+$(async () => {
+  await initializeProxies();
+
   if (!License || $.isEmptyObject(License) || !MABPayment) {
     initializeDC(false);
     return;
@@ -213,17 +216,20 @@ const updateCheckbox = function (item, isChecked) {
   }
 };
 
-const onDCSubAdded = function (item) {
+const onDCSubAdded = function (items) {
+  let item = items;
+  if (Array.isArray(items)) {
+    [item] = items;
+  }
   updateCheckbox(item, true);
 };
-BG.ewe.subscriptions.onAdded.addListener(onDCSubAdded);
+SubscriptionsProxy.onAdded.addListener(onDCSubAdded);
 
-const onDCSubRemoved = function (item) {
+const onDCSubRemoved = function (items) {
+  let item = items;
+  if (Array.isArray(items)) {
+    [item] = items;
+  }
   updateCheckbox(item, false);
 };
-BG.ewe.subscriptions.onRemoved.addListener(onDCSubRemoved);
-
-window.addEventListener('unload', () => {
-  BG.ewe.subscriptions.onAdded.removeListener(onDCSubAdded);
-  BG.ewe.subscriptions.onRemoved.removeListener(onDCSubRemoved);
-});
+SubscriptionsProxy.onRemoved.addListener(onDCSubRemoved);

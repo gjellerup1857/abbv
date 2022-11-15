@@ -14,7 +14,7 @@ export default {
         dest: 'abp-background.js',
         src: [
           'adblock-betafish/functions.js',
-          'adblock-betafish/settings.js',
+          'adblock-betafish/prefs/settings.js',
           'vendor/adblockplusui/adblockpluschrome/lib/devtools.js',
           'vendor/adblockplusui/adblockpluschrome/lib/debug.js',
           'adblock-betafish/alias/subscriptionInit.js',
@@ -32,8 +32,10 @@ export default {
           'adblock-betafish/twitchSettings.js',
           'adblock-betafish/youtube/yt-bg.js',
           'adblock-betafish/picreplacement/distraction-control-bg.js',
+          'adblock-betafish/messaging/premium-message-responder.js',
+          'adblock-betafish/messaging/message-responder.js',
         ],
-      }
+      },
     ],
   },
   mapping: {
@@ -173,6 +175,54 @@ export default {
       {
         dest: 'adblock-onpage-icon-user.css',
         src: 'adblock-betafish/onpageIcon/onpage-icon-user.css',
+      },
+      {
+        dest: 'adblock-options-events.js',
+        src: 'adblock-betafish/options/events.js',
+      },
+      {
+        dest: 'adblock-options-settingsproxy.js',
+        src: 'adblock-betafish/messaging/settingsproxy.js',
+      },
+      {
+        dest: 'adblock-options-prefsproxy.js',
+        src: 'adblock-betafish/messaging/prefsproxy.js',
+      },
+      {
+        dest: 'adblock-options-servermessagesproxy.js',
+        src: 'adblock-betafish/messaging/servermessagesproxy.js',
+      },
+      {
+        dest: 'adblock-options-filtersproxy.js',
+        src: 'adblock-betafish/messaging/filtersproxy.js',
+      },
+      {
+        dest: 'adblock-options-subscriptionsproxy.js',
+        src: 'adblock-betafish/messaging/subscriptionsproxy.js',
+      },
+      {
+        dest: 'adblock-options-subscriptionadapterproxy.js',
+        src: 'adblock-betafish/messaging/subscriptionadapterproxy.js',
+      },
+      {
+        dest: 'adblock-options-localdatacollectionproxy.js',
+        src: 'adblock-betafish/messaging/localdatacollectionproxy.js',
+      },
+      {
+        dest: 'adblock-options-datacollectionproxy.js',
+        src: 'adblock-betafish/messaging/datacollectionproxy.js',
+      },
+      {
+        dest: 'adblock-options-listenersupport.js',
+        src: 'adblock-betafish/messaging/listenersupport.js',
+      },
+      {
+        dest: 'adblock-options-premiumproxy.js',
+        src: 'adblock-betafish/messaging/premiumproxy.js',
+      },
+      {
+        dest: 'adblock-options-localcdnproxy.js',
+        src: 'adblock-betafish/messaging/localcdnproxy.js',
       },
       {
         dest: 'adblock-options-tabs.css',

@@ -9,7 +9,7 @@ import * as info from 'info';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import SubscriptionAdapter from './subscriptionadapter';
 import postData from './fetch-util';
-import { getSettings, settings, setSetting } from './settings';
+import { getSettings, settings, setSetting } from './prefs/settings';
 
 const DataCollectionV2 = (function getDataCollectionV2() {
   const HOUR_IN_MIN = 60;

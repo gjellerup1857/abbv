@@ -381,20 +381,5 @@ export class Channels {
         }
       });
     });
-
-    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      if (request.message !== 'get_random_listing') {
-        return;
-      }
-      const myPage = ext.getPage(sender.tab.id);
-      if (!!ewe.filters.getAllowingFilters(myPage.id).length || !this.license.isActiveLicense()) {
-        sendResponse({ disabledOnPage: true });
-      }
-      const result = this.randomListing(request.opts);
-      if (result) {
-        sendResponse(result);
-      }
-      sendResponse({ disabledOnPage: true });
-    });
   }
 }

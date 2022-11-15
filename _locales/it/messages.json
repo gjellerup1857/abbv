@@ -2404,7 +2404,7 @@
     "description": "sync error message text on the popup menu"
   },
   "unsync_error_msg_part_3": {
-    "message": "Clicca qui per aggiornare questa pagina, quindi clicca su \"Aggiungi questa estensione\" per sincronizzare questo dispositivo",
+    "message": "Clicca qui per aggiornare questa pagina, quindi clicca su [[\"Aggiungi questa estensione\"]] per sincronizzare questo dispositivo",
     "description": "sync error message text on the Sync tab of the options page"
   },
   "sync_premium_cta": {

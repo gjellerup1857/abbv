@@ -14,7 +14,7 @@ import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
 import { TELEMETRY } from '../telemetry';
 import { Channels } from './channels';
-import { getSettings, setSetting } from '../settings';
+import { getSettings, setSetting } from '../prefs/settings';
 import { loadAdBlockSnippets } from '../alias/contentFiltering';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
 import { initialize } from '../alias/subscriptionInit';
@@ -525,13 +525,6 @@ export const License = (function getLicense() {
   };
 }());
 
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'payment_success' && request.version === 1 && isTrustedSenderDomain(sender)) {
-    License.activate();
-    sendResponse({ ack: true });
-  }
-});
-
 const replacedPerPage = new ext.PageMap();
 
 // Records how many ads have been replaced by AdBlock.  This is used
@@ -608,86 +601,7 @@ Promise.all([onInstalledPromise, License.ready(), initialize]).then((detailsArra
 });
 
 License.ready().then(() => {
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === 'load_my_adblock') {
-      if (sender.url && sender.url.startsWith('http') && License.isActiveLicense() && getSettings().picreplacement) {
-        const logError = function (e) {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        };
-        browser.tabs.executeScript(sender.tab.id, { file: 'adblock-picreplacement.js', frameId: sender.frameId, runAt: 'document_start' }).catch(logError);
-      }
-      if (
-        License.isActiveLicense()
-        && sender.url
-        && sender.url.startsWith('http')
-        && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control-push.txt')
-        && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
-      ) {
-        const logError = function (e) {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        };
-        browser.tabs.executeScript(sender.tab.id, { file: 'adblock-picreplacement-push-notification-wrapper-cs.js', runAt: 'document_start' }).catch(logError);
-      }
-      sendResponse({});
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === 'recordOneAdReplaced') {
-      sendResponse({});
-      if (License.isActiveLicense()) {
-        replacedCounts.recordOneAdReplaced(sender.tab.id);
-      }
-    }
-  });
-
   License.checkSevenDayAlarm();
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'setBlacklistCTAStatus') {
-      if (typeof request.isEnabled === 'boolean') {
-        License.shouldShowBlacklistCTA(request.isEnabled);
-      }
-      sendResponse({});
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'setWhitelistCTAStatus') {
-      if (typeof request.isEnabled === 'boolean') {
-        License.shouldShowWhitelistCTA(request.isEnabled);
-      }
-      sendResponse({});
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'openPremiumPayURL') {
-      openTab(License.MAB_CONFIG.payURL);
-      sendResponse({});
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'cleanUpSevenDayAlarm') {
-      License.cleanUpSevenDayAlarm();
-      sendResponse({});
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'License.MAB_CONFIG' && typeof request.url === 'string') {
-      sendResponse({ url: License.MAB_CONFIG[request.url] });
-    }
-  });
-
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'isActiveLicense') {
-      sendResponse(License.isActiveLicense());
-    }
-  });
 
   if (License.isActiveLicense()) {
     loadAdBlockSnippets();

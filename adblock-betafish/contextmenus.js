@@ -22,12 +22,6 @@ const updateButtonUIAndContextMenus = function () {
     }
   });
 };
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'updateButtonUIAndContextMenus') {
-    updateButtonUIAndContextMenus();
-    sendResponse({});
-  }
-});
 
 // Bounce messages back to content scripts.
 const emitPageBroadcast = (function emitBroadcast() {

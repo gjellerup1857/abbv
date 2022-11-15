@@ -9,7 +9,7 @@
 
 import { Prefs } from 'prefs';
 import { domainSuffixes, parseDomains } from 'adblockpluscore/lib/url';
-import { getSettings } from './settings';
+import { getSettings } from './prefs/settings';
 import { getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import OnPageIconManager from './onpageIcon/onpage-icon-bg';
 import postData from './fetch-util';

@@ -6,7 +6,7 @@
    getUserFilters, Utils, replacedCounts, setSetting, storageGet, storageSet */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
-import { getSettings } from './settings';
+import { getSettings } from './prefs/settings';
 
 const LocalDataCollection = (function getLocalDataCollection() {
   const easyPrivacyURL = 'https://easylist-downloads.adblockplus.org/easyprivacy.txt';
@@ -81,26 +81,26 @@ const LocalDataCollection = (function getLocalDataCollection() {
     dataCollectionCache.domains = {};
   };
 
-  const saveCacheData = function (callback) {
-    if (getSettings().local_data_collection && !isEmptyObject(dataCollectionCache.domains)) {
-      const hourSnapShot = JSON.parse(JSON.stringify({
-        v: '1',
-        doms: dataCollectionCache.domains,
-      }));
-      browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
-        const savedData = hourlyResponse[EXT_STATS_KEY] || { };
-        savedData[Date.now().toString()] = hourSnapShot;
-        chromeStorageSetHelper(EXT_STATS_KEY, savedData, callback);
-        clearCache();
-      });
-    } else {
-      if (!getSettings().local_data_collection) {
-        browser.alarms.clear(STATS_ALARM_NAME);
+  const saveCacheData = function () {
+    return new Promise(async (resolve) => {
+      if (getSettings().local_data_collection && !isEmptyObject(dataCollectionCache.domains)) {
+        const hourSnapShot = JSON.parse(JSON.stringify({
+          v: '1',
+          doms: dataCollectionCache.domains,
+        }));
+        browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
+          const savedData = hourlyResponse[EXT_STATS_KEY] || { };
+          savedData[Date.now().toString()] = hourSnapShot;
+          chromeStorageSetHelper(EXT_STATS_KEY, savedData, resolve);
+          clearCache();
+        });
+      } else {
+        if (!getSettings().local_data_collection) {
+          browser.alarms.clear(STATS_ALARM_NAME);
+        }
+        resolve();
       }
-      if (typeof callback === 'function') {
-        callback();
-      }
-    }
+    });
   };
 
   const initializeAlarm = function () {
@@ -124,19 +124,25 @@ const LocalDataCollection = (function getLocalDataCollection() {
 
   const returnObj = {};
   returnObj.EXT_STATS_KEY = EXT_STATS_KEY;
-  returnObj.start = function returnObjStart(callback) {
-    dataCollectionCache.domains = {};
-    ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
-    replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
-    initializeAlarm();
-    setSetting('local_data_collection', true, callback);
+
+  returnObj.start = function returnObjStart() {
+    return new Promise(async (resolve) => {
+      dataCollectionCache.domains = {};
+      ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
+      replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
+      initializeAlarm();
+      setSetting('local_data_collection', true, resolve);
+    });
   };
-  returnObj.end = function returnObjEnd(callback) {
-    browser.alarms.clear(STATS_ALARM_NAME);
-    clearCache();
-    ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
-    replacedCounts.adReplacedNotifier.off('adReplaced', adReplacedListener);
-    setSetting('local_data_collection', false, callback);
+
+  returnObj.end = function returnObjEnd() {
+    return new Promise(async (resolve) => {
+      browser.alarms.clear(STATS_ALARM_NAME);
+      clearCache();
+      ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
+      replacedCounts.adReplacedNotifier.off('adReplaced', adReplacedListener);
+      setSetting('local_data_collection', false, resolve);
+    });
   };
   returnObj.clearCache = clearCache;
   returnObj.getCache = function returnObjGetCache() {

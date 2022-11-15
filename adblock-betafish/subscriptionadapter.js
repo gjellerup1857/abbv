@@ -1,6 +1,6 @@
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, isTrustedSenderDomain */
+/* global browser */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import abRecommendationData from './data/betafish-subscriptions.json';
@@ -9,19 +9,13 @@ import abRecommendationData from './data/betafish-subscriptions.json';
 // Also adds the 'language' and 'hidden' properties
 const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const addAdBlockProperties = function (sub) {
-    const subscription = sub;
+    let subscription = sub;
     if (abRecommendationData && subscription && abRecommendationData[subscription.url]) {
       subscription.id = abRecommendationData[subscription.url].id;
-      subscription.index = abRecommendationData[subscription.url].index;
-      subscription.hidden = abRecommendationData[subscription.url].hidden;
-      subscription.type = abRecommendationData[subscription.url].type;
-      Object.defineProperty(subscription, 'language', {
-        get() {
-          return (subscription.languages && subscription.languages.length > 0)
-                  || abRecommendationData[subscription.url].language
-                  || false;
-        },
-      });
+      subscription = Object.assign(subscription, abRecommendationData[subscription.url]);
+      if (!Object.prototype.hasOwnProperty.call(subscription, 'language')) {
+        subscription.language = (subscription.languages && subscription.languages.length > 0);
+      }
     }
     return subscription;
   };
@@ -96,10 +90,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     const result = {};
     for (let subscription of ewe.subscriptions.getDownloadable()) {
       subscription = addAdBlockProperties(subscription);
-      const tempSub = {};
-      for (const attr in subscription) {
-        tempSub[attr] = subscription[attr];
-      }
+      const tempSub = Object.assign({}, subscription);
       // if the subscription doesn't have a 'id' property, use the 'URL' as an
       // 'id' property
       if (!tempSub.id || tempSub.id === undefined) {
@@ -145,49 +136,19 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   // without the filter contents (text)
   const getAllSubscriptionsMinusText = function () {
     const userSubs = getSubscriptionsMinusText();
-
     for (let subscription of ewe.subscriptions.getRecommendations()) {
       subscription = addAdBlockProperties(subscription);
-      const {
-        url, id, languages, language, type, title, homepage, hidden, index,
-      } = subscription;
+      const { id } = subscription;
       if (!(id in userSubs)) {
-        userSubs[id] = {};
-        userSubs[id].subscribed = false;
-        userSubs[id].url = url;
-        userSubs[id].userSubmitted = false;
-        userSubs[id].languages = languages;
-        userSubs[id].type = type;
-        userSubs[id].title = title;
+        userSubs[id] = Object.assign({}, subscription);
       }
-      userSubs[id].id = id;
-      userSubs[id].homepage = homepage;
-      userSubs[id].hidden = hidden;
-      userSubs[id].language = language;
-      userSubs[id].index = index;
     }
     for (const url in abRecommendationData) {
-      const subscription = abRecommendationData[url];
+      let subscription = abRecommendationData[url];
+      subscription = addAdBlockProperties(subscription);
       const { id } = subscription;
-      if (subscription && !Object.prototype.hasOwnProperty.call(subscription, 'language')) {
-        Object.defineProperty(subscription, 'language', {
-          get() {
-            return (subscription.languages && subscription.languages.length > 0) || false;
-          },
-        });
-      }
       if (!(id in userSubs)) {
-        userSubs[id] = {};
-        userSubs[id].subscribed = false;
-        userSubs[id].id = id;
-        userSubs[id].url = url;
-        userSubs[id].userSubmitted = false;
-        userSubs[id].language = subscription.language;
-        userSubs[id].languages = subscription.languages;
-        userSubs[id].hidden = subscription.hidden;
-        userSubs[id].type = subscription.type;
-        userSubs[id].title = subscription.title;
-        userSubs[id].homepage = subscription.homepage;
+        userSubs[id] = Object.assign({}, subscription);
       }
     }
     return userSubs;
@@ -218,13 +179,6 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   };
 
 
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.command === 'unsubscribe' && message.id && isTrustedSenderDomain(sender)) {
-      unsubscribe({ id: message.id });
-      sendResponse({});
-    }
-  });
-
   // Subcribe the user to the subscription specified in the argument
   const subscribe = function (options) {
     if (options && options.id) {
@@ -235,17 +189,11 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     }
   };
 
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.command === 'subscribe' && message.id && isTrustedSender(sender)) {
-      subscribe({ id: message.id });
-      sendResponse({});
-    }
-  });
-
   return {
     getSubscriptionInfoFromURL,
     getUrlFromId,
     unsubscribe,
+    subscribe,
     getSubscriptionsMinusText,
     getSubscriptionsChecksum,
     getAllSubscriptionsMinusText,
