@@ -14,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* For ESLint: List any global identifiers used in this file below */
+/* global browser */
+
 
 /** @module */
 

@@ -1,4 +1,19 @@
-
+/*
+ * This file is part of AdBlock  <https://getadblock.com/>,
+ * Copyright (C) 2013-present  Adblock, Inc.
+ *
+ * AdBlock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * AdBlock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, chromeStorageSetHelper, log, License, translate,
@@ -643,87 +658,15 @@ if (browser.runtime.id === adblocBetaID) {
 }
 
 const updateStorageKey = 'last_known_version';
-if (browser.runtime.id) {
-  let updateTabRetryCount = 0;
-  const getUpdatedURL = function () {
-    const encodedVersion = encodeURIComponent('5.2.0');
-    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${TELEMETRY.userId()}`;
-    if (License && License.isActiveLicense()) {
-      updatedURL = `https://getadblock.com/update/p/${encodedVersion}/?u=${TELEMETRY.userId()}`;
-    }
-    updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
-    return updatedURL;
-  };
-  const waitForUserAction = function () {
-    browser.tabs.onCreated.removeListener(waitForUserAction);
-    setTimeout(() => {
-      updateTabRetryCount += 1;
-      // eslint-disable-next-line no-use-before-define
-      openUpdatedPage();
-    }, 10000); // 10 seconds
-  };
-  const openUpdatedPage = function () {
-    const updatedURL = getUpdatedURL();
-    browser.tabs.create({ url: updatedURL });
-  };
-  const shouldShowUpdate = function () {
-    const checkQueryState = function () {
-      browser.idle.queryState(30).then((state) => {
-        if (state === 'active') {
-          openUpdatedPage();
-        } else {
-          browser.tabs.onCreated.removeListener(waitForUserAction);
-          browser.tabs.onCreated.addListener(waitForUserAction);
-        }
-      });
-    };
-    if (browser.management && browser.management.getSelf) {
-      browser.management.getSelf().then((extensionInfo) => {
-        if (extensionInfo && extensionInfo.installType !== 'admin') {
-          License.ready().then(checkQueryState);
-        }
-      });
-    } else {
-      License.ready().then(checkQueryState);
-    }
-  };
-  const slashUpdateReleases = ['5.2.0', '5.3.0'];
-  // Display updated page after each update
-  browser.runtime.onInstalled.addListener(async (details) => {
-    /* eslint-disable max-len */
-    let { last_known_version: lastKnownVersion } = await browser.storage.local.get(updateStorageKey);
-    if (!lastKnownVersion) {
-      lastKnownVersion = localStorage.getItem(updateStorageKey);
-    }
-    const currentVersion = browser.runtime.getManifest().version;
-    // don't open the /update page for Ukraine or Russian users.
-    const shouldShowUpdateForLocale = function () {
-      const language = determineUserLanguage();
-      return !(language && (language.startsWith('ru') || language.startsWith('uk')));
-    };
-    if (
-      details.reason === 'update'
-      && shouldShowUpdateForLocale()
-      && slashUpdateReleases.includes(currentVersion)
-      && !slashUpdateReleases.includes(lastKnownVersion)
-      && browser.runtime.id !== adblocBetaID
-    ) {
-      settings.onload().then(() => {
-        if (!getSettings().suppress_update_page) {
-          TELEMETRY.untilLoaded(() => {
-            Prefs.untilLoaded.then(shouldShowUpdate);
-          });
-        }
-      });
-    }
+browser.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'update' || details.reason === 'install') {
     // We want to move away from localStorage, so remove item if it exists.
     localStorage.removeItem(updateStorageKey);
     // Update version in browser.storage.local. We intentionally ignore the
     // returned promise.
     browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
-  });
-}
-
+  }
+});
 
 const openTab = function (url) {
   browser.tabs.create({ url });
@@ -822,110 +765,105 @@ const getDebugInfo = function () {
     otherInfo.isAdblockPaused = adblockIsPaused();
     otherInfo.licenseState = License.get().status;
     otherInfo.licenseVersion = License.get().lv;
-    LocalDataCollection.getRawStatsSize((rawStatsSize) => {
+    LocalDataCollection.getRawStatsSize(async (rawStatsSize) => {
       otherInfo.rawStatsSize = rawStatsSize;
       // Get total pings
-      browser.storage.local.get('total_pings').then((storageResponse) => {
-        otherInfo.totalPings = storageResponse.totalPings || 0;
+      const storageResponse = await browser.storage.local.get('total_pings');
+      otherInfo.totalPings = storageResponse.totalPings || 0;
 
-        // Now, add exclude filters (if there are any)
-        const excludeFiltersKey = 'exclude_filters';
-        browser.storage.local.get(excludeFiltersKey).then((secondResponse) => {
-          if (secondResponse && secondResponse[excludeFiltersKey]) {
-            response.excludedFilters = secondResponse[excludeFiltersKey];
+      // Now, add exclude filters (if there are any)
+      const excludeFiltersKey = 'exclude_filters';
+      const secondResponse = await browser.storage.local.get(excludeFiltersKey);
+      if (secondResponse && secondResponse[excludeFiltersKey]) {
+        response.excludedFilters = secondResponse[excludeFiltersKey];
+      }
+      // Now, add JavaScript exception error (if there is one)
+      const errorKey = 'errorkey';
+      const errorResponse = await browser.storage.local.get(errorKey);
+      if (errorResponse && errorResponse[errorKey]) {
+        response.otherInfo[errorKey] = errorResponse[errorKey];
+      }
+      // Now, add the migration messages (if there are any)
+      const migrateLogMessageKey = 'migrateLogMessageKey';
+      const migrateLogMessageResponse = await browser.storage.local.get(migrateLogMessageKey);
+      if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
+        const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
+        for (let i = 0; i < messages.length; i++) {
+          const key = `migration_message_${i}`;
+          response.otherInfo[key] = messages[i];
+        }
+      }
+
+      const getDebugAlarmInfo = async function () {
+        const alarms = await browser.alarms.getAll();
+        if (alarms && alarms.length > 0) {
+          otherInfo['Alarm info'] = `length: ${alarms.length}`;
+          for (let i = 0; i < alarms.length; i++) {
+            const alarm = alarms[i];
+            otherInfo[`${i} Alarm Name`] = alarm.name;
+            otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
           }
-          // Now, add JavaScript exception error (if there is one)
-          const errorKey = 'errorkey';
-          browser.storage.local.get(errorKey).then((errorResponse) => {
-            if (errorResponse && errorResponse[errorKey]) {
-              response.otherInfo[errorKey] = errorResponse[errorKey];
-            }
-            // Now, add the migration messages (if there are any)
-            const migrateLogMessageKey = 'migrateLogMessageKey';
-            browser.storage.local.get(migrateLogMessageKey).then((migrateLogMessageResponse) => {
-              if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
-                const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
-                for (let i = 0; i < messages.length; i++) {
-                  const key = `migration_message_${i}`;
-                  response.otherInfo[key] = messages[i];
-                }
-              }
-              const getDebugAlarmInfo = async function () {
-                const alarms = await browser.alarms.getAll();
-                if (alarms && alarms.length > 0) {
-                  otherInfo['Alarm info'] = `length: ${alarms.length}`;
-                  for (let i = 0; i < alarms.length; i++) {
-                    const alarm = alarms[i];
-                    otherInfo[`${i} Alarm Name`] = alarm.name;
-                    otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
-                  }
-                } else {
-                  otherInfo['No alarm info'] = 'No alarm info';
-                }
-                resolve(response);
-              };
-              const addMetaDataInfo = function () {
-                getCustomFilterMetaData()
-                  .then((results) => {
-                    otherInfo.customRuleMetaData = results;
-                    getDebugAlarmInfo();
-                  });
-              };
+        } else {
+          otherInfo['No alarm info'] = 'No alarm info';
+        }
+        resolve(response);
+      };
 
-              const getDebugLicenseInfo = function () {
-                if (License.isActiveLicense()) {
-                  otherInfo.licenseInfo = {};
-                  otherInfo.licenseInfo.extensionGUID = TELEMETRY.userId();
-                  otherInfo.licenseInfo.licenseId = License.get().licenseId;
-                  if (getSettings().sync_settings) {
-                    const syncInfo = {};
-                    syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
-                    syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
-                    syncInfo.SyncCommitLog = SyncService.getSyncLog();
-                    otherInfo.syncInfo = syncInfo;
-                  }
-                  browser.alarms.getAll().then((alarms) => {
-                    if (alarms && alarms.length > 0) {
-                      response.otherInfo['Alarm info'] = `length: ${alarms.length}`;
-                      for (let i = 0; i < alarms.length; i++) {
-                        const alarm = alarms[i];
-                        response.otherInfo[`${i} Alarm Name`] = alarm.name;
-                        response.otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
-                      }
-                    } else {
-                      response.otherInfo['No alarm info'] = 'No alarm info';
-                    }
-                    License.getLicenseInstallationDate((installdate) => {
-                      response.otherInfo['License Installation Date'] = installdate;
-                      const customChannelId = channels.getIdByName('CustomChannel');
-                      if (channels.getGuide()[customChannelId].enabled) {
-                        const customChannel = channels.channelGuide[customChannelId].channel;
-                        customChannel.getTotalBytesInUse().then((result) => {
-                          response.otherInfo['Custom Channel total bytes in use'] = result;
-                          addMetaDataInfo();
-                        });
-                      } else {
-                        addMetaDataInfo();
-                      }
-                    });
-                  });
-                } else { // License is not active
-                  addMetaDataInfo();
-                }
-              };
-              if (browser.permissions && browser.permissions.getAll) {
-                browser.permissions.getAll().then((allPermissions) => {
-                  otherInfo.hostPermissions = allPermissions;
-                  getDebugLicenseInfo();
-                });
-              } else {
-                otherInfo.hostPermissions = 'no data';
-                getDebugLicenseInfo();
-              }
-            });
+      const addMetaDataInfo = async function () {
+        const results = await getCustomFilterMetaData();
+        otherInfo.customRuleMetaData = results;
+        getDebugAlarmInfo();
+      };
+
+      const getDebugLicenseInfo = async function () {
+        if (License.isActiveLicense()) {
+          otherInfo.licenseInfo = {};
+          otherInfo.licenseInfo.extensionGUID = TELEMETRY.userId();
+          otherInfo.licenseInfo.licenseId = License.get().licenseId;
+          if (getSettings().sync_settings) {
+            const syncInfo = {};
+            syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
+            syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
+            syncInfo.SyncCommitLog = SyncService.getSyncLog();
+            otherInfo.syncInfo = syncInfo;
+          }
+          const alarms = await browser.alarms.getAll();
+          if (alarms && alarms.length > 0) {
+            response.otherInfo['Alarm info'] = `length: ${alarms.length}`;
+            for (let i = 0; i < alarms.length; i++) {
+              const alarm = alarms[i];
+              response.otherInfo[`${i} Alarm Name`] = alarm.name;
+              response.otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
+            }
+          } else {
+            response.otherInfo['No alarm info'] = 'No alarm info';
+          }
+          License.getLicenseInstallationDate(async (installdate) => {
+            response.otherInfo['License Installation Date'] = installdate;
+            const customChannelId = channels.getIdByName('CustomChannel');
+            if (channels.getGuide()[customChannelId].enabled) {
+              const customChannel = channels.channelGuide[customChannelId].channel;
+              const result = await customChannel.getTotalBytesInUse();
+              response.otherInfo['Custom Channel total bytes in use'] = result;
+              await addMetaDataInfo();
+            } else {
+              await addMetaDataInfo();
+            }
           });
+        } else { // License is not active
+          await addMetaDataInfo();
+        }
+      };
+
+      if (browser.permissions && browser.permissions.getAll) {
+        browser.permissions.getAll().then(async (allPermissions) => {
+          otherInfo.hostPermissions = allPermissions;
+          await getDebugLicenseInfo();
         });
-      });
+      } else {
+        otherInfo.hostPermissions = 'no data';
+        await getDebugLicenseInfo();
+      }
     });
   });
 };
