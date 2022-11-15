@@ -128,24 +128,24 @@ const ServerMessages = (function serverMessages() {
   // Send an error message to the backup log server. This is to be used when
   // there's fetch failure.  It may fail as well depending on the failure,
   // and state of the local computer & network
-  const sendMessageToBackupLogServer = function (msg, error) {
+  const sendMessageToBackupLogServer = function (msg, errorMsg, queryType = 'error') {
     const payload = {
       u: TELEMETRY.userId(),
       f: TELEMETRY.flavor,
       o: TELEMETRY.os,
       l: determineUserLanguage(),
-      t: msg,
+      t: queryType,
       v: browser.runtime.getManifest().version,
-      error,
+      error: errorMsg,
     };
+    const eventWithPayload = { event: msg, payload };
     fetch('https://192.241.161.10/v2/record_log.php', {
       method: 'POST',
       cache: 'no-cache',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(eventWithPayload),
     });
   };
-
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.command === 'recordGeneralMessage' && message.msg) {
       recordGeneralMessage(message.msg, undefined, message.additionalParams);
