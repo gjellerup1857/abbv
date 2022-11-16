@@ -698,176 +698,169 @@ async function getCustomFilterMetaData() {
 
 
 // Get debug info as a JSON object for bug reporting and ad reporting
-const getDebugInfo = function () {
-  return new Promise(async (resolve) => {
-    const response = {};
-    response.otherInfo = {};
-    const { otherInfo } = response;
+const getDebugInfo = async function (callback) {
+  const response = {};
+  response.otherInfo = {};
+  const { otherInfo } = response;
 
-    // Is this installed build of AdBlock the official one?
-    if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
-      otherInfo.buildtype = ' Beta';
-    } else if (browser.runtime.id === 'gighmmpiobklfepjocnamgkkbiglidom'
-      || browser.runtime.id === 'aobdicepooefnbaeokijohmhjlleamfj'
-      || browser.runtime.id === 'ndcileolkflehcjpmjnfbnaibdcgglog'
-      || browser.runtime.id === 'jid1-NIfFY2CA8fy1tg@jetpack') {
-      otherInfo.buildtype = ' Stable';
-    } else {
-      otherInfo.buildtype = ' Unofficial';
+  // Is this installed build of AdBlock the official one?
+  if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
+    otherInfo.buildtype = ' Beta';
+  } else if (browser.runtime.id === 'gighmmpiobklfepjocnamgkkbiglidom'
+    || browser.runtime.id === 'aobdicepooefnbaeokijohmhjlleamfj'
+    || browser.runtime.id === 'ndcileolkflehcjpmjnfbnaibdcgglog'
+    || browser.runtime.id === 'jid1-NIfFY2CA8fy1tg@jetpack') {
+    otherInfo.buildtype = ' Stable';
+  } else {
+    otherInfo.buildtype = ' Unofficial';
+  }
+
+  // Get AdBlock version
+  otherInfo.version = browser.runtime.getManifest().version;
+
+  // Get subscribed filter lists
+  const subscriptionInfo = {};
+  const subscriptions = SubscriptionAdapter.getSubscriptionsMinusText();
+  for (const id in subscriptions) {
+    if (subscriptions[id].subscribed) {
+      subscriptionInfo[id] = {};
+      subscriptionInfo[id].lastSuccess = new Date(subscriptions[id].lastSuccess * 1000);
+      subscriptionInfo[id].lastDownload = new Date(subscriptions[id].lastDownload * 1000);
+      subscriptionInfo[id].downloadStatus = subscriptions[id].downloadStatus;
     }
+  }
 
-    // Get AdBlock version
-    otherInfo.version = browser.runtime.getManifest().version;
+  response.subscriptions = subscriptionInfo;
 
-    // Get subscribed filter lists
-    const subscriptionInfo = {};
-    const subscriptions = SubscriptionAdapter.getSubscriptionsMinusText();
-    for (const id in subscriptions) {
-      if (subscriptions[id].subscribed) {
-        subscriptionInfo[id] = {};
-        subscriptionInfo[id].lastSuccess = new Date(subscriptions[id].lastSuccess * 1000);
-        subscriptionInfo[id].lastDownload = new Date(subscriptions[id].lastDownload * 1000);
-        subscriptionInfo[id].downloadStatus = subscriptions[id].downloadStatus;
-      }
+  const userFilters = await getUserFilters();
+  if (userFilters && userFilters.length) {
+    response.customFilters = userFilters.map(filter => filter.text).join('\n');
+  }
+
+  // Get settings
+  const adblockSettings = {};
+  const settings = getSettings();
+  for (const setting in settings) {
+    adblockSettings[setting] = JSON.stringify(settings[setting]);
+  }
+
+  response.settings = adblockSettings;
+  response.prefs = JSON.stringify(Prefs);
+  otherInfo.browser = TELEMETRY.browser;
+  otherInfo.browserVersion = TELEMETRY.browserVersion;
+  otherInfo.osVersion = TELEMETRY.osVersion;
+  otherInfo.os = TELEMETRY.os;
+
+  if (localStorage && localStorage.length) {
+    otherInfo.localStorageInfo = {};
+    otherInfo.localStorageInfo.length = localStorage.length;
+    let inx = 1;
+    for (const key in localStorage) {
+      otherInfo.localStorageInfo[`key${inx}`] = key;
+      inx += 1;
     }
-
-    response.subscriptions = subscriptionInfo;
-
-    const userFilters = await getUserFilters();
-    if (userFilters && userFilters.length) {
-      response.customFilters = userFilters.map(filter => filter.text).join('\n');
-    }
-
-    // Get settings
-    const adblockSettings = {};
-    const settings = getSettings();
-    for (const setting in settings) {
-      adblockSettings[setting] = JSON.stringify(settings[setting]);
-    }
-
-    response.settings = adblockSettings;
-    response.prefs = JSON.stringify(Prefs);
-    otherInfo.browser = TELEMETRY.browser;
-    otherInfo.browserVersion = TELEMETRY.browserVersion;
-    otherInfo.osVersion = TELEMETRY.osVersion;
-    otherInfo.os = TELEMETRY.os;
-    if (localStorage && localStorage.length) {
-      otherInfo.localStorageInfo = {};
-      otherInfo.localStorageInfo.length = localStorage.length;
-      let inx = 1;
-      for (const key in localStorage) {
-        otherInfo.localStorageInfo[`key${inx}`] = key;
-        inx += 1;
-      }
-    } else {
-      otherInfo.localStorageInfo = 'no data';
-    }
-    otherInfo.isAdblockPaused = adblockIsPaused();
-    otherInfo.licenseState = License.get().status;
-    otherInfo.licenseVersion = License.get().lv;
-    LocalDataCollection.getRawStatsSize(async (rawStatsSize) => {
-      otherInfo.rawStatsSize = rawStatsSize;
-      // Get total pings
-      const storageResponse = await browser.storage.local.get('total_pings');
+  } else {
+    otherInfo.localStorageInfo = 'no data';
+  }
+  otherInfo.isAdblockPaused = adblockIsPaused();
+  otherInfo.licenseState = License.get().status;
+  otherInfo.licenseVersion = License.get().lv;
+  LocalDataCollection.getRawStatsSize((rawStatsSize) => {
+    otherInfo.rawStatsSize = rawStatsSize;
+    // Get total pings
+    browser.storage.local.get('total_pings').then((storageResponse) => {
       otherInfo.totalPings = storageResponse.totalPings || 0;
 
       // Now, add exclude filters (if there are any)
       const excludeFiltersKey = 'exclude_filters';
-      const secondResponse = await browser.storage.local.get(excludeFiltersKey);
-      if (secondResponse && secondResponse[excludeFiltersKey]) {
-        response.excludedFilters = secondResponse[excludeFiltersKey];
-      }
-      // Now, add JavaScript exception error (if there is one)
-      const errorKey = 'errorkey';
-      const errorResponse = await browser.storage.local.get(errorKey);
-      if (errorResponse && errorResponse[errorKey]) {
-        response.otherInfo[errorKey] = errorResponse[errorKey];
-      }
-      // Now, add the migration messages (if there are any)
-      const migrateLogMessageKey = 'migrateLogMessageKey';
-      const migrateLogMessageResponse = await browser.storage.local.get(migrateLogMessageKey);
-      if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
-        const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
-        for (let i = 0; i < messages.length; i++) {
-          const key = `migration_message_${i}`;
-          response.otherInfo[key] = messages[i];
+      browser.storage.local.get(excludeFiltersKey).then((secondResponse) => {
+        if (secondResponse && secondResponse[excludeFiltersKey]) {
+          response.excludedFilters = secondResponse[excludeFiltersKey];
         }
-      }
-
-      const getDebugAlarmInfo = async function () {
-        const alarms = await browser.alarms.getAll();
-        if (alarms && alarms.length > 0) {
-          otherInfo['Alarm info'] = `length: ${alarms.length}`;
-          for (let i = 0; i < alarms.length; i++) {
-            const alarm = alarms[i];
-            otherInfo[`${i} Alarm Name`] = alarm.name;
-            otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
+        // Now, add JavaScript exception error (if there is one)
+        const errorKey = 'errorkey';
+        browser.storage.local.get(errorKey).then((errorResponse) => {
+          if (errorResponse && errorResponse[errorKey]) {
+            otherInfo[errorKey] = errorResponse[errorKey];
           }
-        } else {
-          otherInfo['No alarm info'] = 'No alarm info';
-        }
-        resolve(response);
-      };
-
-      const addMetaDataInfo = async function () {
-        const results = await getCustomFilterMetaData();
-        otherInfo.customRuleMetaData = results;
-        getDebugAlarmInfo();
-      };
-
-      const getDebugLicenseInfo = async function () {
-        if (License.isActiveLicense()) {
-          otherInfo.licenseInfo = {};
-          otherInfo.licenseInfo.extensionGUID = TELEMETRY.userId();
-          otherInfo.licenseInfo.licenseId = License.get().licenseId;
-          if (getSettings().sync_settings) {
-            const syncInfo = {};
-            syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
-            syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
-            syncInfo.SyncCommitLog = SyncService.getSyncLog();
-            otherInfo.syncInfo = syncInfo;
-          }
-          const alarms = await browser.alarms.getAll();
-          if (alarms && alarms.length > 0) {
-            response.otherInfo['Alarm info'] = `length: ${alarms.length}`;
-            for (let i = 0; i < alarms.length; i++) {
-              const alarm = alarms[i];
-              response.otherInfo[`${i} Alarm Name`] = alarm.name;
-              response.otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime);
+          // Now, add the migration messages (if there are any)
+          const migrateLogMessageKey = 'migrateLogMessageKey';
+          browser.storage.local.get(migrateLogMessageKey).then((migrateLogMessageResponse) => {
+            if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
+              const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
+              for (let i = 0; i < messages.length; i++) {
+                const key = `migration_message_${i}`;
+                otherInfo[key] = messages[i];
+              }
             }
-          } else {
-            response.otherInfo['No alarm info'] = 'No alarm info';
-          }
-          License.getLicenseInstallationDate(async (installdate) => {
-            response.otherInfo['License Installation Date'] = installdate;
-            const customChannelId = channels.getIdByName('CustomChannel');
-            if (channels.getGuide()[customChannelId].enabled) {
-              const customChannel = channels.channelGuide[customChannelId].channel;
-              const result = await customChannel.getTotalBytesInUse();
-              response.otherInfo['Custom Channel total bytes in use'] = result;
-              await addMetaDataInfo();
+            const getDebugAlarmInfo = async function () {
+              const alarms = await browser.alarms.getAll();
+              if (alarms && alarms.length > 0) {
+                otherInfo['Alarm info'] = `length: ${alarms.length}`;
+                for (let i = 0; i < alarms.length; i++) {
+                  const alarm = alarms[i];
+                  otherInfo[`${i} Alarm Name`] = alarm.name;
+                  otherInfo[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime).toLocaleString();
+                }
+              } else {
+                otherInfo['No alarm info'] = 'No alarm info';
+              }
+              if (typeof callback === 'function') {
+                callback(response);
+              }
+            };
+            const addMetaDataInfo = function () {
+              getCustomFilterMetaData()
+                .then((results) => {
+                  otherInfo.customRuleMetaData = results;
+                  getDebugAlarmInfo();
+                });
+            };
+
+            const getDebugLicenseInfo = function () {
+              if (License.isActiveLicense()) {
+                otherInfo.licenseInfo = {};
+                otherInfo.licenseInfo.extensionGUID = TELEMETRY.userId();
+                otherInfo.licenseInfo.licenseId = License.get().licenseId;
+                if (getSettings().sync_settings) {
+                  const syncInfo = {};
+                  syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
+                  syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
+                  syncInfo.SyncCommitLog = SyncService.getSyncLog();
+                  otherInfo.syncInfo = syncInfo;
+                }
+                License.getLicenseInstallationDate((installdate) => {
+                  otherInfo['License Installation Date'] = installdate;
+                  const customChannelId = channels.getIdByName('CustomChannel');
+                  if (channels.getGuide()[customChannelId].enabled) {
+                    const customChannel = channels.channelGuide[customChannelId].channel;
+                    customChannel.getTotalBytesInUse().then((result) => {
+                      otherInfo['Custom Channel total bytes in use'] = result;
+                      addMetaDataInfo();
+                    });
+                  } else {
+                    addMetaDataInfo();
+                  }
+                });
+              } else { // License is not active
+                addMetaDataInfo();
+              }
+            };
+            if (browser.permissions && browser.permissions.getAll) {
+              browser.permissions.getAll().then((allPermissions) => {
+                otherInfo.hostPermissions = allPermissions;
+                getDebugLicenseInfo();
+              });
             } else {
-              await addMetaDataInfo();
+              otherInfo.hostPermissions = 'no data';
+              getDebugLicenseInfo();
             }
           });
-        } else { // License is not active
-          await addMetaDataInfo();
-        }
-      };
-
-      if (browser.permissions && browser.permissions.getAll) {
-        browser.permissions.getAll().then(async (allPermissions) => {
-          otherInfo.hostPermissions = allPermissions;
-          await getDebugLicenseInfo();
         });
-      } else {
-        otherInfo.hostPermissions = 'no data';
-        await getDebugLicenseInfo();
-      }
+      });
     });
   });
 };
-
 
 // Called when user explicitly requests filter list updates
 function updateFilterLists() {

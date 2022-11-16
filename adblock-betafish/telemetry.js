@@ -397,8 +397,8 @@ export const TELEMETRY = (function exportStats() {
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm && alarm.name === pingAlarmName) {
           pingNow()
-            .then(() => scheduleNextPing())
-            .then(() => sleepThenPing());
+          .then(() => scheduleNextPing())
+          .then(() => sleepThenPing());
         }
       });
       // Check if the computer was woken up, and if there was a pending alarm
@@ -411,8 +411,8 @@ export const TELEMETRY = (function exportStats() {
           if (alarm && Date.now() > alarm.scheduledTime) {
             await browser.alarms.clear(pingAlarmName);
             pingNow()
-              .then(() => scheduleNextPing())
-              .then(() => sleepThenPing());
+            .then(() => scheduleNextPing())
+            .then(() => sleepThenPing());
           } else if (alarm) {
             // if the alarm should fire in the future,
             // re-add the alarm so it fires at the correct time
