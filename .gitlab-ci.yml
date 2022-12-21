@@ -111,5 +111,5 @@ testpages:firefox:latest:
 testpages:firefox:oldest:
   extends: .testpages
   variables:
-    BROWSER: firefox 68.0
+    BROWSER: firefox 75.0
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
