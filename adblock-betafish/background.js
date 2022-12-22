@@ -666,15 +666,18 @@ if (browser.runtime.id === adblocBetaID) {
 }
 
 const updateStorageKey = 'last_known_version';
-browser.runtime.onInstalled.addListener((details) => {
+browser.runtime.onInstalled.addListener(async (details) => {
+  // Update version in browser.storage.local.
+  // We intentionally ignore the returned promise.
   if (details.reason === 'update' || details.reason === 'install') {
-    // We want to move away from localStorage, so remove item if it exists.
-    localStorage.removeItem(updateStorageKey);
-    // Update version in browser.storage.local. We intentionally ignore the
-    // returned promise.
     browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
   }
+  // We want to move away from localStorage, so remove item if it exists.
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(updateStorageKey);
+  }
 });
+
 
 const openTab = function (url) {
   browser.tabs.create({ url });
