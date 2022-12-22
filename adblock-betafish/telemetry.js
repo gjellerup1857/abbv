@@ -364,6 +364,50 @@ export const TELEMETRY = (function exportStats() {
     }); // end of get
   };
 
+  const sleepThenPing = () => {
+    millisTillNextPing((delay) => {
+      browser.alarms.create(pingAlarmName, { delayInMinutes: (delay / 1000 / 60) });
+    });
+  };
+
+  // Check if the computer was woken up, and if there was a pending alarm
+  // that should fired during the sleep, then
+  // remove it, and fire the update ourselves.
+  // see - https://bugs.chromium.org/p/chromium/issues/detail?id=471524
+  const checkIdleState = () => {
+    browser.idle.onStateChanged.addListener(async (newState) => {
+      if (newState === 'active') {
+        const alarm = await browser.alarms.get(pingAlarmName);
+        if (alarm && Date.now() > alarm.scheduledTime) {
+          await browser.alarms.clear(pingAlarmName);
+          pingNow()
+            .then(() => scheduleNextPing())
+            .then(() => sleepThenPing());
+        } else if (alarm) {
+          // if the alarm should fire in the future,
+          // re-add the alarm so it fires at the correct time
+          const originalTime = alarm.scheduledTime;
+          const wasCleared = await browser.alarms.clear(pingAlarmName);
+          if (wasCleared) {
+            browser.alarms.create(pingAlarmName, { when: originalTime });
+          }
+        }
+      }
+    });
+  };
+  checkIdleState();
+
+  const addAlarmListener = () => {
+    browser.alarms.onAlarm.addListener((alarm) => {
+      if (alarm && alarm.name === pingAlarmName) {
+        pingNow()
+          .then(() => scheduleNextPing())
+          .then(() => sleepThenPing());
+      }
+    });
+  };
+  addAlarmListener();
+
   return {
     userIDStorageKey,
     totalPingStorageKey,
@@ -393,42 +437,6 @@ export const TELEMETRY = (function exportStats() {
     },
     // Ping the server when necessary.
     startPinging() {
-      function sleepThenPing() {
-        millisTillNextPing((delay) => {
-          browser.alarms.create(pingAlarmName, { delayInMinutes: (delay / 1000 / 60) });
-        });
-      }
-      browser.alarms.onAlarm.addListener((alarm) => {
-        if (alarm && alarm.name === pingAlarmName) {
-          pingNow()
-            .then(() => scheduleNextPing())
-            .then(() => sleepThenPing());
-        }
-      });
-      // Check if the computer was woken up, and if there was a pending alarm
-      // that should fired during the sleep, then
-      // remove it, and fire the update ourselves.
-      // see - https://bugs.chromium.org/p/chromium/issues/detail?id=471524
-      browser.idle.onStateChanged.addListener(async (newState) => {
-        if (newState === 'active') {
-          const alarm = await browser.alarms.get(pingAlarmName);
-          if (alarm && Date.now() > alarm.scheduledTime) {
-            await browser.alarms.clear(pingAlarmName);
-            pingNow()
-              .then(() => scheduleNextPing())
-              .then(() => sleepThenPing());
-          } else if (alarm) {
-            // if the alarm should fire in the future,
-            // re-add the alarm so it fires at the correct time
-            const originalTime = alarm.scheduledTime;
-            const wasCleared = await browser.alarms.clear(pingAlarmName);
-            if (wasCleared) {
-              browser.alarms.create(pingAlarmName, { when: originalTime });
-            }
-          }
-        }
-      });
-
       readUserIDPromisified().then(() => {
         // Do 'stuff' when we're first installed...
         // - send a message
