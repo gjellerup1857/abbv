@@ -16,10 +16,11 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global createFilterMetaData */
+/* global */
 
 import ServerMessages from './servermessages';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
+import { createFilterMetaData } from './utilities/background/bg-functions';
 
 const authorizedKeys = [
   `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuePfbm865kumeftXjlbt

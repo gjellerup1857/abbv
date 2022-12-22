@@ -16,12 +16,12 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext, chromeStorageSetHelper, adblockIsPaused,
-   adblockIsDomainPaused, parseUri, settings, isEmptyObject,
-   getUserFilters, Utils, replacedCounts, setSetting, storageGet, storageSet */
+/* global browser, ext, adblockIsPaused, adblockIsDomainPaused, settings,
+   getUserFilters, Utils, replacedCounts, setSetting,  */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { getSettings } from './prefs/settings';
+import { isEmptyObject, chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 const LocalDataCollection = (function getLocalDataCollection() {
   const easyPrivacyURL = 'https://easylist-downloads.adblockplus.org/easyprivacy.txt';

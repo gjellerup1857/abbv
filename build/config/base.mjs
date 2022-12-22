@@ -30,7 +30,6 @@ export default {
       {
         dest: 'abp-background.js',
         src: [
-          'adblock-betafish/functions.js',
           'adblock-betafish/prefs/settings.js',
           'vendor/adblockplusui/adblockpluschrome/lib/devtools.js',
           'vendor/adblockplusui/adblockpluschrome/lib/debug.js',

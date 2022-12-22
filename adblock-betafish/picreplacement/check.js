@@ -16,9 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global ext, browser, chromeStorageSetHelper, migrateData,
-   chromeStorageGetHelper, log, storageSet,
-   translate, reloadOptionsPageTabs, openTab,
+/* global ext, browser, translate, openTab,
    emitPageBroadcast, isTrustedSenderDomain */
 
 
@@ -36,6 +34,14 @@ import { initialize } from '../alias/subscriptionInit';
 import ServerMessages from '../servermessages';
 import SubscriptionAdapter from '../subscriptionadapter';
 import postData from '../fetch-util';
+import {
+  chromeStorageSetHelper,
+  chromeStorageGetHelper,
+  migrateData,
+  log,
+  storageSet,
+  reloadOptionsPageTabs,
+} from '../utilities/background/bg-functions';
 
 const licenseNotifier = new EventEmitter();
 
@@ -623,7 +629,8 @@ License.initialize(() => {
   }
 });
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   License,
   replacedCounts,
 });

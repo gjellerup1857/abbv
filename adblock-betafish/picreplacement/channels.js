@@ -16,14 +16,17 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global settings, getSettings, setSetting, chromeStorageGetHelper,
-   browser, migrateData, chromeStorageSetHelper, ext */
+/* global settings, getSettings, setSetting, ,
+   browser, , , ext */
 
 import { contentTypes } from 'adblockpluscore/lib/contentTypes';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
 import {
-  WIDE, TALL, SKINNYWIDE, SKINNYTALL,
+  SKINNYTALL,
+  SKINNYWIDE,
+  TALL,
+  WIDE,
 } from './image-sizes-map';
 import SubscriptionAdapter from '../subscriptionadapter';
 import CustomChannel from './custom-channel';
@@ -35,7 +38,11 @@ import FoodChannel from './food-channel';
 import GoatsChannel from './goat-channel';
 import OceanChannel from './ocean-channel';
 import UnknownChannel from './unknown-channel';
-
+import {
+  chromeStorageGetHelper,
+  chromeStorageSetHelper,
+  migrateData,
+} from '../utilities/background/bg-functions';
 
 const resourceTypes = new Map();
 for (const type in contentTypes) {

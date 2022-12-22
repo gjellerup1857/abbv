@@ -94,7 +94,8 @@ settings.onload().then(() => {
   }
 });
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   addTwitchAllowlistListeners,
   removeTwitchAllowlistListeners,
   twitchChannelNamePages,

@@ -16,7 +16,9 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log, TELEMETRY, logging, determineUserLanguage */
+/* global browser, TELEMETRY,  */
+
+import { log, determineUserLanguage } from './utilities/background/bg-functions';
 
 // Log an 'error' message on GAB log server.
 const ServerMessages = (function serverMessages() {

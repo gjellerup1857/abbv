@@ -269,7 +269,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   addYTChannelListeners,
   removeYTChannelListeners,
   ytChannelNamePages,

@@ -16,11 +16,10 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, chromeStorageSetHelper, log, License, translate,
-   gabQuestion, ext, getSettings, parseUri, sessionStorageGet, setSetting,
-   storageGet, parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
-   sessionStorageSet, updateButtonUIAndContextMenus, settings,
-   determineUserLanguage, createFilterMetaData, migrateData, isEmptyObject */
+/* global browser, License, translate,
+   gabQuestion, ext, getSettings, setSetting, settings
+   parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
+   updateButtonUIAndContextMenus,  */
 
 
 import { Prefs } from 'prefs';
@@ -43,6 +42,15 @@ import ServerMessages from './servermessages';
 import SURVEY from './survey';
 import { setUninstallURL } from './alias/uninstall';
 
+import {
+  parseUri,
+  createFilterMetaData,
+  chromeStorageSetHelper,
+  isEmptyObject,
+  sessionStorageGet,
+  sessionStorageSet,
+} from './utilities/background/bg-functions';
+
 // Message verification
 const trustedBaseUrl = browser.runtime.getURL('');
 const gabHostnames = ['https://getadblock.com', 'https://dev.getadblock.com', 'https://dev1.getadblock.com', 'https://dev2.getadblock.com', 'https://vpn.getadblock.com', 'https://help.getadblock.com'];
@@ -61,10 +69,10 @@ const isTrustedSenderDomain = (sender) => {
   }
   return false;
 };
-const addCustomFilterRandomName = '';
 const adblocBetaID = 'pljaalgmajnlogcgiohkhdmgpomjcihk';
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   Prefs,
   info,
   getBlockedPerPage,
@@ -83,7 +91,6 @@ Object.assign(window, {
   isTrustedSender,
   isTrustedTarget,
   isTrustedSenderDomain,
-  addCustomFilterRandomName,
 });
 
 // CUSTOM FILTERS
@@ -898,7 +905,8 @@ browser.runtime.onInstalled.addListener((details) => {
 });
 
 // Attach methods to window
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   adblockIsPaused,
   getUserFilters,
   updateFilterLists,

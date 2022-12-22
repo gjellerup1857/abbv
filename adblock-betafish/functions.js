@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /*
  * This file is part of AdBlock  <https://getadblock.com/>,
  * Copyright (C) 2013-present  Adblock, Inc.
@@ -38,6 +39,7 @@ const logging = function (enabled) {
 };
 
 logging(false); // disabled by default
+
 
 // Behaves very similarly to $.ready() but does not require jQuery.
 const onReady = function (callback) {
@@ -376,79 +378,8 @@ const chromeStorageGetHelper = function (storageKey) {
   }));
 };
 
-const chromeLocalStorageOnChangedHelper = function (storageKey, callback) {
-  browser.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace !== 'local') {
-      return;
-    }
-    for (const key in changes) {
-      if (key !== storageKey) {
-        return;
-      }
-      callback();
-    }
-  });
-};
-
 const chromeStorageDeleteHelper = function (key) {
   return browser.storage.local.remove(key);
-};
-
-// Migrate any stored data from localStorage to
-// chrome.storage.local
-// if the data is successfully migrated to chrome.storage,
-// then the original data in localStorage is removed
-// Inputs:
-//   key: string - the data storage key
-//   parseData: Boolean - indicates if the stored data should be parse prior to being saved
-//                        in chrome.storage
-const migrateData = function (key, parseData) {
-  return new Promise((resolve, reject) => {
-    if (typeof window.localStorage === 'undefined') {
-      resolve();
-    }
-    let data = localStorage.getItem(key);
-    if (data) {
-      if (parseData) {
-        data = JSON.parse(data);
-      }
-
-      chromeStorageSetHelper(key, data, (error) => {
-        if (!error) {
-          if (typeof localStorage !== 'undefined') {
-            localStorage.removeItem(key);
-          }
-          resolve();
-        } else {
-          reject(error);
-        }
-      });
-    } else {
-      resolve();
-    }
-  });
-};
-
-const reloadOptionsPageTabs = function () {
-  const optionTabQuery = {
-    url: `chrome-extension://${browser.runtime.id}/options.html*`,
-  };
-  browser.tabs.query(optionTabQuery).then((tabs) => {
-    for (const i in tabs) {
-      browser.tabs.reload(tabs[i].id);
-    }
-  });
-};
-
-const reloadAllOpenedTabs = function () {
-  const optionTabQuery = {
-    url: `chrome-extension://${browser.runtime.id}/*`,
-  };
-  browser.tabs.query(optionTabQuery).then((tabs) => {
-    for (const i in tabs) {
-      browser.tabs.reload(tabs[i].id);
-    }
-  });
 };
 
 // selected attaches a click and keydown event handler to the matching selector and calls
@@ -625,53 +556,3 @@ const ellipsis = function ellipsis(valueToTruncate, maxSize) {
 
   return value;
 };
-
-// Creates the meta data to be saved with a users custom filter rules
-// Return a new object that the following structure:
-// created - a Integer representing the number of milliseconds elapsed
-//           since January 1, 1970 00:00:00 UTC.
-// origin - a String representing the method that user added the filter rule
-//
-// Inputs: origin? - optional value
-const createFilterMetaData = (origin) => {
-  const data = { created: Date.now() };
-  if (origin) {
-    data.origin = origin;
-  }
-  return data;
-};
-
-Object.assign(window, {
-  sessionStorageSet,
-  sessionStorageGet,
-  storageGet,
-  storageSet,
-  chromeStorageDeleteHelper,
-  migrateData,
-  parseUri,
-  determineUserLanguage,
-  chromeStorageSetHelper,
-  logging,
-  translate,
-  chromeStorageGetHelper,
-  reloadOptionsPageTabs,
-  reloadAllOpenedTabs,
-  chromeLocalStorageOnChangedHelper,
-  selected,
-  selectedOnce,
-  i18nJoin,
-  isEmptyObject,
-  setStorageCookie,
-  getStorageCookie,
-  THIRTY_MINUTES_IN_MILLISECONDS,
-  debounced,
-  extend,
-  base64toBlob,
-  selectedOff,
-  isLangRTL,
-  setLangAndDirAttributes,
-  processReplacementChildrenInContent,
-  localizePage,
-  ellipsis,
-  createFilterMetaData,
-});

@@ -16,9 +16,16 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, chromeStorageSetHelper, log, logging, extend */
+/* global browser */
 
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
+
+import {
+  chromeStorageSetHelper,
+  extend,
+  log,
+  logging,
+} from '../utilities/background/bg-functions';
 
 export const settingsNotifier = new EventEmitter();
 const abpPrefPropertyNames = ['show_statsinicon', 'shouldShowBlockElementMenu', 'show_devtools_panel'];
@@ -132,7 +139,8 @@ const disableSetting = function (name) {
 export const isValidTheme = themeName => validThemes.includes(themeName);
 
 // Attach methods to window
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   disableSetting,
   getSettings,
   setSetting,

@@ -16,9 +16,8 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, channels, createFilterMetaData, log,
-   chromeStorageDeleteHelper, chromeStorageGetHelper, createFilterMetaData,
-   chromeStorageSetHelper, getUserFilters, Prefs, abpPrefPropertyNames,
+/* global browser, channels,
+   getUserFilters, Prefs, abpPrefPropertyNames,
    adblockIsDomainPaused, PubNub, adblockIsPaused,
    pausedFilterText1, pausedFilterText2,
    isWhitelistFilter, getCustomFilterMetaData */
@@ -38,6 +37,12 @@ import {
 } from '../prefs/settings';
 import ServerMessages from '../servermessages';
 import postData from '../fetch-util';
+import {
+  chromeStorageDeleteHelper,
+  chromeStorageGetHelper,
+  log,
+  chromeStorageSetHelper,
+} from '../utilities/background/bg-functions';
 
 const SyncService = (function getSyncService() {
   let storedSyncDomainPauses = [];
@@ -130,7 +135,8 @@ const SyncService = (function getSyncService() {
   };
 
   const migrateSyncLog = function () {
-    if (typeof window.localStorage === 'undefined') {
+    /* eslint-disable no-restricted-globals */
+    if (typeof self.localStorage === 'undefined') {
       return;
     }
     let storedMsgs = localStorage.getItem(syncLogMessageKey);

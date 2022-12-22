@@ -20,9 +20,8 @@
 
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, require, log, determineUserLanguage, channels,
-   replacedCounts, chromeStorageSetHelper, recordAnonymousErrorMessage,
-   BigInt, LocalCDN, storageSet */
+/* global browser, require, channels, replacedCounts,
+   recordAnonymousErrorMessage, BigInt, LocalCDN,  */
 
 import { Prefs } from 'prefs';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
@@ -34,7 +33,12 @@ import { getSettings } from './prefs/settings';
 import ServerMessages from './servermessages';
 import postData from './fetch-util';
 import SURVEY from './survey';
-
+import {
+  log,
+  determineUserLanguage,
+  chromeStorageSetHelper,
+  storageSet,
+} from './utilities/background/bg-functions';
 
 export const telemetryNotifier = new EventEmitter();
 

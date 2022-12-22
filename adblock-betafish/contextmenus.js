@@ -24,6 +24,9 @@ import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
 import ServerMessages from './servermessages';
 
+import messageValidator from './messaging/messagevalidator';
+
+
 const updateButtonUIAndContextMenus = function () {
   browser.tabs.query({}).then((tabs) => {
     for (const tab of tabs) {
@@ -163,7 +166,6 @@ const contextMenuItem = (() => ({
       title: browser.i18n.getMessage('block_this_ad'),
       contexts: ['all'],
       onclick(info, tab) {
-        window.addCustomFilterRandomName = `ab-${Math.random().toString(36).substr(2)}`;
         emitPageBroadcast({
           fn: 'topOpenBlacklistUI',
           options: {
@@ -171,7 +173,7 @@ const contextMenuItem = (() => ({
             showBlacklistCTA: License.shouldShowBlacklistCTA(),
             isActiveLicense: License.isActiveLicense(),
             settings: getSettings(),
-            addCustomFilterRandomName: window.addCustomFilterRandomName,
+            addCustomFilterRandomName: messageValidator.generateNewRandomText(),
           },
         }, {
           tab,
@@ -183,7 +185,6 @@ const contextMenuItem = (() => ({
       title: browser.i18n.getMessage('block_an_ad_on_this_page'),
       contexts: ['all'],
       onclick(info, tab) {
-        window.addCustomFilterRandomName = `ab-${Math.random().toString(36).substr(2)}`;
         emitPageBroadcast({
           fn: 'topOpenBlacklistUI',
           options: {
@@ -191,7 +192,7 @@ const contextMenuItem = (() => ({
             showBlacklistCTA: License.shouldShowBlacklistCTA(),
             isActiveLicense: License.isActiveLicense(),
             settings: getSettings(),
-            addCustomFilterRandomName: window.addCustomFilterRandomName,
+            addCustomFilterRandomName: messageValidator.generateNewRandomText(),
           },
         }, {
           tab,
@@ -209,9 +210,8 @@ let updateContextMenuItems = async function (page) {
     return;
   }
 
-  const adblockIsPaused = window.adblockIsPaused();
-  const domainIsPaused = window.adblockIsDomainPaused({ url: page.url.href, id: page.id });
-  if (adblockIsPaused) {
+  const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
+  if (adblockIsPaused()) {
     browser.contextMenus.create(contextMenuItem.unpauseAll);
   } else if (domainIsPaused) {
     browser.contextMenus.create(contextMenuItem.unpauseDomain);
@@ -288,7 +288,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.command === 'showBlacklist' && typeof request.nothingClicked === 'boolean') {
-    window.addCustomFilterRandomName = `ab-${Math.random().toString(36).substr(2)}`;
     emitPageBroadcast({
       fn: 'topOpenBlacklistUI',
       options: {
@@ -296,7 +295,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         isActiveLicense: License.isActiveLicense(),
         showBlacklistCTA: License.shouldShowBlacklistCTA(),
         settings: getSettings(),
-        addCustomFilterRandomName: window.addCustomFilterRandomName,
+        addCustomFilterRandomName: messageValidator.generateNewRandomText(),
       },
       tabID: request.tabId,
     });
@@ -306,11 +305,10 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.command === 'showWhitelist') {
-    window.addCustomFilterRandomName = `ab-${Math.random().toString(36).substr(2)}`;
     emitPageBroadcast({
       fn: 'topOpenWhitelistUI',
       options: {
-        addCustomFilterRandomName: window.addCustomFilterRandomName,
+        addCustomFilterRandomName: messageValidator.generateNewRandomText(),
       },
       tabID: request.tabId,
     });
@@ -334,7 +332,8 @@ Prefs.on(Prefs.shouldShowBlockElementMenu, () => {
 
 updateButtonUIAndContextMenus();
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   emitPageBroadcast,
   updateButtonUIAndContextMenus,
 });

@@ -18,6 +18,7 @@ import DataCollectionV2 from '../datacollection.v2';
 import ServerMessages from '../servermessages';
 import LocalDataCollection from '../localdatacollection';
 import ExcludeFilter from '../excludefilter';
+import messageValidator from './messagevalidator';
 import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
 
 const processMessageResponse = (sendResponse, responseData) => {
@@ -25,7 +26,8 @@ const processMessageResponse = (sendResponse, responseData) => {
   return Promise.resolve(responseData);
 };
 
-Object.assign(window, {
+// eslint-disable-next-line no-restricted-globals
+Object.assign(self, {
   processMessageResponse,
 });
 
@@ -192,9 +194,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+async function addCustomFilterMessageValidation(message) {
+  if (await messageValidator.validateMessage(message)) {
+    return addCustomFilter(message.filterTextToAdd, message.origin).then(results => results);
+  }
+}
+
 /**
  * Process the 'addCustomFilter' message the wizards, which requires verifing the
- * `addCustomFilterRandomName` on the message matches what is current set on the global
+ * `addCustomFilterRandomName` property on the message matches what is current set on the global
  * name space
  *
  */
@@ -203,10 +211,8 @@ browser.runtime.onMessage.addListener((message) => {
   if (
     message.command === 'addCustomFilter'
     && message.filterTextToAdd
-    && message.addCustomFilterRandomName === window.addCustomFilterRandomName
   ) {
-    window.addCustomFilterRandomName = '';
-    return addCustomFilter(message.filterTextToAdd, message.origin).then(results => results);
+    return addCustomFilterMessageValidation(message);
   }
 });
 

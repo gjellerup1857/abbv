@@ -33,6 +33,8 @@ import { TabSessionStorage } from "../../vendor/adblockplusui/adblockpluschrome/
 import { allowlistingState } from "../../vendor/adblockplusui/adblockpluschrome/lib/allowlisting";
 import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../vendor/adblockplusui/adblockpluschrome/lib/browserAction";
 
+import { chromeStorageSetHelper,  chromeStorageGetHelper } from '../utilities/background/bg-functions.js'
+
 const ANIMATION_LOOPS = 3;
 const FRAME_IN_MS = 100;
 
