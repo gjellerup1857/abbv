@@ -28,6 +28,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   const FIFTEEN_MINS = 15;
   const EXT_STATS_KEY = 'ext_stats_key';
   const STATS_ALARM_NAME = 'statsalarm';
+  const STATS_STORAGE_KEY = 'ab:stats.storage.key';
   const REPORTING_OPTIONS = {
     filterType: 'blocking',
     includeElementHiding: false,
@@ -69,6 +70,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
         } else {
           dataCollectionCache.domains[domain].trackers += 1;
         }
+        chromeStorageSetHelper(STATS_STORAGE_KEY, dataCollectionCache);
       });
     }
   };
@@ -86,6 +88,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
       const domain = new URL(url).hostname;
       initializeDomainIfNeeded(domain);
       dataCollectionCache.domains[domain].adsReplaced += 1;
+      chromeStorageSetHelper(STATS_STORAGE_KEY, dataCollectionCache);
     } else if (!getSettings().local_data_collection) {
       LocalDataCollection.end();
     }
@@ -95,6 +98,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   const clearCache = function () {
     dataCollectionCache = {};
     dataCollectionCache.domains = {};
+    browser.storage.local.remove(STATS_STORAGE_KEY);
   };
 
   const saveCacheData = function () {
@@ -119,40 +123,56 @@ const LocalDataCollection = (function getLocalDataCollection() {
     });
   };
 
-  const initializeAlarm = function () {
-    browser.alarms.onAlarm.addListener((alarm) => {
-      if (alarm && alarm.name === STATS_ALARM_NAME) {
-        saveCacheData();
-      }
-    });
-    browser.alarms.create(STATS_ALARM_NAME, { periodInMinutes: FIFTEEN_MINS });
+  const loadCache = async function () {
+    const response = await browser.storage.local.get(STATS_STORAGE_KEY);
+    if (response[STATS_STORAGE_KEY]) {
+      dataCollectionCache = response[STATS_STORAGE_KEY];
+    }
   };
 
-  // If enabled at startup periodic saving of memory cache &
-  // sending of data to the log server
-  settings.onload().then(() => {
-    if (getSettings().local_data_collection) {
-      initializeAlarm();
+  const initialize = function () {
+    browser.alarms.onAlarm.addListener(async (alarm) => {
+      // Not our alarm, nothing to do
+      if (!alarm && alarm.name !== STATS_ALARM_NAME) {
+        return;
+      }
+      await settings.onload();
+      // If we're collecting data and the alarm has fired, process the memory cache
+      if (getSettings().local_data_collection) {
+        await loadCache();
+        saveCacheData();
+      } else {
+        browser.alarms.clear(STATS_ALARM_NAME);
+      }
+    });
+    // If enabled at startup, enable periodic processing of memory cache
+    settings.onload().then(async () => {
+      if (!getSettings().local_data_collection) {
+        return;
+      }
+      await loadCache();
+      browser.alarms.create(STATS_ALARM_NAME, { periodInMinutes: FIFTEEN_MINS });
       ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
       replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
-    }
-  });// End of then
+    });
+  };
+  initialize();
 
   const returnObj = {};
   returnObj.EXT_STATS_KEY = EXT_STATS_KEY;
 
   returnObj.start = function returnObjStart() {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       dataCollectionCache.domains = {};
-      ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
-      replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
-      initializeAlarm();
-      setSetting('local_data_collection', true, resolve);
+      setSetting('local_data_collection', true, () => {
+        initialize();
+        resolve();
+      });
     });
   };
 
   returnObj.end = function returnObjEnd() {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       browser.alarms.clear(STATS_ALARM_NAME);
       clearCache();
       ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
