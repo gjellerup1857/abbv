@@ -16,8 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, TELEMETRY, License, log, openTab, chromeStorageGetHelper,
-   chromeStorageSetHelper
+/* global browser, TELEMETRY, License, log, openTab,
  */
 
 // if the ping response indicates a survey (tab or overlay)
@@ -29,6 +28,7 @@ import { getSettings } from './prefs/settings';
 import { getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import OnPageIconManager from './onpageIcon/onpage-icon-bg';
 import postData from './fetch-util';
+import { chromeStorageGetHelper, chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 
 const SURVEY = (function getSurvey() {
