@@ -350,7 +350,6 @@ const imageSwap = {
       callback(false);
       return false;
     }
-
     browser.runtime.sendMessage({
       command: 'channels.getrandomlisting',
       opts: {
@@ -759,7 +758,6 @@ onReady(() => {
   for (let i = 0; i < allElements.length; i++) {
     const data = allElements[i];
     const size = imageSwap.getSize(data);
-
     if (!imageSwap.isInvalidSize(size)) {
       data.size = size;
       data.dimension = (size.x * size.y);

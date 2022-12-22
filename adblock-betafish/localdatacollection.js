@@ -49,7 +49,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   const addFilterToCache = function (details, filter) {
     const validFilterText = filter && filter.text && (typeof filter.text === 'string');
     if (details.tabId > 0 && validFilterText && validFilterText && details && details.url) {
-      browser.tabs.get(details.tabId).then((tab) => {
+      browser.tabs.get(details.tabId).then(async (tab) => {
         if (tab.incognito) {
           return;
         }
@@ -58,11 +58,12 @@ const LocalDataCollection = (function getLocalDataCollection() {
         initializeDomainIfNeeded(domain);
         const { text } = filter;
         let isAd = true;
-        for (const sub of ewe.subscriptions.getForFilter(text)) {
+        const subscriptions = await ewe.subscriptions.getForFilter(text);
+        subscriptions.forEach((sub) => {
           if (!sub.disabled && sub.url && sub.url === easyPrivacyURL) {
             isAd = false;
           }
-        }
+        });
         if (isAd) {
           dataCollectionCache.domains[domain].ads += 1;
         } else {
@@ -165,18 +166,13 @@ const LocalDataCollection = (function getLocalDataCollection() {
   };
   returnObj.saveCacheData = saveCacheData;
   returnObj.easyPrivacyURL = easyPrivacyURL;
-  returnObj.exportRawStats = function returnObjFilterStats(callback) {
-    browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
-      const savedData = hourlyResponse[EXT_STATS_KEY] || { };
-      if (typeof callback === 'function') {
-        callback(savedData);
-      }
-    });
+  returnObj.exportRawStats = async function returnObjFilterStats() {
+    const hourlyResponse = await browser.storage.local.get(EXT_STATS_KEY);
+    return Promise.resolve(hourlyResponse[EXT_STATS_KEY] || { });
   };
-  returnObj.getRawStatsSize = function returnObjFilterStatsSize(callback) {
-    LocalDataCollection.exportRawStats((rawStats) => {
-      callback(JSON.stringify(rawStats).length);
-    });
+  returnObj.getRawStatsSize = async function returnObjFilterStatsSize() {
+    const rawStats = await LocalDataCollection.exportRawStats();
+    return Promise.resolve((JSON.stringify(rawStats).length));
   };
   // Note: the following function is used for testing purposes
   // Import filter list statistics which will be converted to the format needed / used

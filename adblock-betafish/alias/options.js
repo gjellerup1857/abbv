@@ -28,7 +28,7 @@
 
 
 import * as info from "info";
-import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging";
+import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port";
 
 const optionsUrl = browser.runtime.getManifest().options_ui.page;
 
@@ -157,7 +157,7 @@ browser.browserAction.onClicked.addListener(async () => {
   let [, optionsPort] = await showOptions();
   if (!/^https?:$/.test(currentPage.url.protocol)) return;
 
-  const isAllowlisted = ewe.filters.isResourceAllowlisted(
+  const isAllowlisted = await ewe.filters.isResourceAllowlisted(
     currentPage.url,
     "document",
     currentPage.id

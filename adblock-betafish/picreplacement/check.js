@@ -26,10 +26,11 @@
 // Paying for this extension supports the work on AdBlock.  Thanks very much.
 
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { TabSessionStorage } from '../../vendor/adblockplusui/adblockpluschrome/lib/storage/tab-session';
+
 import { TELEMETRY } from '../telemetry';
 import { Channels } from './channels';
 import { getSettings, setSetting } from '../prefs/settings';
-import { loadAdBlockSnippets } from '../alias/contentFiltering';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
 import { initialize } from '../alias/subscriptionInit';
 import ServerMessages from '../servermessages';
@@ -352,13 +353,14 @@ export const License = (function getLicense() {
       if (getSettings().sync_settings) {
         // We have to import the "sync-service" module on demand,
         // as the "sync-service" module in turn requires this module.
+        /* eslint-disable import/no-cycle */
         (import('./sync-service')).disableSync();
       }
       setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
-      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-push' });
-      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-newsletter' });
-      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-survey' });
-      SubscriptionAdapter.unsubscribe({ id: 'distraction-control-video' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-push' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-newsletter' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-survey' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-video' });
       browser.alarms.clear(licenseAlarmName);
     },
     ready() {
@@ -390,18 +392,13 @@ export const License = (function getLicense() {
         browser.alarms.create(licenseAlarmName, { when: nextLicenseCheck.getTime() });
       });
     },
-    getLicenseInstallationDate(callback) {
-      if (typeof callback !== 'function') {
-        return;
+    async getLicenseInstallationDate() {
+      const response = await browser.storage.local.get(installTimestampStorageKey);
+      const originalInstallTimestamp = response[installTimestampStorageKey];
+      if (originalInstallTimestamp) {
+        return (new Date(originalInstallTimestamp));
       }
-      browser.storage.local.get(installTimestampStorageKey).then((response) => {
-        const originalInstallTimestamp = response[installTimestampStorageKey];
-        if (originalInstallTimestamp) {
-          callback(new Date(originalInstallTimestamp));
-        } else {
-          callback(undefined);
-        }
-      });
+      return undefined;
     },
     // activate the current license and configure the extension in licensed mode.
     // Call with an optional delay parameter (in milliseconds) if the first license
@@ -421,7 +418,6 @@ export const License = (function getLicense() {
         }, delay);
       }
       setSetting('picreplacement', false);
-      loadAdBlockSnippets();
     },
     getFormattedActiveSinceDate() {
       if (
@@ -539,7 +535,7 @@ export const License = (function getLicense() {
   };
 }());
 
-const replacedPerPage = new ext.PageMap();
+const replacedPerPage = new TabSessionStorage('ab:premium:replacedPerPage');
 
 // Records how many ads have been replaced by AdBlock.  This is used
 // by the AdBlock to display statistics to the user.
@@ -570,10 +566,9 @@ export const replacedCounts = (function getReplacedCount() {
         const data = replacedCountData;
         data.total += 1;
         chromeStorageSetHelper(key, data);
-        browser.tabs.get(tabId).then((tab) => {
-          const myPage = new ext.Page(tab);
-          let replaced = replacedPerPage.get(myPage) || 0;
-          replacedPerPage.set(myPage, replaced += 1);
+        browser.tabs.get(tabId).then(async (tab) => {
+          let replaced = await replacedPerPage.get(tabId) || 0;
+          await replacedPerPage.set(tabId, replaced += 1);
           adReplacedNotifier.emit('adReplaced', tabId, tab.url);
         });
       });
@@ -581,9 +576,9 @@ export const replacedCounts = (function getReplacedCount() {
     get() {
       return chromeStorageGetHelper(key);
     },
-    getTotalAdsReplaced(tabId) {
+    async getTotalAdsReplaced(tabId) {
       if (tabId) {
-        return replacedPerPage.get(ext.getPage(tabId));
+        return replacedPerPage.get(tabId);
       }
       return this.get().then(data => data.total);
     },
@@ -618,7 +613,6 @@ License.ready().then(() => {
   License.checkSevenDayAlarm();
 
   if (License.isActiveLicense()) {
-    loadAdBlockSnippets();
     License.updatePeriodically();
   }
 });

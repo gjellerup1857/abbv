@@ -40,7 +40,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
   dataCollectionCache.filters = {};
   dataCollectionCache.domains = {};
 
-  const addFilterToCache = function (details, filter) {
+  const addFilterToCache = async function (details, filter) {
     const validFilterText = filter && filter.text && (typeof filter.text === 'string');
     if (validFilterText && details && details.url) {
       let domain = details.url.hostname;
@@ -71,14 +71,15 @@ const DataCollectionV2 = (function getDataCollectionV2() {
         }
         dataCollectionCache.filters[text].firstParty[domain].hits += 1;
       }
-      for (const sub of ewe.subscriptions.getForFilter(filter.text)) {
+      const subscriptions = await ewe.subscriptions.getForFilter(text);
+      subscriptions.forEach((sub) => {
         if (sub.enabled && sub.url && sub.downloadable) {
           const subURL = sub.url.substring(0, 256);
           if (!dataCollectionCache.filters[text].subscriptions.includes(subURL)) {
             dataCollectionCache.filters[text].subscriptions.push(subURL);
           }
         }
-      }
+      });
     }
   };
 
@@ -109,7 +110,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
     }
     if (dataCollectionSetting && Object.keys(dataCollectionCache.filters).length > 0) {
       const subscribedSubs = [];
-      const subs = SubscriptionAdapter.getSubscriptionsMinusText();
+      const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
       for (const subscription of Object.values(subs)) {
         if (subscription && subscription.url) {
           subscribedSubs.push(subscription.url.substring(0, 256));

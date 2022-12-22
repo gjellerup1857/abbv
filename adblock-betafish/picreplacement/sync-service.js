@@ -428,10 +428,11 @@ const SyncService = (function getSyncService() {
       }
     }
     if (payload.subscriptions) {
-      const currentSubs = SubscriptionAdapter.getSubscriptionsMinusText();
+      const currentSubs = await SubscriptionAdapter.getSubscriptionsMinusText();
       for (const id in currentSubs) {
         if (!payload.subscriptions[id] && currentSubs[id].subscribed) {
-          ewe.subscriptions.remove(currentSubs[id].url);
+          // eslint-disable-next-line no-await-in-loop
+          await ewe.subscriptions.remove(currentSubs[id].url);
         }
       }
       for (const id in payload.subscriptions) {
@@ -441,7 +442,8 @@ const SyncService = (function getSyncService() {
             url = id.slice(4);
           }
           if (url) {
-            ewe.subscriptions.add(url);
+            // eslint-disable-next-line no-await-in-loop
+            await ewe.subscriptions.add(url);
             ewe.subscriptions.sync(url);
           }
         }
@@ -708,7 +710,7 @@ const SyncService = (function getSyncService() {
     const payload = {};
     payload.settings = getSettings();
     payload.subscriptions = {};
-    const subscriptions = SubscriptionAdapter.getSubscriptionsMinusText();
+    const subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
 
     for (const id in subscriptions) {
       if (subscriptions[id].subscribed && subscriptions[id].url) {

@@ -79,16 +79,15 @@ $(async () => {
 
     content.push('');
 
+    if (theDebugInfo.exclude_filters) {
+      content.push('=== Exclude Filters ===');
+      content.push(JSON.stringify(theDebugInfo.exclude_filters));
+    }
     // Custom & Excluded filters might not always be in the object
     if (theDebugInfo.customFilters) {
       content.push('=== Custom Filters ===');
       content.push(theDebugInfo.customFilters);
       content.push('');
-    }
-
-    if (theDebugInfo.exclude_filters) {
-      content.push('=== Exclude Filters ===');
-      content.push(JSON.stringify(theDebugInfo.exclude_filters));
     }
 
     content.push('=== Settings ===');

@@ -197,7 +197,7 @@ const SURVEY = (function getSurvey() {
 
     const parsedDomains = parseDomains(surveyData.domains, ',');
 
-    const tabListener = function (updatedTabId, changeInfo, tab) {
+    const tabListener = async function (updatedTabId, changeInfo, tab) {
       const shouldShowOnPageIcon = function () {
         shouldShowSurvey(surveyData, (responseData) => {
           log('shouldShowSurvey::responseData:', responseData);
@@ -226,8 +226,8 @@ const SURVEY = (function getSurvey() {
         log('processIcon:: checking if isActiveOnDomain', cleanDomain, isActiveOnDomain(cleanDomain, parsedDomains));
         log('processIcon:: checking if isRestricted', isRestricted(myURL));
         if (isActiveOnDomain(cleanDomain, parsedDomains) && !isRestricted(myURL)) {
-          log('processIcon:: block count check', getBlockedPerPage(tab), surveyData.block_count);
-          if (surveyData.block_count <= getBlockedPerPage(tab)) {
+          log('processIcon:: block count check', await getBlockedPerPage(tab), surveyData.block_count);
+          if (surveyData.block_count <= await getBlockedPerPage(tab)) {
             shouldShowOnPageIcon();
           }
         }

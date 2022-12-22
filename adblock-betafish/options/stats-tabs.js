@@ -1131,7 +1131,7 @@ $(async () => {
   await initializeProxies();
   subs = await SubscriptionAdapter.getSubscriptionsMinusText();
   await LocalDataCollection.saveCacheData();
-  await initializeStatsTabContent();
+  initializeStatsTabContent();
 
   localizePage();
   // use a MutationObserver to watch if the stats tab is redisplayed.

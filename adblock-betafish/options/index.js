@@ -23,8 +23,37 @@
    settingsNotifier, initializeMABPayment, initializeSettings, initializeLicense,
    initializeChannels, settings, initializePrefs, ServerMessages, SubscriptionAdapter,
    initializeLocalDataCollection, SyncService, initializeSyncService, initializePremiumPort,
-   initializeSubscriptionsProxy, initializeFiltersProxy, send, sendTypeMessage
+   initializeSubscriptionsProxy, initializeFiltersProxy
     */
+
+const DISTRACTION_CONTROL_URL_LIST = [
+  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt',
+  'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt',
+  'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt',
+  'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt',
+  'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control.txt',
+  'https://cdn.adblockcdn.com/filters/distraction-control.txt',
+];
+
+/* eslint-disable-next-line no-unused-vars */
+function isDistractionControlURL(url) {
+  return DISTRACTION_CONTROL_URL_LIST.includes(url);
+}
+
+/* eslint-disable-next-line no-unused-vars */
+function send(command, args) {
+  const updatedArgs = Object.assign({}, { command }, args);
+  return browser.runtime.sendMessage(updatedArgs);
+}
+
+function sendTypeMessage(type, args) {
+  const updatedArgs = Object.assign({}, { type }, args);
+  return browser.runtime.sendMessage(updatedArgs);
+}
 
 /* eslint-disable-next-line no-unused-vars */
 const isSelectorFilter = function (text) {

@@ -102,7 +102,7 @@ export const TELEMETRY = (function exportStats() {
     storageSet(TELEMETRY.nextPingTimeStorageKey);
   }
 
-  const getPingData = function (callbackFN) {
+  const getPingData = async function (callbackFN) {
     if (!callbackFN && (typeof callbackFN !== 'function')) {
       return;
     }
@@ -118,7 +118,7 @@ export const TELEMETRY = (function exportStats() {
         const themePopupMenu = settingsObj.color_themes.popup_menu.replace('_theme', '');
         let subsStr = '-1';
         if (typeof BigInt === 'function') {
-          subsStr = BigInt(`0b${SubscriptionAdapter.getSubscriptionsChecksum()}`).toString();
+          subsStr = BigInt(`0b${await SubscriptionAdapter.getSubscriptionsChecksum()}`).toString();
         }
 
         data = {
@@ -164,7 +164,7 @@ export const TELEMETRY = (function exportStats() {
         if (browser.runtime.id) {
           data.extid = browser.runtime.id;
         }
-        const subs = SubscriptionAdapter.getAllSubscriptionsMinusText();
+        const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
         if (subs) {
           const aa = subs.acceptable_ads;
           const aaPrivacy = subs.acceptable_ads_privacy;
@@ -397,8 +397,8 @@ export const TELEMETRY = (function exportStats() {
       browser.alarms.onAlarm.addListener((alarm) => {
         if (alarm && alarm.name === pingAlarmName) {
           pingNow()
-          .then(() => scheduleNextPing())
-          .then(() => sleepThenPing());
+            .then(() => scheduleNextPing())
+            .then(() => sleepThenPing());
         }
       });
       // Check if the computer was woken up, and if there was a pending alarm
@@ -411,8 +411,8 @@ export const TELEMETRY = (function exportStats() {
           if (alarm && Date.now() > alarm.scheduledTime) {
             await browser.alarms.clear(pingAlarmName);
             pingNow()
-            .then(() => scheduleNextPing())
-            .then(() => sleepThenPing());
+              .then(() => scheduleNextPing())
+              .then(() => sleepThenPing());
           } else if (alarm) {
             // if the alarm should fire in the future,
             // re-add the alarm so it fires at the correct time

@@ -45,7 +45,7 @@ $(async () => {
     }
     $('.status_msg').css('display', 'inline-flex');
 
-    if (License.isLicenseCodeValid() && License.get().code) {
+    if (License.isLicenseCodeValid() && License.code) {
       manageSubscriptionURL = `${manageSubscriptionURL}?lic=${License.code}`;
       $('a#manage-subscription').attr('href', manageSubscriptionURL).show();
     }

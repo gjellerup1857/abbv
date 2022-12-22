@@ -26,10 +26,13 @@ import abRecommendationData from './data/betafish-subscriptions.json';
 // Also adds the 'language' and 'hidden' properties
 const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const addAdBlockProperties = function (sub) {
-    let subscription = sub;
-    if (abRecommendationData && subscription && abRecommendationData[subscription.url]) {
-      subscription.id = abRecommendationData[subscription.url].id;
-      subscription = Object.assign(subscription, abRecommendationData[subscription.url]);
+    let subscription = Object.assign({}, sub);
+    const url = subscription.url || subscription.mv2URL;
+    if (abRecommendationData[url]) {
+      subscription = Object.assign(subscription, abRecommendationData[url]);
+      if (Object.prototype.hasOwnProperty.call(sub, 'languages')) {
+        subscription.languages = [].concat(sub.languages);
+      }
       if (!Object.prototype.hasOwnProperty.call(subscription, 'language')) {
         subscription.language = (subscription.languages && subscription.languages.length > 0);
       }
@@ -41,8 +44,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const getUrlFromId = function (searchID) {
     for (const url in abRecommendationData) {
       const subscription = abRecommendationData[url];
-      const { id } = subscription;
-      if (searchID === id) {
+      const { adblockId } = subscription;
+      if (searchID === adblockId) {
         return url;
       }
     }
@@ -53,9 +56,9 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const getIdFromURL = function (searchURL) {
     for (const url in abRecommendationData) {
       const subscription = abRecommendationData[url];
-      const { id } = subscription;
+      const { adblockId } = subscription;
       if (searchURL === url) {
-        return id;
+        return adblockId;
       }
     }
     return null;
@@ -73,8 +76,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
 
     for (let subscription of ewe.subscriptions.getRecommendations()) {
       subscription = addAdBlockProperties(subscription);
-      const { id } = subscription;
-      if (id === searchID) {
+      const { adblockId } = subscription;
+      if (adblockId === searchID) {
         return subscription.language;
       }
     }
@@ -94,29 +97,33 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   };
 
   // Unsubcribe the user from the subscription specified in the argument
-  const unsubscribe = function (options) {
-    const subscriptionUrl = getUrlFromId(options.id);
+  const unsubscribe = async function (options) {
+    const subscriptionUrl = getUrlFromId(options.adblockId);
     if (subscriptionUrl !== '') {
-      ewe.subscriptions.remove(subscriptionUrl);
+      try {
+        await ewe.subscriptions.remove(subscriptionUrl);
+      } catch (e) {
+        // do nothing
+      }
     }
   };
 
   // Get only the user's subscriptions with in the AB format
   // without the filter contents (text)
-  const getSubscriptionsMinusText = function () {
+  const getSubscriptionsMinusText = async function () {
     const result = {};
-    for (let subscription of ewe.subscriptions.getDownloadable()) {
-      subscription = addAdBlockProperties(subscription);
-      const tempSub = Object.assign({}, subscription);
-      // if the subscription doesn't have a 'id' property, use the 'URL' as an
-      // 'id' property
-      if (!tempSub.id || tempSub.id === undefined) {
-        tempSub.id = `url:${subscription.url}`;
+    const subscriptions = await ewe.subscriptions.getDownloadable();
+    subscriptions.forEach(async (subscription) => {
+      const tempSub = addAdBlockProperties(subscription);
+      // if the subscription doesn't have a 'adblockId' property, use the 'URL' as an
+      // 'adblockId' property
+      if (!tempSub.adblockId || tempSub.adblockId === undefined) {
+        tempSub.adblockId = `url:${subscription.url}`;
       }
       // add the 'subscribed' property
       tempSub.subscribed = true;
-      result[tempSub.id] = tempSub;
-    }
+      result[tempSub.adblockId] = tempSub;
+    });
     return result;
   };
 
@@ -129,15 +136,16 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   };
 
   // Get a binary string representation of the users subscriptions
-  const getSubscriptionsChecksum = function () {
+  const getSubscriptionsChecksum = async function () {
     let resultA = 0;
     let resultB = 0;
-    for (let subscription of ewe.subscriptions.getDownloadable()) {
-      subscription = addAdBlockProperties(subscription);
-      let index = subscription.index || 0; // 0 is the 'unkown' index
+    const subscriptions = await ewe.subscriptions.getDownloadable();
+    subscriptions.forEach(async (subscription) => {
+      const sub = addAdBlockProperties(subscription);
+      let index = sub.index || 0; // 0 is the 'unkown' index
       // if URL wasn't found in our subscription file, check the rareFilterLists to get the index
-      if (index === 0 && rareFilterLists[subscription.url]) {
-        index = rareFilterLists[subscription.url];
+      if (index === 0 && rareFilterLists[sub.url]) {
+        index = rareFilterLists[sub.url];
       }
       index = parseInt(index, 10);
       if (index < 32) {
@@ -145,51 +153,54 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       } else {
         resultB |= (2 ** (index - 32)); // eslint-disable-line no-bitwise
       }
-    }
+    });
     return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(32, '0');
   };
 
   // Get all subscriptions in the AB format
   // without the filter contents (text)
-  const getAllSubscriptionsMinusText = function () {
-    const userSubs = getSubscriptionsMinusText();
-    for (let subscription of ewe.subscriptions.getRecommendations()) {
-      subscription = addAdBlockProperties(subscription);
-      const { id } = subscription;
-      if (!(id in userSubs)) {
-        userSubs[id] = Object.assign({}, subscription);
+  const getAllSubscriptionsMinusText = async function () {
+    const userSubs = await getSubscriptionsMinusText();
+    for (const subscription of ewe.subscriptions.getRecommendations()) {
+      const sub = addAdBlockProperties(subscription);
+      const { adblockId } = sub;
+      if (!(adblockId in userSubs)) {
+        userSubs[adblockId] = sub;
+      } else {
+        Object.assign(userSubs[adblockId], sub);
       }
     }
     for (const url in abRecommendationData) {
-      let subscription = abRecommendationData[url];
-      subscription = addAdBlockProperties(subscription);
-      const { id } = subscription;
-      if (!(id in userSubs)) {
-        userSubs[id] = Object.assign({}, subscription);
+      let sub = Object.assign({}, abRecommendationData[url]);
+      sub.url = url;
+      sub = addAdBlockProperties(sub);
+      const { adblockId } = sub;
+      if (!(adblockId in userSubs)) {
+        userSubs[adblockId] = sub;
       }
     }
     return userSubs;
   };
   // Get all distraction control subscriptions
   // without the filter contents (text)
-  const getDCSubscriptionsMinusText = function () {
-    const userSubs = getAllSubscriptionsMinusText();
+  const getDCSubscriptionsMinusText = async function () {
+    const userSubs = await getAllSubscriptionsMinusText();
     const result = {};
-    for (const id in userSubs) {
+    for (const adblockId in userSubs) {
       const {
         url, type, title, homepage, hidden, subscribed, index,
-      } = userSubs[id];
+      } = userSubs[adblockId];
       if (type === 'distraction-control') {
-        result[id] = {};
-        result[id].subscribed = subscribed;
-        result[id].id = id;
-        result[id].url = url;
-        result[id].userSubmitted = false;
-        result[id].hidden = hidden;
-        result[id].type = type;
-        result[id].title = title;
-        result[id].homepage = homepage;
-        result[id].index = index;
+        result[adblockId] = {};
+        result[adblockId].subscribed = subscribed;
+        result[adblockId].adblockId = adblockId;
+        result[adblockId].url = url;
+        result[adblockId].userSubmitted = false;
+        result[adblockId].hidden = hidden;
+        result[adblockId].type = type;
+        result[adblockId].title = title;
+        result[adblockId].homepage = homepage;
+        result[adblockId].index = index;
       }
     }
     return result;
@@ -198,8 +209,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
 
   // Subcribe the user to the subscription specified in the argument
   const subscribe = function (options) {
-    if (options && options.id) {
-      const subscriptionUrl = getUrlFromId(options.id);
+    if (options && options.adblockId) {
+      const subscriptionUrl = getUrlFromId(options.adblockId);
       if (subscriptionUrl) {
         ewe.subscriptions.add(subscriptionUrl);
       }
@@ -221,3 +232,4 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
 }());
 
 export default SubscriptionAdapter;
+SubscriptionAdapter.getAllSubscriptionsMinusText();

@@ -222,6 +222,7 @@ try {
           throw new Error('anError');
         }
       }
+
       browser.runtime.sendMessage({ command: 'getCurrentTabInfo', tabId }).then((info) => {
         if (info) {
           try {

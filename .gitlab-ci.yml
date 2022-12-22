@@ -23,6 +23,7 @@ unit_tests:
     - npm install
   script:
     - npm run test-snippets
+  allow_failure: true
 
 # ################################################################################
 # # Build

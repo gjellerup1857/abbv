@@ -18,6 +18,7 @@ import DataCollectionV2 from '../datacollection.v2';
 import ServerMessages from '../servermessages';
 import LocalDataCollection from '../localdatacollection';
 import ExcludeFilter from '../excludefilter';
+import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
 
 const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -176,6 +177,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'getDebugInfo':
       sendResponse({});
       return getDebugInfo();
+    case 'showIconBadgeCTA':
+      sendResponse({});
+      showIconBadgeCTA(message.value);
+      return;
+    case 'getNewBadgeTextReason':
+      sendResponse({ reason: getNewBadgeTextReason() });
+      return;
     case 'updateButtonUIAndContextMenus':
       updateButtonUIAndContextMenus();
       sendResponse({});
@@ -217,7 +225,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({});
         break;
       case 'unsubscribe':
-        SubscriptionAdapter.unsubscribe({ id: message.id });
+        SubscriptionAdapter.unsubscribe({ adblockId: message.adblockId });
         sendResponse({});
         break;
       case 'getIdFromURL':

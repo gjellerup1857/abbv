@@ -345,22 +345,19 @@ export class Channels {
   }
 
   // Ignore EasyPrivacy rules, since they can cause issue with odd image swaps
-  static shouldUseFilter(filter) {
+  static async shouldUseFilter(filter) {
     if (!filter) {
       return false;
     }
-
-    for (const subscription of ewe.subscriptions.getForFilter(filter.text)) {
-      if (subscription.downloadable && subscription.title === 'EasyPrivacy') {
-        return false;
-      }
-    }
-    return true;
+    const subscriptions = await ewe.subscriptions.getForFilter(filter);
+    const isEasyPrivacy = subscriptions.filter(subscription => subscription.title === 'EasyPrivacy');
+    return (isEasyPrivacy && isEasyPrivacy.length === 0);
   }
 
-  filterListener({ request, filter }) {
+  async filterListener({ request, filter }) {
     if (getSettings().picreplacement && this.license.isActiveLicense()) {
-      if (!Channels.shouldUseFilter(filter)) {
+      const shouldUseFilter = await Channels.shouldUseFilter(filter);
+      if (!shouldUseFilter) {
         return;
       }
       if (request
@@ -384,6 +381,7 @@ export class Channels {
       ewe.reporting.onBlockableItem.removeListener(this.filterListener, REPORTING_OPTIONS);
     }
   }
+
 
   initializeListeners() {
     this.license.ready().then(() => {

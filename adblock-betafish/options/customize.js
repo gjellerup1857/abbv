@@ -17,8 +17,8 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, createFilterMetaData, Prefs, settings,
-syncErrorCode, translate, checkForSyncError, isSelectorFilter, activateTab, License,
-MABPayment, DOMPurify, initializeProxies, FiltersProxy, send, sendTypeMessage */
+   syncErrorCode, translate, checkForSyncError, isSelectorFilter, activateTab, License,
+   MABPayment, DOMPurify, initializeProxies, FiltersProxy, send, sendTypeMessage  */
 
 let originalCustomFilters = [];
 

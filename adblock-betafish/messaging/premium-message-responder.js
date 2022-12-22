@@ -148,10 +148,6 @@ License.ready().then(() => {
         break;
       case 'isActiveLicense':
         return processMessageResponse(sendResponse, License.isActiveLicense());
-      case 'payment_success':
-        License.activate();
-        sendResponse({ ack: true });
-        break;
       case 'shouldShowMyAdBlockEnrollment':
         return processMessageResponse(sendResponse, License.shouldShowMyAdBlockEnrollment());
       default:

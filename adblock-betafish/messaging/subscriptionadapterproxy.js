@@ -12,7 +12,7 @@ class SubscriptionAdapter {
 
   static getAllSubscriptionsMinusText = () => send('getAllSubscriptionsMinusText');
 
-  static isLanguageSpecific = id => send('isLanguageSpecific', { id });
+  static isLanguageSpecific = adblockId => send('isLanguageSpecific', { adblockId });
 
   static getSubscriptionsMinusText = () => send('getSubscriptionsMinusText');
 }

@@ -200,7 +200,7 @@ const contextMenuItem = (() => ({
     },
 }))();
 
-let updateContextMenuItems = function (page) {
+let updateContextMenuItems = async function (page) {
   // Remove the AdBlock context menu items
   browser.contextMenus.removeAll();
 
@@ -215,7 +215,7 @@ let updateContextMenuItems = function (page) {
     browser.contextMenus.create(contextMenuItem.unpauseAll);
   } else if (domainIsPaused) {
     browser.contextMenus.create(contextMenuItem.unpauseDomain);
-  } else if (ewe.filters.getAllowingFilters(page.id).length) {
+  } else if (await ewe.filters.getAllowingFilters(page.id).length) {
     browser.contextMenus.create(contextMenuItem.pauseAll);
   } else {
     browser.contextMenus.create(contextMenuItem.blockThisAd);

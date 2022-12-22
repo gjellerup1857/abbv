@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global translate, License, MABPayment, filterNotifier,
    activateTab, browser, storageSet, storageGet, initializeProxies,
-   SubscriptionsProxy, SubscriptionAdapter, send   */
+   SubscriptionsProxy, SubscriptionAdapter, send, isDistractionControlURL   */
 
 // the elements array below are in the order they appear on the page
 const distractionControlUIitems = [
@@ -57,7 +57,7 @@ let dcWarningClosed = storageGet(dcWarningClosedKey);
 
 function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
   const isSelected = filterList.subscribed;
-  const filterListUrl = filterList.url;
+  const filterListUrl = filterList.mv2URL;
 
   let $checkBox = $('<input>')
     .attr('type', 'checkbox')
@@ -221,7 +221,7 @@ $(async () => {
 });
 
 const isDCFilterList = function (item) {
-  return (item && item.type === 'distraction-control');
+  return (item && isDistractionControlURL(item.url));
 };
 
 const updateCheckbox = function (item, isChecked) {
