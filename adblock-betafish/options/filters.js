@@ -17,11 +17,11 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global settings, SubscriptionAdapter, browser,
-   translate, updateAcceptableAdsUI, port,
+   translate, updateAcceptableAdsUI,
    delayedSubscriptionSelection, startSubscriptionSelection, selected, activateTab, License,
    MABPayment, getStorageCookie, setStorageCookie, THIRTY_MINUTES_IN_MILLISECONDS,
    updateSocialIconsVisibility, initializeProxies, SubscriptionsProxy, send,
-   isDistractionControlURL,
+   connectUIPort, isDistractionControlURL
    */
 
 function isAcceptableAds(filterList) {
@@ -1055,19 +1055,20 @@ $(async () => {
   };
   SubscriptionsProxy.onChanged.addListener(onSubUpdated);
 
-  port.onMessage.addListener((message) => {
-    if (message.type === 'subscriptions.respond' && message.args && message.args.length) {
-      if (message.action === 'added') {
-        onFilterChangeHandler('subscription.added', message.args[0]);
-      } else if (message.action === 'removed') {
-        onFilterChangeHandler('subscription.removed', message.args[0]);
+  connectUIPort(({ addUIListener, postUIMessage }) => {
+    addUIListener((message) => {
+      if (message.type === 'subscriptions.respond' && message.args && message.args.length) {
+        if (message.action === 'added') {
+          onFilterChangeHandler('subscription.added', message.args[0]);
+        } else if (message.action === 'removed') {
+          onFilterChangeHandler('subscription.removed', message.args[0]);
+        }
       }
-    }
-  });
-
-  port.postMessage({
-    type: 'subscriptions.listen',
-    filter: ['added', 'removed'],
+    });
+    postUIMessage({
+      type: 'subscriptions.listen',
+      filter: ['added', 'removed'],
+    });
   });
 
   FilterListUtil.updateSubscriptionInfoAll();

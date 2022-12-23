@@ -556,3 +556,87 @@ const ellipsis = function ellipsis(valueToTruncate, maxSize) {
 
   return value;
 };
+
+let port;
+const connectUIPort = (callback) => {
+  let autoReconnect = true;
+  // We're only establishing a connection to help prevent the background page or
+  // service worker from going to sleep, if it does go to sleep, will attempt to wake up
+  const keepPortAlive = () => {
+    const disconnectUI = () => {
+      autoReconnect = false;
+      port.disconnect();
+    };
+
+    const addUIListener = listenerCallback => port.onMessage.addListener(listenerCallback);
+
+    const postUIMessage = message => port.postMessage(message);
+
+    // We're only establishing one connection per page, for which we need to
+    // ignoresubsequent connection attempts
+    if (port && typeof callback === 'function') {
+      callback({ addUIListener, postUIMessage, disconnectUI });
+      return;
+    }
+
+    try {
+      port = browser.runtime.connect({ name: 'ui' });
+    } catch (ex) {
+      // We are no longer able to connect to the service worker, so we give up
+      // and assume that the extension is gone
+      port = null;
+      return;
+    }
+
+    // When the connection to the service worker drops, we try to reconnect,
+    // assuming that the extension is still there, in order to wake up the
+    // service worker
+    port.onDisconnect.addListener(() => {
+      port = null;
+      if (!autoReconnect) {
+        return;
+      }
+      // If the disconnect occurs due to the extension being unloaded, we may
+      // still be able to reconnect while that's ongoing, which misleads us into
+      // thinking that the extension is still there. Therefore we need to wait
+      // a little bit before trying to reconnect.
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=1312478
+      setTimeout(() => keepPortAlive(), 100);
+    });
+    if (typeof callback === 'function') {
+      callback({ addUIListener, postUIMessage, disconnectUI });
+    }
+  };
+  keepPortAlive();
+};
+
+Object.assign(window, {
+  sessionStorageSet,
+  sessionStorageGet,
+  storageGet,
+  storageSet,
+  chromeStorageDeleteHelper,
+  parseUri,
+  determineUserLanguage,
+  chromeStorageSetHelper,
+  logging,
+  translate,
+  chromeStorageGetHelper,
+  selected,
+  selectedOnce,
+  i18nJoin,
+  isEmptyObject,
+  setStorageCookie,
+  getStorageCookie,
+  THIRTY_MINUTES_IN_MILLISECONDS,
+  debounced,
+  extend,
+  base64toBlob,
+  selectedOff,
+  isLangRTL,
+  setLangAndDirAttributes,
+  processReplacementChildrenInContent,
+  localizePage,
+  ellipsis,
+  connectUIPort,
+});

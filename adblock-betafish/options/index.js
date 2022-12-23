@@ -23,7 +23,9 @@
    settingsNotifier, initializeMABPayment, initializeSettings, initializeLicense,
    initializeChannels, settings, initializePrefs, ServerMessages, SubscriptionAdapter,
    initializeLocalDataCollection, SyncService, initializeSyncService, initializePremiumPort,
-   initializeSubscriptionsProxy, initializeFiltersProxy
+   initializeSubscriptionsProxy, initializeFiltersProxy, send, sendTypeMessage,
+   connectUIPort, initializeSubscriptionsProxy, initializeFiltersProxy
+
     */
 
 const DISTRACTION_CONTROL_URL_LIST = [
@@ -82,7 +84,7 @@ const language = determineUserLanguage();
 
 /* eslint-disable-next-line no-unused-vars */
 let delayedSubscriptionSelection = null;
-const port = browser.runtime.connect({ name: 'ui' });
+
 let syncErrorCode = 0;
 
 // Function to check the last known Sync Error Code,
@@ -226,18 +228,6 @@ function startSubscriptionSelection(title, url) {
     }
   }
 }
-
-port.onMessage.addListener((message) => {
-  if (message.type === 'app.respond' && message.action === 'addSubscription') {
-    const subscription = message.args[0];
-    startSubscriptionSelection(subscription.title, subscription.url);
-  }
-});
-
-port.postMessage({
-  type: 'app.listen',
-  filter: ['addSubscription'],
-});
 
 function setSelectedThemeColor() {
   let optionsTheme = 'default_theme';
@@ -628,16 +618,6 @@ $(async () => {
   await initializeProxies();
   await initializeMABPayment();
 
-  // delay opening of a second port due to a race condition in the ABP code
-  // the delay allows the confirmation message to the user to function correctly
-  window.setTimeout(() => {
-    const port2 = browser.runtime.connect({ name: 'ui' });
-    port2.postMessage({
-      type: 'app.listen',
-      filter: ['addSubscription'],
-    });
-  }, 500);
-
   storageSet(License.pageReloadedOnSettingChangeKey, false);
 
   const onSettingsChanged = function (name, currentValue) {
@@ -671,4 +651,19 @@ document.addEventListener('readystatechange', () => {
   if ((document.readyState === 'complete') && (typeof setLangAndDirAttributes === 'function')) {
     setLangAndDirAttributes();
   }
+});
+
+connectUIPort(({ addUIListener, postUIMessage }) => {
+  addUIListener((message) => {
+    if (message.type === 'app.respond' && message.action === 'addSubscription') {
+      window.setTimeout(() => {
+        const subscription = message.args[0];
+        startSubscriptionSelection(subscription.title, subscription.url);
+      }, 500);
+    }
+  });
+  postUIMessage({
+    type: 'app.listen',
+    filter: ['addSubscription'],
+  });
 });
