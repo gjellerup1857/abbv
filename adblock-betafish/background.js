@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, License, translate,
+/* global browser, License,
    gabQuestion, ext, getSettings, setSetting, settings
    parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
    updateButtonUIAndContextMenus,  */
@@ -272,7 +272,7 @@ const removeCustomFilterForHost = function (host) {
 // If the user confirms the removal of the entries, then they are removed, and the page reloaded.
 const confirmRemovalOfCustomFiltersOnHost = function (host, activeTabId) {
   const customFilterCount = countCache.getCustomFilterCount(host);
-  const confirmationText = translate('confirm_undo_custom_filters', [customFilterCount, host]);
+  const confirmationText = browser.i18n.getMessage('confirm_undo_custom_filters', [customFilterCount, host]);
   const messageListenerFN = function (request) {
     browser.runtime.onMessage.removeListener(messageListenerFN);
     if (request === `remove_custom_filters_on_host${host}:true`) {
