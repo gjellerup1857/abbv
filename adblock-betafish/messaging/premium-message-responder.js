@@ -134,10 +134,6 @@ License.ready().then(() => {
         License.shouldShowWhitelistCTA(message.isEnabled);
         sendResponse({});
         break;
-      case 'openPremiumPayURL':
-        openTab(License.MAB_CONFIG.payURL);
-        sendResponse({});
-        break;
       case 'cleanUpSevenDayAlarm':
         License.cleanUpSevenDayAlarm();
         sendResponse({});
@@ -158,6 +154,10 @@ License.ready().then(() => {
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { command } = message;
     switch (command) {
+      case 'openPremiumPayURL':
+        openTab(License.MAB_CONFIG.payURL);
+        sendResponse({});
+        break;
       case 'payment_success':
         License.activate();
         sendResponse({ ack: true });
