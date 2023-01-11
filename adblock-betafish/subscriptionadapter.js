@@ -36,6 +36,10 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       if (!Object.prototype.hasOwnProperty.call(subscription, 'language')) {
         subscription.language = (subscription.languages && subscription.languages.length > 0);
       }
+      subscription.correctedURL = subscription.url;
+      if (browser.runtime.getManifest().manifest_version === 2) {
+        subscription.correctedURL = subscription.mv2URL;
+      }
     }
     return subscription;
   };

@@ -375,8 +375,8 @@ SubscriptionUtil.subscribe = async (adblockId, title) => {
     FilterListUtil.cachedSubscriptions[adblockId] = newSub;
     subscription = newSub;
   }
-  await SubscriptionsProxy.add(subscription.url);
-  await SubscriptionsProxy.sync(subscription.url);
+  await SubscriptionsProxy.add(subscription.correctedURL);
+  await SubscriptionsProxy.sync(subscription.correctedURL);
 
   if (isAcceptableAds(cachedSubscription)) {
     updateAcceptableAdsUI(true, false);
@@ -384,8 +384,10 @@ SubscriptionUtil.subscribe = async (adblockId, title) => {
 
   if (isAcceptableAdsPrivacy(cachedSubscription)) {
     const aa = FilterListUtil.cachedSubscriptions.acceptable_ads;
-    setTimeout(() => {
-      SubscriptionsProxy.remove(aa.url);
+    setTimeout(async () => {
+      if (await SubscriptionsProxy.has(aa.correctedURL)) {
+        SubscriptionsProxy.remove(aa.correctedURL);
+      }
     }, 1);
     updateAcceptableAdsUI(true, true);
   }
@@ -402,14 +404,18 @@ SubscriptionUtil.subscribe = async (adblockId, title) => {
 SubscriptionUtil.unsubscribe = (adblockId) => {
   SubscriptionUtil.updateCacheValue(adblockId);
   const cachedSubscription = FilterListUtil.cachedSubscriptions[adblockId];
-  setTimeout(() => {
-    SubscriptionsProxy.remove(cachedSubscription.url);
+  setTimeout(async () => {
+    if (await SubscriptionsProxy.has(cachedSubscription.correctedURL)) {
+      SubscriptionsProxy.remove(cachedSubscription.correctedURL);
+    }
   }, 1);
 
   if (isAcceptableAds(cachedSubscription)) {
     const aaPrivacy = FilterListUtil.cachedSubscriptions.acceptable_ads_privacy;
-    setTimeout(() => {
-      SubscriptionsProxy.remove(aaPrivacy.url);
+    setTimeout(async () => {
+      if (await SubscriptionsProxy.has(aaPrivacy.correctedURL)) {
+        SubscriptionsProxy.remove(aaPrivacy.correctedURL);
+      }
     }, 1);
     updateAcceptableAdsUI(false, false);
   }
@@ -462,6 +468,7 @@ function getDefaultFilterUI(filterList, checkboxID, filterListType) {
   const $checkBox = $('<input>')
     .attr('type', 'checkbox')
     .attr('adblockId', checkboxID)
+    .attr('id', checkboxID)
     .prop('checked', isSelected);
 
   const $checkBoxIcons = $(`
@@ -511,7 +518,7 @@ function getDefaultFilterUI(filterList, checkboxID, filterListType) {
     .append($extraInformation);
 
   const $label = $('<label>')
-    .attr('title', filterList.url)
+    .attr('title', filterList.correctedURL)
     .attr('for', checkboxID)
     .append($filterInfo)
     .append($infoSection);
@@ -560,6 +567,7 @@ function getToggleFilterUI(filterList, checkboxID) {
   const $checkBox = $('<input>')
     .attr('type', 'checkbox')
     .attr('adblockId', checkboxID)
+    .attr('id', checkboxID)
     .prop('checked', !!filterList.subscribed);
 
   const $spanSlider = $('<span>')
@@ -571,7 +579,7 @@ function getToggleFilterUI(filterList, checkboxID) {
 
   const $label = $('<label>')
     .addClass('switch')
-    .attr('title', filterList.url)
+    .attr('title', filterList.correctedURL)
     .attr('for', checkboxID)
     .append($checkBox)
     .append($spanSlider)

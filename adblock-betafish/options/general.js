@@ -71,12 +71,16 @@ const initialize = async function init() {
     if (isEnabled) {
       await SubscriptionsProxy.add(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
       await SubscriptionsProxy.sync(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
-      await SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
+      if (await SubscriptionsProxy.has(SubscriptionsProxy.ACCEPTABLE_ADS_URL)) {
+        SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
+      }
       updateAcceptableAdsUI(true, true);
     } else {
       await SubscriptionsProxy.add(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
       await SubscriptionsProxy.sync(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
-      await SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
+      if (await SubscriptionsProxy.has(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL)) {
+        SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
+      }
       updateAcceptableAdsUI(true, false);
     }
   };
@@ -87,8 +91,12 @@ const initialize = async function init() {
       await SubscriptionsProxy.sync(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
       updateAcceptableAdsUI(true, false);
     } else {
-      await SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
-      await SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
+      if (await SubscriptionsProxy.has(SubscriptionsProxy.ACCEPTABLE_ADS_URL)) {
+        SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_URL);
+      }
+      if (await SubscriptionsProxy.has(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL)) {
+        SubscriptionsProxy.remove(SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL);
+      }
       updateAcceptableAdsUI(false, false);
     }
   };
