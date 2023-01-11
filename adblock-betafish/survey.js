@@ -28,7 +28,7 @@ import { getSettings } from './prefs/settings';
 import { getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import OnPageIconManager from './onpageIcon/onpage-icon-bg';
 import postData from './fetch-util';
-import { chromeStorageGetHelper, chromeStorageSetHelper } from './utilities/background/bg-functions';
+import { chromeStorageGetHelper, log, chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 
 const SURVEY = (function getSurvey() {
@@ -355,9 +355,11 @@ const SURVEY = (function getSurvey() {
   return {
     maybeSurvey(responseData) {
       if (getSettings().show_survey === false) {
+        log('maybeSurvey::show_survey === false, returning');
         return;
       }
       if (getSettings().suppress_surveys) {
+        log('maybeSurvey::suppress_surveys === true, returning');
         return;
       }
 
