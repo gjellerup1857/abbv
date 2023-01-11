@@ -653,17 +653,20 @@ document.addEventListener('readystatechange', () => {
   }
 });
 
-connectUIPort(({ addUIListener, postUIMessage }) => {
-  addUIListener((message) => {
-    if (message.type === 'app.respond' && message.action === 'addSubscription') {
-      window.setTimeout(() => {
+// delay opening of the port due to a race condition
+// the delay allows the confirmation message to the user to function correctly
+// when the options page is already open
+window.setTimeout(() => {
+  connectUIPort(({ addUIListener, postUIMessage }) => {
+    addUIListener((message) => {
+      if (message.type === 'app.respond' && message.action === 'addSubscription') {
         const subscription = message.args[0];
         startSubscriptionSelection(subscription.title, subscription.url);
-      }, 500);
-    }
+      }
+    });
+    postUIMessage({
+      type: 'app.listen',
+      filter: ['addSubscription'],
+    });
   });
-  postUIMessage({
-    type: 'app.listen',
-    filter: ['addSubscription'],
-  });
-});
+}, 50);
