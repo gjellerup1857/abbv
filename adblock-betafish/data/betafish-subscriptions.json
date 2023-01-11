@@ -384,16 +384,19 @@
     "index": 37
   },
   "https://secure.fanboy.co.nz/fanboy-annoyance.txt": {
+    "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
     "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
     "adblockId": "annoyances",
     "index": 38
   },
   "https://fanboy.co.nz/fanboy-annoyance.txt": {
+    "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
     "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
     "adblockId": "annoyances",
     "index": 38
   },
   "https://easylist-downloads.adblockplus.org/v3/full/fanboy-annoyance.txt": {
+    "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
     "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
     "adblockId": "annoyances",
     "index": 38

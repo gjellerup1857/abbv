@@ -719,11 +719,12 @@ const SyncService = (function getSyncService() {
     const subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
 
     for (const id in subscriptions) {
-      if (subscriptions[id].subscribed && subscriptions[id].url) {
-        if (sendFilterListByURL.includes(id)) {
-          payload.subscriptions[`url:${subscriptions[id].url}`] = subscriptions[id].url;
+      if (subscriptions[id].subscribed && subscriptions[id].mv2URL) {
+        const { adblockId } = subscriptions[id];
+        if (sendFilterListByURL.includes(adblockId)) {
+          payload.subscriptions[`url:${subscriptions[id].mv2URL}`] = subscriptions[id].mv2URL;
         } else {
-          payload.subscriptions[id] = subscriptions[id].url;
+          payload.subscriptions[adblockId] = subscriptions[id].mv2URL;
         }
       }
     }
