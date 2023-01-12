@@ -669,4 +669,4 @@ window.setTimeout(() => {
       filter: ['addSubscription'],
     });
   });
-}, 50);
+}, 250);

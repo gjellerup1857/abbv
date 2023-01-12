@@ -370,6 +370,7 @@ SubscriptionUtil.subscribe = async (adblockId, title) => {
       userSubmitted: true,
       initialUrl: adblockId.substr(4),
       url: adblockId.substr(4),
+      correctedURL: adblockId.substr(4),
       title,
     };
     FilterListUtil.cachedSubscriptions[adblockId] = newSub;
@@ -826,6 +827,7 @@ CustomFilterListUploadUtil.performUpload = (url, subscribeTo, title) => {
   const entry = {
     adblockId: subscribeTo,
     url,
+    correctedURL: url,
     subscribed: false,
     userSubmitted: true,
     label: '',
