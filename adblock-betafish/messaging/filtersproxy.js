@@ -1,17 +1,17 @@
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, port, ListenerSupport, sendTypeMessage */
+/* global browser, port, ListenerSupport, sendTypeMessage, send */
 
 /**
  * Act as Proxy to the ewe.filters.* APIs
  *
  */
 class FiltersProxy {
-  static add = (text, origin) => sendTypeMessage('filters.add', { text, origin });
+  static add = (text, origin) => send('filters.add', { text, origin });
 
-  static remove = text => sendTypeMessage('filters.remove', { text });
+  static remove = filters => send('filters.remove', { filters });
 
-  static validate = text => sendTypeMessage('filters.validate', { text });
+  static validate = text => send('filters.validate', { text });
 
   static getUserFilters = () => sendTypeMessage('filters.get');
 

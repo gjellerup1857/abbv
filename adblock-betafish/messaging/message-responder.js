@@ -11,6 +11,10 @@
 
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import {
+  toPlainFilterError,
+} from '../../vendor/adblockplusui/adblockpluschrome/lib/messaging/types';
+
+import {
   getSettings, setSetting, settings, settingsNotifier, isValidTheme,
 } from '../prefs/settings';
 import SubscriptionAdapter from '../subscriptionadapter';
@@ -20,6 +24,7 @@ import LocalDataCollection from '../localdatacollection';
 import ExcludeFilter from '../excludefilter';
 import messageValidator from './messagevalidator';
 import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
+import { createFilterMetaData } from '../utilities/background/bg-functions';
 
 const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -375,6 +380,98 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return processMessageResponse(sendResponse, LocalDataCollection.EXT_STATS_KEY);
     case 'ExcludeFilter.setExcludeFilters':
       ExcludeFilter.setExcludeFilters(message.filters);
+      sendResponse({});
+      break;
+    default:
+  }
+});
+
+function parseFilter(text) {
+  const filterText = text.trim() || null;
+  let error = null;
+
+  if (filterText) {
+    if (filterText[0] === '[') {
+      error = { type: 'unexpected_filter_list_header' };
+    } else {
+      const filterError = ewe.filters.validate(filterText);
+      if (filterError) {
+        error = toPlainFilterError(filterError);
+      }
+    }
+  }
+
+  return [filterText, error];
+}
+
+function filtersValidate(text) {
+  const filters = [];
+  const errors = [];
+
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const [filter, error] = parseFilter(lines[i]);
+
+    if (error) {
+      error.filter = filter;
+      // We don't treat filter headers like invalid filters,
+      // instead we simply ignore them and don't show any errors
+      // in order to allow pasting complete filter lists.
+      // If there are no filters, we do treat it as an invalid filter
+      // to inform users about it and to give them a chance to edit it.
+      if (error.type === 'unexpected_filter_list_header'
+          && lines.length > 1) {
+        /* eslint-disable no-continue */
+        continue;
+      }
+      errors.push(error);
+    } else if (filter) {
+      filters.push(filter);
+    }
+  }
+
+  return [filters, errors];
+}
+
+async function filtersAdd(text, origin) {
+  const filters = [];
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const [filter, error] = parseFilter(lines[i]);
+
+    if (error) {
+      return error;
+    }
+
+    if (filter) {
+      filters.push(filter);
+    }
+  }
+  try {
+    await ewe.filters.add(filters, createFilterMetaData(origin));
+  } catch (error) {
+    return error;
+  }
+}
+
+
+/* eslint-disable consistent-return */
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'filters.validate': {
+      const [, validationErrors] = filtersValidate(message.text);
+      return processMessageResponse(sendResponse, validationErrors);
+    }
+    case 'filters.add': {
+      sendResponse({});
+      return filtersAdd(message.text, message.origin);
+    }
+    case 'filters.remove':
+      ewe.filters.remove(message.filters);
       sendResponse({});
       break;
     default:

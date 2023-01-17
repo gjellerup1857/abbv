@@ -3153,6 +3153,10 @@
     "message": "Invalid CSS selector",
     "description": "Error message that is shown when the user has an inlvaild CSS query in their custom filter."
   },
+  "filter_url_not_specific_enough": {
+    "message": "Invalid rule, not specific enough",
+    "description": "Error message that is shown when the user has an inlvaild custom filter."
+  },
   "filter_snippet_nodomain": {
     "message": "No active domain specified for snippet filter"
   },
