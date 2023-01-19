@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5a6b284",
-    "@eyeo/snippets": "0.5.6",
+    "@eyeo/snippets": "0.6.0",
     "adblockpluscore": "0.5.1",
     "argparse": "1.0.10",
     "del": "7.0.0",
