@@ -222,6 +222,7 @@ try {
           throw new Error('anError');
         }
       }
+
       browser.runtime.sendMessage({ command: 'getCurrentTabInfo', tabId }).then((info) => {
         if (info) {
           try {
@@ -384,7 +385,7 @@ try {
                 || info.lastPostStatusCode === 403)
             ) {
               show(['div_sync_removed_error_msg', 'sync_removed_error_msg_part_1']);
-              browser.runtime.sendMessage({ command: 'resetAllSyncErrors' }); // reset all of  the errors, so it doesn't show again.
+              browser.runtime.sendMessage({ command: 'SyncService.resetAllErrors' }); // reset all of  the errors, so it doesn't show again.
             } else if (
               (info.lastPostStatusCode >= 400 || info.lastPostStatusCode === 0)
               && info.settings.sync_settings
