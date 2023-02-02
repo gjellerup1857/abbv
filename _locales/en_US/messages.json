@@ -2408,7 +2408,7 @@
     "description": "sync error message text on the popup menu"
   },
   "unsync_error_msg_part_3": {
-    "message": "Click here to refresh this page, then click [[\"Add This Extension\"]] to sync this device",
+    "message": "Click here to refresh this page, then click \"Add This Extension\" to sync this device",
     "description": "sync error message text on the Sync tab of the options page"
   },
   "sync_premium_cta": {
@@ -3153,10 +3153,6 @@
     "message": "Invalid CSS selector",
     "description": "Error message that is shown when the user has an inlvaild CSS query in their custom filter."
   },
-  "filter_url_not_specific_enough": {
-    "message": "Invalid rule, not specific enough",
-    "description": "Error message that is shown when the user has an inlvaild custom filter."
-  },
   "filter_snippet_nodomain": {
     "message": "No active domain specified for snippet filter"
   },
@@ -3168,7 +3164,7 @@
     "message": "Filter list headers aren't allowed here"
   },
   "too_many_filters": {
-    "description": "Error message shown when the attempts to more custom rules than is allowed under manifest V3",
+    "description": "Error message shown when the attempts to add more custom rules than is allowed under manifest V3",
     "message": "Reached maximum amount of filters. Please remove other filters of the same type before adding new ones."
   },
   "filter_invalid": {
