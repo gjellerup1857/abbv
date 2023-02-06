@@ -83,6 +83,11 @@
     "id": "9CC3AF4D-EB89-4100-97C6-4EEE4F8A2E82",
     "index": 8
   },
+  "https://easylist-downloads.adblockplus.org/antiadblockfilters.txt": {
+    "url": "https://easylist-downloads.adblockplus.org/antiadblockfilters.txt",
+    "adblockId": "warning_removal",
+    "index": 9
+  },
   "https://easylist-downloads.adblockplus.org/v3/full/abpindo+easylist.txt": {
     "id": "B7D76369-DD19-4602-80E8-2E32DDB490AC",
     "mv2URL": "https://easylist-downloads.adblockplus.org/abpindo+easylist.txt",

@@ -29,7 +29,7 @@ async function cleanCustomFilter(filtersArg) {
   if (isPaused) {
     const pausedFilterText = await send('getPausedFilterText');
     filters = filters.filter(element => !(element.text === pausedFilterText.pausedFilterText1
-               || element.text === pausedFilterText.pausedFilterText2));
+                  || element.text === pausedFilterText.pausedFilterText2));
   }
   // Remove the domain pause white-list items
   const domainPauses = await send('adblockIsDomainPaused');
@@ -131,11 +131,11 @@ $(async () => {
   }
 
   /**
-   * Checks if the given selector filter has a valid query string.
-   *
-   * @param {string} selectorFilter The selector filter to validate
-   * @returns {boolean} True if the given filters query is valid
-   */
+      * Checks if the given selector filter has a valid query string.
+      *
+      * @param {string} selectorFilter The selector filter to validate
+      * @returns {boolean} True if the given filters query is valid
+      */
   function hasValidQueryString(selectorFilter) {
     // Taken from ABP's Filter.contentRegExp property.
     // Match groups are domains, separator, body
@@ -149,6 +149,16 @@ $(async () => {
       return false;
     }
     return true;
+  }
+
+  /**
+      * Shows the error message to the users
+      *
+      * @param {string} filterErrorMessage The error message to the user
+      */
+  function showErrorMessage(filterErrorMessage) {
+    $('#messagecustom').html(DOMPurify.sanitize(filterErrorMessage, { SAFE_FOR_JQUERY: true }));
+    $('#messagecustom').removeClass('do-not-display');
   }
 
   async function saveFilters() {
@@ -172,12 +182,25 @@ $(async () => {
     const uniqCustomFilters = customFiltersArray.filter((item, inx) => customFiltersArray.indexOf(item) === inx);
     const newFiltersToAdd = [];
     // only add 'new' filters
-    for (let i = 0; (i < uniqCustomFilters.length); i++) {
+    for (let i = 0; (i < uniqCustomFilters.length && !filterErrorMessage); i++) {
       let filterToAdd = uniqCustomFilters[i];
       filterToAdd = filterToAdd.trim();
       if (!originalCustomFilters.includes(filterToAdd) && filterToAdd) {
+        if (filterToAdd
+             && isSelectorFilter(filterToAdd)
+             && !hasValidQueryString(filterToAdd)
+        ) {
+          filterErrorMessage = translate(
+            'customfilterserrormessage',
+            [filterToAdd, translate('filter_invalid_css')],
+          );
+        }
         newFiltersToAdd.push(filterToAdd);
       }
+    }
+    if (filterErrorMessage) {
+      showErrorMessage(filterErrorMessage);
+      return;
     }
 
     if (newFiltersToAdd.length) {
@@ -185,15 +208,7 @@ $(async () => {
       if (errors) {
         const { filter, reason, type } = errors;
         // if multiple errors are returned, only show the first one.
-        if (filter
-          && isSelectorFilter(filter)
-          && !hasValidQueryString(filter)
-        ) {
-          filterErrorMessage = translate(
-            'customfilterserrormessage',
-            [filter, translate('filter_invalid_css')],
-          );
-        } else if (filter) {
+        if (filter) {
           filterErrorMessage = translate(
             'customfilterserrormessage',
             [filter, translate(reason || type) || translate('filter_invalid')],
@@ -201,8 +216,7 @@ $(async () => {
         } else {
           filterErrorMessage = translate(reason || type) || translate('filter_invalid');
         }
-        $('#messagecustom').html(DOMPurify.sanitize(filterErrorMessage, { SAFE_FOR_JQUERY: true }));
-        $('#messagecustom').removeClass('do-not-display');
+        showErrorMessage(filterErrorMessage);
         return;
       }
     }

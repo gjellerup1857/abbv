@@ -124,6 +124,7 @@ const contextMenuItem = (() => ({
   pauseAll:
     {
       title: browser.i18n.getMessage('pause_adblock_everywhere'),
+      id: 'pause_adblock_everywhere',
       contexts: ['all'],
       onclick: () => {
         ServerMessages.recordGeneralMessage('cm_pause_clicked');
@@ -134,6 +135,7 @@ const contextMenuItem = (() => ({
   unpauseAll:
     {
       title: browser.i18n.getMessage('resume_blocking_ads'),
+      id: 'resume_blocking_ads',
       contexts: ['all'],
       onclick: () => {
         ServerMessages.recordGeneralMessage('cm_unpause_clicked');
@@ -144,6 +146,7 @@ const contextMenuItem = (() => ({
   pauseDomain:
     {
       title: browser.i18n.getMessage('domain_pause_adblock'),
+      id: 'domain_pause_adblock',
       contexts: ['all'],
       onclick: (info, tab) => {
         ServerMessages.recordGeneralMessage('cm_domain_pause_clicked');
@@ -154,6 +157,7 @@ const contextMenuItem = (() => ({
   unpauseDomain:
     {
       title: browser.i18n.getMessage('resume_blocking_ads'),
+      id: 'resume_blocking_ads_unpause',
       contexts: ['all'],
       onclick: (info, tab) => {
         ServerMessages.recordGeneralMessage('cm_domain_unpause_clicked');
@@ -164,6 +168,7 @@ const contextMenuItem = (() => ({
   blockThisAd:
     {
       title: browser.i18n.getMessage('block_this_ad'),
+      id: 'block_this_ad',
       contexts: ['all'],
       onclick(info, tab) {
         emitPageBroadcast({
@@ -183,6 +188,7 @@ const contextMenuItem = (() => ({
   blockAnAd:
     {
       title: browser.i18n.getMessage('block_an_ad_on_this_page'),
+      id: 'block_an_ad_on_this_page',
       contexts: ['all'],
       onclick(info, tab) {
         emitPageBroadcast({
@@ -201,16 +207,22 @@ const contextMenuItem = (() => ({
     },
 }))();
 
+const checkLastError = function () {
+  if (browser.runtime.lastError) {
+    // do nothing
+  }
+};
+
 let updateContextMenuItems = async function (page) {
   // Remove the AdBlock context menu items
-  browser.contextMenus.removeAll();
+  await browser.contextMenus.removeAll();
 
   // Check if the context menu items should be added
   if (!Prefs.shouldShowBlockElementMenu) {
     return;
   }
-
   const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
+
   if (adblockIsPaused()) {
     browser.contextMenus.create(contextMenuItem.unpauseAll);
   } else if (domainIsPaused) {
@@ -218,10 +230,10 @@ let updateContextMenuItems = async function (page) {
   } else if (await ewe.filters.getAllowingFilters(page.id).length) {
     browser.contextMenus.create(contextMenuItem.pauseAll);
   } else {
-    browser.contextMenus.create(contextMenuItem.blockThisAd);
-    browser.contextMenus.create(contextMenuItem.blockAnAd);
-    browser.contextMenus.create(contextMenuItem.pauseDomain);
-    browser.contextMenus.create(contextMenuItem.pauseAll);
+    browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
+    browser.contextMenus.create(contextMenuItem.blockAnAd, checkLastError);
+    browser.contextMenus.create(contextMenuItem.pauseDomain, checkLastError);
+    browser.contextMenus.create(contextMenuItem.pauseAll, checkLastError);
   }
 };
 
@@ -233,8 +245,8 @@ const updateContextMenuItemsNoOp = function () {
 // the `create` function is invoked twice, because it's the second
 // and all subsequent calls that fail.
 try {
-  browser.contextMenus.create(contextMenuItem.blockThisAd);
-  browser.contextMenus.create(contextMenuItem.blockThisAd);
+  browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
+  browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
 } catch (e) {
   updateContextMenuItems = updateContextMenuItemsNoOp;
 }

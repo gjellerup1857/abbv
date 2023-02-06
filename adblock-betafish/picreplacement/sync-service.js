@@ -407,6 +407,7 @@ const SyncService = (function getSyncService() {
   }
 
   const processSyncUpdate = async function (payload) {
+    log('processing sync update', payload);
     // do we need a check or comparison of payload.version vs. syncSchemaVersion ?
     if (payload.settings) {
       const keywords = Object.keys(payload.settings);
@@ -719,12 +720,16 @@ const SyncService = (function getSyncService() {
     const subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
 
     for (const id in subscriptions) {
-      if (subscriptions[id].subscribed && subscriptions[id].mv2URL) {
+      if (subscriptions[id].subscribed) {
         const { adblockId } = subscriptions[id];
+        let { mv2URL: url } = subscriptions[id];
+        if (!url) {
+          ({ url } = subscriptions[id]);
+        }
         if (sendFilterListByURL.includes(adblockId)) {
-          payload.subscriptions[`url:${subscriptions[id].mv2URL}`] = subscriptions[id].mv2URL;
+          payload.subscriptions[`url:${url}`] = url;
         } else {
-          payload.subscriptions[adblockId] = subscriptions[id].mv2URL;
+          payload.subscriptions[adblockId] = url;
         }
       }
     }
@@ -780,6 +785,8 @@ const SyncService = (function getSyncService() {
       lastPostStatusCode = 200;
       pendingPostData = false;
       chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
+      log('sending sync \'payload\' to server', thedata);
+      log('sending sync \'thedata\' to server', payload);
       postData(License.MAB_CONFIG.syncURL, thedata).then((postResponse) => {
         lastPostStatusCode = postResponse.status;
         if (postResponse.ok) {
@@ -876,6 +883,7 @@ const SyncService = (function getSyncService() {
   // a delay is added to allow the domain pause filters time to be saved to storage
   // otherwise the domain pause filter check below would always fail
   const onFilterListsSubAdded = function (sub, calledPreviously) {
+    log('onFilterListsSubAdded', sub);
     if (calledPreviously === undefined) {
       setTimeout(() => {
         onFilterListsSubAdded(sub, true);

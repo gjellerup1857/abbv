@@ -75,7 +75,7 @@
     "npm": ">=7"
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5a6b284",
+    "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#5a6b284a4c25ecc33485ab5e6b3882fb0f65dc94",
     "@eyeo/snippets": "0.6.0",
     "adblockpluscore": "0.5.1",
     "argparse": "1.0.10",

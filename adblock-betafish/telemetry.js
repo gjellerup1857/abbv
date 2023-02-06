@@ -207,7 +207,8 @@ export const TELEMETRY = (function exportStats() {
 
         data.dc = dataCorrupt ? '1' : '0';
       } catch (err) {
-        recordAnonymousErrorMessage('ping_error', null, { error: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
+        ServerMessages.recordAnonymousErrorMessage('ping_error', null, { error: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
+        return;
       }
       SURVEY.types((res) => {
         data.st = res + CtaABManager.types();
