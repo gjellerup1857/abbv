@@ -207,6 +207,7 @@ const contextMenuItem = (() => ({
     },
 }))();
 
+
 const checkLastError = function () {
   if (browser.runtime.lastError) {
     // do nothing
@@ -224,11 +225,11 @@ let updateContextMenuItems = async function (page) {
   const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
 
   if (adblockIsPaused()) {
-    browser.contextMenus.create(contextMenuItem.unpauseAll);
+    browser.contextMenus.create(contextMenuItem.unpauseAll, checkLastError);
   } else if (domainIsPaused) {
-    browser.contextMenus.create(contextMenuItem.unpauseDomain);
+    browser.contextMenus.create(contextMenuItem.unpauseDomain, checkLastError);
   } else if (await ewe.filters.getAllowingFilters(page.id).length) {
-    browser.contextMenus.create(contextMenuItem.pauseAll);
+    browser.contextMenus.create(contextMenuItem.pauseAll, checkLastError);
   } else {
     browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
     browser.contextMenus.create(contextMenuItem.blockAnAd, checkLastError);
