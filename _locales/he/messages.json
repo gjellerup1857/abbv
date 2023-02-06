@@ -2396,7 +2396,7 @@
     "description": "sync error message text on the popup menu"
   },
   "unsync_error_msg_part_3": {
-    "message": "לחץ כאן כדי לרענן דף זה, לאחר מכן לחץ על \"הוסף הרחבה זו\" כדי לסנכרן מכשיר זה",
+    "message": "לחץ כאן כדי לרענן דף זה, לאחר מכן לחץ על [[\"הוסף הרחבה זו\"]] כדי לסנכרן מכשיר זה",
     "description": "sync error message text on the Sync tab of the options page"
   },
   "sync_premium_cta": {
