@@ -563,10 +563,8 @@ try {
 
       selected('#div_myadblock_enrollment_v2', () => {
         browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'myadblock_cta_clicked' });
-        browser.runtime.sendMessage({ command: 'License.MAB_CONFIG', url: 'payURL' }).then((response) => {
-          browser.runtime.sendMessage({ command: 'openTab', urlToOpen: response.url }).then(() => {
-            closeAndReloadPopup();
-          });
+        browser.runtime.sendMessage({ command: 'openPremiumPayURL' }).then(() => {
+          closeAndReloadPopup();
         });
       });
 
