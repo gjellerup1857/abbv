@@ -2404,7 +2404,7 @@
     "description": "sync error message text on the popup menu"
   },
   "unsync_error_msg_part_3": {
-    "message": "Päivitä sivu painamalla tästä ja sitten [[\"Lisää tämä laajennus\"]] synkronoidaksesi tämän laitteen",
+    "message": "Päivitä sivu painamalla tästä ja sitten \"Lisää tämä laajennus\" synkronoidaksesi tämän laitteen",
     "description": "sync error message text on the Sync tab of the options page"
   },
   "sync_premium_cta": {

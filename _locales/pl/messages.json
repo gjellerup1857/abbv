@@ -2404,7 +2404,7 @@
     "description": "sync error message text on the popup menu"
   },
   "unsync_error_msg_part_3": {
-    "message": "Kliknij tutaj, aby odświeżyć stronę, a następnie kliknij [[\"Dodaj rozszerzenie\"]], aby zsynchronizować to urządzenie",
+    "message": "Kliknij tutaj, aby odświeżyć stronę, a następnie kliknij \"Dodaj rozszerzenie\", aby zsynchronizować to urządzenie",
     "description": "sync error message text on the Sync tab of the options page"
   },
   "sync_premium_cta": {
