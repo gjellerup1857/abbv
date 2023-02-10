@@ -475,10 +475,6 @@
     "message": "Publicité Acceptable",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Filtres personnalisés AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

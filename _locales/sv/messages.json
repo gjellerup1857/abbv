@@ -475,10 +475,6 @@
     "message": "Godtagbara annonser",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlocks anpassade filter",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

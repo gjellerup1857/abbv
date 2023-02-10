@@ -393,10 +393,6 @@
     "message": "Разреши Приемливи реклами",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Разреши собствения пакет на AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "Разреши EasyList",
     "description": "A filter list"

@@ -28,7 +28,7 @@ import { TabSessionStorage } from '../../vendor/adblockplusui/adblockpluschrome/
 
 import { TELEMETRY } from '../telemetry';
 import { Channels } from './channels';
-import { getSettings, setSetting } from '../prefs/settings';
+import { getSettings, setSetting } from '../prefs/background';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
 import { initialize } from '../alias/subscriptionInit';
 import ServerMessages from '../servermessages';

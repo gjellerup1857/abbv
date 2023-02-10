@@ -5,7 +5,7 @@
 import { License, replacedCounts, channels } from '../picreplacement/check';
 import { channelsNotifier } from '../picreplacement/channels';
 import SyncService from '../picreplacement/sync-service';
-import { getSettings } from '../prefs/settings';
+import { getSettings } from '../prefs/background';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 
 /**

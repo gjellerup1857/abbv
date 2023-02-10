@@ -393,10 +393,6 @@
     "message": "Anuncios Aceptables",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Filtros personalizados de AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

@@ -475,10 +475,6 @@
     "message": "Acceptabele advertenties",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Aangepaste AdBlock-filters",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

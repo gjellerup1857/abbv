@@ -475,10 +475,6 @@
     "message": "Hyväksyttävät mainokset",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlockin mukautetut suodattimet",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

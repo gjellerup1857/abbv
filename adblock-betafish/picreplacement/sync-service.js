@@ -34,7 +34,7 @@ import { channelsNotifier } from './channels';
 import SubscriptionAdapter from '../subscriptionadapter';
 import {
   getSettings, setSetting, settingsNotifier, settings,
-} from '../prefs/settings';
+} from '../prefs/background';
 import ServerMessages from '../servermessages';
 import postData from '../fetch-util';
 import {

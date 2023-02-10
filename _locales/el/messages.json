@@ -471,10 +471,6 @@
     "message": "Αποδεκτές Διαφημίσεις",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Προσαρμοσμένα φίλτρα AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

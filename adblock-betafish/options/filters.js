@@ -132,8 +132,7 @@ FilterListUtil.sortFilterListArrays = () => {
 FilterListUtil.getFilterListType = (filterList) => {
   let filterListType = '';
   if (
-    filterList.adblockId === 'adblock_custom'
-    || filterList.adblockId === 'easylist'
+    filterList.adblockId === 'easylist'
     || filterList.adblockId === 'anticircumvent'
     || filterList.adblockId === 'acceptable_ads'
     || filterList.adblockId === 'acceptable_ads_privacy'

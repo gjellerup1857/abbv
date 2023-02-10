@@ -475,10 +475,6 @@
     "message": "Anuncis Acceptables",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Filtres personalitzats d'AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

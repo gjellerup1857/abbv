@@ -475,10 +475,6 @@
     "message": "可接受廣告",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock 自訂過濾條件",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

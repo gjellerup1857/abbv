@@ -16,9 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, License,
-   gabQuestion, ext, getSettings, setSetting, settings
-   parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
+/* global browser, ext, getSettings, twitchChannelNamePages, ytChannelNamePages,
    updateButtonUIAndContextMenus,  */
 
 
@@ -41,6 +39,7 @@ import { License, channels } from './picreplacement/check';
 import ServerMessages from './servermessages';
 import SURVEY from './survey';
 import { setUninstallURL } from './alias/uninstall';
+import * as prefs from './prefs/background';
 
 import {
   parseUri,
@@ -678,6 +677,14 @@ browser.runtime.onInstalled.addListener(async (details) => {
   }
 });
 
+browser.runtime.onInstalled.addListener(async (details) => {
+  if (details.reason !== 'update') {
+    return;
+  }
+
+  await initialize;
+  prefs.migrateUserData();
+});
 
 const openTab = function (url) {
   browser.tabs.create({ url });

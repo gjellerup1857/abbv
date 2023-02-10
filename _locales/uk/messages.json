@@ -393,10 +393,6 @@
     "message": "Прийнятна реклама",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Користувацькі фільтри AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

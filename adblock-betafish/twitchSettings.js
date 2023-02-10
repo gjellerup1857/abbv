@@ -21,7 +21,7 @@
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
-import { getSettings, settings } from './prefs/settings';
+import { getSettings, settings } from './prefs/background';
 
 const twitchChannelNamePages = new Map();
 

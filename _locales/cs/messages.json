@@ -471,10 +471,6 @@
     "message": "Přijatelné reklamy",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Vlastní filtry AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

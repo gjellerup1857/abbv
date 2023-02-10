@@ -475,10 +475,6 @@
     "message": "控えめな広告",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlockカスタムフィルタ",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

@@ -19,7 +19,7 @@
 /* global browser, log,
  */
 
-import { getSettings } from '../prefs/settings';
+import { getSettings } from '../prefs/background';
 import { log } from '../utilities/background/bg-functions';
 
 const OnPageIconManager = (function initialize() {

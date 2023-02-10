@@ -475,10 +475,6 @@
     "message": "Kabul edilebilir reklamlar",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock özel filtreler",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

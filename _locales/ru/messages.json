@@ -475,10 +475,6 @@
     "message": "Приемлемая реклама",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Пользовательские фильтры AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

@@ -23,7 +23,7 @@ import * as info from 'info';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import SubscriptionAdapter from './subscriptionadapter';
 import postData from './fetch-util';
-import { getSettings, settings, setSetting } from './prefs/settings';
+import { getSettings, settings, setSetting } from './prefs/background';
 import { parseUri, log, chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 const DataCollectionV2 = (function getDataCollectionV2() {

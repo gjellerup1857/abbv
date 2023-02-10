@@ -475,10 +475,6 @@
     "message": "허용할만한 광고",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock 사용자 필터",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

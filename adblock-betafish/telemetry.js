@@ -29,7 +29,7 @@ import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { EventEmitter } from '../vendor/adblockplusui/adblockpluschrome/lib/events';
 import CtaABManager from './ctaabmanager';
 import SubscriptionAdapter from './subscriptionadapter';
-import { getSettings } from './prefs/settings';
+import { getSettings } from './prefs/background';
 import ServerMessages from './servermessages';
 import postData from './fetch-util';
 import SURVEY from './survey';

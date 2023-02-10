@@ -479,10 +479,6 @@
     "message": "Acceptable Ads",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock custom filters",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

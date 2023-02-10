@@ -471,10 +471,6 @@
     "message": "פרסומות מקובלות",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "מסננים מותאמים אישית של AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

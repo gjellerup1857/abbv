@@ -16,7 +16,7 @@ import {
 
 import {
   getSettings, setSetting, settings, settingsNotifier, isValidTheme,
-} from '../prefs/settings';
+} from '../prefs/background';
 import SubscriptionAdapter from '../subscriptionadapter';
 import DataCollectionV2 from '../datacollection.v2';
 import ServerMessages from '../servermessages';
