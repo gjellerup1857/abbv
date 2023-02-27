@@ -2845,22 +2845,6 @@
     "message": "Vill du aktivera AdBlock och uppdatera sidan?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Popups om nyhetsbrev",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Flytande videor",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Undersökningar",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Förfrågningar om att \"Tillåta aviseringar\"",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Nästa",
     "description": "Button label text for help flow in popup menu."
@@ -3656,10 +3640,6 @@
   "feature_disabled": {
     "message": "Funktion Inaktiverad",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Det verkar som att du inte har aktiverat den funktionen. Vi kan se om problemet fixas om du aktiverar den.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock uppdaterar nu dina inställningar.",

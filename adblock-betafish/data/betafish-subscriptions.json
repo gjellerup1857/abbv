@@ -19,45 +19,17 @@
     "adblockId": "acceptable_ads_privacy",
     "index": 2
   },
-  "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt": {
-    "id": "8E2D687A-3B44-46E1-BE68-2FE5441A788E",
-    "adblockId": "distraction-control-video",
+  "https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt": {
+    "id": "CDAD4CF5-2706-42CB-B404-F5B9B61B8CAA",
+    "mv2URL": "https://easylist-downloads.adblockplus.org/adblock_premium.txt",
+    "adblockId": "distraction-control",
     "index": 4
   },
-  "https://cdn.adblockcdn.com/filters/distraction-control-video.txt": {
-    "id": "8E2D687A-3B44-46E1-BE68-2FE5441A788E",
-    "adblockId": "distraction-control-video",
+  "https://easylist-downloads.adblockplus.org/adblock_premium.txt": {
+    "id": "CDAD4CF5-2706-42CB-B404-F5B9B61B8CAA",
+    "mv2URL": "https://easylist-downloads.adblockplus.org/adblock_premium.txt",
+    "adblockId": "distraction-control",
     "index": 4
-  },
-  "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt": {
-    "id": "1E7A240E-CD85-493D-BEEF-C68A6AEA1225",
-    "adblockId": "distraction-control-survey",
-    "index": 5
-  },
-  "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt": {
-    "id": "1E7A240E-CD85-493D-BEEF-C68A6AEA1225",
-    "adblockId": "distraction-control-survey",
-    "index": 5
-  },
-  "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt": {
-    "id": "D5561090-9ADB-4EEE-AA81-101B645D9F4F",
-    "adblockId": "distraction-control-newsletter",
-    "index": 6
-  },
-  "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt": {
-    "id": "D5561090-9ADB-4EEE-AA81-101B645D9F4F",
-    "adblockId": "distraction-control-newsletter",
-    "index": 6
-  },
-  "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt": {
-    "id": "3B85CD3F-553A-45D1-AA38-6288E1C4C7B9",
-    "adblockId": "distraction-control-push",
-    "index": 7
-  },
-  "https://cdn.adblockcdn.com/filters/distraction-control-push.txt": {
-    "id": "3B85CD3F-553A-45D1-AA38-6288E1C4C7B9",
-    "adblockId": "distraction-control-push",
-    "index": 7
   },
   "https://easylist-downloads.adblockplus.org/v3/full/nocoin.txt": {
     "adblockId": "bitcoin_mining_protection",

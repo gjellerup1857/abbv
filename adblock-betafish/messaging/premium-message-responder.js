@@ -102,7 +102,7 @@ License.ready().then(() => {
         License.isActiveLicense()
           && sender.url
           && sender.url.startsWith('http')
-          && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control-push.txt')
+          && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
           && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
       ) {
         const logError = function (e) {

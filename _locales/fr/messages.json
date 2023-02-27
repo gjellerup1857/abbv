@@ -2845,22 +2845,6 @@
     "message": "Voulez-vous activer AdBlock et recharger la page ?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Pop-up des newsletters",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Vidéos flottantes",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Enquêtes",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Demandes \"Autoriser les notifications\"",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Suivant",
     "description": "Button label text for help flow in popup menu."
@@ -3656,10 +3640,6 @@
   "feature_disabled": {
     "message": "Fonctionnalité désactivée",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Il semble que vous n'ayez pas activé cette fonctionnalité. Voyons si son activation résout le problème.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock met actuellement à jour vos préférences.",

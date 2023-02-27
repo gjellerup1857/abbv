@@ -55,42 +55,9 @@ const distractionControlUIitems = [
 const dcWarningClosedKey = 'dc_warning_closed';
 let dcWarningClosed = storageGet(dcWarningClosedKey);
 
-function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
-  const isSelected = filterList.subscribed;
-  const filterListUrl = filterList.url;
+const DistractionControlURL = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
 
-  let $checkBox = $('<input>')
-    .attr('type', 'checkbox')
-    .attr('id', checkboxID)
-    .attr('data-url', filterListUrl)
-    .prop('checked', isSelected);
-
-  let $checkBoxIcons = $(`
-    <i role="img" aria-hidden="true" class="unchecked material-icons">lens</i>
-    <i role="img" aria-hidden="true" class="checked material-icons circle-icon-bg-24 checkbox-icon">check_circle</i>'`);
-
-  if (!isActiveLicense) {
-    $checkBoxIcons = $('<i role="img" aria-hidden="true" class="material-icons dc-icons md-20">lock</i>');
-    $checkBox = $('<span>');
-  } else {
-    $checkBox.on('click', function clickhandler() {
-      const checked = $(this).is(':checked');
-      if (checked) {
-        SubscriptionsProxy.add(filterListUrl);
-      } else {
-        setTimeout(() => {
-          SubscriptionsProxy.remove(filterListUrl);
-        }, 1);
-      }
-    });
-  }
-
-  const $checkBoxWrapper = $('<span>')
-    .addClass('checkbox')
-    .addClass('md-stack')
-    .append($checkBox)
-    .append($checkBoxIcons);
-
+function getDefaultFilterUI(entry, isActiveLicense) {
   const $filterTitle = $('<span>')
     .addClass('dc_filter_list_title')
     .text(entry.title);
@@ -107,8 +74,6 @@ function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
     .append($extraInformation);
 
   const $label = $('<label>')
-    .attr('title', filterList.url)
-    .attr('for', checkboxID)
     .append($filterInfo);
 
   if (!isActiveLicense) {
@@ -133,22 +98,21 @@ function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
 
   const $image = $('<img>').attr('src', entry.imageURL);
 
-  const $imageWrapper = $('<span>')
+  const $imageWrapper = $('<div>')
     .addClass('dc_image_wrapper')
     .append($image)
     .append($lockOverlay);
 
   const $leftWrapper = $('<span>')
-    .addClass('left_dc_subscription')
-    .append($checkBoxWrapper)
+    .addClass('right_dc_subscription')
     .append($label);
 
   const $checkboxHeaderLine = $('<div>')
     .addClass('dc_subscription')
     .addClass('dc_section_padding')
-    .attr('name', filterList.id)
-    .append($leftWrapper)
-    .append($imageWrapper);
+    .append($imageWrapper)
+    .append($leftWrapper);
+
 
   const $filterWrapper = $('<div>')
     .addClass('filter-subscription-wrapper')
@@ -163,29 +127,37 @@ function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
     });
   }
 
-  return {
-    checkbox: $checkBox,
-    filter: $filterWrapper,
-  };
+  return $filterWrapper;
 }
 
-const prepareDCSubscriptions = function prepareDCSubscriptions(subs, isActiveLicense) {
-  let index = 0;
+const prepareDCItems = function prepareDCItems(isActiveLicense) {
   for (const id in distractionControlUIitems) {
     const entry = distractionControlUIitems[id];
-    $('#distraction-control-filter-lists').append(getDefaultFilterUI(entry, subs[entry.id], index, isActiveLicense).filter);
-    index += 1;
+    $('#distraction-control-filter-lists').append(getDefaultFilterUI(entry, isActiveLicense));
   }
 };
 
 const initializeDC = async function initializeDC(isActiveLicense) {
-  // Retrieves list of filter lists from the background.
-  const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
-  // Initialize page using subscriptions from the background.
-  // Copy from update subscription list + setsubscriptionlist
-  prepareDCSubscriptions(subs, isActiveLicense);
+  prepareDCItems(isActiveLicense);
 
-  if (isActiveLicense && !dcWarningClosed) {
+  if (!isActiveLicense) {
+    return;
+  }
+  $('#distraction-control-filter-lists-switch').on('change', async function onOptionSelectionChange() {
+    const isEnabled = $(this).is(':checked');
+    if (isEnabled) {
+      await SubscriptionsProxy.add(DistractionControlURL);
+      await SubscriptionsProxy.sync(DistractionControlURL);
+    } else {
+      await SubscriptionsProxy.remove(DistractionControlURL);
+    }
+  });
+  const hasDC = await SubscriptionsProxy.has(DistractionControlURL);
+  $('#distraction-control-filter-lists-switch').prop('checked', hasDC);
+  $('#distractioncontrol .page-title .locked').hide();
+  $('#distractioncontrol .page-title .switch').show();
+
+  if (!dcWarningClosed) {
     $('.distraction-control-warning').css({ display: 'flex' });
     $('#distraction-control-warning-button').on('click', () => {
       $('.distraction-control-warning').slideUp();
@@ -220,14 +192,9 @@ $(async () => {
   });
 });
 
-const isDCFilterList = function (item) {
-  return (item && isDistractionControlURL(item.url));
-};
-
 const updateCheckbox = function (item, isChecked) {
-  if (isDCFilterList(item)) {
-    const $checkbox = $(`input[data-url='${item.url}']`);
-    $checkbox.prop('checked', isChecked);
+  if (isDistractionControlURL(item.url)) {
+    $('#distraction-control-filter-lists-switch').prop('checked', isChecked);
   }
 };
 

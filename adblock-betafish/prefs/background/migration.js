@@ -21,15 +21,40 @@
 
 import * as ewe from '../../../vendor/webext-sdk/dist/ewe-api';
 
+async function unsubscribeToFilterList(url) {
+  if (await ewe.subscriptions.has(url)) {
+    await ewe.subscriptions.remove(url);
+    return true;
+  }
+  return false;
+}
+
 /**
  * Migrates existing user data from older versions
  */
 function migrateUserData() {
   // We remove the AdBlock Custom filter list,
   // because it no longer serves any purpose
-  const abCustomUrl = 'https://cdn.adblockcdn.com/filters/adblock_custom.txt';
-  if (ewe.subscriptions.has(abCustomUrl)) {
-    ewe.subscriptions.remove(abCustomUrl);
+  unsubscribeToFilterList('https://cdn.adblockcdn.com/filters/adblock_custom.txt');
+
+  // Remove any of the old DC filters,
+  // Subscript to the new DC filter list
+  const DISTRACTION_CONTROL_URL_LIST = [
+    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt',
+    'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
+    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt',
+    'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
+    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt',
+    'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
+    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt',
+    'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
+  ];
+  let subscribedTODC = false;
+  for (const url of DISTRACTION_CONTROL_URL_LIST) {
+    subscribedTODC = unsubscribeToFilterList(url);
+  }
+  if (subscribedTODC) {
+    ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/adblock_premium.txt');
   }
 }
 

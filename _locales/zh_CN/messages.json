@@ -2845,22 +2845,6 @@
     "message": "您要启用 AdBlock 并重新加载页面吗？",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "电子通讯弹窗",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "浮动视频",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "调查",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "“允许通知”请求",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "下一步",
     "description": "Button label text for help flow in popup menu."
@@ -3656,10 +3640,6 @@
   "feature_disabled": {
     "message": "已禁用功能",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "似乎您没有启用该功能。看看选择该功能能否解决此问题。",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock 正在更新您的首选项。",

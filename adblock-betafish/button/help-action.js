@@ -127,8 +127,12 @@ const popupMenuHelpActionMap = {
   stillSeeDistractionAction() {
     if (filterUpdateError) {
       transitionTo('seeDistractionFilterError', false);
+    } else if (pageInfo && pageInfo.subscriptions && pageInfo.subscriptions['distraction-control']) {
+      transitionTo('requestDCSubmission', false);
     } else {
-      transitionTo('whichDistractions', false);
+      savedData = {};
+      savedData.subURL = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
+      transitionTo('enableDCFeature', false);
     }
   },
   problemSolvedAction() {
@@ -219,17 +223,6 @@ const popupMenuHelpActionMap = {
       transitionTo('finishDCSubmission', false);
     });
   },
-  checkIfSubscribedToList(segue) {
-    const subId = segue.correlates_to_filter_list;
-    const subURL = segue.correlates_to_filter_list_URL;
-    const titleText = segue.content;
-    savedData = { subId, titleText, subURL };
-    if (pageInfo && pageInfo.subscriptions && pageInfo.subscriptions[subId]) {
-      transitionTo('requestDCSubmission', false);
-    } else {
-      transitionTo('enableDCFeature', false);
-    }
-  },
   distractionControlFeatureDisabled() {
     transitionTo('distractionControlFeatureDisabled', false);
   },
@@ -265,6 +258,10 @@ const popupMenuHelpActionMap = {
     transitionTo('seeingDistractionsProblemSolved', false);
   },
   whichDistractionsAction() {
-    transitionTo('seeDistraction', false);
+    if (pageInfo && pageInfo.subscriptions && pageInfo.subscriptions['distraction-control']) {
+      transitionTo('requestDCSubmission', false);
+    } else {
+      transitionTo('seeDistraction', false);
+    }
   },
 };

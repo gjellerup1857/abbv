@@ -2833,22 +2833,6 @@
     "message": "Doriți să activați AdBlock și să reîncărcați pagina?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Pop-up-uri cu buletine informative",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Videoclipurile flotante",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Sondaje",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Solicitări „Permiteți notificări”",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Următor",
     "description": "Button label text for help flow in popup menu."
@@ -3644,10 +3628,6 @@
   "feature_disabled": {
     "message": "Caracteristică dezactivată",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Se pare că nu aveți această caracteristică activată. Să vedem dacă activarea ei rezolvă problema.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock vă actualizează preferințele acum.",

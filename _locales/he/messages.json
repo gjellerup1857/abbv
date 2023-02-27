@@ -2801,14 +2801,6 @@
     "message": "האם אתה רוצה לאפשר את AdBlock ולטעון מחדש את הדף?",
     "description": "panel text on the help flow in popup menu."
   },
-  "autoplay_videos": {
-    "message": "סרטונים צפים",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "סקרים",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "הבא",
     "description": "Button label text for help flow in popup menu."

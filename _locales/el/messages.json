@@ -2813,22 +2813,6 @@
     "message": "Βλέπετε ακόμα τη διαφήμιση;",
     "description": "Message for help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Αναδυόμενα παράθυρα ενημερωτικών δελτίων",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "«Αιωρούμενα» βίντεο",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Έρευνες",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Αιτήματα «Να επιτρέπονται οι ειδοποιήσεις»",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Επόμενο",
     "description": "Button label text for help flow in popup menu."
@@ -3616,10 +3600,6 @@
   "feature_disabled": {
     "message": "Το χαρακτηριστικό είναι ανενεργό",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Φαίνεται ότι αυτό το χαρακτηριστικό δεν είναι ενεργοποιημένο. Ας δούμε αν η ενεργοποίησή του επιδιορθώνει το πρόβλημα.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "Το AdBlock ενημερώνει τις προτιμήσεις σας τώρα.",

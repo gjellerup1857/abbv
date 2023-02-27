@@ -2789,18 +2789,6 @@
     "message": "Aby skontaktować się z naszym zespołem pomocy technicznej, odwiedź nasze [[Centrum Pomocy]].",
     "description": "Message for help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Wyskakujące okienka newslettera",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Ankieta",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Żądanie \"Zezwalaj na powiadomienia\"",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Dalej",
     "description": "Button label text for help flow in popup menu."
@@ -3584,10 +3572,6 @@
   "feature_disabled": {
     "message": "Funkcja wyłączona",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Wygląda na to, że nie masz włączonej tej funkcji. Zobaczmy, czy włączenie jej rozwiąże problem.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock aktualizuje teraz Twoje preferencje.",

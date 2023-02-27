@@ -29,16 +29,8 @@
     */
 
 const DISTRACTION_CONTROL_URL_LIST = [
-  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt',
-  'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
-  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt',
-  'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
-  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt',
-  'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
-  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt',
-  'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
-  'https://easylist-downloads.adblockplus.org/v3/full/distraction-control.txt',
-  'https://cdn.adblockcdn.com/filters/distraction-control.txt',
+  'https://easylist-downloads.adblockplus.org/adblock_premium.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt',
 ];
 
 /* eslint-disable-next-line no-unused-vars */

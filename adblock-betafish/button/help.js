@@ -151,7 +151,12 @@ const transitionTo = function (segueToId, backIconClicked) {
           textSpan.append(document.createTextNode(' '));
         }
         if (content.displayURL) {
-          const displayURL = ellipsis(pageInfo.url.origin + pageInfo.url.pathname, 90);
+          let displayURL = '';
+          if (typeof pageInfo.url === 'object') {
+            displayURL = ellipsis(pageInfo.url.origin + pageInfo.url.pathname, 90);
+          } else if (typeof pageInfo.url === 'string') {
+            displayURL = ellipsis(pageInfo.url, 90);
+          }
           textSpan.text(displayURL);
           textSpan.addClass('url-info');
         }

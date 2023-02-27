@@ -1,5 +1,5 @@
 <!DOCTYPE html>
- <!--
+<!--
   - This file is part of AdBlock <https://getadblock.com/>,
   - Copyright (C) 2013-present  Adblock, Inc.
   -
@@ -35,13 +35,21 @@
       </section>
       <!-- End: Payment section visible only to free MAB users -->
       <h1 class="page-title">
-        <span i18n="newmyadblockenrollment" class="newLabelText"></span>
+        <label class="switch" for="distraction-control-filter-lists-switch">
+          <input type="checkbox" class="feature" id="distraction-control-filter-lists-switch" />
+          <span class="slider round"></span>
+        </label>
+        <span class="md-stack locked"
+          ><i role="img" aria-hidden="true" class="material-icons dc-icons md-20">lock</i></span
+        >
         <span i18n="distraction_control"></span>
+        <span i18n="newmyadblockenrollment" class="newLabelText locked"></span>
       </h1>
       <h3 class="distraction-control-sub-title">
         <span i18n="take_control"></span>
         <span i18n="goodbye_distractions"></span>
       </h3>
+
       <div class="distraction-control-warning">
         <div class="distraction-control-warning-message">
           <span i18n="please_note" class="bold"></span>

@@ -2817,22 +2817,6 @@
     "message": "Encara veieu la distracció?",
     "description": "Message for help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Finestres emergents de butlletins",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Vídeos flotants",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Enquestes",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Sol·licituds «Permet notificacions»",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Següent",
     "description": "Button label text for help flow in popup menu."
@@ -3620,10 +3604,6 @@
   "feature_disabled": {
     "message": "Característica desactivada",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Sembla que no teniu activada aquesta funció. Vegem si això soluciona el problema.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "L'AdBlock està actualitzant les vostres preferències ara.",

@@ -2837,22 +2837,6 @@
     "message": "Haluatko ottaa AdBlockin käyttöön ja päivittää sivun?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Uutiskirjeponnahdukset",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Kelluvat videot",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Kyselyt",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "“Salli ilmoitukset” -pyynnöt",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Seuraava",
     "description": "Button label text for help flow in popup menu."
@@ -3648,10 +3632,6 @@
   "feature_disabled": {
     "message": "Ominaisuus ei ole käytössä",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Näyttää siltä, ettei ominaisuus ole käytössä. Kokeillaan, jos käyttöönotto korjaa ongelman.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock päivittää asetuksiasi parhaillaan.",

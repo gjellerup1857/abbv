@@ -182,10 +182,6 @@ export const TELEMETRY = (function exportStats() {
           } else if (!aa.subscribed && !aaPrivacy.subscribed) {
             data.aa = '0'; // Both filter lists unsubscribed
           }
-          data.dcv = subs['distraction-control-video'].subscribed ? '1' : '0';
-          data.dcs = subs['distraction-control-survey'].subscribed ? '1' : '0';
-          data.dcn = subs['distraction-control-newsletter'].subscribed ? '1' : '0';
-          data.dcp = subs['distraction-control-push'].subscribed ? '1' : '0';
         }
 
         data.crctotal = 0;
@@ -207,8 +203,8 @@ export const TELEMETRY = (function exportStats() {
 
         data.dc = dataCorrupt ? '1' : '0';
       } catch (err) {
+        log(err);
         ServerMessages.recordAnonymousErrorMessage('ping_error', null, { error: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
-        return;
       }
       SURVEY.types((res) => {
         data.st = res + CtaABManager.types();

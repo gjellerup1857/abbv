@@ -2837,22 +2837,6 @@
     "message": "Reklamları engellemeye devam etmek ve sayfayı yeniden yüklemek istiyor musunuz?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Bülten açılır pencereleri\n",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Kayan videolar",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Anketler",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "\"Bildirimlere İzin Ver\" istekleri",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "İleri",
     "description": "Button label text for help flow in popup menu."
@@ -3648,10 +3632,6 @@
   "feature_disabled": {
     "message": "Özellik Devre Dışı",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Görünüşe göre bu özelliği etkinleştirmemişsiniz. Bunu seçmenin sorunu çözüp çözmediğini görelim.\n",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock şimdi tercihlerinizi güncelliyor.\n",

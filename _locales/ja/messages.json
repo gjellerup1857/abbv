@@ -2845,22 +2845,6 @@
     "message": "AdBlockを有効にし、ページをリロードしますか？",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "ニュースレターのポップアップ",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "フローティング動画広告",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "アンケート",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "「通知を許可」のリクエスト",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "次へ",
     "description": "Button label text for help flow in popup menu."
@@ -3656,10 +3640,6 @@
   "feature_disabled": {
     "message": "機能停止",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "この機能が無効になっているようです。この機能を有効にすることで問題が解決されるかどうか確認してみましょう。",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlockは現在、お客様の設定を更新中です。",

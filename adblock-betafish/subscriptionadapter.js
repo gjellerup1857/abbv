@@ -213,7 +213,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       const {
         url, type, title, homepage, hidden, subscribed, index,
       } = userSubs[adblockId];
-      if (type === 'distraction-control') {
+      if (url === 'https://easylist-downloads.adblockplus.org/adblock_premium.txt') {
         result[adblockId] = {};
         result[adblockId].subscribed = subscribed;
         result[adblockId].adblockId = adblockId;

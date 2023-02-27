@@ -65,7 +65,7 @@ const SyncService = (function getSyncService() {
   // sync feature was added to AdBlock, therefore these filter lists should be sent
   // with an ID of 'url:...' instead of the id in the betafish-subscriptions.json file
   // any adds to the the betafish-subscriptions.json file should be added here as well.
-  const sendFilterListByURL = ['nordic', 'annoyances',
+  const sendFilterListByURL = ['nordic', 'annoyances', 'distraction-control',
     'fb_notifications', 'easylist_plus_romanian', 'idcac'];
 
   function setCommitVersion(newVersionNum) {
@@ -445,12 +445,8 @@ const SyncService = (function getSyncService() {
     if (payload.subscriptions) {
       const currentSubs = await SubscriptionAdapter.getSubscriptionsMinusText();
       for (const id in currentSubs) {
-        if (
-          !payload.subscriptions[id]
-          && currentSubs[id].subscribed
-          // eslint-disable-next-line no-await-in-loop
-          && await ewe.subscriptions.has(currentSubs[id].url)
-        ) {
+        if (!payload.subscriptions[id] && currentSubs[id].subscribed) {
+          log('sync - removing subscription ', currentSubs[id].url);
           // eslint-disable-next-line no-await-in-loop
           await ewe.subscriptions.remove(currentSubs[id].url);
         }
@@ -462,7 +458,7 @@ const SyncService = (function getSyncService() {
             url = adblockId.slice(4);
           }
           if (url) {
-            url = SubscriptionAdapter.getV2URLFromURL(url);
+            log('sync - adding subscription ', url);
             // eslint-disable-next-line no-await-in-loop
             await ewe.subscriptions.add(url);
             ewe.subscriptions.sync(url);
@@ -772,6 +768,7 @@ const SyncService = (function getSyncService() {
     for (const id in guide) {
       payload.channels[guide[id].name] = guide[id].enabled;
     }
+    log('sync - sync payload', payload);
     return payload;
   };
 
