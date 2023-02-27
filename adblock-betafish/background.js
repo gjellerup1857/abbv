@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext, getSettings, twitchChannelNamePages, ytChannelNamePages,
+/* global browser, ext, twitchChannelNamePages, ytChannelNamePages,
    updateButtonUIAndContextMenus,  */
 
 
@@ -40,6 +40,7 @@ import ServerMessages from './servermessages';
 import SURVEY from './survey';
 import { setUninstallURL } from './alias/uninstall';
 import * as prefs from './prefs/background';
+import { settings, getSettings } from './prefs/background';
 
 import {
   parseUri,
@@ -868,9 +869,9 @@ const getDebugInfo = function () {
 
     // Get settings
     const adblockSettings = {};
-    const settings = getSettings();
-    for (const setting in settings) {
-      adblockSettings[setting] = JSON.stringify(settings[setting]);
+    const settingsObj = getSettings();
+    for (const [key, value] of Object.entries(settingsObj)) {
+      adblockSettings[key] = JSON.stringify(value);
     }
 
     response.settings = adblockSettings;

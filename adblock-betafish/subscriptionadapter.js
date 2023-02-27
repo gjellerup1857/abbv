@@ -27,7 +27,7 @@ import abRecommendationData from './data/betafish-subscriptions.json';
 const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const addAdBlockProperties = function (sub) {
     let subscription = Object.assign({}, sub);
-    const url = subscription.url || subscription.mv2URL;
+    const { url } = subscription;
     if (abRecommendationData[url]) {
       subscription = Object.assign(subscription, abRecommendationData[url]);
       if (Object.prototype.hasOwnProperty.call(sub, 'languages')) {
@@ -38,9 +38,6 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       }
     }
     subscription.correctedURL = subscription.url;
-    if (browser.runtime.getManifest().manifest_version === 2) {
-      subscription.correctedURL = subscription.mv2URL || subscription.url;
-    }
     return subscription;
   };
 
@@ -66,6 +63,28 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       }
     }
     return null;
+  };
+
+  // Get the MV2 URL for the corresponding ID
+  const getV2URLFromID = function (searchID) {
+    for (const url in abRecommendationData) {
+      const subscription = abRecommendationData[url];
+      const { id } = subscription;
+      if (searchID === id && !url.includes('/v3/')) {
+        return url;
+      }
+    }
+    return null;
+  };
+
+  // Get the MV2 URL for the corresponding URL
+  // if not found, return the passed parameter
+  const getV2URLFromURL = function (searchURL) {
+    const subscription = abRecommendationData[searchURL];
+    if (subscription && subscription.id) {
+      return getV2URLFromID(subscription.id);
+    }
+    return searchURL;
   };
 
   // determine if the specified filter list is language specific
@@ -232,6 +251,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     getDCSubscriptionsMinusText,
     getIdFromURL,
     isLanguageSpecific,
+    getV2URLFromID,
+    getV2URLFromURL,
   };
 }());
 

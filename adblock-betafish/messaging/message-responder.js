@@ -246,7 +246,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       case 'isLanguageSpecific':
         sendResponse({});
         return processMessageResponse(sendResponse,
-          SubscriptionAdapter.isLanguageSpecific(message.id));
+          SubscriptionAdapter.isLanguageSpecific(message.adblockId));
       case 'getSubscriptionsMinusText':
         sendResponse({});
         return processMessageResponse(sendResponse,

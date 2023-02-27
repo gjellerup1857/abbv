@@ -1,432 +1,355 @@
 {
   "https://easylist-downloads.adblockplus.org/exceptionrules.txt": {
     "id": "0798B6A2-94A4-4ADF-89ED-BEC112FC4C7F",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/exceptionrules.txt",
     "adblockId": "acceptable_ads",
     "index": 1
   },
   "https://easylist-downloads.adblockplus.org/v3/full/exceptionrules.txt": {
     "id": "0798B6A2-94A4-4ADF-89ED-BEC112FC4C7F",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/exceptionrules.txt",
     "adblockId": "acceptable_ads",
     "index": 1
   },
   "https://easylist-downloads.adblockplus.org/exceptionrules-privacy-friendly.txt": {
     "id": "F12E0801-A00B-49DE-B1E3-52C9C4F90C8C",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/exceptionrules-privacy-friendly.txt",
     "adblockId": "acceptable_ads_privacy",
     "index": 2
   },
   "https://easylist-downloads.adblockplus.org/v3/full/exceptionrules-privacy-friendly.txt": {
     "id": "F12E0801-A00B-49DE-B1E3-52C9C4F90C8C",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/exceptionrules-privacy-friendly.txt",
     "adblockId": "acceptable_ads_privacy",
     "index": 2
   },
   "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt": {
     "id": "8E2D687A-3B44-46E1-BE68-2FE5441A788E",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-video.txt",
     "adblockId": "distraction-control-video",
     "index": 4
   },
   "https://cdn.adblockcdn.com/filters/distraction-control-video.txt": {
     "id": "8E2D687A-3B44-46E1-BE68-2FE5441A788E",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-video.txt",
     "adblockId": "distraction-control-video",
     "index": 4
   },
   "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt": {
     "id": "1E7A240E-CD85-493D-BEEF-C68A6AEA1225",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt",
     "adblockId": "distraction-control-survey",
     "index": 5
   },
   "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt": {
     "id": "1E7A240E-CD85-493D-BEEF-C68A6AEA1225",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt",
     "adblockId": "distraction-control-survey",
     "index": 5
   },
   "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt": {
     "id": "D5561090-9ADB-4EEE-AA81-101B645D9F4F",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt",
     "adblockId": "distraction-control-newsletter",
     "index": 6
   },
   "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt": {
     "id": "D5561090-9ADB-4EEE-AA81-101B645D9F4F",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt",
     "adblockId": "distraction-control-newsletter",
     "index": 6
   },
   "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt": {
     "id": "3B85CD3F-553A-45D1-AA38-6288E1C4C7B9",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-push.txt",
     "adblockId": "distraction-control-push",
     "index": 7
   },
   "https://cdn.adblockcdn.com/filters/distraction-control-push.txt": {
     "id": "3B85CD3F-553A-45D1-AA38-6288E1C4C7B9",
-    "mv2URL": "https://cdn.adblockcdn.com/filters/distraction-control-push.txt",
     "adblockId": "distraction-control-push",
     "index": 7
   },
   "https://easylist-downloads.adblockplus.org/v3/full/nocoin.txt": {
-    "url": "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt",
     "adblockId": "bitcoin_mining_protection",
     "id": "9CC3AF4D-EB89-4100-97C6-4EEE4F8A2E82",
     "index": 8
   },
   "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt": {
-    "url": "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/nocoin.txt",
     "adblockId": "bitcoin_mining_protection",
     "id": "9CC3AF4D-EB89-4100-97C6-4EEE4F8A2E82",
     "index": 8
   },
   "https://easylist-downloads.adblockplus.org/antiadblockfilters.txt": {
-    "url": "https://easylist-downloads.adblockplus.org/antiadblockfilters.txt",
     "adblockId": "warning_removal",
     "index": 9
   },
   "https://easylist-downloads.adblockplus.org/v3/full/abpindo+easylist.txt": {
     "id": "B7D76369-DD19-4602-80E8-2E32DDB490AC",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abpindo+easylist.txt",
     "adblockId": "easylist_plus_indonesian",
     "index": 13
   },
   "https://easylist-downloads.adblockplus.org/abpindo+easylist.txt": {
     "id": "B7D76369-DD19-4602-80E8-2E32DDB490AC",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abpindo+easylist.txt",
     "adblockId": "easylist_plus_indonesian",
     "index": 13
   },
   "https://easylist-downloads.adblockplus.org/v3/full/abpvn+easylist.txt": {
     "id": "1C571EC7-6E52-47CC-B04A-4B3008D0AEBE",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abpvn+easylist.txt",
     "adblockId": "easylist_plus_vietnamese",
     "index": 14
   },
   "https://easylist-downloads.adblockplus.org/abpvn+easylist.txt": {
     "id": "1C571EC7-6E52-47CC-B04A-4B3008D0AEBE",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abpvn+easylist.txt",
     "adblockId": "easylist_plus_vietnamese",
     "index": 14
   },
   "https://easylist-downloads.adblockplus.org/v3/full/bulgarian_list+easylist.txt": {
     "id": "E22C3B40-DC90-49D7-8BF5-E60904AB159A",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/bulgarian_list+easylist.txt",
     "adblockId": "easylist_plus_bulgarian",
     "index": 15
   },
   "https://easylist-downloads.adblockplus.org/bulgarian_list+easylist.txt": {
     "id": "E22C3B40-DC90-49D7-8BF5-E60904AB159A",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/bulgarian_list+easylist.txt",
     "adblockId": "easylist_plus_bulgarian",
     "index": 15
   },
   "https://easylist-downloads.adblockplus.org/easylist.txt": {
     "id": "8C13E995-8F06-4927-BEA7-6C845FB7EEBF",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylist.txt",
     "adblockId": "easylist",
     "index": 16
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylist.txt": {
     "id": "8C13E995-8F06-4927-BEA7-6C845FB7EEBF",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylist.txt",
     "adblockId": "easylist",
     "index": 16
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistchina+easylist.txt": {
     "id": "9BD3EA2F-889D-4CC3-B680-CF484F2BD1B9",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt",
     "adblockId": "chinese",
     "index": 17
   },
   "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt": {
     "id": "9BD3EA2F-889D-4CC3-B680-CF484F2BD1B9",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt",
     "adblockId": "chinese",
     "index": 17
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistczechslovak+easylist.txt": {
     "id": "4B6CE485-30AB-4213-AD17-504B3F2D2825",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistczechslovak+easylist.txt",
     "adblockId": "czech",
     "index": 18
   },
   "https://easylist-downloads.adblockplus.org/easylistczechslovak+easylist.txt": {
     "id": "4B6CE485-30AB-4213-AD17-504B3F2D2825",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistczechslovak+easylist.txt",
     "adblockId": "czech",
     "index": 18
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistdutch+easylist.txt": {
     "id": "A4B88FB6-E5E5-417F-8A49-20B8244995FD",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistdutch+easylist.txt",
     "adblockId": "dutch",
     "index": 19
   },
   "https://easylist-downloads.adblockplus.org/easylistdutch+easylist.txt": {
     "id": "A4B88FB6-E5E5-417F-8A49-20B8244995FD",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistdutch+easylist.txt",
     "adblockId": "dutch",
     "index": 19
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistgermany+easylist.txt": {
     "id": "0CD3D105-D3B3-4652-8489-94163DE9A08F",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistgermany+easylist.txt",
     "adblockId": "easylist_plus_german",
     "index": 20
   },
   "https://easylist-downloads.adblockplus.org/easylistgermany+easylist.txt": {
     "id": "0CD3D105-D3B3-4652-8489-94163DE9A08F",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistgermany+easylist.txt",
     "adblockId": "easylist_plus_german",
     "index": 20
   },
   "https://easylist-downloads.adblockplus.org/v3/full/israellist+easylist.txt": {
     "id": "07549D8B-F06F-4D9D-A567-929AA59E9D1D",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/israellist+easylist.txt",
     "adblockId": "israeli",
     "index": 21
   },
   "https://easylist-downloads.adblockplus.org/israellist+easylist.txt": {
     "id": "07549D8B-F06F-4D9D-A567-929AA59E9D1D",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/israellist+easylist.txt",
     "adblockId": "israeli",
     "index": 21
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistitaly+easylist.txt": {
     "id": "BBC07C05-66F1-42EC-BD4D-7AD495FAC84B",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistitaly+easylist.txt",
     "adblockId": "italian",
     "index": 22
   },
   "https://easylist-downloads.adblockplus.org/easylistitaly+easylist.txt": {
     "id": "BBC07C05-66F1-42EC-BD4D-7AD495FAC84B",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistitaly+easylist.txt",
     "adblockId": "italian",
     "index": 22
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistlithuania+easylist.txt": {
     "id": "CBE50FA2-DE3F-480C-B1D7-04289391C033",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistlithuania+easylist.txt",
     "adblockId": "easylist_plus_lithuania",
     "index": 23
   },
   "https://easylist-downloads.adblockplus.org/easylistlithuania+easylist.txt": {
     "id": "CBE50FA2-DE3F-480C-B1D7-04289391C033",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistlithuania+easylist.txt",
     "adblockId": "easylist_plus_lithuania",
     "index": 23
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistpolish+easylist.txt": {
     "id": "3D2C09D0-DF1C-4C8E-9947-A23DCEAF8F8B",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistpolish+easylist.txt",
     "adblockId": "easylist_plus_polish",
     "index": 24
   },
   "https://easylist-downloads.adblockplus.org/easylistpolish+easylist.txt": {
     "id": "3D2C09D0-DF1C-4C8E-9947-A23DCEAF8F8B",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistpolish+easylist.txt",
     "adblockId": "easylist_plus_polish",
     "index": 24
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistportuguese+easylist.txt": {
     "id": "14DF7BE6-9675-4E07-987A-D8A1000F9FEF",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistportuguese+easylist.txt",
     "adblockId": "easylist_plus_portuguese",
     "index": 25
   },
   "https://easylist-downloads.adblockplus.org/easylistportuguese+easylist.txt": {
     "id": "14DF7BE6-9675-4E07-987A-D8A1000F9FEF",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistportuguese+easylist.txt",
     "adblockId": "easylist_plus_portuguese",
     "index": 25
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easylistspanish+easylist.txt": {
     "id": "C3D13A19-3E8D-41F5-AD64-0F3B36DDE128",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistspanish+easylist.txt",
     "adblockId": "easylist_plus_spanish",
     "index": 26
   },
   "https://easylist-downloads.adblockplus.org/easylistspanish+easylist.txt": {
     "id": "C3D13A19-3E8D-41F5-AD64-0F3B36DDE128",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easylistspanish+easylist.txt",
     "adblockId": "easylist_plus_spanish",
     "index": 26
   },
   "https://easylist-downloads.adblockplus.org/v3/full/indianlist+easylist.txt": {
     "id": "25A31255-AB36-48A4-9086-06192DE71119",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/indianlist+easylist.txt",
     "adblockId": "easylist_plus_indian",
     "index": 27
   },
   "https://easylist-downloads.adblockplus.org/indianlist+easylist.txt": {
     "id": "25A31255-AB36-48A4-9086-06192DE71119",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/indianlist+easylist.txt",
     "adblockId": "easylist_plus_indian",
     "index": 27
   },
   "https://easylist-downloads.adblockplus.org/v3/full/koreanlist+easylist.txt": {
     "id": "2708BCB7-2E45-41BC-B517-1730CF532F89",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/koreanlist+easylist.txt",
     "adblockId": "easylist_plun_korean",
     "index": 28
   },
   "https://easylist-downloads.adblockplus.org/koreanlist+easylist.txt": {
     "id": "2708BCB7-2E45-41BC-B517-1730CF532F89",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/koreanlist+easylist.txt",
     "adblockId": "easylist_plun_korean",
     "index": 28
   },
   "https://easylist-downloads.adblockplus.org/v3/full/latvianlist+easylist.txt": {
     "id": "950C88EA-2DD1-42E3-B2A2-2DF2ED15563A",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/latvianlist+easylist.txt",
     "adblockId": "latvian",
     "index": 29
   },
   "https://easylist-downloads.adblockplus.org/latvianlist+easylist.txt": {
     "id": "950C88EA-2DD1-42E3-B2A2-2DF2ED15563A",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/latvianlist+easylist.txt",
     "adblockId": "latvian",
     "index": 29
   },
   "https://easylist-downloads.adblockplus.org/v3/full/liste_ar+liste_fr+easylist.txt": {
     "id": "684A25C6-6B5D-458A-8A2B-BAC0A12B0B15",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/liste_ar+liste_fr+easylist.txt",
     "adblockId": "easylist_plus_arabic_plus_french",
     "index": 30
   },
   "https://easylist-downloads.adblockplus.org/liste_ar+liste_fr+easylist.txt": {
     "id": "684A25C6-6B5D-458A-8A2B-BAC0A12B0B15",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/liste_ar+liste_fr+easylist.txt",
     "adblockId": "easylist_plus_arabic_plus_french",
     "index": 30
   },
   "https://easylist-downloads.adblockplus.org/v3/full/liste_fr+easylist.txt": {
     "id": "2CEA1481-C29C-44F1-A084-A2A019533797",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/liste_fr+easylist.txt",
     "adblockId": "easylist_plus_french",
     "index": 31
   },
   "https://easylist-downloads.adblockplus.org/liste_fr+easylist.txt": {
     "id": "2CEA1481-C29C-44F1-A084-A2A019533797",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/liste_fr+easylist.txt",
     "adblockId": "easylist_plus_french",
     "index": 31
   },
   "https://easylist-downloads.adblockplus.org/v3/full/ruadlist+easylist.txt": {
     "id": "1B5F78CA-8B30-4BDF-B0A3-451CB2202984",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/ruadlist+easylist.txt",
     "adblockId": "russian",
     "index": 32
   },
   "https://easylist-downloads.adblockplus.org/ruadlist+easylist.txt": {
     "id": "1B5F78CA-8B30-4BDF-B0A3-451CB2202984",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/ruadlist+easylist.txt",
     "adblockId": "russian",
     "index": 32
   },
   "https://easylist-downloads.adblockplus.org/v3/full/rolist+easylist.txt": {
     "id": "EEEF75EC-B2B4-49F4-BC49-17B08266F334",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/rolist+easylist.txt",
     "adblockId": "easylist_plus_romanian",
     "index": 33
   },
   "https://easylist-downloads.adblockplus.org/rolist+easylist.txt": {
     "id": "EEEF75EC-B2B4-49F4-BC49-17B08266F334",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/rolist+easylist.txt",
     "adblockId": "easylist_plus_romanian",
     "index": 33
   },
   "https://easylist-downloads.adblockplus.org/v3/full/abp-filters-anti-cv.txt": {
     "id": "D4028CDD-3D39-4624-ACC7-8140F4EC3238",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abp-filters-anti-cv.txt",
     "adblockId": "anticircumvent",
     "index": 34
   },
   "https://easylist-downloads.adblockplus.org/abp-filters-anti-cv.txt": {
     "id": "D4028CDD-3D39-4624-ACC7-8140F4EC3238",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/abp-filters-anti-cv.txt",
     "adblockId": "anticircumvent",
     "index": 34
   },
   "https://easylist-downloads.adblockplus.org/v3/full/easyprivacy.txt": {
     "id": "D72B6F06-52B2-4FED-96A2-1BF59CDD7AEC",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easyprivacy.txt",
     "adblockId": "easyprivacy",
     "index": 35
   },
   "https://easylist-downloads.adblockplus.org/easyprivacy.txt": {
     "id": "D72B6F06-52B2-4FED-96A2-1BF59CDD7AEC",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/easyprivacy.txt",
     "adblockId": "easyprivacy",
     "index": 35
   },
   "https://easylist-downloads.adblockplus.org/v3/full/i_dont_care_about_cookies.txt": {
     "id": "2090F374-29D9-4202-B2CE-139D6492D95E",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/i_dont_care_about_cookies.txt",
     "adblockId": "idcac",
     "index": 36
   },
   "https://easylist-downloads.adblockplus.org/i_dont_care_about_cookies.txt": {
     "id": "2090F374-29D9-4202-B2CE-139D6492D95E",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/i_dont_care_about_cookies.txt",
     "adblockId": "idcac",
     "index": 36
   },
   "https://easylist-downloads.adblockplus.org/v3/full/fanboy-social.txt": {
     "id": "0A679439-445F-4DE7-84B9-88341F6DA520",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/fanboy-social.txt",
     "adblockId": "antisocial",
     "index": 37
   },
   "https://easylist-downloads.adblockplus.org/fanboy-social.txt": {
     "id": "0A679439-445F-4DE7-84B9-88341F6DA520",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/fanboy-social.txt",
     "adblockId": "antisocial",
     "index": 37
   },
   "https://secure.fanboy.co.nz/fanboy-annoyance.txt": {
     "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
-    "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
-    "adblockId": "annoyances",
-    "index": 38
-  },
-  "https://fanboy.co.nz/fanboy-annoyance.txt": {
-    "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
-    "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
     "adblockId": "annoyances",
     "index": 38
   },
   "https://easylist-downloads.adblockplus.org/v3/full/fanboy-annoyance.txt": {
     "id": "0B0296EB-1CC5-49CD-AD38-8AF27420B7E4",
-    "mv2URL": "https://fanboy.co.nz/fanboy-annoyance.txt",
     "adblockId": "annoyances",
     "index": 38
   },
   "https://easylist-downloads.adblockplus.org/v3/full/fanboy-notifications.txt": {
     "id": "5BD2BB73-459D-4A74-AF9D-A10157268350",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/fanboy-notifications.txt",
     "adblockId": "fb_notifications",
     "index": 39
   },
   "https://easylist-downloads.adblockplus.org/fanboy-notifications.txt": {
     "id": "5BD2BB73-459D-4A74-AF9D-A10157268350",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/fanboy-notifications.txt",
     "adblockId": "fb_notifications",
     "index": 39
   },
   "https://easylist-downloads.adblockplus.org/v3/full/dandelion_sprouts_nordic_filters+easylist.txt": {
     "id": "96932CD9-6DDF-4D97-B92F-FDF747B6FAA2",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/dandelion_sprouts_nordic_filters+easylist.txt",
     "adblockId": "nordic",
     "index": 55
   },
   "https://easylist-downloads.adblockplus.org/dandelion_sprouts_nordic_filters+easylist.txt": {
     "id": "96932CD9-6DDF-4D97-B92F-FDF747B6FAA2",
-    "mv2URL": "https://easylist-downloads.adblockplus.org/dandelion_sprouts_nordic_filters+easylist.txt",
     "adblockId": "nordic",
     "index": 55
   }

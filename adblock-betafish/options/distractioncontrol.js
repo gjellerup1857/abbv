@@ -57,7 +57,7 @@ let dcWarningClosed = storageGet(dcWarningClosedKey);
 
 function getDefaultFilterUI(entry, filterList, checkboxID, isActiveLicense) {
   const isSelected = filterList.subscribed;
-  const filterListUrl = filterList.mv2URL;
+  const filterListUrl = filterList.url;
 
   let $checkBox = $('<input>')
     .attr('type', 'checkbox')
