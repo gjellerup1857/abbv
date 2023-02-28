@@ -48,6 +48,7 @@ export default {
           'adblock-betafish/twitchSettings.js',
           'adblock-betafish/youtube/yt-bg.js',
           'adblock-betafish/picreplacement/distraction-control-bg.js',
+          'adblock-betafish/notifications/background/notifications.js',
           'adblock-betafish/messaging/premium-message-responder.js',
           'adblock-betafish/messaging/message-responder.js',
         ],
