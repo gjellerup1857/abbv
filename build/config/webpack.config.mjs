@@ -35,8 +35,6 @@ export default {
       punycode$: 'punycode.js',
       url$: 'url.js',
       prefs: path.resolve('', 'vendor/adblockplusui/adblockpluschrome/lib/prefs.js'),
-      './options': '../../adblock-betafish/alias/options.js',
-      '../../lib/pages/options.js': '../../../../adblock-betafish/alias/options.js',
       './icon': '../../adblock-betafish/alias/icon.js',
       'subscriptionInit': '../../adblock-betafish/alias/subscriptionInit.js',
       uninstall: '../../adblock-betafish/alias/uninstall.js',

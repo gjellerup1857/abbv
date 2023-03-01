@@ -23,15 +23,23 @@ import Vinyl from 'vinyl';
 
 let manifest;
 
-function editManifest(dataParam, version, channel, target, extensionId) {
+async function getJSON(path) {
+  let content = await fs.promises.readFile(resolve(path));
+  return JSON.parse(content);
+}
+
+
+async function editManifest(dataParam, version, channel, target, extensionId) {
   const data = dataParam;
   data.version = version;
 
   if (target === 'chrome') {
     delete data.applications;
     delete data.content_security_policy;
-    const tempArray = data.web_accessible_resources.concat(data.web_accessible_resources_chrome);
-    data.web_accessible_resources = tempArray;
+    if (data.manifest_version === 2) {
+      const tempArray = data.web_accessible_resources.concat(data.web_accessible_resources_chrome);
+      data.web_accessible_resources = tempArray;
+    }
   }
 
   if (target === 'firefox') {
@@ -45,7 +53,17 @@ function editManifest(dataParam, version, channel, target, extensionId) {
     delete data.optional_permissions;
 
     data.applications.gecko = gecko;
+
+    if ("action" in data) {
+      delete data.action.default_popup;
+    }
   }
+
+  if ("declarative_net_request" in data) {
+    const rules = await getJSON("./node_modules/@adblockinc/rules/dist/manifest/adblock.json");
+    data.declarative_net_request = rules;
+  }
+
   delete data.web_accessible_resources_chrome;
 
   return data;
@@ -62,16 +80,22 @@ export function createManifest(contents) {
   ]);
 }
 
-export async function getManifestContent({
-  target, version, channel, path, extensionId,
-}) {
+export async function getManifestContent(options) {
+  const {target, version, channel, manifestPath, manifestVersion, extensionId } = options;
   if (manifest) {
     return manifest;
   }
 
-  const raw = JSON.parse(await fs.promises.readFile(resolve(path || 'build/manifest.json')));
+  let raw;
+  if (manifestPath) {
+    raw = await getJSON(resolve(manifestPath));
+  } else {
+    let base = await getJSON("build/manifest.base.json");
+    let specific = await getJSON(`build/manifest.v${manifestVersion}.json`);
+    raw = Object.assign({}, base, specific);
+  }
 
-  manifest = editManifest(raw, version, channel, target, extensionId);
+  manifest = await editManifest(raw, version, channel, target, extensionId);
 
   return manifest;
 }

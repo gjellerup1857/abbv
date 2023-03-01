@@ -129,13 +129,13 @@ const initialize = ewe.start({
   version: info.addonVersion,
   bundledSubscriptionsPath: "/data/rules/abp",
 }).then(async (eweFirstRun) => {
-  eweFirstRun.warnings.forEach(console.warn);
-  await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
-  await testStorage().catch(() => { setDataCorrupted(true); })
   await detectFirstRun(
     eweFirstRun.foundSubscriptions,
     eweFirstRun.foundStorage
-    );
+  );
+  eweFirstRun.warnings.forEach(console.warn);
+  await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
+  await testStorage().catch(() => { setDataCorrupted(true); })
   // adding default filter lists
   await addSubscriptions();
   await removeSubscriptions();

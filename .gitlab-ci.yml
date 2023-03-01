@@ -34,19 +34,22 @@ build:
     - npm install
   script:
     # Create extension builds
-    - npx gulp build -t chrome --unhandled-rejections=strict
-    - npx gulp build -t firefox --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 3 --unhandled-rejections=strict
+    - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
     - npx gulp source
     # Attach commit hash to build files
-    - mv adblockchrome-*.zip adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
-    - mv adblockfirefox-*.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    - mv adblockchrome-*-mv3.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
     - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
       - adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
-      - adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
-      - adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 # ################################################################################
 # # Check filesizes
@@ -67,15 +70,21 @@ build:
        exit 0;
      fi
 
-check_filesizes:chrome:
+check_filesizes:chrome_mv2:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
-check_filesizes:firefox:
+check_filesizes:chrome_mv3:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+
+
+check_filesizes:firefox_mv2:
+  extends: .check_filesizes
+  variables:
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 ################################################################################
 # Ad filtering tests
@@ -121,22 +130,22 @@ testpages:chrome:latest:
   extends: .testpages
   variables:
     BROWSER: chromium latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
 testpages:chrome:oldest:
   extends: .testpages
   variables:
     BROWSER: chromium 77.0.3865.0
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
 testpages:firefox:latest:
   extends: .testpages
   variables:
     BROWSER: firefox latest
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 testpages:firefox:oldest:
   extends: .testpages
   variables:
     BROWSER: firefox 75.0
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi

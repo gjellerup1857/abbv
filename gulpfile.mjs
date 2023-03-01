@@ -16,6 +16,7 @@ const argumentParser = new argparse.ArgumentParser({
 });
 
 argumentParser.addArgument(['-t', '--target'], { choices: ['chrome', 'firefox'] });
+argumentParser.addArgument(['-o', '--outputDirectory']);
 argumentParser.addArgument(['-c', '--channel'], {
   choices: ['development', 'release'],
   defaultValue: 'release',
@@ -24,11 +25,21 @@ argumentParser.addArgument(['-b', '--build-num']);
 argumentParser.addArgument(['--ext-version']);
 argumentParser.addArgument(['--ext-id']);
 argumentParser.addArgument('--config');
-argumentParser.addArgument(['-m', '--manifest']);
+argumentParser.addArgument(
+  ["-m", "--manifest-version"],
+  {
+    choices: [2, 3],
+    defaultValue: 2,
+    type: "int"
+  }
+);
 argumentParser.addArgument(['--basename']);
 
 const args = argumentParser.parseKnownArgs()[0];
-const targetDir = `devenv.${args.target}`;
+let targetDir = `devenv.${args.target}`;
+if (args.outputDirectory) {
+  targetDir = `${args.outputDirectory}`;
+}
 
 async function getBuildSteps(options) {
   const buildSteps = [];
@@ -39,6 +50,9 @@ async function getBuildSteps(options) {
       tasks.addDevEnvVersion(),
       await tasks.addTestsPage({ scripts: options.unitTests.scripts, addonName }),
     );
+  }
+  if (options.manifestVersion === 3) {
+    buildSteps.push(tasks.mapping(config.rulesV3.mapping));
   }
 
   buildSteps.push(
@@ -66,6 +80,7 @@ async function getBuildOptions(isDevenv, isSource) {
     target: args.target,
     channel: args.channel,
     archiveType: args.target === 'chrome' ? '.zip' : '.xpi',
+    manifestVersion: args.manifest_version
   };
 
   // eslint-disable-next-line no-nested-ternary
@@ -112,8 +127,7 @@ async function getBuildOptions(isDevenv, isSource) {
         ? opts.version.concat('.', args.build_num)
         : opts.version.concat('.', await gitUtils.getBuildnum());
     }
-
-    opts.output = zip.dest(`${opts.basename}${opts.target}-${opts.version}${opts.archiveType}`);
+    opts.output = zip.dest(`${opts.basename}${opts.target}-${opts.version}-mv${opts.manifestVersion}${opts.archiveType}`);
   }
   if (args.ext_version) {
     opts.version = args.ext_version;
@@ -123,8 +137,9 @@ async function getBuildOptions(isDevenv, isSource) {
     target: opts.target,
     version: opts.version,
     channel: opts.channel,
-    path: args.manifest,
     extensionId: args.ext_id,
+    manifestPath: args.manifest_path,
+    manifestVersion: args.manifest_version
   });
   return opts;
 }

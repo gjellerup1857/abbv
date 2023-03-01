@@ -15,11 +15,18 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable import/extensions */
-
-export { default as base } from './base.mjs';
-export { default as chrome } from './chrome.mjs';
-export { default as firefox } from './firefox.mjs';
-export { default as webpack } from './webpack.config.mjs';
-export { chromeDev, firefoxDev } from './devenv.mjs';
-export { default as rulesV3 } from "./rules.v3.mjs";
+export default {
+    mapping: {
+        copy: [
+        {
+            dest: "data/rules/abp",
+            src: "node_modules/@adblockinc/rules/dist/rules/abp/*"
+        },
+        {
+            dest: "data/rules/dnr",
+            src: "node_modules/@adblockinc/rules/dist/rules/dnr/*"
+        }
+        ],
+        rename: []
+    }
+};

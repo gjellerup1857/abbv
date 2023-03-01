@@ -40,7 +40,8 @@ import ServerMessages from './servermessages';
 import SURVEY from './survey';
 import { setUninstallURL } from './alias/uninstall';
 import * as prefs from './prefs/background';
-import { settings, getSettings } from './prefs/background';
+import { getSettings, settings } from './prefs/background';
+
 
 import {
   parseUri,
@@ -716,12 +717,9 @@ if (browser.runtime.id) {
   const slashUpdateReleases = ['5.4.1'];
   // Display updated page after each update
   browser.runtime.onInstalled.addListener(async (details) => {
-    let {
+    const {
       last_known_version: lastKnownVersion,
     } = await browser.storage.local.get(updateStorageKey);
-    if (!lastKnownVersion) {
-      lastKnownVersion = localStorage.getItem(updateStorageKey);
-    }
     const currentVersion = browser.runtime.getManifest().version;
     // don't open the /update page for Ukraine or Russian users.
     const shouldShowUpdateForLocale = function () {
@@ -744,7 +742,9 @@ if (browser.runtime.id) {
       });
     }
     // We want to move away from localStorage, so remove item if it exists.
-    localStorage.removeItem(updateStorageKey);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(updateStorageKey);
+    }
     // Update version in browser.storage.local. We intentionally ignore the
     // returned promise.
     browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
@@ -881,7 +881,7 @@ const getDebugInfo = function () {
     otherInfo.osVersion = TELEMETRY.osVersion;
     otherInfo.os = TELEMETRY.os;
 
-    if (localStorage && localStorage.length) {
+    if (typeof localStorage !== 'undefined' && localStorage.length) {
       otherInfo.localStorageInfo = {};
       otherInfo.localStorageInfo.length = localStorage.length;
       let inx = 1;

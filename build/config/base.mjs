@@ -30,6 +30,7 @@ export default {
       {
         dest: 'abp-background.js',
         src: [
+          'adblock-betafish/extension/bootstrap/serviceworkerInit.js',
           'adblock-betafish/prefs/background/settings.js',
           'vendor/adblockplusui/adblockpluschrome/lib/devtools.js',
           'vendor/adblockplusui/adblockpluschrome/lib/debug.js',
@@ -138,6 +139,10 @@ export default {
       },
     ],
     rename: [
+      {
+        dest: "data/rules/index.json",
+        src: "node_modules/@adblockinc/rules/dist/index/adblock.json"
+      },
       {
         dest: 'adblock-errorreporting.js',
         src: 'adblock-betafish/errorreporting.js',

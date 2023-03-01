@@ -15,11 +15,12 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable import/extensions */
+/* For ESLint: List any global identifiers used in this file below */
+/* global importScripts
+*/
 
-export { default as base } from './base.mjs';
-export { default as chrome } from './chrome.mjs';
-export { default as firefox } from './firefox.mjs';
-export { default as webpack } from './webpack.config.mjs';
-export { chromeDev, firefoxDev } from './devenv.mjs';
-export { default as rulesV3 } from "./rules.v3.mjs";
+if (typeof importScripts !== 'undefined') {
+  importScripts('polyfill.js');
+  importScripts('ext/common.js');
+  importScripts('ext/background.js');
+}

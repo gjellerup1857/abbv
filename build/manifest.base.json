@@ -6,28 +6,6 @@
       "strict_min_version": "75.0"
     }
   },
-  "background": {
-    "persistent": true,
-    "scripts": [
-      "polyfill.js",
-      "ext/common.js",
-      "ext/background.js",
-      "abp-background.js",
-      "pubnub.min.js"
-    ]
-  },
-  "browser_action": {
-    "default_icon": {
-      "16": "icons/adblock-16.png",
-      "19": "icons/adblock-19.png",
-      "20": "icons/adblock-20.png",
-      "32": "icons/adblock-32.png",
-      "38": "icons/adblock-38.png",
-      "40": "icons/adblock-40.png"
-    },
-    "default_popup": "adblock-button-popup.html",
-    "default_title": "__MSG_name__"
-  },
   "commands": {
     "toggle_pause": {
       "description": "Toggle Pause/Resume on all sites",
@@ -100,9 +78,6 @@
     }
   ],
   "content_security_policy": "default-src 'self'; img-src 'self' data: blob: https://cdn.adblockcdn.com; style-src 'self' 'unsafe-inline'; connect-src *; frame-src 'self' https://getadblock.com",
-  "manifest_version": 2,
-  "minimum_chrome_version": "77.0",
-  "minimum_opera_version": "64.0",
   "name": "__MSG_name__",
   "short_name": "__MSG_short_name__",
   "description": "__MSG_description__",
@@ -119,19 +94,6 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "permissions": [
-    "tabs",
-    "<all_urls>",
-    "contextMenus",
-    "webRequest",
-    "webRequestBlocking",
-    "webNavigation",
-    "storage",
-    "unlimitedStorage",
-    "notifications",
-    "idle",
-    "alarms"
-  ],
   "optional_permissions": [
     "management"
   ],
