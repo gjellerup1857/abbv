@@ -106,7 +106,7 @@ check_filesizes:firefox_mv2:
   script:
     - cd testpages.adblockplus.org &&
       docker build -t testpages --build-arg EXTENSION_FILE=$EXTENSION . &&
-      docker run --shm-size=256m -e SKIP_EXTENSION_DOWNLOAD="true" -e GREP="^.*$BROWSER((?!Subscriptions).)*\$" testpages
+      docker run --shm-size=256m -e SKIP_EXTENSION_DOWNLOAD="true" -e GREP="$PARAMETERS" testpages
   after_script:
     - docker cp $(docker ps -aqf ancestor=testpages):/testpages.adblockplus.org/test/screenshots .
       2> /dev/null
@@ -126,26 +126,42 @@ check_filesizes:firefox_mv2:
     - when: manual
       allow_failure: true
 
-testpages:chrome:latest:
+testpages:MV3:chrome:latest:
+  extends: .testpages
+  variables:
+    BROWSER: chromium latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    SKIP: Subscriptions|Sitekey|Header
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
+testpages:MV2:chrome:latest:
   extends: .testpages
   variables:
     BROWSER: chromium latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:chrome:oldest:
+testpages:MV2:chrome:oldest:
   extends: .testpages
   variables:
     BROWSER: chromium 77.0.3865.0
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:firefox:latest:
+testpages:MV2:firefox:latest:
   extends: .testpages
   variables:
     BROWSER: firefox latest
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:firefox:oldest:
+testpages:MV2:firefox:oldest:
   extends: .testpages
   variables:
     BROWSER: firefox 75.0
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
