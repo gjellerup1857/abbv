@@ -36,10 +36,6 @@ async function editManifest(dataParam, version, channel, target, extensionId) {
   if (target === 'chrome') {
     delete data.applications;
     delete data.content_security_policy;
-    if (data.manifest_version === 2) {
-      const tempArray = data.web_accessible_resources.concat(data.web_accessible_resources_chrome);
-      data.web_accessible_resources = tempArray;
-    }
   }
 
   if (target === 'firefox') {
@@ -64,7 +60,6 @@ async function editManifest(dataParam, version, channel, target, extensionId) {
     data.declarative_net_request = rules;
   }
 
-  delete data.web_accessible_resources_chrome;
 
   return data;
 }

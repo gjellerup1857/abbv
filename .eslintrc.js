@@ -9,6 +9,7 @@ module.exports = {
   "plugins": ["no-unsanitized"],
   "rules": {
       "linebreak-style": "off",
+      "no-void": "off",
       "no-unused-vars": ["error", { "vars": "local" }],
       "strict": ["error", "global"],
       "func-names": ["error", "as-needed"],

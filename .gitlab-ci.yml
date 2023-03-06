@@ -139,29 +139,21 @@ testpages:MV2:chrome:latest:
   variables:
     BROWSER: chromium latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-    SKIP: Subscriptions
-    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
 testpages:MV2:chrome:oldest:
   extends: .testpages
   variables:
     BROWSER: chromium 77.0.3865.0
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-    SKIP: Subscriptions
-    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
 testpages:MV2:firefox:latest:
   extends: .testpages
   variables:
     BROWSER: firefox latest
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
-    SKIP: Subscriptions
-    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
 testpages:MV2:firefox:oldest:
   extends: .testpages
   variables:
     BROWSER: firefox 75.0
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
-    SKIP: Subscriptions
-    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'

@@ -42,7 +42,6 @@ import { setUninstallURL } from './alias/uninstall';
 import * as prefs from './prefs/background';
 import { getSettings, settings } from './prefs/background';
 
-
 import {
   parseUri,
   createFilterMetaData,
