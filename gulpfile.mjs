@@ -25,6 +25,7 @@ argumentParser.addArgument(['-b', '--build-num']);
 argumentParser.addArgument(['--ext-version']);
 argumentParser.addArgument(['--ext-id']);
 argumentParser.addArgument('--config');
+argumentParser.addArgument('--manifest-path');
 argumentParser.addArgument(
   ["-m", "--manifest-version"],
   {

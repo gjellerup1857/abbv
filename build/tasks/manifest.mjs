@@ -81,14 +81,14 @@ export async function getManifestContent(options) {
     return manifest;
   }
 
-  let raw;
+  let base;
   if (manifestPath) {
-    raw = await getJSON(resolve(manifestPath));
+    base = await getJSON(resolve(manifestPath));
   } else {
-    let base = await getJSON("build/manifest.base.json");
-    let specific = await getJSON(`build/manifest.v${manifestVersion}.json`);
-    raw = Object.assign({}, base, specific);
+    base = await getJSON("build/manifest.base.json");
   }
+  let specific = await getJSON(`build/manifest.v${manifestVersion}.json`);
+  let raw = Object.assign({}, base, specific);
 
   manifest = await editManifest(raw, version, channel, target, extensionId);
 
