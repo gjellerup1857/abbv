@@ -141,6 +141,14 @@ testpages:MV3:chrome:latest:
     SKIP: Subscriptions|Sitekey|Header
     PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
+testpages:MV3:edge:latest:
+  extends: .testpages
+  variables:
+    BROWSER: edge latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    SKIP: Subscriptions|Sitekey|Header
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
 testpages:MV2:chrome:latest:
   extends: .testpages
   variables:
@@ -149,10 +157,10 @@ testpages:MV2:chrome:latest:
     SKIP: Subscriptions
     PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:MV2:chrome:oldest:
+testpages:MV2:edge:latest:
   extends: .testpages
   variables:
-    BROWSER: chromium 77.0.3865.0
+    BROWSER: edge latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     SKIP: Subscriptions
     PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
@@ -162,6 +170,14 @@ testpages:MV2:firefox:latest:
   variables:
     BROWSER: firefox latest
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
+testpages:MV2:chrome:oldest:
+  extends: .testpages
+  variables:
+    BROWSER: chromium 77.0.3865.0
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     SKIP: Subscriptions
     PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
