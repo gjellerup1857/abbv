@@ -719,7 +719,7 @@ if (browser.runtime.id) {
       License.ready().then(checkLicense);
     }
   };
-  const slashUpdateReleases = ['5.4.1'];
+  const slashUpdateReleases = ['5.4.1', '5.4.2'];
   // Display updated page after each update
   browser.runtime.onInstalled.addListener(async (details) => {
     const {

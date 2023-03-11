@@ -19,7 +19,7 @@
 /* global License, localizePage, SyncService, translate, FIVE_SECONDS,
    settingsNotifier, processReplacementChildren, MABPayment, storageSet, storageGet,
    determineUserLanguage, initializeProxies, licenseNotifier, browser, settings,
-   send,
+   send, info
     */
 
 const onSyncDataInitialGetError = async function () {
@@ -237,6 +237,34 @@ const onSyncDataInitialGetError = async function () {
     }
   };
 
+  const showAddDeviceTextBox = () => {
+    $('#btnAddThisExtension').fadeOut('slow', () => {
+      if (deviceNameArray.length === 0) {
+        $('#enter-name-div').show()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        $('#btnCancelSyncName').show();
+      } else {
+        $('#show-verify-message').show();
+        $('#verify-overwrite-div').show();
+        $('#sync_extension_section_list_title').hide();
+      }
+    });
+  };
+
+  const getUserConfirmation = () => {
+    if (info.application !== 'firefox') {
+      showAddDeviceTextBox();
+      return;
+    }
+    const dialogText = translate('sync_confirmation_message_I')
+                       + translate('sync_confirmation_message_II')
+                       + translate('sync_confirmation_message_III')
+                       + translate('sync_confirmation_message_IV');
+    // eslint-disable-next-line no-alert
+    if (window.confirm(dialogText)) {
+      showAddDeviceTextBox();
+    }
+  };
+
   const documentEventsHandling = () => {
     const observer = new MutationObserver(((mutations) => {
       for (const mutation of mutations) {
@@ -271,16 +299,7 @@ const onSyncDataInitialGetError = async function () {
     });
 
     $('#btnAddThisExtension').on('click', () => {
-      $('#btnAddThisExtension').fadeOut('slow', () => {
-        if (deviceNameArray.length === 0) {
-          $('#enter-name-div').show()[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-          $('#btnCancelSyncName').show();
-        } else {
-          $('#show-verify-message').show();
-          $('#verify-overwrite-div').show();
-          $('#sync_extension_section_list_title').hide();
-        }
-      });
+      getUserConfirmation();
     });
 
     $('#btnVerifyCancel').on('click', () => {

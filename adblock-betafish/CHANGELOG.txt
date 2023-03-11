@@ -2,6 +2,9 @@
 
 UNRELEASED:
 
+Version: 5.4.2, Date: 2023-02-21
+- Added a consent dialog when a user enables the AdBlock Premium Sync feature (only for Firefox users)
+
 Version: 5.4.1, Date: 2023-02-12
 - Fixed the on click event handler for the "Upgrade your AdBlock" CTA in the AdBlock popup menu
 - Show the /update page to let users know about the AdBlock Premium

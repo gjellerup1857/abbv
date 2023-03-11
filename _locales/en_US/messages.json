@@ -3738,5 +3738,21 @@
   "get_around_popups": {
     "message": "With Bypass Mode, you’ll be able to get around some of those pop-ups without disabling AdBlock.",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "sync_confirmation_message_I": {
+    "message": "By clicking 'OK', you allow us to collect some information about the particular extension installation, including: unique extension identifier, sync device name, the timestamp of when the sync enrollment was made, and your extension settings (e.g. custom filters, filter list subscriptions, preferences, etc.).",
+    "description": "Consent text to be shown to Premium Firefox users when enabling the Premium Sync feature"
+  },
+  "sync_confirmation_message_II": {
+    "message": "\nWe need this consent in order to provide the Backup & Sync service.",
+    "description": "Consent text to be shown to Premium Firefox users when enabling the Premium Sync feature"
+  },
+  "sync_confirmation_message_III": {
+    "message": " Learn more in our Privacy Policy: https://getadblock.com/privacy/",
+    "description": "Consent text to be shown to Premium Firefox users when enabling the Premium Sync feature"
+  },
+  "sync_confirmation_message_IV": {
+    "message": "\nIf you don’t agree with the data collection, you can select the 'Cancel' option.",
+    "description": "Consent text to be shown to Premium Firefox users when enabling the Premium Sync feature"
   }
 }
