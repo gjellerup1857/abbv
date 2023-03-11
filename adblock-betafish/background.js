@@ -272,6 +272,11 @@ const removeCustomFilterForHost = function (host) {
 // so some JavaScript is injected into the active tab, which does the confirmation for us.
 // If the user confirms the removal of the entries, then they are removed, and the page reloaded.
 const confirmRemovalOfCustomFiltersOnHost = function (host, activeTabId) {
+  if (!browser.tabs.executeScript) {
+    /* eslint-disable-next-line no-console */
+    console.error('confirmRemovalOfCustomFiltersOnHost disable for MV3 extensions');
+    return; // this function isn't supported under MV3, and shouldn't be invoked for MV3 extensions.
+  }
   const customFilterCount = countCache.getCustomFilterCount(host);
   const confirmationText = browser.i18n.getMessage('confirm_undo_custom_filters', [customFilterCount, host]);
   const messageListenerFN = function (request) {
@@ -295,6 +300,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   confirmRemovalOfCustomFiltersOnHost(message.host, message.activeTabId);
   sendResponse({});
 });
+
 
 // Reload already opened tab
 // Input:
@@ -1009,7 +1015,6 @@ Object.assign(self, {
   countCache,
   updateCustomFilterCountMap,
   removeCustomFilterForHost,
-  confirmRemovalOfCustomFiltersOnHost,
   reloadTab,
   isSelectorFilter,
   isWhitelistFilter,

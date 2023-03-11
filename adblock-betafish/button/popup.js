@@ -285,7 +285,13 @@ const start = async function () {
 
     const disabledOrallowlisted = info.disabledSite || !info.whitelisted;
     const eligibleForUndo = !info.paused && !info.domainPaused && disabledOrallowlisted;
-    if (eligibleForUndo && info.customFilterCount) {
+    if (
+      eligibleForUndo
+      && info.customFilterCount
+      && browser.runtime.getManifest().manifest_version === 2
+      // The 'undo' functionality is only available in MV2 extensions
+      // until issue #305 is implemented
+    ) {
       show(['div_undo']);
     }
 

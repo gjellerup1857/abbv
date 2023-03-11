@@ -60,7 +60,6 @@ async function editManifest(dataParam, version, channel, target, extensionId) {
     data.declarative_net_request = rules;
   }
 
-
   return data;
 }
 

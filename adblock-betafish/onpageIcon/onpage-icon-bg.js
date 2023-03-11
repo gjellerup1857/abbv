@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log,
+/* global browser,
  */
 
 import { getSettings } from '../prefs/background';
@@ -62,6 +62,43 @@ const OnPageIconManager = (function initialize() {
     return true;
   };
 
+  const injectScript = async (tabId) => {
+    try {
+      if (browser.scripting) {
+        await browser.scripting.executeScript({
+          target: { tabId },
+          files: ['purify.min.js'],
+        });
+      } else {
+        await browser.tabs.executeScript({
+          file: 'purify.min.js',
+          allFrames: false,
+        });
+      }
+    } catch (error) {
+      log('Injection of DOM Purify failed', error);
+    }
+  };
+
+  const injectStyle = async (tabId) => {
+    try {
+      if (browser.scripting) {
+        await browser.scripting.insertCSS({
+          target: { tabId },
+          files: ['adblock-onpage-icon-user.css'],
+        });
+      } else {
+        await browser.tabs.insertCSS({
+          file: 'adblock-onpage-icon-user.css',
+          allFrames: false,
+          runAt: 'document_start',
+        });
+      }
+    } catch (error) {
+      log('Injection of on-page icon style failed', error);
+    }
+  };
+
 
   return {
     // shows / display the AdBlock annimated icon on the specified tab
@@ -78,7 +115,7 @@ const OnPageIconManager = (function initialize() {
     //                         required to start with a '/' character
     //                         the '/' indicates that a new tab should be opened on gab.com
     //                         (the extension will add the 'gab.com' prefix for security reasons)
-    showOnPageIcon(tabId, tabUrl, iconData) {
+    async showOnPageIcon(tabId, tabUrl, iconData) {
       if (!getSettings().onpageMessages) {
         log('OnPageIconManager:: settings.onpageMessages is false');
         return;
@@ -92,36 +129,21 @@ const OnPageIconManager = (function initialize() {
         msgText = msgText.slice(0, MAX_MSG_TEXT_LENGTH);
       }
       log('showOnPageIcon::iconData:', iconData);
-      browser.tabs.insertCSS(tabId, {
-        file: 'adblock-onpage-icon-user.css',
-        allFrames: false,
-        runAt: 'document_start',
-      }).then(() => {
-        browser.tabs.executeScript(tabId, {
-          file: 'purify.min.js',
-          allFrames: false,
-        }).then(() => {
-          const data = {
-            command: 'showonpageicon',
-            tabURL: tabUrl,
-            titleText: iconData.titleText,
-            titlePrefixText: iconData.titlePrefixText,
-            msgText,
-            surveyId: iconData.surveyId,
-            buttonText: iconData.buttonText,
-            buttonURL: iconData.buttonURL,
-            ctaIconURL: iconData.ctaIconURL,
-          };
-          browser.tabs.sendMessage(tabId, data).catch((error) => {
-            log('error', error);
-          });
-        }).catch((error) => {
-          log('Injection of DOM Purify failed');
-          log(error);
-        });
-      }).catch((error) => {
-        log('Injection of adblock-onpage-icon-user.css failed');
-        log(error);
+      await injectStyle(tabId);
+      await injectScript(tabId);
+      const data = {
+        command: 'showonpageicon',
+        tabURL: tabUrl,
+        titleText: iconData.titleText,
+        titlePrefixText: iconData.titlePrefixText,
+        msgText,
+        surveyId: iconData.surveyId,
+        buttonText: iconData.buttonText,
+        buttonURL: iconData.buttonURL,
+        ctaIconURL: iconData.ctaIconURL,
+      };
+      browser.tabs.sendMessage(tabId, data).catch((error) => {
+        log('error', error);
       });
     }, // end of showOnPageIcon
   };

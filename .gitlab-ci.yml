@@ -36,16 +36,16 @@ build:
     # Create extension builds
     - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
     - npx gulp build -t chrome -m 3 --unhandled-rejections=strict
+    - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
     - npx gulp build -t chrome -m 2 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
     - npx gulp build -t chrome -m 3 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
-    - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
     - npx gulp source
     # Attach commit hash to build files
+    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
     - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     - mv adblockchrome-*-mv3.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
     - mv adblockbetachrome-*-mv2.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     - mv adblockbetachrome-*-mv3.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
     - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
@@ -53,6 +53,7 @@ build:
       - adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
       - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
       - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
       - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
       - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
       - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi

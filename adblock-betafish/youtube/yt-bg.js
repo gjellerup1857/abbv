@@ -66,39 +66,44 @@ const removeAllowlistFilterForYoutubeChannel = function (text) {
   }
 };
 
-// inject the manage YT subscription
-const injectManagedContentScript = function (details, historyUpdated) {
-  const { tabId } = details;
-  browser.tabs.sendMessage(tabId, { command: 'ping_yt_manage_cs' }).then((pingResponse) => {
-    // Since the onHistoryStateUpdated may get called more than once with the exact same data,
-    // check the timestamps, and only inject the content script once
-    const diff = details.timeStamp - lastInjectedTimestamp;
-    if (pingResponse && pingResponse.status === 'yes') {
-      lastInjectedTimestamp = details.timeStamp;
-      browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
-    } else if (diff > 100) { // check if the timestamp difference is more than 100 ms
-      lastInjectedTimestamp = details.timeStamp;
-      browser.tabs.executeScript(tabId, {
-        file: 'purify.min.js',
-        allFrames: false,
-        runAt: 'document_start',
-      }).then(() => {
-        browser.tabs.executeScript(tabId, {
-          file: 'adblock-yt-manage-cs.js',
-          allFrames: false,
-          runAt: 'document_start',
-        }).then(() => {
-          browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
-        });
+const injectScript = async function (scriptFileName, tabId) {
+  try {
+    if (browser.scripting) {
+      await browser.scripting.executeScript({
+        target: { tabId, allFrames: false },
+        files: [scriptFileName],
       });
+    } else {
+      await browser.tabs.executeScript(tabId, { file: scriptFileName, allFrames: false, runAt: 'document_start' });
     }
-  });
+  } catch (error) {
+    /* eslint-disable-next-line no-console */
+    console.error(error);
+  }
+};
+
+// inject the manage YT subscription
+const injectManagedContentScript = async function (details, historyUpdated) {
+  const { tabId } = details;
+  const pingResponse = await browser.tabs.sendMessage(tabId, { command: 'ping_yt_manage_cs' });
+  // Since the onHistoryStateUpdated may get called more than once with the exact same data,
+  // check the timestamps, and only inject the content script once
+  const diff = details.timeStamp - lastInjectedTimestamp;
+  if (pingResponse && pingResponse.status === 'yes') {
+    lastInjectedTimestamp = details.timeStamp;
+    void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
+  } else if (diff > 100) { // check if the timestamp difference is more than 100 ms
+    lastInjectedTimestamp = details.timeStamp;
+    void injectScript('purify.min.js', tabId);
+    void injectScript('adblock-yt-manage-cs.js', tabId);
+    void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
+  }
 };
 
 const managedSubPageCompleted = function (details) {
   const theURL = new URL(details.url);
   if (theURL.pathname === '/feed/channels') {
-    injectManagedContentScript(details);
+    void injectManagedContentScript(details);
   }
 };
 
@@ -115,7 +120,7 @@ const ytHistoryHandler = function (details) {
       // check if the user clicked the back / forward buttons, if so,
       // the data on the page is already loaded,
       // so the content script does not have to wait for it to load.
-      injectManagedContentScript(details, !(details.transitionQualifiers && details.transitionQualifiers.includes('forward_back')));
+      void injectManagedContentScript(details, !(details.transitionQualifiers && details.transitionQualifiers.includes('forward_back')));
     }
   }
 };
@@ -179,7 +184,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (json && json.items && json.items[0]) {
             const channelName = json.items[0].snippet.title;
             ytChannelNamePages.set(sender.tab.id, channelName);
-            browser.tabs.sendMessage(sender.tab.id, {
+            void browser.tabs.sendMessage(sender.tab.id, {
               command: 'updateURLWithYouTubeChannelName',
               channelName,
             });
@@ -190,7 +195,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({});
       return;
     }
-    browser.tabs.sendMessage(sender.tab.id, {
+    void browser.tabs.sendMessage(sender.tab.id, {
       command: 'updateURLWithYouTubeChannelName',
       channelName: ytChannelNamePages.get(sender.tab.id),
     });
@@ -212,7 +217,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (json && json.items && json.items[0]) {
             const channelName = json.items[0].snippet.title;
             ytChannelNamePages.set(sender.tab.id, channelName);
-            browser.tabs.sendMessage(sender.tab.id, {
+            void browser.tabs.sendMessage(sender.tab.id, {
               command: 'updateURLWithYouTubeChannelName',
               channelName,
             });
@@ -222,7 +227,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       xhr.send();
       sendResponse({});
     } else {
-      browser.tabs.sendMessage(sender.tab.id, {
+      void browser.tabs.sendMessage(sender.tab.id, {
         command: 'updateURLWithYouTubeChannelName',
         channelName: ytChannelNamePages.get(sender.tab.id),
       });
