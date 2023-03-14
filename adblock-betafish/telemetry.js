@@ -107,7 +107,7 @@ export const TELEMETRY = (function exportStats() {
   }
 
   const getPingData = async function (callbackFN) {
-    if (!callbackFN && (typeof callbackFN !== 'function')) {
+    if (!callbackFN || (typeof callbackFN !== 'function')) {
       return;
     }
     browser.storage.local.get(TELEMETRY.totalPingStorageKey).then(async (response) => {
@@ -202,6 +202,13 @@ export const TELEMETRY = (function exportStats() {
         }
 
         data.dc = dataCorrupt ? '1' : '0';
+
+        data.isPinned = '-1';
+        const userSettings = browser.action.getUserSettings
+          && await browser.action.getUserSettings();
+        if (userSettings) {
+          data.isPinned = userSettings.isOnToolbar ? '1' : '0';
+        }
       } catch (err) {
         log(err);
         ServerMessages.recordAnonymousErrorMessage('ping_error', null, { error: JSON.stringify(err, Object.getOwnPropertyNames(err)) });
