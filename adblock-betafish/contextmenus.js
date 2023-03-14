@@ -17,28 +17,52 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, ext, adblockIsPaused, adblockIsDomainPaused
-   log, License, reloadTab, getSettings */
+   License, reloadTab, getSettings, tryToUnwhitelist */
 
 import { Prefs } from 'prefs';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
 import ServerMessages from './servermessages';
+import { log } from './utilities/background/bg-functions';
 
 import messageValidator from './messaging/messagevalidator';
 
-
-const updateButtonUIAndContextMenus = function () {
-  browser.tabs.query({}).then((tabs) => {
-    for (const tab of tabs) {
-      tab.url = tab.url ? tab.url : tab.pendingUrl;
-      if (adblockIsPaused() || adblockIsDomainPaused({ url: tab.url.href, id: tab.id })) {
-        setBadge(tab.id, { number: '' });
-      }
-      const page = new ext.Page(tab);
-      // eslint-disable-next-line no-use-before-define
-      updateContextMenuItems(page);
+const updateBadge = async function (tabArg) {
+  if (tabArg) {
+    const tab = tabArg;
+    tab.url = tab.url ? tab.url : tab.pendingUrl;
+    if (
+      tab.active
+      && (
+        adblockIsPaused()
+          || adblockIsDomainPaused({ url: tab.url.href, id: tab.id })
+          || !!(await ewe.filters.getAllowingFilters(tab.id)).length
+      )
+    ) {
+      setBadge(tab.id, { number: '' });
     }
-  });
+  }
+};
+
+const updateContextMenus = function (tab) {
+  if (tab && tab.active) {
+    const page = new ext.Page(tab);
+    // eslint-disable-next-line no-use-before-define
+    updateContextMenuItems(page);
+  }
+};
+
+const updateButtonUIAndContextMenus = async function (tabArg) {
+  if (tabArg) {
+    updateBadge(tabArg);
+    updateContextMenus(tabArg);
+    return;
+  }
+  const tabs = await browser.tabs.query({});
+  for (const tab of tabs) {
+    updateBadge(tab);
+    updateContextMenus(tab);
+  }
 };
 
 // Bounce messages back to content scripts.
@@ -91,10 +115,30 @@ const emitPageBroadcast = (function emitBroadcast() {
   //         alreadyInjected?:int used to recursively inject required scripts.
   //         tabID:int representing the ID of the tab to execute in.
   //         tabID defaults to the active tab
-  const executeOnTab = function (fnName, parameter, alreadyInjected, tabID) {
+  const executeOnTab = async function (fnName, parameter, alreadyInjected, tabID) {
     const injectedSoFar = alreadyInjected || 0;
     const data = injectMap[fnName];
     const details = { allFrames: data.allFrames };
+
+    if ('scripting' in browser) {
+      await browser.scripting.executeScript({
+        target: { tabId: tabID, allFrames: data.allFrames },
+        files: data.include,
+      }).catch(log);
+      const functionToExecute = (args) => {
+        if (typeof window[args.fnName] === 'function') {
+          window[args.fnName](args);
+        }
+      };
+      const params = parameter;
+      params.fnName = fnName;
+      await browser.scripting.executeScript({
+        target: { tabId: tabID, allFrames: data.allFrames },
+        args: [params],
+        function: functionToExecute,
+      }).catch(log);
+      return;
+    }
 
     // If there's anything to inject, inject the next item and recurse.
     if (data.include.length > injectedSoFar) {
@@ -120,57 +164,36 @@ const emitPageBroadcast = (function emitBroadcast() {
   return theFunction;
 }());
 
-const contextMenuItem = (() => ({
-  pauseAll:
-    {
-      title: browser.i18n.getMessage('pause_adblock_everywhere'),
-      id: 'pause_adblock_everywhere',
-      contexts: ['all'],
-      onclick: () => {
+browser.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info && info.menuItemId) {
+    const { menuItemId } = info;
+    switch (menuItemId) {
+      case 'pause_adblock_everywhere':
         ServerMessages.recordGeneralMessage('cm_pause_clicked');
         adblockIsPaused(true);
-        updateButtonUIAndContextMenus();
-      },
-    },
-  unpauseAll:
-    {
-      title: browser.i18n.getMessage('resume_blocking_ads'),
-      id: 'resume_blocking_ads',
-      contexts: ['all'],
-      onclick: () => {
+        updateButtonUIAndContextMenus(tab);
+        break;
+      case 'resume_blocking_ads':
         ServerMessages.recordGeneralMessage('cm_unpause_clicked');
         adblockIsPaused(false);
-        updateButtonUIAndContextMenus();
-      },
-    },
-  pauseDomain:
-    {
-      title: browser.i18n.getMessage('domain_pause_adblock'),
-      id: 'domain_pause_adblock',
-      contexts: ['all'],
-      onclick: (info, tab) => {
+        updateButtonUIAndContextMenus(tab);
+        break;
+      case 'resume_blocking_ads_unallow':
+        ServerMessages.recordGeneralMessage('cm_unpause_clicked');
+        await tryToUnwhitelist(info.pageUrl, tab.id);
+        updateButtonUIAndContextMenus(tab);
+        break;
+      case 'domain_pause_adblock':
         ServerMessages.recordGeneralMessage('cm_domain_pause_clicked');
         adblockIsDomainPaused({ url: tab.url, id: tab.id }, true);
-        updateButtonUIAndContextMenus();
-      },
-    },
-  unpauseDomain:
-    {
-      title: browser.i18n.getMessage('resume_blocking_ads'),
-      id: 'resume_blocking_ads_unpause',
-      contexts: ['all'],
-      onclick: (info, tab) => {
+        updateButtonUIAndContextMenus(tab);
+        break;
+      case 'resume_blocking_ads_domain':
         ServerMessages.recordGeneralMessage('cm_domain_unpause_clicked');
         adblockIsDomainPaused({ url: tab.url, id: tab.id }, false);
-        updateButtonUIAndContextMenus();
-      },
-    },
-  blockThisAd:
-    {
-      title: browser.i18n.getMessage('block_this_ad'),
-      id: 'block_this_ad',
-      contexts: ['all'],
-      onclick(info, tab) {
+        updateButtonUIAndContextMenus(tab);
+        break;
+      case 'block_this_ad':
         emitPageBroadcast({
           fn: 'topOpenBlacklistUI',
           options: {
@@ -180,17 +203,10 @@ const contextMenuItem = (() => ({
             settings: getSettings(),
             addCustomFilterRandomName: messageValidator.generateNewRandomText(),
           },
-        }, {
-          tab,
+          tabID: tab.id,
         });
-      },
-    },
-  blockAnAd:
-    {
-      title: browser.i18n.getMessage('block_an_ad_on_this_page'),
-      id: 'block_an_ad_on_this_page',
-      contexts: ['all'],
-      onclick(info, tab) {
+        break;
+      case 'block_an_ad_on_this_page':
         emitPageBroadcast({
           fn: 'topOpenBlacklistUI',
           options: {
@@ -200,10 +216,56 @@ const contextMenuItem = (() => ({
             settings: getSettings(),
             addCustomFilterRandomName: messageValidator.generateNewRandomText(),
           },
-        }, {
-          tab,
+          tabID: tab.id,
         });
-      },
+        break;
+      default:
+    }
+  }
+});
+
+const contextMenuItem = (() => ({
+  pauseAll:
+    {
+      title: browser.i18n.getMessage('pause_adblock_everywhere'),
+      id: 'pause_adblock_everywhere',
+      contexts: ['all'],
+    },
+  unpauseAll:
+    {
+      title: browser.i18n.getMessage('resume_blocking_ads'),
+      id: 'resume_blocking_ads',
+      contexts: ['all'],
+    },
+  unAllowList:
+    {
+      title: browser.i18n.getMessage('resume_blocking_ads'),
+      id: 'resume_blocking_ads_unallow',
+      contexts: ['all'],
+    },
+  pauseDomain:
+    {
+      title: browser.i18n.getMessage('domain_pause_adblock'),
+      id: 'domain_pause_adblock',
+      contexts: ['all'],
+    },
+  unpauseDomain:
+    {
+      title: browser.i18n.getMessage('resume_blocking_ads'),
+      id: 'resume_blocking_ads_domain',
+      contexts: ['all'],
+    },
+  blockThisAd:
+    {
+      title: browser.i18n.getMessage('block_this_ad'),
+      id: 'block_this_ad',
+      contexts: ['all'],
+    },
+  blockAnAd:
+    {
+      title: browser.i18n.getMessage('block_an_ad_on_this_page'),
+      id: 'block_an_ad_on_this_page',
+      contexts: ['all'],
     },
 }))();
 
@@ -215,26 +277,23 @@ const checkLastError = function () {
 };
 
 let updateContextMenuItems = async function (page) {
-  // Remove the AdBlock context menu items
   await browser.contextMenus.removeAll();
-
   // Check if the context menu items should be added
   if (!Prefs.shouldShowBlockElementMenu) {
     return;
   }
   const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
-
   if (adblockIsPaused()) {
-    browser.contextMenus.create(contextMenuItem.unpauseAll, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.unpauseAll, checkLastError);
   } else if (domainIsPaused) {
-    browser.contextMenus.create(contextMenuItem.unpauseDomain, checkLastError);
-  } else if (await ewe.filters.getAllowingFilters(page.id).length) {
-    browser.contextMenus.create(contextMenuItem.pauseAll, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.unpauseDomain, checkLastError);
+  } else if ((await ewe.filters.getAllowingFilters(page.id)).length) {
+    await browser.contextMenus.create(contextMenuItem.unAllowList, checkLastError);
   } else {
-    browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
-    browser.contextMenus.create(contextMenuItem.blockAnAd, checkLastError);
-    browser.contextMenus.create(contextMenuItem.pauseDomain, checkLastError);
-    browser.contextMenus.create(contextMenuItem.pauseAll, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.blockThisAd, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.blockAnAd, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.pauseDomain, checkLastError);
+    await browser.contextMenus.create(contextMenuItem.pauseAll, checkLastError);
   }
 };
 
@@ -259,11 +318,16 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
+browser.tabs.onActivated.addListener(async (activeInfo) => {
+  const tab = await browser.tabs.get(activeInfo.tabId);
+  updateButtonUIAndContextMenus(tab);
+});
+
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.command !== 'sendContentToBack') {
     return;
   } // not for us
-  emitPageBroadcast({ fn: 'sendContentToBack', options: {} });
+  emitPageBroadcast({ fn: 'sendContentToBack', options: {}, tabID: sender.tab.id });
   sendResponse({});
 });
 

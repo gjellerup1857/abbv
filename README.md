@@ -73,9 +73,7 @@ Two other build options are provided to aid in testing of the extension.
 
 `--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.*_ directory in the project directory)  This option is only applicable to developer ('devenv') builds.
 
-`--manifest-path` - specifiying this parameter at build time will override the default 'base' manifest file that used during the build process.  It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options).
-
-The `--manifest-path` build option can be used to create the AdBlock beta extension.  The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file.   The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
+`--manifest-path` specifiying this parameter at build time will override the default 'base' manifest file that used during the build process.  It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension.  The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file.   The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
 
 `npx gulp devenv -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
 

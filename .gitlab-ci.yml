@@ -41,9 +41,9 @@ build:
     - npx gulp build -t chrome -m 3 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
     - npx gulp source
     # Attach commit hash to build files
-    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
     - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     - mv adblockchrome-*-mv3.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
     - mv adblockbetachrome-*-mv2.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
     - mv adblockbetachrome-*-mv3.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
     - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
