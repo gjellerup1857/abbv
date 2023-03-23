@@ -5,6 +5,28 @@ import { Prefs } from 'prefs';
 import SubscriptionAdapter from '../subscriptionadapter';
 import { TELEMETRY } from '../telemetry';
 
+/**
+ * Returns the number of currently active filters that have been added using
+ * the experimental allowlisting functionality (i.e. that originated in the
+ * web, and not in the extension popup).
+ *
+ * @returns {number} The filter count
+ */
+async function getWebAllowlistingFilterCount() {
+  // get all allowlisting filters that are enabled
+  const filters = (await ewe.filters.getUserFilters()).filter(
+    filter => filter.type === "allowing" && filter.enabled
+  );
+
+  // collect their metadata
+  const filtersMetadata = await Promise.all(
+    filters.map(async filter => await ewe.filters.getMetadata(filter.text))
+  );
+
+  // count the ones that originated in the web
+  return filtersMetadata.filter(data => data.origin === "web").length;
+}
+
 export function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
     TELEMETRY.untilLoaded(function (userID) {
@@ -36,6 +58,7 @@ export function setUninstallURL() {
           url = url + "&bc=" + bc;
           let lastUpdateTime = await getLastUpdateTime();
           url = url + "&lt=" + lastUpdateTime;
+          url += `&wafc=${await getWebAllowlistingFilterCount()}`;
           browser.runtime.setUninstallURL(url);
         };
         // start an interval timer that will update the Uninstall URL every 2
