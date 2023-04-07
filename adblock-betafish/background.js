@@ -59,7 +59,7 @@ const gabHostnames = ['https://getadblock.com', 'https://dev.getadblock.com', 'h
 const isTrustedSender = sender => sender.url.startsWith(trustedBaseUrl);
 
 const isTrustedTarget = url => (url.startsWith(trustedBaseUrl)
-                            || gabHostnames.includes(new URL(url).origin));
+  || gabHostnames.includes(new URL(url).origin));
 
 const isTrustedSenderDomain = (sender) => {
   if (sender.origin) {
@@ -670,7 +670,7 @@ const updateStorageKey = 'last_known_version';
 if (browser.runtime.id) {
   let updateTabRetryCount = 0;
   const getUpdatedURL = function () {
-    const encodedVersion = encodeURIComponent('5.4.1');
+    const encodedVersion = encodeURIComponent('5.5.0');
     let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${TELEMETRY.userId()}`;
     updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
     return updatedURL;
@@ -713,7 +713,7 @@ if (browser.runtime.id) {
       License.ready().then(checkLicense);
     }
   };
-  const slashUpdateReleases = ['5.4.1', '5.4.2'];
+  const slashUpdateReleases = ['5.5.0'];
   // Display updated page after each update
   browser.runtime.onInstalled.addListener(async (details) => {
     let {
