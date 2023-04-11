@@ -26,7 +26,7 @@ import { Prefs } from 'prefs';
 import * as info from 'info';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 
-import { TELEMETRY } from './telemetry';
+import { TELEMETRY, IPM } from './telemetry/background';
 import { Stats, getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import { revalidateAllowlistingStates } from '../vendor/adblockplusui/adblockpluschrome/lib/allowlisting';
 import { initialize } from './alias/subscriptionInit';
@@ -83,6 +83,7 @@ Object.assign(self, {
   ServerMessages,
   SubscriptionAdapter,
   TELEMETRY,
+  IPM,
   DataCollectionV2,
   CtaABManager,
   getNewBadgeTextReason,
@@ -326,7 +327,7 @@ const isSelectorExcludeFilter = function (text) {
 };
 
 const getAdblockUserId = function () {
-  return TELEMETRY.userId();
+  return TELEMETRY.userId;
 };
 
 // INFO ABOUT CURRENT PAGE
@@ -671,7 +672,7 @@ if (browser.runtime.id) {
   let updateTabRetryCount = 0;
   const getUpdatedURL = function () {
     const encodedVersion = encodeURIComponent('5.5.0');
-    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${TELEMETRY.userId()}`;
+    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${TELEMETRY.userId}`;
     updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
     return updatedURL;
   };
@@ -735,11 +736,10 @@ if (browser.runtime.id) {
       && !slashUpdateReleases.includes(lastKnownVersion)
       && browser.runtime.id !== adblocBetaID
     ) {
-      settings.onload().then(() => {
+      settings.onload().then(async () => {
         if (!getSettings().suppress_update_page) {
-          TELEMETRY.untilLoaded(() => {
-            Prefs.untilLoaded.then(shouldShowUpdate);
-          });
+          await TELEMETRY.untilLoaded();
+          Prefs.untilLoaded.then(shouldShowUpdate);
         }
       });
     }
@@ -799,7 +799,7 @@ const getDebugLicenseInfo = async () => {
   const response = {};
   if (License.isActiveLicense()) {
     response.licenseInfo = {};
-    response.licenseInfo.extensionGUID = TELEMETRY.userId();
+    response.licenseInfo.extensionGUID = TELEMETRY.userId;
     response.licenseInfo.licenseId = License.get().licenseId;
     if (getSettings().sync_settings) {
       const syncInfo = {};
@@ -957,11 +957,12 @@ async function checkUpdateProgress() {
   return { inProgress, filterError };
 }
 
-initialize.then(() => {
-  TELEMETRY.untilLoaded(() => {
-    TELEMETRY.startPinging();
-    setUninstallURL();
-  });
+initialize.then(async () => {
+  await TELEMETRY.untilLoaded();
+  TELEMETRY.start();
+  setUninstallURL();
+  await IPM.untilLoaded();
+  IPM.start();
   revalidateAllowlistingStates();
 });
 

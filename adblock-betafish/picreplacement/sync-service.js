@@ -24,7 +24,7 @@
 
 /** @module SyncService */
 
-import { TELEMETRY } from '../telemetry';
+import { TELEMETRY } from '../telemetry/background';
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 // check.js imports disableSync from here
@@ -625,7 +625,7 @@ const SyncService = (function getSyncService() {
         cache: 'no-cache',
         headers: {
           'X-GABSYNC-PARAMS': JSON.stringify({
-            extensionGUID: TELEMETRY.userId(),
+            extensionGUID: TELEMETRY.userId,
             licenseId: License.get().licenseId,
             extInfo: getExtensionInfo(),
           }),
@@ -659,7 +659,7 @@ const SyncService = (function getSyncService() {
       chromeStorageSetHelper(syncExtensionNameKey, currentExtensionName);
       const thedata = {
         deviceName: currentExtensionName,
-        extensionGUID: TELEMETRY.userId(),
+        extensionGUID: TELEMETRY.userId,
         licenseId: License.get().licenseId,
         extInfo: getExtensionInfo(),
       };
@@ -706,7 +706,7 @@ const SyncService = (function getSyncService() {
 
 
   const removeCurrentExtensionName = function () {
-    removeExtensionName(currentExtensionName, TELEMETRY.userId());
+    removeExtensionName(currentExtensionName, TELEMETRY.userId);
   };
 
   // return all of the current user configurable extension options (settings, Prefs, filter list
@@ -772,7 +772,7 @@ const SyncService = (function getSyncService() {
     const thedata = {
       data: JSON.stringify(payload),
       commitVersion: syncCommitVersion,
-      extensionGUID: TELEMETRY.userId(),
+      extensionGUID: TELEMETRY.userId,
       licenseId: License.get().licenseId,
       extInfo: getExtensionInfo(),
     };
@@ -959,7 +959,7 @@ const SyncService = (function getSyncService() {
   function enablePubNub() {
     pubnub = new PubNub({
       subscribeKey: License.MAB_CONFIG.subscribeKey,
-      authKey: `${License.get().licenseId}_${TELEMETRY.userId()}`,
+      authKey: `${License.get().licenseId}_${TELEMETRY.userId}`,
       ssl: true,
     });
 
@@ -1129,7 +1129,7 @@ const SyncService = (function getSyncService() {
       cache: 'no-cache',
       headers: {
         'X-GABSYNC-PARAMS': JSON.stringify({
-          extensionGUID: TELEMETRY.userId(),
+          extensionGUID: TELEMETRY.userId,
           licenseId: License.get().licenseId,
           commitVersion: syncCommitVersion,
           force: forceParam,

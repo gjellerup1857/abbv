@@ -50,7 +50,7 @@ const ServerMessages = (function serverMessages() {
       return;
     }
     const payload = {
-      u: TELEMETRY.userId(),
+      u: TELEMETRY.userId,
       f: TELEMETRY.flavor,
       o: TELEMETRY.os,
       l: determineUserLanguage(),
@@ -132,7 +132,7 @@ const ServerMessages = (function serverMessages() {
   // and state of the local computer & network
   const sendMessageToBackupLogServer = function (msg, errorMsg, queryType = 'error') {
     const payload = {
-      u: TELEMETRY.userId(),
+      u: TELEMETRY.userId,
       f: TELEMETRY.flavor,
       o: TELEMETRY.os,
       l: determineUserLanguage(),

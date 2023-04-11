@@ -120,7 +120,7 @@ const SURVEY = (function getSurvey() {
     if (!surveyAllowed) {
       return null;
     }
-    const data = { cmd: 'survey', u: TELEMETRY.userId(), sid: surveyData.survey_id };
+    const data = { cmd: 'survey', u: TELEMETRY.userId, sid: surveyData.survey_id };
     if (TELEMETRY.flavor === 'E' && Prefs.blocked_total) {
       data.b = Prefs.blocked_total;
     }
@@ -373,9 +373,10 @@ const SURVEY = (function getSurvey() {
         processIcon(surveyData);
       }
     }, // end of maybeSurvey
-    types(callback) {
+    types() {
       // 'T' = Tab Surveys
-      callback('TI');
+      // 'I' = On Page Icon
+      return 'TI';
     },
   };
 }());

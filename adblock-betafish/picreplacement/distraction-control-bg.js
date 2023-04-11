@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, log */
 
-import { TELEMETRY } from '../telemetry';
+import { TELEMETRY } from '../telemetry/background';
 import SubscriptionAdapter from '../subscriptionadapter';
 
 const sendDCReport = function (url, type, id) {
