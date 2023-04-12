@@ -107,7 +107,6 @@ class TelemetryBase {
   async loadUserID() {
     const response = await browser.storage.local.get(userIdStorageKey);
     if (!response[userIdStorageKey]) {
-      this.firstRun = true;
       const timeSuffix = (Date.now()) % 1e8; // 8 digits from end of
       // timestamp
       const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -238,6 +237,9 @@ class TelemetryBase {
       return FiftyFiveMinutes;
     }
     const response = await browser.storage.local.get(this.nextRequestTimeStorageKey);
+    if (!response[this.nextRequestTimeStorageKey]) {
+      this.firstRun = true;
+    }
     let nextPingTime = response[this.nextRequestTimeStorageKey];
     if (typeof nextPingTime !== 'number' || Number.isNaN(nextPingTime)) {
       nextPingTime = 0;
