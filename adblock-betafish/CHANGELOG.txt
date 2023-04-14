@@ -2,6 +2,11 @@
 
 UNRELEASED:
 
+Version: 5.5.0, Date: 2023-04-14
+- Show the /update page to let users know about the AdBlock Premium
+- Added sending telemetry data to a new in-product messaging (IPM) server
+- Added a new query string parameter to the un-install page which will provide information on whether the user has used the experimental allowlisting feature
+
 Version: 5.4.2, Date: 2023-02-21
 - Added a consent dialog when a user enables the AdBlock Premium Sync feature (only for Firefox users)
 
