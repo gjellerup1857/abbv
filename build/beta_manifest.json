@@ -47,7 +47,8 @@
         "ext/content.js",
         "adblock-functions.js",
         "adblock-uiscripts-rightclick_hook.js",
-        "adblock-onpage-icon-cs.js"
+        "adblock-onpage-icon-cs.js",
+        "premium.preload.js"
       ],
       "match_about_blank": true,
       "matches": [
