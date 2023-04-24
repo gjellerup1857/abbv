@@ -20,7 +20,7 @@
 
 
 import { Prefs } from 'prefs';
-import { TELEMETRY } from '../../telemetry';
+import { TELEMETRY } from '../../telemetry/background';
 
 /**
  * The domain where pages are hosted on.
