@@ -26,7 +26,7 @@
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
 import { TabSessionStorage } from '../../vendor/adblockplusui/adblockpluschrome/lib/storage/tab-session';
 
-import { TELEMETRY } from '../telemetry';
+import { TELEMETRY } from '../telemetry/background';
 import { Channels } from './channels';
 import { getSettings, setSetting } from '../prefs/background';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
@@ -83,10 +83,11 @@ export const License = (function getLicense() {
       subscriptionURL: 'https://dev.getadblock.com/premium/manage-subscription/',
     },
   };
-  TELEMETRY.untilLoaded((userID) => {
+  (async () => {
+    const userID = await TELEMETRY.untilLoaded();
     mabConfig.prod.payURL = `${mabConfig.prod.payURL}?u=${userID}`;
     mabConfig.dev.payURL = `${mabConfig.dev.payURL}&u=${userID}`;
-  });
+  })();
   const MAB_CONFIG = isProd ? mabConfig.prod : mabConfig.dev;
 
   const sevenDayAlarmIdleListener = function (newState) {
@@ -300,55 +301,54 @@ export const License = (function getLicense() {
       return theme || '';
     },
     // Get the latest license data from the server, and talk to the user if needed.
-    update() {
-      TELEMETRY.untilLoaded((userID) => {
-        licenseNotifier.emit('license.updating');
-        const postDataObj = {};
-        postDataObj.u = userID;
-        postDataObj.cmd = 'license_check';
-        const licsenseStatusBefore = License.get().status;
-        // license version
-        postDataObj.v = '1';
-        postData(License.MAB_CONFIG.licenseURL, postDataObj).then(async (response) => {
-          if (response.ok) {
-            const responseObj = await response.json();
-            ajaxRetryCount = 0;
-            const updatedLicense = responseObj;
-            licenseNotifier.emit('license.updated', updatedLicense);
-            if (!updatedLicense) {
-              return;
-            }
-            // merge the updated license
-            theLicense = { ...theLicense, ...updatedLicense };
-            theLicense.licenseId = theLicense.code;
-            License.set(theLicense);
-            // now check to see if we need to do anything because of a status change
-            if (
-              licsenseStatusBefore === 'active'
-              && updatedLicense.status
-              && updatedLicense.status === 'expired'
-            ) {
-              License.processExpiredLicense();
-              ServerMessages.recordGeneralMessage('trial_license_expired');
-            }
-          } else {
-            log('license server error response', response.status, ajaxRetryCount);
-            licenseNotifier.emit('license.updated.error', ajaxRetryCount);
-            ajaxRetryCount += 1;
-            if (ajaxRetryCount > 3) {
-              log('Retry Count exceeded, giving up', ajaxRetryCount);
-              return;
-            }
-            const oneMinute = 1 * 60 * 1000;
-            setTimeout(() => {
-              License.updatePeriodically(`error${ajaxRetryCount}`);
-            }, oneMinute);
+    async update() {
+      const userID = await TELEMETRY.untilLoaded();
+      licenseNotifier.emit('license.updating');
+      const postDataObj = {};
+      postDataObj.u = userID;
+      postDataObj.cmd = 'license_check';
+      const licsenseStatusBefore = License.get().status;
+      // license version
+      postDataObj.v = '1';
+      postData(License.MAB_CONFIG.licenseURL, postDataObj).then(async (response) => {
+        if (response.ok) {
+          const responseObj = await response.json();
+          ajaxRetryCount = 0;
+          const updatedLicense = responseObj;
+          licenseNotifier.emit('license.updated', updatedLicense);
+          if (!updatedLicense) {
+            return;
           }
-        })
-          .catch((error) => {
-            log('license server returned error: ', error);
-          });
-      });
+          // merge the updated license
+          theLicense = { ...theLicense, ...updatedLicense };
+          theLicense.licenseId = theLicense.code;
+          License.set(theLicense);
+          // now check to see if we need to do anything because of a status change
+          if (
+            licsenseStatusBefore === 'active'
+            && updatedLicense.status
+            && updatedLicense.status === 'expired'
+          ) {
+            License.processExpiredLicense();
+            ServerMessages.recordGeneralMessage('trial_license_expired');
+          }
+        } else {
+          log('license server error response', response.status, ajaxRetryCount);
+          licenseNotifier.emit('license.updated.error', ajaxRetryCount);
+          ajaxRetryCount += 1;
+          if (ajaxRetryCount > 3) {
+            log('Retry Count exceeded, giving up', ajaxRetryCount);
+            return;
+          }
+          const oneMinute = 1 * 60 * 1000;
+          setTimeout(() => {
+            License.updatePeriodically(`error${ajaxRetryCount}`);
+          }, oneMinute);
+        }
+      })
+        .catch((error) => {
+          log('license server returned error: ', error);
+        });
     },
     processExpiredLicense() {
       theLicense = License.get();
@@ -507,7 +507,7 @@ export const License = (function getLicense() {
     // data returned by the API and the fail handler receives any error information available.
     fetchLicenseAPI(command, requestBody, ok, requestFail) {
       const licenseCode = License.get().code;
-      const userID = TELEMETRY.userId();
+      const userID = TELEMETRY.userId;
       const body = requestBody;
       let fail = requestFail;
       body.cmd = command;

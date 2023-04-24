@@ -24,7 +24,7 @@ import { Prefs } from 'prefs';
 import * as info from 'info';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 
-import { TELEMETRY } from './telemetry';
+import { TELEMETRY, IPM } from './telemetry/background';
 import { Stats, getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import { revalidateAllowlistingStates } from '../vendor/adblockplusui/adblockpluschrome/lib/allowlisting';
 import { initialize } from './alias/subscriptionInit';
@@ -58,7 +58,7 @@ const gabHostnames = ['https://getadblock.com', 'https://dev.getadblock.com', 'h
 const isTrustedSender = sender => sender.url.startsWith(trustedBaseUrl);
 
 const isTrustedTarget = url => (url.startsWith(trustedBaseUrl)
-                            || gabHostnames.includes(new URL(url).origin));
+  || gabHostnames.includes(new URL(url).origin));
 
 const isTrustedSenderDomain = (sender) => {
   if (sender.origin) {
@@ -82,6 +82,7 @@ Object.assign(self, {
   ServerMessages,
   SubscriptionAdapter,
   TELEMETRY,
+  IPM,
   DataCollectionV2,
   CtaABManager,
   getNewBadgeTextReason,
@@ -331,7 +332,7 @@ const isSelectorExcludeFilter = function (text) {
 };
 
 const getAdblockUserId = function () {
-  return TELEMETRY.userId();
+  return TELEMETRY.userId;
 };
 
 // INFO ABOUT CURRENT PAGE
@@ -661,20 +662,15 @@ const getCurrentTabInfo = function (secondTime, tabId) {
   });
 };
 
-// BETA CODE
-if (browser.runtime.id === adblocBetaID) {
-  // Display beta page after each update for beta-users only
-  browser.runtime.onInstalled.addListener((details) => {
-    if (details.reason === 'update' || details.reason === 'install') {
-      browser.tabs.create({ url: 'https://getadblock.com/beta' });
-    }
-  });
-}
-
 const updateStorageKey = 'last_known_version';
 browser.runtime.onInstalled.addListener(async (details) => {
   void browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
 
+  // Display beta page after each update for beta-users only
+  if ((details.reason === 'update' || details.reason === 'install')
+    && browser.runtime.id === adblocBetaID) {
+    browser.tabs.create({ url: 'https://getadblock.com/beta' });
+  }
   if (details.reason !== 'update') {
     return;
   }
@@ -730,7 +726,7 @@ const getDebugLicenseInfo = async () => {
   const response = {};
   if (License.isActiveLicense()) {
     response.licenseInfo = {};
-    response.licenseInfo.extensionGUID = TELEMETRY.userId();
+    response.licenseInfo.extensionGUID = TELEMETRY.userId;
     response.licenseInfo.licenseId = License.get().licenseId;
     if (getSettings().sync_settings) {
       const syncInfo = {};
@@ -888,11 +884,12 @@ async function checkUpdateProgress() {
   return { inProgress, filterError };
 }
 
-initialize.then(() => {
-  TELEMETRY.untilLoaded(() => {
-    TELEMETRY.startPinging();
-    setUninstallURL();
-  });
+initialize.then(async () => {
+  await TELEMETRY.untilLoaded();
+  TELEMETRY.start();
+  setUninstallURL();
+  await IPM.untilLoaded();
+  IPM.start();
   revalidateAllowlistingStates();
 });
 

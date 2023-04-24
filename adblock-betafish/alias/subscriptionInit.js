@@ -9,6 +9,7 @@ import * as info from 'info';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port.js";
+import { TELEMETRY } from '../telemetry/background';
 
 let firstRun;
 let reinitialized = false;
@@ -24,15 +25,15 @@ let dataCorrupted = false;
  * gets notified (on the first run page) if the data appears incomplete
  * and therefore will be reinitialized.
  */
- async function detectFirstRun(foundSubscriptions, foundStorage) {
-   let userFilters = await ewe.filters.getUserFilters();
-   firstRun = !foundSubscriptions && !userFilters.length;
+async function detectFirstRun(foundSubscriptions, foundStorage) {
+  let userFilters = await ewe.filters.getUserFilters();
+  firstRun = !foundSubscriptions && !userFilters.length;
 
-   if (firstRun && (foundStorage || Prefs.currentVersion))
-     reinitialized = true;
+  if (firstRun && (foundStorage || Prefs.currentVersion))
+    reinitialized = true;
 
-   Prefs.currentVersion = info.addonVersion;
- }
+  Prefs.currentVersion = info.addonVersion;
+}
 
 /**
  * In case of data corruption, we don't want to show users
@@ -79,6 +80,21 @@ function removeSubscriptions() {
     }
   });
 }
+
+
+async function openInstalled() {
+  const userID = await TELEMETRY.untilLoaded();
+  browser.tabs.create({
+    url:
+      "https://getadblock.com/installed/?u=" +
+      userID +
+      "&lg=" +
+      browser.i18n.getUILanguage() +
+      "&dc=" +
+      dataCorrupted
+  });
+}
+
 
 async function addSubscriptions() {
   if (firstRun || reinitialized) {
