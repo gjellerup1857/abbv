@@ -74,6 +74,21 @@ export const License = (function getLicense() {
       subscribeKey: 'sub-c-9eccffb2-8c6a-11e9-97ab-aa54ad4b08ec',
       payURL: 'https://getadblock.com/premium/enrollment/',
       subscriptionURL: 'https://getadblock.com/premium/manage-subscription/',
+      bypassAuthorizedKeys: [
+        // Production keys
+        `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsCtBp9/0qCM5lp0lJVSx
+      IAGgWZsX50xeJfBq6OkfsI+305Yj0igVfyVASOaC1fc2JRHD/uAOKk47SiPcBkiz
+      mPHUt9ziOtAEkW7GrU6gaVOSwp26vUbSuvg9ouut5U2m8ULOyzp+WyU8nCzTPV5o
+      AvCta04bK9or4UnyTRKyqADlNwz7WnH+0QiHYbgtfE/E3rowEoMEAC44C7OiawCm
+      rnBXAkyBJnh1oEfUVI4LurxVl/zLo8MWfzErkaJy1FpsFR3F3L9ymKXpmxbhlDdX
+      0rxjwnRD/2sCWW3SJOU26gfFgu/NI6LGxcWdPrucdkoOOOnNQjjDlhGYPTqqxugH
+      /I5r+tAeUrrwKjmFcpMdxX7dfw1LoBoZCZnShZKlGKDqXf985Dc+3StbGWcxwNn9
+      l9/Ho6YFA7fKpBKEED2V+SrDb4RCkScvOOiMOI1v5bwsLinUd/2yxRDrO25uwU7h
+      r4LqmOguqjjLGF17d2WvG5D+LIQwgusxQd9Jk/n9PRdwtVGJhSDsDc8el2nKIqk9
+      ofk3YJzAIbS9iHQ2LuHubuhzYjkxRLcdSbt1oONHCSHeecZn/OXwYeTvU7Po1KPW
+      emi3XUpyjylUe9ONlw50lynwRw117bNHQDDHwKPoVW1cjoAtRsCnviFHPWTPjQKe
+      A2LS9qa7eNdIonehrzG20cECAwEAAQ==`,
+      ],
     },
     dev: {
       licenseURL: 'https://dev.myadblock.licensing.getadblock.com/license/',
@@ -81,6 +96,47 @@ export const License = (function getLicense() {
       subscribeKey: 'sub-c-9e0a7270-83e7-11e9-99de-d6d3b84c4a25',
       payURL: 'https://getadblock.com/premium/enrollment/?testmode=true',
       subscriptionURL: 'https://dev.getadblock.com/premium/manage-subscription/',
+      bypassAuthorizedKeys: [
+        // Development keys
+        `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAlTA+1kMAzbuPzMv/FV5B
+      BcnqJRb7BTtCTE3IKox2Jd6d5kgI4JUIR9Hrsh+BPU8DACOv5dmcTIiy8Ci5Ptlu
+      99t09oOPfZQLTyBEL4wFrTgbJPftURKugs8fkU9ttR/FyCCtSzhFlGNrcQvTTUvr
+      NLBpBGuIpCkz/k8hux+IqDxaStVlJaJnyfcLl4kD+ogWkjmzG7Ba8btfPlVEkGvh
+      xgrlVafn5w94hIhF9XzByxDxFk9KE4+Bs317HmYjYVoH3av61WMqZY5NFHoucuZz
+      r4vhwt3b7yFIQ3T/eqiysUUX5OrqBVK9aQos8mCDKjGp2hWYnP1Oi1BzfPKVyTju
+      IZAtZdrIeazj5NDcH+dwRmYTfB0r/35Dd7SIUrNX1uIRHcKWvLFUtpsRW+/d1XHG
+      ruWBaPExutIgcIIpSCHm1cHVYpgEzu8Vs5VyOw+AfqTL5kWNAchx1VeWD91r4cVh
+      ZPZQbN/TfxHyxisYLRMD4pKfjV8hlsUvmuy+Bg49Ds+rpGVEvnDdijWIbVsSD9eN
+      5IO768819feXbR56PPxQtMs/JaE77Uoauuj7Lw9vGx/27V24TCWNTtbnwRkBCxJz
+      m7YeUksuKYg7SQp4SMzkwhGxRRu9xlF/yKnDVXF5/J483akIuhuv0TiJI51mYvrD
+      uc6lr1LW6QmZf6Vv2+ur7hcCAwEAAQ==`,
+        // Testing keys
+        `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqpV+M8A3hfi7JMut3Orr
+      Sa6YEQutZ6F/FiaAmWPAlrG4IFA88HvqxRqbPz1niCWou7FqgsJ+v5+hhyrMFqM2
+      JBBdaLHiDN1KNm7Ydx1j7NJJ+o/O22SN6kIU6k+VLg2B+Gj37s1qi8tIGWnrP+Ip
+      jPMHDYSxLbQlIH/6CIiKVyMr7zaTej9rigGr33tqxM+RZtwo8eudEVcN3+DsUZ4j
+      /jYx/hTvPze2r5xhB3faErhPSFLjZ9UIv0P9tPwO9m7PRQx9mrnh5QnS8NfEY2FY
+      oFd+HiTsJS1QJi/ez9+5n1WCOTutc2lbxboCV3eJegBDObPDW1EhuVXOzGTEs5Sc
+      Mb8NgE4iEoL9awIiGce+jS4Yj2olJAwGxv0rDJTycnDxx0SDvjTqEYFhuXk55vGd
+      Dq7ClDvv8yiQ4CfCjZiLr9YbzO/kp2zf55wL+0SGmLKW6BLcUgGTciSHYMhPLv/N
+      C5HtFlag5H7KGyimp/Q8eC9RnTskchyr1ShWyOoRMTsd45Htba5gfYjUWQxqhKiC
+      SuFCooSX8/6zMynNOvD3A1p1+NhsKYzB+hnBeaFc/YKRyXVx1UJc8EZDc6jOYDoz
+      1EB3nXfMQjtqmpqS5IbhzUxKDRC+kvRo7wa0TexhFMs6Vlg3+dAeemQujyljtJ7r
+      PVMNXy0NnTuRNSK6V+Oz2JUCAwEAAQ==`,
+        // Production keys
+        `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsCtBp9/0qCM5lp0lJVSx
+      IAGgWZsX50xeJfBq6OkfsI+305Yj0igVfyVASOaC1fc2JRHD/uAOKk47SiPcBkiz
+      mPHUt9ziOtAEkW7GrU6gaVOSwp26vUbSuvg9ouut5U2m8ULOyzp+WyU8nCzTPV5o
+      AvCta04bK9or4UnyTRKyqADlNwz7WnH+0QiHYbgtfE/E3rowEoMEAC44C7OiawCm
+      rnBXAkyBJnh1oEfUVI4LurxVl/zLo8MWfzErkaJy1FpsFR3F3L9ymKXpmxbhlDdX
+      0rxjwnRD/2sCWW3SJOU26gfFgu/NI6LGxcWdPrucdkoOOOnNQjjDlhGYPTqqxugH
+      /I5r+tAeUrrwKjmFcpMdxX7dfw1LoBoZCZnShZKlGKDqXf985Dc+3StbGWcxwNn9
+      l9/Ho6YFA7fKpBKEED2V+SrDb4RCkScvOOiMOI1v5bwsLinUd/2yxRDrO25uwU7h
+      r4LqmOguqjjLGF17d2WvG5D+LIQwgusxQd9Jk/n9PRdwtVGJhSDsDc8el2nKIqk9
+      ofk3YJzAIbS9iHQ2LuHubuhzYjkxRLcdSbt1oONHCSHeecZn/OXwYeTvU7Po1KPW
+      emi3XUpyjylUe9ONlw50lynwRw117bNHQDDHwKPoVW1cjoAtRsCnviFHPWTPjQKe
+      A2LS9qa7eNdIonehrzG20cECAwEAAQ==`,
+      ],
     },
   };
   (async () => {
@@ -206,6 +262,18 @@ export const License = (function getLicense() {
   };
   addSevenDayAlarmStateListener();
 
+  /**
+   * Provides payload to verify authenticity of Premium license data
+   *
+   * @returns {string} Encoded signed Premium license data
+   */
+  const getBypassPayload = function () {
+    if (!License.isActiveLicense()) {
+      return null;
+    }
+    return `${License.get().encodedData}.${License.get().signature}`;
+  };
+
   // Load the license from persistent storage
   // Should only be called during startup / initialization
   const loadFromStorage = function (callback) {
@@ -262,6 +330,7 @@ export const License = (function getLicense() {
     licenseNotifier,
     MAB_CONFIG,
     isProd,
+    getBypassPayload,
     enrollUser(enrollReason) {
       loadFromStorage(() => {
         // only enroll users if they were not previously enrolled
@@ -282,6 +351,12 @@ export const License = (function getLicense() {
         theLicense = newLicense;
         browser.storage.local.set({ license: theLicense });
       }
+    },
+    /**
+     * Changes configuration to use development licensing server
+     */
+    setDevConfig() {
+      License.MAB_CONFIG = mabConfig.dev;
     },
     initialize(callback) {
       loadFromStorage(() => {

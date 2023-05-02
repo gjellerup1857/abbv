@@ -18,7 +18,7 @@
 
 export default {
   basename: 'adblock',
-  version: '5.5.0',
+  version: '5.6.0',
   webpack: {
     bundles: [
       {
@@ -48,6 +48,7 @@ export default {
           'adblock-betafish/alias/icon.js',
           'adblock-betafish/twitchSettings.js',
           'adblock-betafish/youtube/yt-bg.js',
+          'adblock-betafish/picreplacement/bypass-mode-bg.js',
           'adblock-betafish/picreplacement/distraction-control-bg.js',
           'adblock-betafish/notifications/background/notifications.js',
           'adblock-betafish/messaging/premium-message-responder.js',
@@ -131,6 +132,7 @@ export default {
           'adblock-betafish/lib/*',
           'adblock-betafish/adblock.css',
           'adblock-betafish/picreplacement/contentscript-loader.js',
+          'adblock-betafish/picreplacement/premium.preload.js',
           'vendor/adblockplusui/adblockpluschrome/devtools.html',
           'vendor/adblockplusui/devtools-panel.js',
           'adblock-betafish/alias/i18n.js',
