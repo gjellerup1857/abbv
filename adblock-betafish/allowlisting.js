@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global */
+/* global License*/
 
 import ServerMessages from './servermessages';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
@@ -49,15 +49,66 @@ fcEVJJt8DUfuCYV9mtKPHbj06RHnLsaXQ72x6I+ocXi8TygTjldZFx13ttJqVvju
 UaTE0E4KN9Mzb/2zEYTgCzcCAwEAAQ==`,
 ];
 
-ewe.allowlisting.setAuthorizedKeys(authorizedKeys);
-
+/**
+ * Function to be called when a valid allowlisting request was received
+ *
+ * @param domain - Domain to allowlist
+ */
 async function onAllowlisting(domain) {
+  if (License.isActiveLicense()) {
+    return;
+  }
+
   await ewe.filters.add([`@@||${domain}^$document`], createFilterMetaData('web'));
 }
-ewe.allowlisting.setAllowlistingCallback(onAllowlisting);
 
-ewe.allowlisting.onUnauthorized.addListener((error) => {
-  ServerMessages.recordErrorMessage('one_click_allowlisting_error ', undefined, { errorMessage: error.toString() });
-  // eslint-disable-next-line no-console
-  console.error(error);
-});
+/**
+ * Remove all web based allowlisting filters
+ */
+async function removeWebAllowlistingFilters() {
+  const allowlistingFilters = (await ewe.filters.getUserFilters())
+    .filter(filter => filter.type === 'allowing');
+
+  const allowlistingFiltersWithMetadata = await Promise.all(
+    allowlistingFilters.map(async (filter) => {
+      const metadata = await ewe.filters.getMetadata(filter.text);
+      return { filter, metadata };
+    }),
+  );
+
+  const webAllowlistingFilters = allowlistingFiltersWithMetadata
+    .filter(({ metadata }) => metadata && metadata.origin === 'web')
+    .map(({ filter }) => filter);
+
+  return ewe.filters.remove(webAllowlistingFilters.map(filter => filter.text));
+}
+
+/**
+ * Initializes module
+ */
+async function start() {
+  ewe.allowlisting.setAuthorizedKeys(authorizedKeys);
+  ewe.allowlisting.setAllowlistingCallback(onAllowlisting);
+
+  await License.ready();
+  if (License.isActiveLicense()) {
+    removeWebAllowlistingFilters();
+  }
+
+  License.licenseNotifier.on('license.status.changed', () => {
+    if (License.isActiveLicense()) {
+      ewe.allowlisting.setAuthorizedKeys([]);
+      removeWebAllowlistingFilters();
+    } else {
+      ewe.allowlisting.setAuthorizedKeys(authorizedKeys);
+    }
+  });
+
+  ewe.allowlisting.onUnauthorized.addListener((error) => {
+    ServerMessages.recordErrorMessage('one_click_allowlisting_error ', undefined, { errorMessage: error.toString() });
+    // eslint-disable-next-line no-console
+    console.error(error);
+  });
+}
+
+start();
