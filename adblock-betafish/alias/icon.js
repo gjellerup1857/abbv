@@ -32,7 +32,11 @@ import { TabSessionStorage } from "../../vendor/adblockplusui/adblockpluschrome/
 import { allowlistingState } from "../../vendor/adblockplusui/adblockpluschrome/lib/allowlisting";
 import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../vendor/adblockplusui/adblockpluschrome/lib/browserAction";
 
-import { chromeStorageSetHelper,  chromeStorageGetHelper } from '../utilities/background/bg-functions.js'
+import {
+  chromeStorageSetHelper,
+  chromeStorageGetHelper,
+  chromeStorageDeleteHelper
+} from '../utilities/background/bg-functions.js'
 
 const ANIMATION_LOOPS = 3;
 const FRAME_IN_MS = 100;
@@ -49,15 +53,13 @@ let allowlistedState = new TabSessionStorage("icon:allowlistedState");
 
 let icons = [null, null];
 
-function easeOut(progress)
-{
+function easeOut(progress) {
   // This is merely an approximation to the built-in ease-out timing function
   // https://css-tricks.com/emulating-css-timing-functions-javascript/
   return 1 - Math.pow(1 - progress, 1.675);
 }
 
-function calculateFrameOpacities(keyframeFrames, transitionFrames)
-{
+function calculateFrameOpacities(keyframeFrames, transitionFrames) {
   let opacities = [];
 
   // Show second half of first keyframe
@@ -81,15 +83,13 @@ function calculateFrameOpacities(keyframeFrames, transitionFrames)
   return opacities;
 }
 
-async function loadImage(url)
-{
+async function loadImage(url) {
   let response = await fetch(url);
   let blob = await response.blob();
   return createImageBitmap(blob);
 }
 
-async function renderIcons()
-{
+async function renderIcons() {
   let paths = [
     "icons/ab-16.png", "icons/ab-16-whitelisted.png",
     "icons/ab-32.png", "icons/ab-32-whitelisted.png"
@@ -111,34 +111,28 @@ async function renderIcons()
   }
 }
 
-async function setIcon(page, opacity, frames)
-{
+async function setIcon(page, opacity, frames) {
   opacity = opacity || 0;
   let allowlisted = !!(await allowlistedState.get(page.id));
 
-  if (!frames)
-  {
-    if (opacity > 0.5)
-    {
+  if (!frames) {
+    if (opacity > 0.5) {
       setIconPath(
         page.id,
         "/icons/ab-$size-notification.png"
       );
     }
-    else if (icons[allowlisted | 0])
-    {
+    else if (icons[allowlisted | 0]) {
       setIconImageData(page.id, icons[allowlisted | 0]);
     }
-    else
-    {
+    else {
       setIconPath(
         page.id,
         "/icons/ab-$size" + (allowlisted ? "-allowlisted" : "") + ".png"
       );
     }
   }
-  else
-  {
+  else {
     browser.action.setIcon({
       tabId: page.id,
       imageData: frames["" + opacity + allowlisted]
@@ -146,8 +140,7 @@ async function setIcon(page, opacity, frames)
   }
 }
 
-allowlistingState.addListener("changed", async(page, isAllowlisted) =>
-{
+allowlistingState.addListener("changed", async (page, isAllowlisted) => {
   await allowlistedState.set(page.id, isAllowlisted);
   if (canUpdateIcon)
     await setIcon(page);
@@ -180,14 +173,11 @@ async function renderFrames(opacities) {
   let canvas = new OffscreenCanvas(0, 0);
   let context = canvas.getContext("2d");
 
-  for (let allowlisted of [false, true])
-  {
-    for (let opacity of opacities)
-    {
+  for (let allowlisted of [false, true]) {
+    for (let opacity of opacities) {
       let imageData = {};
       let sizes = [16, 20, 32, 40];
-      for (let size of sizes)
-      {
+      for (let size of sizes) {
         canvas.width = size;
         canvas.height = size;
         context.globalAlpha = 1;
@@ -203,9 +193,8 @@ async function renderFrames(opacities) {
   return frames;
 }
 
-async function animateIcon(opacities, frames)
-{
-  let tabs = await browser.tabs.query({active: true});
+async function animateIcon(opacities, frames) {
+  let tabs = await browser.tabs.query({ active: true });
   let pages = tabs.map(tab => new ext.Page(tab));
 
   let animationLoop = 0;
@@ -213,8 +202,7 @@ async function animateIcon(opacities, frames)
   let numberOfFrames = opacities.length;
   let opacity = 0;
 
-  let onActivated = async page =>
-  {
+  let onActivated = async page => {
     pages.push(page);
     await setIcon(page, opacity, frames);
     toggleBadge(page.id, true);
@@ -224,26 +212,20 @@ async function animateIcon(opacities, frames)
   canUpdateIcon = false;
   for (let page of pages)
     toggleBadge(page.id, true);
-  return new Promise((resolve, reject) =>
-  {
-    let interval = setInterval(async() =>
-    {
+  return new Promise((resolve, reject) => {
+    let interval = setInterval(async () => {
       let oldOpacity = opacity;
       opacity = opacities[animationStep++];
 
-      if (opacity != oldOpacity)
-      {
-        for (let page of pages)
-        {
+      if (opacity != oldOpacity) {
+        for (let page of pages) {
           if (await allowlistedState.has(page.id))
             await setIcon(page, opacity, frames);
         }
       }
 
-      if (animationStep > numberOfFrames)
-      {
-        if (++animationLoop > ANIMATION_LOOPS - 1 || stopRequested)
-        {
+      if (animationStep > numberOfFrames) {
+        if (++animationLoop > ANIMATION_LOOPS - 1 || stopRequested) {
           clearInterval(interval);
           ext.pages.onActivated.removeListener(onActivated);
           for (let page of pages)
@@ -251,8 +233,7 @@ async function animateIcon(opacities, frames)
           canUpdateIcon = true;
           resolve();
         }
-        else
-        {
+        else {
           animationStep = 0;
         }
       }
@@ -267,8 +248,7 @@ async function animateIcon(opacities, frames)
  * @return {Promise} A promise that is fullfilled when
  *                   the icon animation has been stopped.
  */
-export async function stopIconAnimation()
-{
+export async function stopIconAnimation() {
   stopRequested = true;
   await notRunning;
   stopRequested = false;
@@ -282,15 +262,13 @@ export async function stopIconAnimation()
  * @param {string} type  The notification type (i.e: "information" or
  *                       "critical".)
  */
-export function startIconAnimation(type)
-{
+export function startIconAnimation(type) {
   let opacities = frameOpacities;
   if (type == "critical")
     opacities = frameOpacitiesCritical;
 
   notRunning = Promise.all([renderFrames(opacities), stopIconAnimation()])
-    .then(results =>
-    {
+    .then(results => {
       if (stopRequested)
         return;
 
@@ -330,9 +308,12 @@ export async function showIconBadgeCTA(showBadge, reason) {
     if (!newBadgeText || newBadgeText.length >= 5) {
       newBadgeText = 'New';
     }
-    chromeStorageSetHelper(statsInIconKey, Prefs.show_statsinicon);
+    const storedValue = await chromeStorageGetHelper(statsInIconKey);
+    if (!storedValue) {  // don't overwrite the original, saved value
+      chromeStorageSetHelper(statsInIconKey, Prefs.show_statsinicon);
+    }
     Prefs.show_statsinicon = false;
-    // wait 10 seconds to allow any other ABP setup tasks to finish
+    // wait 10 seconds to allow any other tasks to finish
     setTimeout(() => {
       // process all currently opened tabs
       browser.tabs.query({}).then((tabs) => {
@@ -349,13 +330,13 @@ export async function showIconBadgeCTA(showBadge, reason) {
     const storedValue = await chromeStorageGetHelper(statsInIconKey);
     if (typeof storedValue === 'boolean') {
       Prefs.show_statsinicon = storedValue;
-      chromeStorageSetHelper(statsInIconKey); // remove the data, since we no longer need it
+      chromeStorageDeleteHelper(statsInIconKey); // remove the data, since we no longer need it
       browser.tabs.query({}).then((tabs) => {
         for (const tab of tabs) {
           setBadge(tab.id, { number: '' });
         }
       });
-      browser.action.setBadgeText({  text: '' });
+      browser.action.setBadgeText({ text: '' });
     }
   }
 };

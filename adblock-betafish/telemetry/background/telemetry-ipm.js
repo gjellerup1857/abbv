@@ -20,10 +20,8 @@
 
 
 import { telemetryNotifier } from './telemetry-ping';
-import CtaABManager from '../../ctaabmanager';
 import TelemetryBase from './telemetry-base';
 import postData from '../../fetch-util';
-import SURVEY from '../../survey';
 import { log, chromeStorageSetHelper } from '../../utilities/background/bg-functions';
 
 class IPMTelemetry extends TelemetryBase {
@@ -61,9 +59,6 @@ class IPMTelemetry extends TelemetryBase {
       });
       if (response && response.ok) {
         telemetryNotifier.emit('ipm.ping.complete');
-        const text = await response.text();
-        SURVEY.maybeSurvey(text);
-        CtaABManager.maybeCtaAB(text);
       } else {
         log('IPM server returned error: ', (response && response.statusText));
       }
