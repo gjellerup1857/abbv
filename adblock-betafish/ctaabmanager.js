@@ -21,6 +21,8 @@
 
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from './alias/icon';
 
+import { isEmptyObject } from './utilities/background/bg-functions';
+
 
 const CtaABManager = (function get() {
   let ctaData = {
@@ -47,7 +49,7 @@ const CtaABManager = (function get() {
     let pingData = {};
     try {
       pingData = JSON.parse(responseData);
-      if (!pingData) {
+      if (!pingData || isEmptyObject(pingData)) {
         return null;
       }
     } catch (e) {

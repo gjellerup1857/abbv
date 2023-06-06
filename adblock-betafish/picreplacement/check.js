@@ -331,15 +331,12 @@ export const License = (function getLicense() {
     MAB_CONFIG,
     isProd,
     getBypassPayload,
-    enrollUser(enrollReason) {
+    enrollUser() {
       loadFromStorage(() => {
         // only enroll users if they were not previously enrolled
         if (typeof theLicense.myadblock_enrollment === 'undefined') {
           theLicense.myadblock_enrollment = true;
           License.set(theLicense);
-          if (enrollReason === 'update') {
-            showIconBadgeCTA(true, NEW_BADGE_REASONS.UPDATE);
-          }
         }
       });
     },
@@ -687,7 +684,7 @@ const onInstalledPromise = new Promise(((resolve) => {
 Promise.all([onInstalledPromise, License.ready(), initialize]).then((detailsArray) => {
   // Enroll existing users in Premium
   if (detailsArray.length > 0 && detailsArray[0].reason) {
-    License.enrollUser(detailsArray[0].reason);
+    License.enrollUser();
     if (detailsArray[0].reason === 'install') {
       // create an alarm that will fire in ~ 7 days to show the "New" badge text
       browser.alarms.create(License.sevenDayAlarmName, { delayInMinutes: (60 * 24 * 7) });
