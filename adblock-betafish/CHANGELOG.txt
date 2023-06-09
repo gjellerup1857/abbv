@@ -2,6 +2,11 @@
 
 UNRELEASED:
 
+Version: 5.7.0, Date: 2023-06-09
+ - Updated the bundled Snippets library to 0.6.2
+ - Fixed an issue with the AdBlock toolbar icon incorrectly showing "NEW"
+ - Updated the extension for Premium users so that web based allow listed rules are removed
+
 Version: 5.6.0, Date: 2023-05-01
 - Continue to show the /update page to let users know about the AdBlock Premium
 - Provide experimental Flattr API to some websites
