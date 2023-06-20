@@ -18,5 +18,5 @@
 import IPMTelemetry from './telemetry-ipm';
 import Telemetry from './telemetry-ping';
 
-export const IPM = new IPMTelemetry('total_ipm_pings', 'next_ipm_ping_time', 'ipm_pingalarm', 'https://ipm.adblock.dev/api/stats');
-export const TELEMETRY = new Telemetry('total_pings', 'next_ping_time', 'pingalarm', 'https://ping.getadblock.com/stats/');
+export const IPM = new IPMTelemetry('total_ipm_pings', 'next_ipm_ping_time', 'ipm_pingalarm', 'ipm_server_url');
+export const TELEMETRY = new Telemetry('total_pings', 'next_ping_time', 'pingalarm', 'ping_server_url');

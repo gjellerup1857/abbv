@@ -29,7 +29,7 @@
 /** @module icon */
 import * as info from "info";
 
-import { TabSessionStorage } from "../../vendor/adblockplusui/adblockpluschrome/lib/storage/tab-session.js";
+import { TabSessionStorage } from "./storage/tab-session.js";
 import { allowlistingState } from "../../vendor/adblockplusui/adblockpluschrome/lib/allowlisting";
 import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../vendor/adblockplusui/adblockpluschrome/lib/browserAction";
 

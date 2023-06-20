@@ -16,31 +16,22 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log, License, runBandaids, openTab */
+/* global browser */
 
-// Set to true to get noisier console.log statements
-const VERBOSE_DEBUG = false;
 /* eslint-disable import/no-mutable-exports */
 export let log = function log() {
 };
 // Enabled in adblock_start_common.js and background.js if the user wants
 export const logging = function (enabled) {
   if (enabled) {
-    /* eslint-disable no-shadow */
+    /* eslint-disable  @typescript-eslint/no-shadow */
     log = function log(...args) {
-      if (VERBOSE_DEBUG || args[0] !== '[DEBUG]') { // comment out for verbosity
-        // eslint-disable-next-line no-console
-        console.log(...args);
-      }
-    };
-  } else {
-    /* eslint-disable no-shadow */
-    log = function log() {
+      // eslint-disable-next-line no-console
+      console.log(...args);
     };
   }
 };
 logging(false); // disabled by default
-
 
 // Determine what language the user's browser is set to use
 export const determineUserLanguage = function () {

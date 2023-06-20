@@ -22,6 +22,7 @@ import { EventEmitter } from '../../../vendor/adblockplusui/adblockpluschrome/li
 import ServerMessages from '../../servermessages';
 import TelemetryBase from './telemetry-base';
 import postData from '../../fetch-util';
+import { Prefs } from '../../alias/prefs';
 import { log, chromeStorageSetHelper } from '../../utilities/background/bg-functions';
 
 export const telemetryNotifier = new EventEmitter();
@@ -57,12 +58,12 @@ class Telemetry extends TelemetryBase {
 
   sendPingData(pingData) {
     return new Promise(async (resolve) => {
-      const response = await postData(this.hostURL, pingData)
+      const response = await postData(Prefs.get(this.hostURLPref), pingData)
         // Send any network errors during the ping fetch to a dedicated log server
         // to help us determine why there's been a drop in ping requests
         // See https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/136
         .catch((error) => {
-          ServerMessages.sendMessageToBackupLogServer('fetch_error', error.toString());
+          void ServerMessages.sendMessageToBackupLogServer('fetch_error', error.toString());
           log('ping server returned error: ', error);
         });
       if (response && response.ok) {

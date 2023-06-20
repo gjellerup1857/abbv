@@ -16,17 +16,16 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, License,
-   gabQuestion, ext, getSettings, setSetting, settings
-   parseFilter, channels, twitchChannelNamePages, ytChannelNamePages,
-   updateButtonUIAndContextMenus,  */
+/* global browser, ext, getSettings, settings,  twitchChannelNamePages,
+   ytChannelNamePages, updateButtonUIAndContextMenus,  */
 
 
-import { Prefs } from 'prefs';
 import * as info from 'info';
+import { Prefs } from './alias/prefs';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 
-import { TELEMETRY, IPM } from './telemetry/background';
+import { TELEMETRY, IPM as IPMTelemetry } from './telemetry/background';
+import { getUserId } from './id/background/index';
 import { Stats, getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
 import { revalidateAllowlistingStates } from '../vendor/adblockplusui/adblockpluschrome/lib/allowlisting';
 import { initialize } from './alias/subscriptionInit';
@@ -34,12 +33,10 @@ import SyncService from './picreplacement/sync-service';
 
 import SubscriptionAdapter from './subscriptionadapter';
 import DataCollectionV2 from './datacollection.v2';
-import CtaABManager from './ctaabmanager';
 import { getNewBadgeTextReason } from './alias/icon';
 import LocalDataCollection from './localdatacollection';
 import { License, channels } from './picreplacement/check';
 import ServerMessages from './servermessages';
-import SURVEY from './survey';
 import { setUninstallURL } from './alias/uninstall';
 
 import {
@@ -77,15 +74,13 @@ Object.assign(self, {
   Prefs,
   info,
   getBlockedPerPage,
-  SURVEY,
   SyncService,
   LocalDataCollection,
   ServerMessages,
   SubscriptionAdapter,
   TELEMETRY,
-  IPM,
+  IPMTelemetry,
   DataCollectionV2,
-  CtaABManager,
   getNewBadgeTextReason,
   ewe,
   License,
@@ -326,8 +321,8 @@ const isSelectorExcludeFilter = function (text) {
   return /#@#./.test(text);
 };
 
-const getAdblockUserId = function () {
-  return TELEMETRY.userId;
+const getAdblockUserId = async function () {
+  return getUserId();
 };
 
 // INFO ABOUT CURRENT PAGE
@@ -684,8 +679,8 @@ if (browser.runtime.id) {
       openUpdatedPage();
     }, 10000); // 10 seconds
   };
-  const openUpdatedPage = function () {
-    const updatedURL = getUpdatedURL();
+  const openUpdatedPage = async function () {
+    const updatedURL = await getUpdatedURL();
     browser.tabs.create({ url: updatedURL });
   };
   const shouldShowUpdate = function () {
@@ -738,7 +733,7 @@ if (browser.runtime.id) {
     ) {
       settings.onload().then(async () => {
         if (!getSettings().suppress_update_page) {
-          await TELEMETRY.untilLoaded();
+          await getUserId();
           Prefs.untilLoaded.then(shouldShowUpdate);
         }
       });
@@ -799,7 +794,7 @@ const getDebugLicenseInfo = async () => {
   const response = {};
   if (License.isActiveLicense()) {
     response.licenseInfo = {};
-    response.licenseInfo.extensionGUID = TELEMETRY.userId;
+    response.licenseInfo.extensionGUID = await getUserId();
     response.licenseInfo.licenseId = License.get().licenseId;
     if (getSettings().sync_settings) {
       const syncInfo = {};
@@ -958,11 +953,11 @@ async function checkUpdateProgress() {
 }
 
 initialize.then(async () => {
-  await TELEMETRY.untilLoaded();
+  await getUserId();
   TELEMETRY.start();
   setUninstallURL();
-  await IPM.untilLoaded();
-  IPM.start();
+  await IPMTelemetry.untilLoaded();
+  IPMTelemetry.start();
   revalidateAllowlistingStates();
 });
 

@@ -19,7 +19,7 @@
 /* global browser, ext, adblockIsPaused, adblockIsDomainPaused
    log, License, reloadTab, getSettings */
 
-import { Prefs } from 'prefs';
+import { Prefs } from './alias/prefs';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
 import ServerMessages from './servermessages';
@@ -45,42 +45,42 @@ const updateButtonUIAndContextMenus = function () {
 const emitPageBroadcast = (function emitBroadcast() {
   const injectMap = {
     topOpenWhitelistUI:
-      {
-        allFrames: false,
-        include: [
-          'jquery-3.5.1.min.js',
-          'adblock-uiscripts-load_wizard_resources.js',
-          'adblock-uiscripts-top_open_whitelist_ui.js',
-        ],
-      },
+    {
+      allFrames: false,
+      include: [
+        'jquery-3.5.1.min.js',
+        'adblock-uiscripts-load_wizard_resources.js',
+        'adblock-uiscripts-top_open_whitelist_ui.js',
+      ],
+    },
     topOpenWhitelistCompletionUI:
-      {
-        allFrames: false,
-        include: [
-          'jquery-3.5.1.min.js',
-          'adblock-uiscripts-load_wizard_resources.js',
-          'adblock-uiscripts-top_open_whitelist_completion_ui.js',
-        ],
-      },
+    {
+      allFrames: false,
+      include: [
+        'jquery-3.5.1.min.js',
+        'adblock-uiscripts-load_wizard_resources.js',
+        'adblock-uiscripts-top_open_whitelist_completion_ui.js',
+      ],
+    },
     topOpenBlacklistUI:
-      {
-        allFrames: false,
-        include: [
-          'jquery-3.5.1.min.js',
-          'purify.min.js',
-          'adblock-uiscripts-load_wizard_resources.js',
-          'adblock-uiscripts-blacklisting-overlay.js',
-          'adblock-uiscripts-blacklisting-clickwatcher.js',
-          'adblock-uiscripts-blacklisting-elementchain.js',
-          'adblock-uiscripts-blacklisting-blacklistui.js',
-          'adblock-uiscripts-top_open_blacklist_ui.js',
-        ],
-      },
+    {
+      allFrames: false,
+      include: [
+        'jquery-3.5.1.min.js',
+        'purify.min.js',
+        'adblock-uiscripts-load_wizard_resources.js',
+        'adblock-uiscripts-blacklisting-overlay.js',
+        'adblock-uiscripts-blacklisting-clickwatcher.js',
+        'adblock-uiscripts-blacklisting-elementchain.js',
+        'adblock-uiscripts-blacklisting-blacklistui.js',
+        'adblock-uiscripts-top_open_blacklist_ui.js',
+      ],
+    },
     sendContentToBack:
-      {
-        allFrames: true,
-        include: ['adblock-uiscripts-send_content_to_back.js'],
-      },
+    {
+      allFrames: true,
+      include: ['adblock-uiscripts-send_content_to_back.js'],
+    },
   };
 
   // Inject the required scripts to execute fnName(parameter) in
@@ -122,89 +122,89 @@ const emitPageBroadcast = (function emitBroadcast() {
 
 const contextMenuItem = (() => ({
   pauseAll:
-    {
-      title: browser.i18n.getMessage('pause_adblock_everywhere'),
-      id: 'pause_adblock_everywhere',
-      contexts: ['all'],
-      onclick: () => {
-        ServerMessages.recordGeneralMessage('cm_pause_clicked');
-        adblockIsPaused(true);
-        updateButtonUIAndContextMenus();
-      },
+  {
+    title: browser.i18n.getMessage('pause_adblock_everywhere'),
+    id: 'pause_adblock_everywhere',
+    contexts: ['all'],
+    onclick: () => {
+      ServerMessages.recordGeneralMessage('cm_pause_clicked');
+      adblockIsPaused(true);
+      updateButtonUIAndContextMenus();
     },
+  },
   unpauseAll:
-    {
-      title: browser.i18n.getMessage('resume_blocking_ads'),
-      id: 'resume_blocking_ads',
-      contexts: ['all'],
-      onclick: () => {
-        ServerMessages.recordGeneralMessage('cm_unpause_clicked');
-        adblockIsPaused(false);
-        updateButtonUIAndContextMenus();
-      },
+  {
+    title: browser.i18n.getMessage('resume_blocking_ads'),
+    id: 'resume_blocking_ads',
+    contexts: ['all'],
+    onclick: () => {
+      ServerMessages.recordGeneralMessage('cm_unpause_clicked');
+      adblockIsPaused(false);
+      updateButtonUIAndContextMenus();
     },
+  },
   pauseDomain:
-    {
-      title: browser.i18n.getMessage('domain_pause_adblock'),
-      id: 'domain_pause_adblock',
-      contexts: ['all'],
-      onclick: (info, tab) => {
-        ServerMessages.recordGeneralMessage('cm_domain_pause_clicked');
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true);
-        updateButtonUIAndContextMenus();
-      },
+  {
+    title: browser.i18n.getMessage('domain_pause_adblock'),
+    id: 'domain_pause_adblock',
+    contexts: ['all'],
+    onclick: (info, tab) => {
+      ServerMessages.recordGeneralMessage('cm_domain_pause_clicked');
+      adblockIsDomainPaused({ url: tab.url, id: tab.id }, true);
+      updateButtonUIAndContextMenus();
     },
+  },
   unpauseDomain:
-    {
-      title: browser.i18n.getMessage('resume_blocking_ads'),
-      id: 'resume_blocking_ads_unpause',
-      contexts: ['all'],
-      onclick: (info, tab) => {
-        ServerMessages.recordGeneralMessage('cm_domain_unpause_clicked');
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, false);
-        updateButtonUIAndContextMenus();
-      },
+  {
+    title: browser.i18n.getMessage('resume_blocking_ads'),
+    id: 'resume_blocking_ads_unpause',
+    contexts: ['all'],
+    onclick: (info, tab) => {
+      ServerMessages.recordGeneralMessage('cm_domain_unpause_clicked');
+      adblockIsDomainPaused({ url: tab.url, id: tab.id }, false);
+      updateButtonUIAndContextMenus();
     },
+  },
   blockThisAd:
-    {
-      title: browser.i18n.getMessage('block_this_ad'),
-      id: 'block_this_ad',
-      contexts: ['all'],
-      onclick(info, tab) {
-        emitPageBroadcast({
-          fn: 'topOpenBlacklistUI',
-          options: {
-            info,
-            showBlacklistCTA: License.shouldShowBlacklistCTA(),
-            isActiveLicense: License.isActiveLicense(),
-            settings: getSettings(),
-            addCustomFilterRandomName: messageValidator.generateNewRandomText(),
-          },
-        }, {
-          tab,
-        });
-      },
+  {
+    title: browser.i18n.getMessage('block_this_ad'),
+    id: 'block_this_ad',
+    contexts: ['all'],
+    onclick(info, tab) {
+      emitPageBroadcast({
+        fn: 'topOpenBlacklistUI',
+        options: {
+          info,
+          showBlacklistCTA: License.shouldShowBlacklistCTA(),
+          isActiveLicense: License.isActiveLicense(),
+          settings: getSettings(),
+          addCustomFilterRandomName: messageValidator.generateNewRandomText(),
+        },
+      }, {
+        tab,
+      });
     },
+  },
   blockAnAd:
-    {
-      title: browser.i18n.getMessage('block_an_ad_on_this_page'),
-      id: 'block_an_ad_on_this_page',
-      contexts: ['all'],
-      onclick(info, tab) {
-        emitPageBroadcast({
-          fn: 'topOpenBlacklistUI',
-          options: {
-            nothingClicked: true,
-            showBlacklistCTA: License.shouldShowBlacklistCTA(),
-            isActiveLicense: License.isActiveLicense(),
-            settings: getSettings(),
-            addCustomFilterRandomName: messageValidator.generateNewRandomText(),
-          },
-        }, {
-          tab,
-        });
-      },
+  {
+    title: browser.i18n.getMessage('block_an_ad_on_this_page'),
+    id: 'block_an_ad_on_this_page',
+    contexts: ['all'],
+    onclick(info, tab) {
+      emitPageBroadcast({
+        fn: 'topOpenBlacklistUI',
+        options: {
+          nothingClicked: true,
+          showBlacklistCTA: License.shouldShowBlacklistCTA(),
+          isActiveLicense: License.isActiveLicense(),
+          settings: getSettings(),
+          addCustomFilterRandomName: messageValidator.generateNewRandomText(),
+        },
+      }, {
+        tab,
+      });
     },
+  },
 }))();
 
 

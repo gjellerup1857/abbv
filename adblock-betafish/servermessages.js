@@ -16,12 +16,15 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, TELEMETRY,  */
+/* global browser  */
 
-import { log, determineUserLanguage } from './utilities/background/bg-functions';
+import { log, determineUserLanguage, getUserAgentInfo } from './utilities/background/index';
+import { getUserId } from './id/background/index';
 
 // Log an 'error' message on GAB log server.
 const ServerMessages = (function serverMessages() {
+  const { flavor } = getUserAgentInfo();
+  const { os } = getUserAgentInfo();
   // Log a message on GAB log server. The user's userid will be prepended to the
   // message.
   // If callback() is specified, call callback() after logging has completed
@@ -45,14 +48,14 @@ const ServerMessages = (function serverMessages() {
   // Log a message on GAB log server. The user's userid will be prepended to the
   // message.
   // If callback() is specified, call callback() after logging has completed
-  const recordMessageWithUserID = function (msg, queryType, callback, additionalParams) {
+  const recordMessageWithUserID = async function (msg, queryType, callback, additionalParams) {
     if (!msg || !queryType) {
       return;
     }
     const payload = {
-      u: TELEMETRY.userId,
-      f: TELEMETRY.flavor,
-      o: TELEMETRY.os,
+      u: await getUserId(),
+      f: flavor,
+      o: os,
       l: determineUserLanguage(),
       t: queryType,
       v: browser.runtime.getManifest().version,
@@ -73,8 +76,8 @@ const ServerMessages = (function serverMessages() {
       return;
     }
     const payload = {
-      f: TELEMETRY.flavor,
-      o: TELEMETRY.os,
+      f: flavor,
+      o: os,
       l: determineUserLanguage(),
       t: queryType,
     };
@@ -94,8 +97,8 @@ const ServerMessages = (function serverMessages() {
       return;
     }
     const payload = {
-      f: TELEMETRY.flavor,
-      o: TELEMETRY.os,
+      f: flavor,
+      o: os,
       l: determineUserLanguage(),
       t: 'error',
     };
@@ -109,32 +112,32 @@ const ServerMessages = (function serverMessages() {
   };
 
   const recordErrorMessage = function (msg, callback, additionalParams) {
-    recordMessageWithUserID(msg, 'error', callback, additionalParams);
+    void recordMessageWithUserID(msg, 'error', callback, additionalParams);
   };
 
   // Log an 'status' related message on GAB log server.
   const recordStatusMessage = function (msg, callback, additionalParams) {
-    recordMessageWithUserID(msg, 'stats', callback, additionalParams);
+    void recordMessageWithUserID(msg, 'stats', callback, additionalParams);
   };
 
   // Log a 'general' message on GAB log server.
   const recordGeneralMessage = function (msg, callback, additionalParams) {
-    recordMessageWithUserID(msg, 'general', callback, additionalParams);
+    void recordMessageWithUserID(msg, 'general', callback, additionalParams);
   };
 
   // Log a 'adreport' message on GAB log server.
   const recordAdreportMessage = function (msg, callback, additionalParams) {
-    recordMessageWithUserID(msg, 'adreport', callback, additionalParams);
+    void recordMessageWithUserID(msg, 'adreport', callback, additionalParams);
   };
 
   // Send an error message to the backup log server. This is to be used when
   // there's fetch failure.  It may fail as well depending on the failure,
   // and state of the local computer & network
-  const sendMessageToBackupLogServer = function (msg, errorMsg, queryType = 'error') {
+  const sendMessageToBackupLogServer = async function (msg, errorMsg, queryType = 'error') {
     const payload = {
-      u: TELEMETRY.userId,
-      f: TELEMETRY.flavor,
-      o: TELEMETRY.os,
+      u: await getUserId(),
+      f: flavor,
+      o: os,
       l: determineUserLanguage(),
       t: queryType,
       v: browser.runtime.getManifest().version,

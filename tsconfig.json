@@ -1,9 +1,20 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "typeRoots": ["node_modules/@types", "node_modules/web-ext-types"],
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/web-ext-types",
+      "adblock-betafish/**/*"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "*",
+        "adblock-betafish/*"
+      ]
+    },
     "module": "es2020",
-    "allowUnreachableCode":false,
+    "allowUnreachableCode": false,
     "allowJs": true,
     "outDir": "./dist",
     "moduleResolution": "node",
@@ -13,14 +24,8 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include":[
-    "js/**/*",
-    "lib/**/*",
-    "ext/**/*",
-    "build/**/*",
-    "mocks/**/*",
-    "src/**/*",
-    "rollup.config.ts"
- ],
- "compileOnSave":false
+  "include": [
+    "adblock-betafish/**/*"
+  ],
+  "compileOnSave": false
 }

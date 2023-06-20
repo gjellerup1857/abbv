@@ -1,9 +1,9 @@
 /** @module uninstall */
 /** similar to adblockpluschrome\lib\uninstall.js */
 
-import { Prefs } from 'prefs';
+import { Prefs } from './prefs';
 import SubscriptionAdapter from '../subscriptionadapter';
-import { TELEMETRY } from '../telemetry/background';
+import { getUserId } from '../id/background/index';
 
 /**
  * Returns the number of currently active filters that have been added using
@@ -29,7 +29,7 @@ async function getWebAllowlistingFilterCount() {
 
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
-    const userID = await TELEMETRY.untilLoaded();
+    const userID = await getUserId();
     let uninstallURL = "https://getadblock.com/uninstall/?u=" + userID;
     // if the start property of blockCount exists (which is the AdBlock
     // installation timestamp)

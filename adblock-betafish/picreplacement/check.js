@@ -16,17 +16,16 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global ext, browser, translate, openTab,
-   emitPageBroadcast, isTrustedSenderDomain */
+/* global browser */
 
 
 // Yes, you could hack my code to not check the license.  But please don't.
 // Paying for this extension supports the work on AdBlock.  Thanks very much.
 
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
-import { TabSessionStorage } from '../../vendor/adblockplusui/adblockpluschrome/lib/storage/tab-session';
+import { TabSessionStorage } from '../alias/storage/tab-session';
 
-import { TELEMETRY } from '../telemetry/background';
+import { getUserId } from '../id/background/index';
 import { Channels } from './channels';
 import { getSettings, setSetting } from '../prefs/settings';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
@@ -140,7 +139,7 @@ export const License = (function getLicense() {
     },
   };
   (async () => {
-    const userID = await TELEMETRY.untilLoaded();
+    const userID = await getUserId();
     mabConfig.prod.payURL = `${mabConfig.prod.payURL}?u=${userID}`;
     mabConfig.dev.payURL = `${mabConfig.dev.payURL}&u=${userID}`;
   })();
@@ -380,7 +379,7 @@ export const License = (function getLicense() {
     },
     // Get the latest license data from the server, and talk to the user if needed.
     async update() {
-      const userID = await TELEMETRY.untilLoaded();
+      const userID = await getUserId();
       licenseNotifier.emit('license.updating');
       const postDataObj = {};
       postDataObj.u = userID;
@@ -582,40 +581,6 @@ export const License = (function getLicense() {
       const isNotActive = !License.isActiveLicense();
       const variant = License.get() ? License.get().var : undefined;
       return License && isNotActive && [3, 4].includes(variant) && License.shouldShowPremiumCTA();
-    },
-    // fetchLicenseAPI automates the common steps required to call the /license/api endpoint.
-    // POST bodies will always automatically contain the command, license and userid so only
-    // provide the missing fields in the body parameter. The ok callback handler receives the
-    // data returned by the API and the fail handler receives any error information available.
-    fetchLicenseAPI(command, requestBody, ok, requestFail) {
-      const licenseCode = License.get().code;
-      const userID = TELEMETRY.userId;
-      const body = requestBody;
-      let fail = requestFail;
-      body.cmd = command;
-      body.userid = userID;
-      if (licenseCode) {
-        body.license = licenseCode;
-      }
-      const request = new Request('https://myadblock.licensing.getadblock.com/license/api/', {
-        method: 'POST',
-        body: JSON.stringify(body),
-      });
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          }
-          fail(response.status);
-          fail = null;
-          return Promise.resolve({});
-        })
-        .then((data) => {
-          ok(data);
-        })
-        .catch((err) => {
-          fail(err);
-        });
     },
   };
 }());

@@ -16,9 +16,9 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser */
+/* global  */
 
-import { SessionStorage } from '../../vendor/adblockplusui/adblockpluschrome/lib/storage/session';
+import { SessionStorage } from '../alias/storage/session';
 
 const sessionStorageKey = 'ab:CustomFilterRandomName';
 const sessionKey = 'ab:randomtext';

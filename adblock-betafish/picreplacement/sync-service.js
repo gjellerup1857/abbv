@@ -25,6 +25,7 @@
 /** @module SyncService */
 
 import { TELEMETRY } from '../telemetry/background';
+import { getUserId } from '../id/background/index';
 import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 // check.js imports disableSync from here
@@ -42,7 +43,8 @@ import {
   chromeStorageGetHelper,
   log,
   chromeStorageSetHelper,
-} from '../utilities/background/bg-functions';
+  getUserAgentInfo,
+} from '../utilities/background/index';
 
 const SyncService = (function getSyncService() {
   let storedSyncDomainPauses = [];
@@ -67,6 +69,8 @@ const SyncService = (function getSyncService() {
   // any adds to the the betafish-subscriptions.json file should be added here as well.
   const sendFilterListByURL = ['nordic', 'annoyances',
     'fb_notifications', 'easylist_plus_romanian', 'idcac'];
+  const { flavor } = getUserAgentInfo();
+  const { os } = getUserAgentInfo();
 
   function setCommitVersion(newVersionNum) {
     syncCommitVersion = newVersionNum;
@@ -170,9 +174,9 @@ const SyncService = (function getSyncService() {
   // return meta data about the extension installation
   const getExtensionInfo = function () {
     return {
-      flavor: TELEMETRY.flavor,
+      flavor,
       browserVersion: TELEMETRY.browserVersion,
-      os: TELEMETRY.os,
+      os,
       osVersion: TELEMETRY.osVersion,
       extVersion: TELEMETRY.version,
       syncSchemaVersion,
@@ -618,14 +622,14 @@ const SyncService = (function getSyncService() {
   };
 
   const getAllExtensionNames = function () {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       syncNotifier.emit('extension.names.downloading');
       fetch(`${License.MAB_CONFIG.syncURL}/devices/list`, {
         method: 'GET',
         cache: 'no-cache',
         headers: {
           'X-GABSYNC-PARAMS': JSON.stringify({
-            extensionGUID: TELEMETRY.userId,
+            extensionGUID: await getUserId(),
             licenseId: License.get().licenseId,
             extInfo: getExtensionInfo(),
           }),
@@ -653,13 +657,13 @@ const SyncService = (function getSyncService() {
     });
   };
 
-  const setCurrentExtensionName = function (newName) {
+  const setCurrentExtensionName = async function (newName) {
     if (newName && newName.trim().length >= 1 && newName.trim().length <= 50) {
       currentExtensionName = newName.trim();
       chromeStorageSetHelper(syncExtensionNameKey, currentExtensionName);
       const thedata = {
         deviceName: currentExtensionName,
-        extensionGUID: TELEMETRY.userId,
+        extensionGUID: await getUserId(),
         licenseId: License.get().licenseId,
         extInfo: getExtensionInfo(),
       };
@@ -705,8 +709,8 @@ const SyncService = (function getSyncService() {
   };
 
 
-  const removeCurrentExtensionName = function () {
-    removeExtensionName(currentExtensionName, TELEMETRY.userId);
+  const removeCurrentExtensionName = async function () {
+    removeExtensionName(currentExtensionName, await getUserId());
   };
 
   // return all of the current user configurable extension options (settings, Prefs, filter list
@@ -772,7 +776,7 @@ const SyncService = (function getSyncService() {
     const thedata = {
       data: JSON.stringify(payload),
       commitVersion: syncCommitVersion,
-      extensionGUID: TELEMETRY.userId,
+      extensionGUID: await getUserId(),
       licenseId: License.get().licenseId,
       extInfo: getExtensionInfo(),
     };
@@ -956,10 +960,10 @@ const SyncService = (function getSyncService() {
     getSyncData();
   }
 
-  function enablePubNub() {
+  async function enablePubNub() {
     pubnub = new PubNub({
       subscribeKey: License.MAB_CONFIG.subscribeKey,
-      authKey: `${License.get().licenseId}_${TELEMETRY.userId}`,
+      authKey: `${License.get().licenseId}_${await getUserId()}`,
       ssl: true,
     });
 
@@ -1115,7 +1119,12 @@ const SyncService = (function getSyncService() {
   //                               the retry logic)
   //        shouldForce:boolean - optional, force a response from the server (even if the commit
   //                              versions match), defaults to false
-  const requestSyncData = function (successCallback, errorCallback, totalAttempts, shouldForce) {
+  const requestSyncData = async function (
+    successCallback,
+    errorCallback,
+    totalAttempts,
+    shouldForce,
+  ) {
     let attemptCount = totalAttempts;
     if (!attemptCount) {
       attemptCount = 1;
@@ -1129,7 +1138,7 @@ const SyncService = (function getSyncService() {
       cache: 'no-cache',
       headers: {
         'X-GABSYNC-PARAMS': JSON.stringify({
-          extensionGUID: TELEMETRY.userId,
+          extensionGUID: await getUserId(),
           licenseId: License.get().licenseId,
           commitVersion: syncCommitVersion,
           force: forceParam,
