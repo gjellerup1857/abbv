@@ -79,15 +79,17 @@
 }
 
 .header-logo {
-  height: 20px;
+  height: 18px;
   width: auto;
 }
 
 .header-logo-text {
-  color: #999999;
-  font-size: 12px;
-  line-height: 140%;
+  color: #333333;
   padding-left: 6px;
+  height: 22px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 140%;
 }
 
 header {
