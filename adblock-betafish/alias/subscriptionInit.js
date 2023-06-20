@@ -119,6 +119,11 @@ async function addSubscriptions() {
       }
     }
   }
+
+  // Show first run page.
+  if (firstRun && !Prefs.suppress_first_run_page) {
+    openInstalled();
+  }
 }
 
 /**
