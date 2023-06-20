@@ -22,9 +22,34 @@
 import { telemetryNotifier } from './telemetry-ping';
 import TelemetryBase from './telemetry-base';
 import postData from '../../fetch-util';
-import { log, chromeStorageSetHelper } from '../../utilities/background/bg-functions';
+import { Prefs } from '../../alias/prefs';
+import { chromeStorageSetHelper } from '../../utilities/background/bg-functions';
+import * as logger from '../../utilities/background/logger.ts';
+import { clearEvents, executeIPMCommand, getPayload } from '../../ipm/background/index.ts';
+
 
 class IPMTelemetry extends TelemetryBase {
+  /**
+ * Processes a response from the IPM server. Will request command execution
+ * if necessary.
+ *
+ * @param response The response from the IPM server
+ */
+  static async processResponse(response) {
+    if (!response.ok) {
+      logger.error(`[Telemetry]: Bad response status from IPM server: ${response.status}`);
+      return;
+    }
+    telemetryNotifier.emit('ipm.ping.complete');
+
+    // if the server responded with something, we assume it's a command
+    const responseText = await response.text();
+    if (responseText) {
+      const body = JSON.parse(responseText);
+      executeIPMCommand(body);
+    }
+  }
+
   // Called just after we ping the server, to schedule our next ping.
   scheduleNextPing() {
     return new Promise(async (resolve) => {
@@ -43,7 +68,16 @@ class IPMTelemetry extends TelemetryBase {
         delayHours = 24;
       }
       const millis = 1000 * 60 * 60 * delayHours;
-      const nextPingTime = Date.now() + millis;
+      let nextPingTime = Date.now() + millis;
+      // The smear factor isn't added for the first ping
+      // so that the first IPM ping is sent ASAP after installation
+      if (totalPings >= 2) {
+        const smear = Math.floor(Math.random() * 600000) + 60000;
+        // add a random amount of time (between 1 minute and 11 minutes)
+        // to the next ping time to avoid overloading the server
+        // with requests at the same time every day
+        nextPingTime += smear;
+      }
       chromeStorageSetHelper(this.nextRequestTimeStorageKey, nextPingTime, (error) => {
         this.dataCorrupt = !!error;
         resolve();
@@ -51,44 +85,19 @@ class IPMTelemetry extends TelemetryBase {
     });
   }
 
-  sendPingData(pingData) {
-    return new Promise(async (resolve) => {
-      const response = await postData(this.hostURL, pingData).catch((error) => {
-        log('ipm ping error', error);
-        resolve(pingData);
-      });
-      if (response && response.ok) {
-        telemetryNotifier.emit('ipm.ping.complete');
-      } else {
-        log('IPM server returned error: ', (response && response.statusText));
-      }
-      resolve(pingData);
+  async sendPingData(pingData) {
+    // as we about to send all user events, we can delete them
+    void clearEvents();
+    const response = await postData(Prefs.get(this.hostURLPref), pingData).catch((error) => {
+      logger.error('ipm ping error', error);
     });
+    IPMTelemetry.processResponse(response);
   }
 
   async pingNow() {
-    const pingData = await this.getTelemetryData();
-    if (!pingData.u) {
-      return pingData;
-    }
-    // attempt to stop users that are pinging us 'a lot'
-    // by checking the current ping count,
-    // if the ping count is above a theshold,
-    // then only ping 'occasionally'
-    if (pingData.pc > 5000) {
-      if (pingData.pc > 5000 && pingData.pc < 100000 && ((pingData.pc % 5000) !== 0)) {
-        return pingData;
-      }
-      if (pingData.pc >= 100000 && ((pingData.pc % 50000) !== 0)) {
-        return pingData;
-      }
-    }
-    pingData.cmd = 'ping';
-    if (browser.management && browser.management.getSelf) {
-      const info = await browser.management.getSelf();
-      pingData.it = info.installType.charAt(0);
-    }
-    return this.sendPingData(pingData);
+    const pingData = await getPayload();
+    await this.sendPingData(pingData);
+    return pingData;
   }
 }
 

@@ -17,48 +17,41 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, channels, replacedCounts, getSettings
-   recordAnonymousErrorMessage, BigInt, LocalCDN,  */
+    BigInt, LocalCDN,  */
 
-import { Prefs } from 'prefs';
+import { Prefs } from '../../alias/prefs';
 import * as ewe from '../../../vendor/webext-sdk/dist/ewe-api';
-import CtaABManager from '../../ctaabmanager';
 import ServerMessages from '../../servermessages';
-import SURVEY from '../../survey';
 import SubscriptionAdapter from '../../subscriptionadapter';
+import { getUserId } from '../../id/background/index';
 
 import {
-  chromeStorageSetHelper,
   determineUserLanguage,
   storageSet,
-} from '../../utilities/background/bg-functions';
+  getUserAgentInfo,
+} from '../../utilities/background/index';
 
-const userIdStorageKey = 'userid';
+
 const FiftyFiveMinutes = 3300000;
 
 class TelemetryBase {
-  constructor(totalRequestsStorageKeyArg, nextRequestTimeStorageKeyArg, alarmNameArg, hostURLArg) {
+  constructor(
+    totalRequestsStorageKeyArg,
+    nextRequestTimeStorageKeyArg,
+    alarmNameArg,
+    hostURLPrefArg,
+  ) {
     this.totalRequestsStorageKey = totalRequestsStorageKeyArg;
     this.nextRequestTimeStorageKey = nextRequestTimeStorageKeyArg;
     this.alarmName = alarmNameArg;
-    this.hostURL = hostURLArg;
+    this.hostURLPref = hostURLPrefArg;
     this.dataCorrupt = false;
     // Get some information about the version, os, and browser
     this.version = browser.runtime.getManifest().version;
-    let match = navigator.userAgent.match(/(CrOS \w+|Windows NT|Mac OS X|Linux) ([\d._]+)?/);
-    this.os = (match || [])[1] || 'Unknown';
-    this.osVersion = (match || [])[2] || 'Unknown';
-    this.flavor = 'E'; // Chrome
-    match = navigator.userAgent.match(/(?:Chrome|Version)\/([\d.]+)/);
-    const edgeMatch = navigator.userAgent.match(/(?:Edg|Version)\/([\d.]+)/);
-    const firefoxMatch = navigator.userAgent.match(/(?:Firefox)\/([\d.]+)/);
-    if (edgeMatch) {
-      this.flavor = 'CM'; // MS - Chromium Edge
-      match = edgeMatch;
-    } else if (firefoxMatch) {
-      this.flavor = 'F'; // Firefox
-      match = firefoxMatch;
-    }
-    this.browserVersion = (match || [])[1] || 'Unknown';
+    this.os = getUserAgentInfo().os;
+    this.osVersion = getUserAgentInfo().osVersion;
+    this.flavor = getUserAgentInfo().flavor;
+    this.browserVersion = getUserAgentInfo().browserVersion;
     this.firstRun = false;
     this.userId = '';
     // added calls to these two methods because the need to be
@@ -103,29 +96,16 @@ class TelemetryBase {
     });
   };
 
-  // Give the user a userid if they don't have one yet.
+  // Get the user a userid.
   async loadUserID() {
-    const response = await browser.storage.local.get(userIdStorageKey);
-    if (!response[userIdStorageKey]) {
-      const timeSuffix = (Date.now()) % 1e8; // 8 digits from end of
-      // timestamp
-      const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      const result = [];
-      for (let i = 0; i < 8; i++) {
-        const choice = Math.floor(Math.random() * alphabet.length);
-        result.push(alphabet[choice]);
-      }
-      this.userId = result.join('') + timeSuffix;
-      chromeStorageSetHelper(userIdStorageKey, this.userId);
-    } else {
-      this.userId = response[userIdStorageKey];
+    if (!this.userId) {
+      this.userId = await getUserId();
     }
     return this.userId;
   }
 
   // Clean up / remove old, unused data in localStorage
   cleanUpLocalStorage() {
-    storageSet(userIdStorageKey);
     storageSet(this.totalRequestsStorageKey);
     storageSet(this.nextRequestTimeStorageKey);
   }
@@ -219,7 +199,6 @@ class TelemetryBase {
     }
 
     data.dc = this.dataCorrupt ? '1' : '0';
-    data.st = SURVEY.types() + CtaABManager.types();
     if (browser.permissions && browser.permissions.getAll) {
       const allPermissions = await browser.permissions.getAll();
       data.dhp = allPermissions.origins && allPermissions.origins.includes('<all_urls>') ? '1' : '0';

@@ -44,6 +44,7 @@
     "dmg": "0.1.0",
     "eslint": "8.21.0",
     "eslint-config-airbnb-base": "13.1.0",
+    "eslint-import-resolver-typescript": "2.7.1",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-no-unsanitized": "4.0.1",
     "extract-zip": "2.0.1",
@@ -64,11 +65,7 @@
     "rollup-plugin-terser": "7.0.2",
     "script-loader": "0.7.2",
     "selenium-webdriver": "4.3.1",
-    "source-map-loader": "4.0.0",
-    "ts-loader": "9.3.1",
-    "webpack": "5.74.0",
-    "webpack-merge": "5.1.4",
-    "webpack-stream": "6.1.1"
+    "source-map-loader": "4.0.0"
   },
   "engines": {
     "node": ">=16.10.0 <17.0.0",
@@ -76,15 +73,24 @@
   },
   "dependencies": {
     "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#090b82a5f45b144e649d0f17faee0cbfad7fd624",
+    "@rollup/plugin-typescript": "8.3.2",
+    "@types/dompurify": "3.0.2",
+    "@types/webextension-polyfill": "0.8.0",
     "@eyeo/snippets": "0.6.2",
     "adblockpluscore": "0.11.1",
     "argparse": "1.0.10",
     "del": "7.0.0",
+    "dompurify": "2.2.2",
     "got": "12.3.1",
     "gulp": "4.0.2",
     "gulp-vinyl-zip": "2.5.0",
     "merge-stream": "2.0.0",
+    "rollup-plugin-cleanup": "3.2.1",
+    "ts-loader": "9.3.1",
     "typescript": "4.7.3",
-    "webextension-polyfill": "0.8.0"
+    "webextension-polyfill": "0.8.0",
+    "webpack": "5.74.0",
+    "webpack-merge": "5.1.4",
+    "webpack-stream": "6.1.1"
   }
 }

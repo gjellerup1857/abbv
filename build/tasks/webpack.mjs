@@ -37,7 +37,7 @@ export default function webpack({
               filename: bundle.dest,
             },
             resolve: {
-              extensions: [".ts", ".js", ".json", ".wasm"],
+              extensions: ['.ts', '.js', '.json', '.wasm'],
               alias: webpackInfo.alias,
               symlinks: false,
             },
@@ -54,11 +54,11 @@ export default function webpack({
                   test: /\.ts$/,
                   use: [
                     {
-                      loader: "ts-loader",
-                      options: {transpileOnly: skipTypeChecks}
-                    }
-                  ]
-                }
+                      loader: 'ts-loader',
+                      options: { transpileOnly: skipTypeChecks },
+                    },
+                  ],
+                },
               ],
             },
             externals: {

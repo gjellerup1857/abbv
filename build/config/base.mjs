@@ -22,10 +22,10 @@ export default {
   webpack: {
     bundles: [
       {
-        dest: "polyfill.js",
+        dest: 'polyfill.js',
         src: [
-          "vendor/adblockplusui/adblockpluschrome/lib/polyfill.js"
-        ]
+          'vendor/adblockplusui/adblockpluschrome/lib/polyfill.js',
+        ],
       },
       {
         dest: 'abp-background.js',
@@ -40,7 +40,6 @@ export default {
           'vendor/adblockplusui/adblockpluschrome/lib/filterConfiguration.js',
           'adblock-betafish/jquery/jquery-3.5.1.min.js',
           'adblock-betafish/errorreporting.js',
-          'adblock-betafish/survey.js',
           'adblock-betafish/alias/parseFilter.js',
           'adblock-betafish/background.js',
           'adblock-betafish/allowlisting.js',
@@ -53,7 +52,13 @@ export default {
           'adblock-betafish/notifications/background/notifications.js',
           'adblock-betafish/messaging/premium-message-responder.js',
           'adblock-betafish/messaging/message-responder.js',
+          'adblock-betafish/ipm/background/index.ts',
+          'adblock-betafish/onpage-dialog/background/index.ts',
         ],
+      },
+      {
+        dest: 'onpage-dialog.postload.js',
+        src: ['adblock-betafish/onpage-dialog/content/dialog.ts'],
       },
     ],
   },
@@ -136,7 +141,7 @@ export default {
           'vendor/adblockplusui/adblockpluschrome/devtools.html',
           'vendor/adblockplusui/devtools-panel.js',
           'adblock-betafish/alias/i18n.js',
-          'vendor/adblockplusui/proxy.html'
+          'vendor/adblockplusui/proxy.html',
         ],
       },
     ],
@@ -182,24 +187,16 @@ export default {
         src: 'adblock-betafish/twitch-contentscript.js',
       },
       {
-        dest: 'adblock-onpage-icon-cs.js',
-        src: 'adblock-betafish/onpageIcon/onpage-icon-cs.js',
-      },
-      {
-        dest: 'adblock-onpage-icon.css',
-        src: 'adblock-betafish/onpageIcon/onpage-icon.css',
-      },
-      {
-        dest: 'adblock-onpage-icon-user.css',
-        src: 'adblock-betafish/onpageIcon/onpage-icon-user.css',
-      },
-      {
         dest: 'adblock-options-events.js',
         src: 'adblock-betafish/options/events.js',
       },
       {
         dest: 'adblock-options-settingsproxy.js',
         src: 'adblock-betafish/messaging/settingsproxy.js',
+      },
+      {
+        dest: 'adblock-onpage-dialog-user.css',
+        src: 'adblock-betafish/onpage-dialog/content/dialog-user.css',
       },
       {
         dest: 'adblock-options-prefsproxy.js',
@@ -618,9 +615,9 @@ export default {
         src: 'adblock-betafish/alias/managed-storage-schema.json',
       },
       {
-        dest: "vendor/webext-sdk/content.js",
-        src: "vendor/webext-sdk/dist/ewe-content.js"
-      }
+        dest: 'vendor/webext-sdk/content.js',
+        src: 'vendor/webext-sdk/dist/ewe-content.js',
+      },
     ],
   },
   translations: {

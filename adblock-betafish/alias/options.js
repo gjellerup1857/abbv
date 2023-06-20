@@ -29,7 +29,7 @@
 
 import * as ewe from "../../vendor/webext-sdk/dist/ewe-api";
 import { port as messagingPort } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port";
-import { SessionStorage } from "../../vendor/adblockplusui/adblockpluschrome/lib/storage/session";
+import { SessionStorage } from "./storage/session.js";
 
 /**
  * Key to store/retrieve an optional message to send to the options page after
@@ -48,8 +48,7 @@ const optionsUrl = browser.runtime.getURL(
 
 const session = new SessionStorage("options");
 
-async function onMessage(message, port)
-{
+async function onMessage(message, port) {
   if (message.type != "app.listen")
     return;
 
@@ -63,13 +62,12 @@ async function onMessage(message, port)
   port.postMessage(optionsMessage);
 }
 
-async function onConnect(port)
-{
-  if (!ext.isTrustedSender(port.sender)){
+async function onConnect(port) {
+  if (!ext.isTrustedSender(port.sender)) {
     return;
   }
 
-  if (port.name != "ui"){
+  if (port.name != "ui") {
     return;
   }
 
@@ -78,8 +76,7 @@ async function onConnect(port)
   }
 
   optionsPort = port;
-  optionsPort.onDisconnect.addListener(() =>
-  {
+  optionsPort.onDisconnect.addListener(() => {
     optionsPort = null;
   });
   optionsPort.onMessage.addListener(onMessage);
@@ -90,37 +87,31 @@ browser.runtime.onConnect.addListener(onConnect);
  * Opens the options page, or switches to its existing tab.
  * @param {Object} [message] - Message to send to options page
  */
-async function showOptions(message)
-{
+async function showOptions(message) {
   await session.delete(optionsMessageKey);
 
   // If the options page is already open, focus its tab manually to avoid
   // potentially opening it again, due to browser.runtime.openOptionsPage()
   // behaving differently across browsers
-  if (optionsPort)
-  {
+  if (optionsPort) {
     // Firefox for Android doesn't support browser.windows
-    if ("windows" in browser)
-    {
+    if ("windows" in browser) {
       await browser.windows.update(
         optionsPort.sender.tab.windowId,
-        {focused: true}
+        { focused: true }
       );
     }
 
-    await browser.tabs.update(optionsPort.sender.tab.id, {active: true});
+    await browser.tabs.update(optionsPort.sender.tab.id, { active: true });
 
     // Send message after focusing options page
-    if (message)
-    {
+    if (message) {
       optionsPort.postMessage(message);
     }
   }
-  else
-  {
+  else {
     // Send message after initializing options page
-    if (message)
-    {
+    if (message) {
       await session.set(optionsMessageKey, message);
     }
 
@@ -136,24 +127,21 @@ export { showOptions };
 // non-mobile.
 // [1] - https://bugzilla.mozilla.org/show_bug.cgi?id=1414613
 Promise.all([browser.action.getPopup({}),
-             browser.runtime.getPlatformInfo()]).then(
-  ([popup, platformInfo]) =>
-  {
+browser.runtime.getPlatformInfo()]).then(
+  ([popup, platformInfo]) => {
     if (!popup && platformInfo.os != "android")
-      browser.action.setPopup({popup: "popup.html"});
+      browser.action.setPopup({ popup: "popup.html" });
   }
 );
 
 // On Firefox for Android, open the options page directly when the browser
 // action is clicked.
-browser.action.onClicked.addListener(async() =>
-{
-  const [tab] = await browser.tabs.query({active: true});
+browser.action.onClicked.addListener(async () => {
+  const [tab] = await browser.tabs.query({ active: true });
   const currentPage = new ext.Page(tab);
 
   let message = null;
-  if (/^https?:$/.test(currentPage.url.protocol))
-  {
+  if (/^https?:$/.test(currentPage.url.protocol)) {
     const isAllowlisted = await ewe.filters.isResourceAllowlisted(
       currentPage.url,
       "document",
@@ -180,7 +168,6 @@ browser.action.onClicked.addListener(async() =>
  *
  * @event "options.open"
  */
-messagingPort.on("options.open", async(message, sender) =>
-{
+messagingPort.on("options.open", async (message, sender) => {
   await showOptions();
 });

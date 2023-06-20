@@ -39,7 +39,6 @@
     ],
     "web_accessible_resources": [
         "adblock-uiscripts-adblock-wizard.css",
-        "adblock-onpage-icon.css",
         "adblock-ads-allowed-icon.svg",
         "adblock-ads-blocked-icon.svg",
         "adblock-wizard_sync_cta.svg",
@@ -61,5 +60,5 @@
         "icons/MaterialIcons-Regular.woff2",
         "icons/adblock-icons.woff2",
         "purify.min.js"
-      ]
-  }
+    ]
+}

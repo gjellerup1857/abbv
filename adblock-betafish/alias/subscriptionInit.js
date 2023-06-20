@@ -4,12 +4,12 @@
 
 /** @module subscriptionInit */
 
-import { Prefs } from 'prefs';
+import { Prefs } from './prefs';
 import * as info from 'info';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port.js";
-import { TELEMETRY } from '../telemetry/background';
+import { getUserId } from '../id/background/index';
 
 let firstRun;
 let reinitialized = false;
@@ -83,7 +83,7 @@ function removeSubscriptions() {
 
 
 async function openInstalled() {
-  const userID = await TELEMETRY.untilLoaded();
+  const userID = await getUserId();
   browser.tabs.create({
     url:
       "https://getadblock.com/installed/?u=" +
