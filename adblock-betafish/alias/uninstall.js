@@ -1,3 +1,23 @@
+/*
+ * This file is part of AdBlock  <https://getadblock.com/>,
+ * Copyright (C) 2013-present  Adblock, Inc.
+ *
+ * AdBlock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * AdBlock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* For ESLint: List any global identifiers used in this file below */
+/* global browser, ewe */
+
 /** @module uninstall */
 /** similar to adblockpluschrome\lib\uninstall.js */
 
@@ -15,16 +35,20 @@ import { getUserId } from '../id/background/index';
 async function getWebAllowlistingFilterCount() {
   // get all allowlisting filters that are enabled
   const filters = (await ewe.filters.getUserFilters()).filter(
-    filter => filter.type === "allowing" && filter.enabled
+    filter => filter.type === 'allowing' && filter.enabled,
   );
 
-  // collect their metadata
+  // collect the origin from the metadata
   const filtersMetadata = await Promise.all(
-    filters.map(async filter => await ewe.filters.getMetadata(filter.text))
+    filters.map(async (rule) => {
+      const metadata = await ewe.filters.getMetadata(rule.text)
+        .catch(() => null);
+      return metadata && metadata.origin;
+    }),
   );
 
   // count the ones that originated in the web
-  return filtersMetadata.filter(data => data.origin === "web").length;
+  return filtersMetadata.filter(data => data === 'web').length;
 }
 
 export async function setUninstallURL() {
@@ -36,8 +60,8 @@ export async function setUninstallURL() {
     // use it to calculate the approximate length of time that user has
     // AdBlock installed
     if (Prefs && Prefs.blocked_total !== undefined) {
-      let twoMinutes = 2 * 60 * 1000;
-      let getLastUpdateTime = async function () {
+      const twoMinutes = 2 * 60 * 1000;
+      const getLastUpdateTime = async function () {
         const userSubs = await SubscriptionAdapter.getSubscriptionsMinusText();
         let maxLastDownload = -1;
         for (const sub in userSubs) {
@@ -47,17 +71,17 @@ export async function setUninstallURL() {
         }
         return maxLastDownload;
       };
-      let updateUninstallURL = async function () {
-        const data = await browser.storage.local.get("blockage_stats");
+      const updateUninstallURL = async function () {
+        const data = await browser.storage.local.get('blockage_stats');
         let url = uninstallURL;
         if (data && data.blockage_stats && data.blockage_stats.start) {
-          let installedDuration = Date.now() - data.blockage_stats.start;
-          url = url + "&t=" + installedDuration;
+          const installedDuration = Date.now() - data.blockage_stats.start;
+          url = `${url}&t=${installedDuration}`;
         }
-        let bc = Prefs.blocked_total;
-        url = url + "&bc=" + bc;
-        let lastUpdateTime = await getLastUpdateTime();
-        url = url + "&lt=" + lastUpdateTime;
+        const bc = Prefs.blocked_total;
+        url = `${url}&bc=${bc}`;
+        const lastUpdateTime = await getLastUpdateTime();
+        url = `${url}&lt=${lastUpdateTime}`;
         url += `&wafc=${await getWebAllowlistingFilterCount()}`;
         browser.runtime.setUninstallURL(url);
       };
@@ -66,7 +90,7 @@ export async function setUninstallURL() {
       setInterval(updateUninstallURL, twoMinutes);
       updateUninstallURL();
     } else {
-      browser.runtime.setUninstallURL(uninstallURL + "&t=-1");
+      browser.runtime.setUninstallURL(`${uninstallURL}&t=-1`);
     }
   }
-};
+}
