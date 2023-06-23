@@ -706,7 +706,7 @@ if (browser.runtime.id) {
       License.ready().then(checkLicense);
     }
   };
-  const slashUpdateReleases = ['5.7.0'];
+  const slashUpdateReleases = ['5.7.0', '5.8.0'];
   // Display updated page after each update
   browser.runtime.onInstalled.addListener(async (details) => {
     // Display beta page after each update for beta-users only

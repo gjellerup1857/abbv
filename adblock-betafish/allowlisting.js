@@ -71,17 +71,17 @@ async function removeWebAllowlistingFilters() {
 
   const allowlistingFiltersWithMetadata = await Promise.all(
     allowlistingFilters.map(async (filter) => {
-      const metadata = await ewe.filters.getMetadata(filter.text);
+      const metadata = await ewe.filters.getMetadata(filter.text)
+        .catch(() => null);
       return { filter, metadata };
     }),
   );
-
   const webAllowlistingFilters = allowlistingFiltersWithMetadata
-    .filter(({ metadata }) => metadata && metadata.origin === 'web')
+    .filter(({ metadata }) => (metadata && metadata.origin === 'web'))
     .map(({ filter }) => filter);
-
   return ewe.filters.remove(webAllowlistingFilters.map(filter => filter.text));
 }
+
 
 /**
  * Initializes module
