@@ -14,10 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser */
+/* global  */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import abRecommendationData from './data/betafish-subscriptions.json';
@@ -171,13 +169,14 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
         index = rareFilterLists[sub.url];
       }
       index = parseInt(index, 10);
-      if (index < 32) {
+      // We can only use 31 bits because the leftmost bit is the signed bit
+      if (index < 31) {
         resultA |= (2 ** index); // eslint-disable-line no-bitwise
       } else {
-        resultB |= (2 ** (index - 32)); // eslint-disable-line no-bitwise
+        resultB |= (2 ** (index - 31)); // eslint-disable-line no-bitwise
       }
     });
-    return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(32, '0');
+    return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(31, '0');
   };
 
   // Get all subscriptions in the AB format
