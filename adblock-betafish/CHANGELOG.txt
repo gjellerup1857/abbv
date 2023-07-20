@@ -2,6 +2,9 @@
 
 UNRELEASED:
 
+Version: 5.8.1, Date: 2023-07-20
+- Updated the bundled Snippets library to 0.7.0
+
 Version: 5.8.0, Date: 2023-06-29
 - Fixed an issue with the initialization of the uninstal URL
 - Updated the telemetry data that is sent to the in-product messaging (IPM) server

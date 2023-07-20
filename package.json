@@ -1,6 +1,6 @@
 {
   "name": "AdBlock",
-  "version": "5.8.0",
+  "version": "5.8.1",
   "description": "AdBlock",
   "repository": {
     "type": "git",
@@ -76,7 +76,7 @@
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
-    "@eyeo/snippets": "0.6.2",
+    "@eyeo/snippets": "0.7.0",
     "adblockpluscore": "0.5.1",
     "argparse": "1.0.10",
     "del": "7.0.0",
