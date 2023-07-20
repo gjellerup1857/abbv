@@ -54,6 +54,7 @@ export default {
           'adblock-betafish/messaging/message-responder.js',
           'adblock-betafish/ipm/background/index.ts',
           'adblock-betafish/onpage-dialog/background/index.ts',
+          'adblock-betafish/new-tab/background/index.ts',
         ],
       },
       {
@@ -147,8 +148,8 @@ export default {
     ],
     rename: [
       {
-        dest: "data/rules/index.json",
-        src: "node_modules/@adblockinc/rules/dist/index/adblock.json"
+        dest: 'data/rules/index.json',
+        src: 'node_modules/@adblockinc/rules/dist/index/adblock.json',
       },
       {
         dest: 'adblock-errorreporting.js',
