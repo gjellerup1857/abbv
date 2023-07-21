@@ -14,7 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/* For ESLint: List any global identifiers used in this file below */
+/* global browser  */
 /**
  * @overview Migrates existing data from older versions
  */
@@ -54,7 +55,12 @@ function migrateUserData() {
     subscribedTODC = unsubscribeToFilterList(url);
   }
   if (subscribedTODC) {
-    ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/adblock_premium.txt');
+    if (browser.runtime.getManifest().manifest_version === 2) {
+      ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/adblock_premium.txt');
+    }
+    if (browser.runtime.getManifest().manifest_version === 3) {
+      ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt');
+    }
   }
 }
 
