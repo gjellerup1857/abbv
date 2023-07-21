@@ -183,6 +183,13 @@ a .link-text-color:hover {
 #local_cdn_option {
   display: none;
 }
+[class*="manifest-specific"] {
+  display: none;
+}
+.manifest-v3 .manifest-specific-v3,
+.manifest-v2 .manifest-specific-v2 {
+  display: flex;
+}
 
 /* BUTTONS */
 
