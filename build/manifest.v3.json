@@ -20,7 +20,8 @@
   "permissions": [
     "alarms",
     "contextMenus",
-    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
     "idle",
     "notifications",
     "scripting",
