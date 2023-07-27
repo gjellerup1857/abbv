@@ -16,9 +16,9 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global translate, License, MABPayment, filterNotifier,
+/* global translate, License, MABPayment,
    activateTab, browser, storageSet, storageGet, initializeProxies,
-   SubscriptionsProxy, SubscriptionAdapter, send, isDistractionControlURL   */
+   SubscriptionsProxy, send, isDistractionControlURL   */
 
 // the elements array below are in the order they appear on the page
 const distractionControlUIitems = [
@@ -57,7 +57,7 @@ let dcWarningClosed = storageGet(dcWarningClosedKey);
 
 const DistractionControlURL = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
 
-function getDefaultFilterUI(entry, isActiveLicense) {
+function getDefaultDCFilterUI(entry, isActiveLicense) {
   const $filterTitle = $('<span>')
     .addClass('dc_filter_list_title')
     .text(entry.title);
@@ -133,7 +133,7 @@ function getDefaultFilterUI(entry, isActiveLicense) {
 const prepareDCItems = function prepareDCItems(isActiveLicense) {
   for (const id in distractionControlUIitems) {
     const entry = distractionControlUIitems[id];
-    $('#distraction-control-filter-lists').append(getDefaultFilterUI(entry, isActiveLicense));
+    $('#distraction-control-filter-lists').append(getDefaultDCFilterUI(entry, isActiveLicense));
   }
 };
 
