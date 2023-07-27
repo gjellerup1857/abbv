@@ -20,6 +20,13 @@
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import abRecommendationData from './data/betafish-subscriptions.json';
 
+const legacyDistractionControlIDs = {
+  'distraction-control-video': 'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
+  'distraction-control-survey': 'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
+  'distraction-control-newsletter': 'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
+  'distraction-control-push': 'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
+};
+
 // Adapters & helpers to add the legacy AB 'id' to the ABP subscriptions
 // Also adds the 'language' and 'hidden' properties
 const SubscriptionAdapter = (function getSubscriptionAdapter() {
@@ -84,6 +91,15 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     }
     return searchURL;
   };
+
+  // determine if the specified filter list is a legacy
+  // Distraction Control filter list
+  // returns true if the ID is a legacy DC filter list URL
+  //         false otherwise
+  const isLegacyDistractionControlById = function (id) {
+    return Object.prototype.hasOwnProperty.call(legacyDistractionControlIDs, id);
+  };
+
 
   // determine if the specified filter list is language specific
   // returns the boolean language attribue (if found)
@@ -249,6 +265,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     getAllSubscriptionsMinusText,
     getDCSubscriptionsMinusText,
     getIdFromURL,
+    isLegacyDistractionControlById,
+    legacyDistractionControlIDs,
     isLanguageSpecific,
     getV2URLFromID,
     getV2URLFromURL,

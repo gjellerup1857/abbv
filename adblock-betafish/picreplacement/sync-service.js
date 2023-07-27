@@ -67,7 +67,7 @@ const SyncService = (function getSyncService() {
   // sync feature was added to AdBlock, therefore these filter lists should be sent
   // with an ID of 'url:...' instead of the id in the betafish-subscriptions.json file
   // any adds to the the betafish-subscriptions.json file should be added here as well.
-  const sendFilterListByURL = ['nordic', 'annoyances', 'distraction-control',
+  const sendFilterListByURL = ['nordic', 'annoyances',
     'fb_notifications', 'easylist_plus_romanian', 'idcac'];
   const { flavor } = getUserAgentInfo();
   const { os } = getUserAgentInfo();
@@ -461,6 +461,9 @@ const SyncService = (function getSyncService() {
           if (!url && adblockId.startsWith('url:')) {
             url = adblockId.slice(4);
           }
+          if (SubscriptionAdapter.isLegacyDistractionControlById(adblockId)) {
+            url = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
+          }
           if (url) {
             log('sync - adding subscription ', url);
             // eslint-disable-next-line no-await-in-loop
@@ -737,7 +740,12 @@ const SyncService = (function getSyncService() {
       if (subscriptions[adblockId].subscribed) {
         const { id } = subscriptions[adblockId];
         const url = SubscriptionAdapter.getV2URLFromID(id) || subscriptions[adblockId].url;
-        if (sendFilterListByURL.includes(adblockId)) {
+        if (adblockId === 'distraction-control') {
+          const dcIDs = SubscriptionAdapter.legacyDistractionControlIDs;
+          for (const [dcID, dcURL] of Object.entries(dcIDs)) {
+            payload.subscriptions[dcID] = dcURL;
+          }
+        } else if (sendFilterListByURL.includes(adblockId)) {
           payload.subscriptions[`url:${url}`] = url;
         } else {
           payload.subscriptions[adblockId] = url;
