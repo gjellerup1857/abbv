@@ -33,7 +33,7 @@ async function unsubscribeToFilterList(url) {
 /**
  * Migrates existing user data from older versions
  */
-function migrateUserData() {
+async function migrateUserData() {
   // We remove the AdBlock Custom filter list,
   // because it no longer serves any purpose
   unsubscribeToFilterList('https://cdn.adblockcdn.com/filters/adblock_custom.txt');
@@ -52,8 +52,10 @@ function migrateUserData() {
   ];
   let subscribedTODC = false;
   for (const url of DISTRACTION_CONTROL_URL_LIST) {
-    subscribedTODC = unsubscribeToFilterList(url);
+    // eslint-disable-next-line no-await-in-loop
+    subscribedTODC = await unsubscribeToFilterList(url);
   }
+
   if (subscribedTODC) {
     if (browser.runtime.getManifest().manifest_version === 2) {
       ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/adblock_premium.txt');
