@@ -20,7 +20,7 @@
   browser, savedData, translate, connectUIPort */
 
 // Help flow button actions -- called when the associated buttons are clicked
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const popupMenuHelpActionMap = {
   // Checks if the page is whitelisted. If the page isn't whitelisted,
   // updates filter lists and checks for update errors
@@ -216,8 +216,8 @@ const popupMenuHelpActionMap = {
     const msg = {
       command: 'sendDCReport',
       url: pageInfo.url.origin + pageInfo.url.pathname,
-      type: savedData.titleText,
-      id: savedData.subId,
+      type: 'distraction',
+      id: 'distraction-control',
     };
     browser.runtime.sendMessage(msg).then(() => {
       transitionTo('finishDCSubmission', false);
