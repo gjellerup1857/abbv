@@ -16,8 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, getSettings, settings, ext, setSetting,
-   addCustomFilter, getUserFilters,
+/* global browser, getSettings, settings, addCustomFilter, getUserFilters,
    isWhitelistFilter */
 
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
@@ -26,9 +25,9 @@ const ytChannelNamePages = new Map();
 
 const webRequestFilter = {
   url:
-  [
-    { hostEquals: 'www.youtube.com' },
-  ],
+    [
+      { hostEquals: 'www.youtube.com' },
+    ],
 };
 
 let lastInjectedTimestamp = 10000;
@@ -69,16 +68,16 @@ const removeAllowlistFilterForYoutubeChannel = function (text) {
 const injectScript = async function (scriptFileName, tabId) {
   try {
     if (browser.scripting) {
-      await browser.scripting.executeScript({
+      return browser.scripting.executeScript({
         target: { tabId, allFrames: false },
         files: [scriptFileName],
       });
-    } else {
-      await browser.tabs.executeScript(tabId, { file: scriptFileName, allFrames: false, runAt: 'document_start' });
     }
+    return browser.tabs.executeScript(tabId, { file: scriptFileName, allFrames: false, runAt: 'document_start' });
   } catch (error) {
     /* eslint-disable-next-line no-console */
     console.error(error);
+    return null;
   }
 };
 
@@ -94,8 +93,8 @@ const injectManagedContentScript = async function (details, historyUpdated) {
     void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
   } else if (diff > 100) { // check if the timestamp difference is more than 100 ms
     lastInjectedTimestamp = details.timeStamp;
-    void injectScript('purify.min.js', tabId);
-    void injectScript('adblock-yt-manage-cs.js', tabId);
+    await injectScript('purify.min.js', tabId);
+    await injectScript('adblock-yt-manage-cs.js', tabId);
     void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
   }
 };
@@ -112,9 +111,9 @@ const managedSubPageCompleted = function (details) {
 // and update the URLs in the Page and Frame objects
 const ytHistoryHandler = function (details) {
   if (details
-      && Object.prototype.hasOwnProperty.call(details, 'tabId')
-      && Object.prototype.hasOwnProperty.call(details, 'url')
-      && details.transitionType === 'link') {
+    && Object.prototype.hasOwnProperty.call(details, 'tabId')
+    && Object.prototype.hasOwnProperty.call(details, 'url')
+    && details.transitionType === 'link') {
     const myURL = new URL(details.url);
     if (getSettings().youtube_manage_subscribed && myURL.pathname === '/feed/channels') {
       // check if the user clicked the back / forward buttons, if so,
@@ -249,19 +248,21 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse(createAllowlistFilterForYoutubeChannelName(message.channelName, message.origin));
   }
   if (message.command === 'blockAllSubscribedChannel' && message.channelNames) {
-    const { channelNames } = message;
-    const parsedChannelNames = [];
-    const userFilters = getAllAdsAllowedUserFilters();
-    for (const [channelName] of Object.entries(channelNames)) {
-      const name = channelNames[channelName].parsedChannelName;
-      parsedChannelNames.push(name);
-      for (let inx = 0; inx < userFilters.length; inx++) {
-        const filterText = userFilters[inx];
-        if (filterText.indexOf(name) > 1) {
-          removeAllowlistFilterForYoutubeChannel(filterText);
+    setTimeout(async () => {
+      const { channelNames } = message;
+      const parsedChannelNames = [];
+      const userFilters = await getAllAdsAllowedUserFilters();
+      for (const [channelName] of Object.entries(channelNames)) {
+        const name = channelNames[channelName].parsedChannelName;
+        parsedChannelNames.push(name);
+        for (let inx = 0; inx < userFilters.length; inx++) {
+          const filterText = userFilters[inx];
+          if (filterText.indexOf(name) > 1) {
+            removeAllowlistFilterForYoutubeChannel(filterText);
+          }
         }
       }
-    }
+    }, 10);
     sendResponse({});
   }
   if (message.command === 'allowAllSubscribedChannel' && message.channelNames) {
