@@ -16,14 +16,14 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, getSettings, translate, FilterListUtil, activateTab,
+/* global browser, translate, FilterListUtil, activateTab,
    CustomFilterListUploadUtil, localizePage, storageSet, chromeStorageSetHelper,
-   chromeStorageGetHelper, debounced, determineUserLanguage, setStorageCookie
-   THIRTY_MINUTES_IN_MILLISECONDS, setLangAndDirAttributes, License,
+   chromeStorageGetHelper, debounced, determineUserLanguage,
+   setLangAndDirAttributes, License,
    settingsNotifier, initializeMABPayment, initializeSettings, initializeLicense,
    initializeChannels, settings, initializePrefs, ServerMessages, SubscriptionAdapter,
-   initializeLocalDataCollection, SyncService, initializeSyncService, initializePremiumPort,
-   initializeSubscriptionsProxy, initializeFiltersProxy, send, sendTypeMessage,
+   initializeLocalDataCollection, SyncService, initializePremiumPort,
+   initializeSubscriptionsProxy, initializeFiltersProxy,
    connectUIPort, initializeSubscriptionsProxy, initializeFiltersProxy
 
     */
@@ -33,12 +33,12 @@ const DISTRACTION_CONTROL_URL_LIST = [
   'https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt',
 ];
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function isDistractionControlURL(url) {
   return DISTRACTION_CONTROL_URL_LIST.includes(url);
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function send(command, args) {
   const updatedArgs = Object.assign({}, { command }, args);
   return browser.runtime.sendMessage(updatedArgs);
@@ -49,7 +49,7 @@ function sendTypeMessage(type, args) {
   return browser.runtime.sendMessage(updatedArgs);
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const isSelectorFilter = function (text) {
   // This returns true for both hiding rules as hiding allowlist rules
   // This means that you'll first have to check if something is an excluded rule
@@ -67,7 +67,7 @@ const mailCtaKey = 'mail-cta-clicked';
 const info = {};
 const FIVE_SECONDS = 5000;
 const TWENTY_SECONDS = FIVE_SECONDS * 4;
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const SIXTY_SECONDS = FIVE_SECONDS * 20;
 let autoReloadingPage;
 let timeoutID;
@@ -82,7 +82,7 @@ let syncErrorCode = 0;
 // Function to check the last known Sync Error Code,
 // only allows an event handler to run if there is
 // no error to prevent data loss
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function checkForSyncError(handler) {
   return function syncError(event) {
     if (syncErrorCode >= 400) {
@@ -194,6 +194,7 @@ function startSubscriptionSelection(title, url) {
 
   if (!list || noFilterListUtil || noCustomFilterListUploadUtil) {
     activateTab('#filters');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     delayedSubscriptionSelection = [title, url];
     return;
   }
@@ -269,7 +270,7 @@ const showNoLongerSyncError = function () {
   });
 };
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const addUnSyncErrorClickHandler = function () {
   $('span[i18n="sync_removed_error_msg_part_2"]').on('click', () => {
     $('.unsync-header').addClass('sync-message-hidden');
@@ -284,7 +285,7 @@ const addUnSyncErrorClickHandler = function () {
 };
 
 // this function is invoked from the tabs.js module
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const checkForUnSyncError = function () {
   if (
     !settings.sync_settings
@@ -461,7 +462,7 @@ const updateAcceptableAdsUIFN = function (checkAA, checkAAprivacy) {
 };
 
 const debounceWaitTime = 1000; // time in ms before
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 const updateAcceptableAdsUI = debounced(debounceWaitTime, updateAcceptableAdsUIFN);
 
 const shouldShowRateUsCTA = function () {

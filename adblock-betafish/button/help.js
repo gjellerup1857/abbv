@@ -277,6 +277,7 @@ const backClickHandler = function () {
     segueBreadCrumb.pop(); // remove current page
     const lastSegueId = segueBreadCrumb[segueBreadCrumb.length - 1]; // now get the previous page
     transitionTo(lastSegueId, true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filterUpdateError = false;
   } else {
     logHelpFlowResults('backIcon');
@@ -334,7 +335,7 @@ const postLoadInitialize = function () {
   $('#separator_help').show();
 };
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const showHelpSetupPage = function () {
   loadHTMLSegments().then(() => {
     postLoadInitialize();

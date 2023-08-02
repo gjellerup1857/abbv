@@ -1,5 +1,5 @@
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender,  isTrustedTarget, tryToUnwhitelist, getUserFilters,
+/* global browser, isTrustedSender, tryToUnwhitelist, getUserFilters,
    createDomainAllowlistFilter, addCustomFilter, countCache, checkUpdateProgress,
    adblockIsPaused, pageIsWhitelisted, adblockIsDomainPaused, getCurrentTabInfo,
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
@@ -71,7 +71,7 @@ function listen(type, filters, newFilter) {
       filters.set('settings', newFilter);
       break;
     default:
-        // do nothing
+    // do nothing
   }
 }
 
@@ -420,7 +420,7 @@ function filtersValidate(text) {
       // If there are no filters, we do treat it as an invalid filter
       // to inform users about it and to give them a chance to edit it.
       if (error.type === 'unexpected_filter_list_header'
-          && lines.length > 1) {
+        && lines.length > 1) {
         /* eslint-disable no-continue */
         continue;
       }

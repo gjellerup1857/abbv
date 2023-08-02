@@ -1,5 +1,5 @@
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, openTab, isTrustedSenderDomain,
+/* global browser, isTrustedSender, openTab,
    processMessageResponse */
 
 import { License, replacedCounts, channels } from '../picreplacement/check';
@@ -54,7 +54,7 @@ function listen(type, filters, newFilter) {
       filters.set('sync', newFilter);
       break;
     default:
-        // do nothing
+    // do nothing
   }
 }
 
@@ -116,10 +116,10 @@ License.ready().then(() => {
       }
       if (
         License.isActiveLicense()
-          && sender.url
-          && sender.url.startsWith('http')
-          && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
-          && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
+        && sender.url
+        && sender.url.startsWith('http')
+        && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
+        && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
       ) {
         void injectScript('adblock-picreplacement-push-notification-wrapper-cs.js', sender.tab.id, sender.frameId);
       }
