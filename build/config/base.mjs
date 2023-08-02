@@ -18,7 +18,7 @@
 
 export default {
   basename: 'adblock',
-  version: '5.8.1',
+  version: '5.9.0',
   webpack: {
     bundles: [
       {
@@ -30,7 +30,8 @@ export default {
       {
         dest: 'abp-background.js',
         src: [
-          'adblock-betafish/prefs/settings.js',
+          'adblock-betafish/extension/bootstrap/serviceworkerInit.js',
+          'adblock-betafish/prefs/background/settings.js',
           'vendor/adblockplusui/adblockpluschrome/lib/devtools.js',
           'vendor/adblockplusui/adblockpluschrome/lib/debug.js',
           'adblock-betafish/alias/subscriptionInit.js',
@@ -48,10 +49,12 @@ export default {
           'adblock-betafish/youtube/yt-bg.js',
           'adblock-betafish/picreplacement/bypass-mode-bg.js',
           'adblock-betafish/picreplacement/distraction-control-bg.js',
+          'adblock-betafish/notifications/background/notifications.js',
           'adblock-betafish/messaging/premium-message-responder.js',
           'adblock-betafish/messaging/message-responder.js',
           'adblock-betafish/ipm/background/index.ts',
           'adblock-betafish/onpage-dialog/background/index.ts',
+          'adblock-betafish/new-tab/background/index.ts',
         ],
       },
       {
@@ -144,6 +147,10 @@ export default {
       },
     ],
     rename: [
+      {
+        dest: 'data/rules/index.json',
+        src: 'node_modules/@adblockinc/rules/dist/index/adblock.json',
+      },
       {
         dest: 'adblock-errorreporting.js',
         src: 'adblock-betafish/errorreporting.js',

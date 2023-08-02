@@ -413,10 +413,6 @@
     "message": "Iklan yang Boleh Diterima",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Penapis tersuai AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

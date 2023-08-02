@@ -471,10 +471,6 @@
     "message": "פרסומות מקובלות",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "מסננים מותאמים אישית של AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2804,14 +2800,6 @@
   "resume_reload_distraction": {
     "message": "האם אתה רוצה לאפשר את AdBlock ולטעון מחדש את הדף?",
     "description": "panel text on the help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "סרטונים צפים",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "סקרים",
-    "description": "Checbox label text for help flow in popup menu."
   },
   "next": {
     "message": "הבא",

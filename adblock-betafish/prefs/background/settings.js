@@ -18,14 +18,14 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from '../../../vendor/adblockplusui/adblockpluschrome/lib/events';
 
 import {
   chromeStorageSetHelper,
   extend,
   log,
   logging,
-} from '../utilities/background/bg-functions';
+} from '../../utilities/background/bg-functions';
 
 export const settingsNotifier = new EventEmitter();
 const abpPrefPropertyNames = ['show_statsinicon', 'shouldShowBlockElementMenu', 'show_devtools_panel'];
@@ -118,7 +118,6 @@ Settings.prototype = {
 };
 
 export const settings = new Settings();
-settings.onload();
 
 export const getSettings = function () {
   return settings.getAll();

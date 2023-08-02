@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, onReady, DOMPurify, translate */
+/* global browser, DOMPurify, translate */
 
 /*
     This content script, when injected into tab that is on YouTube, it will:
@@ -58,12 +58,12 @@ const onPageClickIconElem = DOMPurify.sanitize(`
 // for each YT Channel the user is subscribed to.
 // The CSS is contained within this JS module to avoid loading the same CSS files multiple times.
 const onPageClickIconStyleTextContent = ' #onPageIcon { display: flex; } '
-                                        + ' #messagePanel { display: none; width: 235px; min-height: 75px; box-shadow: 0px 5px 20px rgba(0,0,0,0.15); border-radius: 6px; z-index: 3400; position: absolute; background-color: white; } '
-                                          + ' #message-bubble-content { margin: 10px 0px; } '
-                                          + ' #lineOne, #lineTwo { line-height: 28px; padding: 0px 16px; display: flex; align-items: center; } '
-                                          + ' #lineOneIconLogo, #lineTwoIconLogo {  height: 18px; width: 18px; display: inline; margin: 0; } '
-                                          + ' #lineOneText, #lineTwoText {  padding-left: 7px;  font-size: 14px; font-family: "Lato", Arial, sans-serif; } '
-                                          + ' #iconlogo {  height: 18px; width: 18px; cursor: pointer; display: block; margin: auto; } ';
+  + ' #messagePanel { display: none; width: 235px; min-height: 75px; box-shadow: 0px 5px 20px rgba(0,0,0,0.15); border-radius: 6px; z-index: 3400; position: absolute; background-color: white; } '
+  + ' #message-bubble-content { margin: 10px 0px; } '
+  + ' #lineOne, #lineTwo { line-height: 28px; padding: 0px 16px; display: flex; align-items: center; } '
+  + ' #lineOneIconLogo, #lineTwoIconLogo {  height: 18px; width: 18px; display: inline; margin: 0; } '
+  + ' #lineOneText, #lineTwoText {  padding-left: 7px;  font-size: 14px; font-family: "Lato", Arial, sans-serif; } '
+  + ' #iconlogo {  height: 18px; width: 18px; cursor: pointer; display: block; margin: auto; } ';
 
 
 // used to decode all encoded HTML  (convert '&' to &amp;)
@@ -490,9 +490,9 @@ const bodyClickHandler = function (event) {
   const openedABPanel = document.body.querySelector('.openedABPanel');
   if (
     openedABPanel
-      && openedABPanel !== event.target
-      && !openedABPanel.contains(event.target)
-      && openedPanels.length
+    && openedABPanel !== event.target
+    && !openedABPanel.contains(event.target)
+    && openedPanels.length
   ) {
     openedPanels.forEach((parent) => {
       const panel = parent.querySelector('#messagePanel');
@@ -516,10 +516,12 @@ const inpageIconClickHandler = function (event) {
     return;
   }
   parent.classList.add('openedABPanel');
-  const currentPosition = this.getBoundingClientRect();
-  const bodyRect = document.body.getBoundingClientRect();
-  panelStyle.left = `${(currentPosition.left - bodyRect.left) - 237}px`;
-  panelStyle.top = `${(currentPosition.top - bodyRect.top) - 5}px`;
+  // The following lines are commented out until a fix for the
+  // position of the parent icons is implemented
+  // const currentPosition = this.getBoundingClientRect();
+  // const bodyRect = document.body.getBoundingClientRect();
+  // panelStyle.left = `${(currentPosition.left - bodyRect.left) - 237}px`;
+  // panelStyle.top = `${(currentPosition.top - bodyRect.top) - 5}px`;
   panelStyle.display = 'block';
   document.body.removeEventListener('click', bodyClickHandler);
   document.body.addEventListener('click', bodyClickHandler);

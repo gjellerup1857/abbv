@@ -34,7 +34,8 @@ export type CommandHandler = (ipmId: string) => void;
  * An enum containing all known command names.
  */
 export enum CommandName {
-    createOnPageDialog = "create_on_page_dialog"
+    createOnPageDialog = 'create_on_page_dialog',
+    createTab = 'create_tab'
 }
 
 /**

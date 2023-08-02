@@ -72,12 +72,12 @@
     "npm": ">=7"
   },
   "dependencies": {
-    "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#5a6b284a4c25ecc33485ab5e6b3882fb0f65dc94",
+    "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#090b82a5f45b144e649d0f17faee0cbfad7fd624",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
+    "adblockpluscore": "0.11.1",
     "@eyeo/snippets": "0.7.0",
-    "adblockpluscore": "0.5.1",
     "argparse": "1.0.10",
     "del": "7.0.0",
     "dompurify": "2.2.2",

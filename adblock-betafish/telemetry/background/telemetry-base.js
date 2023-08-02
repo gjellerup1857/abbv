@@ -199,6 +199,12 @@ class TelemetryBase {
     }
 
     data.dc = this.dataCorrupt ? '1' : '0';
+    data.isPinned = '-1';
+    const userSettings = browser.action.getUserSettings
+      && await browser.action.getUserSettings();
+    if (userSettings) {
+      data.isPinned = userSettings.isOnToolbar ? '1' : '0';
+    }
     if (browser.permissions && browser.permissions.getAll) {
       const allPermissions = await browser.permissions.getAll();
       data.dhp = allPermissions.origins && allPermissions.origins.includes('<all_urls>') ? '1' : '0';

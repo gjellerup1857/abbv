@@ -18,8 +18,8 @@
 import { Tabs } from 'webextension-polyfill';
 import * as browser from 'webextension-polyfill';
 
-import { port } from '../../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port.js';
-import { TabSessionStorage } from '../../alias/storage/tab-session.js';
+import { port } from '../../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port';
+import { TabSessionStorage } from '../../alias/storage/tab-session';
 import { getLocaleInfo } from '../../i18n/background';
 import {
   createSafeOriginUrl,
@@ -28,10 +28,10 @@ import {
   getContent,
   recordEvent,
 } from '../../ipm/background';
-import { License } from '../../picreplacement/check.js';
+import { License } from '../../picreplacement/check';
 import * as logger from '../../utilities/background';
 import { MessageSender, TabRemovedEventData } from '../../polyfills/background';
-import { getSettings } from '../../prefs/settings.js';
+import { getSettings } from '../../prefs/background/settings';
 import {
   shouldBeDismissed,
   shouldBeShown,

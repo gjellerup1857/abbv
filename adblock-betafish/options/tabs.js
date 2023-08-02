@@ -244,6 +244,7 @@ function loadTabPanelsHTML() {
         $messageContainer.prepend(unsyncMessageDivSyncTab);
       }
       localizePage();
+      document.documentElement.classList.add(`manifest-v${browser.runtime.getManifest().manifest_version}`);
       tabsLoaded += 1;
       if (tabsLoaded >= $tabPanels.length) {
         // all tabs have been loaded and localized - call

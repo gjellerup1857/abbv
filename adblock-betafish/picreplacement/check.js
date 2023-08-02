@@ -27,7 +27,7 @@ import { TabSessionStorage } from '../alias/storage/tab-session';
 
 import { getUserId } from '../id/background/index';
 import { Channels } from './channels';
-import { getSettings, setSetting } from '../prefs/settings';
+import { getSettings, setSetting } from '../prefs/background';
 import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
 import { initialize } from '../alias/subscriptionInit';
 import ServerMessages from '../servermessages';
@@ -440,10 +440,7 @@ export const License = (function getLicense() {
         (import('./sync-service')).disableSync();
       }
       setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-push' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-newsletter' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-survey' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control-video' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control' });
       browser.alarms.clear(licenseAlarmName);
     },
     ready() {

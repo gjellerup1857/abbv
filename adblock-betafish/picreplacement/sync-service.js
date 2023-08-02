@@ -35,7 +35,7 @@ import { channelsNotifier } from './channels';
 import SubscriptionAdapter from '../subscriptionadapter';
 import {
   getSettings, setSetting, settingsNotifier, settings,
-} from '../prefs/settings';
+} from '../prefs/background';
 import ServerMessages from '../servermessages';
 import postData from '../fetch-util';
 import {
@@ -62,7 +62,7 @@ const SyncService = (function getSyncService() {
   let pendingPostData = false;
   let lastGetStatusCode = 200;
   let lastGetErrorResponse = {};
-  const debounceWaitTime = 3000; // time in ms before posting data
+  const debounceWaitTime = 10000; // time in ms before posting data
   // Below is a list of filter list ids that have been added since the
   // sync feature was added to AdBlock, therefore these filter lists should be sent
   // with an ID of 'url:...' instead of the id in the betafish-subscriptions.json file
@@ -220,6 +220,7 @@ const SyncService = (function getSyncService() {
 
     // If a and b aren't the same type, return false
     if (typeof a !== typeof b) {
+      log('object type compare is false', a, b);
       return false;
     }
 
@@ -235,6 +236,7 @@ const SyncService = (function getSyncService() {
 
     // Return false if not same class
     if (aClass !== bClass) {
+      log('object class compare is false', a, b);
       return false;
     }
 
@@ -245,6 +247,7 @@ const SyncService = (function getSyncService() {
       || aClass === '[object Number]'
     ) {
       if (a.valueOf() !== b.valueOf()) {
+        log('object valueOf compare is false', a, b);
         return false;
       }
     }
@@ -252,6 +255,7 @@ const SyncService = (function getSyncService() {
     // If they're RegExps, Dates or Error objects, check stringified values
     if (aClass === '[object RegExp]' || aClass === '[object Date]' || aClass === '[object Error]') {
       if (a.toString() !== b.toString()) {
+        log('object string compare is false', a, b);
         return false;
       }
     }
@@ -260,6 +264,7 @@ const SyncService = (function getSyncService() {
     // Almost impossible to be equal if a and b aren't trivial
     // and are different functions
     if (aClass === '[object Function]' && a.toString() !== b.toString()) {
+      log('object function compare is false', a, b);
       return false;
     }
 
@@ -270,15 +275,18 @@ const SyncService = (function getSyncService() {
 
     // If they don't have the same number of keys, return false
     if (aKeys.length !== bKeys.length) {
+      log('object key length compare is false', a, b);
       return false;
     }
 
     if (Array.isArray(a) && Array.isArray(b)) {
+      log('array compare is ', arrayComparison(a, b), a, b);
       return arrayComparison(a, b);
     }
 
     // Check they have the same keys
     if (!aKeys.every(key => Object.prototype.hasOwnProperty.call(b, key))) {
+      log('object keys compare is false', aKeys, bKeys);
       return false;
     }
 
@@ -442,17 +450,22 @@ const SyncService = (function getSyncService() {
       const currentSubs = await SubscriptionAdapter.getSubscriptionsMinusText();
       for (const id in currentSubs) {
         if (!payload.subscriptions[id] && currentSubs[id].subscribed) {
+          log('sync - removing subscription ', currentSubs[id].url);
           // eslint-disable-next-line no-await-in-loop
           await ewe.subscriptions.remove(currentSubs[id].url);
         }
       }
-      for (const id in payload.subscriptions) {
-        if (!currentSubs[id] || !currentSubs[id].subscribed) {
-          let url = SubscriptionAdapter.getUrlFromId(id);
-          if (!url && id.startsWith('url:')) {
-            url = id.slice(4);
+      for (const adblockId in payload.subscriptions) {
+        if (!currentSubs[adblockId] || !currentSubs[adblockId].subscribed) {
+          let url = SubscriptionAdapter.getUrlFromId(adblockId);
+          if (!url && adblockId.startsWith('url:')) {
+            url = adblockId.slice(4);
+          }
+          if (SubscriptionAdapter.isLegacyDistractionControlById(adblockId)) {
+            url = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
           }
           if (url) {
+            log('sync - adding subscription ', url);
             // eslint-disable-next-line no-await-in-loop
             await ewe.subscriptions.add(url);
             ewe.subscriptions.sync(url);
@@ -678,7 +691,7 @@ const SyncService = (function getSyncService() {
         })
         .catch((error) => {
           syncNotifier.emit('extension.name.updated.error');
-          log('message server returned error: ', error);
+          log('sync server returned error: ', error);
         });
     }
   };
@@ -704,7 +717,7 @@ const SyncService = (function getSyncService() {
       })
       .catch((error) => {
         syncNotifier.emit('extension.name.remove.error');
-        log('message server returned error: ', error);
+        log('sync server returned error: ', error);
       });
   };
 
@@ -723,14 +736,16 @@ const SyncService = (function getSyncService() {
     payload.subscriptions = {};
     const subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
 
-    for (const id in subscriptions) {
-      if (subscriptions[id].subscribed) {
-        const { adblockId } = subscriptions[id];
-        let { mv2URL: url } = subscriptions[id];
-        if (!url) {
-          ({ url } = subscriptions[id]);
-        }
-        if (sendFilterListByURL.includes(adblockId)) {
+    for (const adblockId in subscriptions) {
+      if (subscriptions[adblockId].subscribed) {
+        const { id } = subscriptions[adblockId];
+        const url = SubscriptionAdapter.getV2URLFromID(id) || subscriptions[adblockId].url;
+        if (adblockId === 'distraction-control') {
+          const dcIDs = SubscriptionAdapter.legacyDistractionControlIDs;
+          for (const [dcID, dcURL] of Object.entries(dcIDs)) {
+            payload.subscriptions[dcID] = dcURL;
+          }
+        } else if (sendFilterListByURL.includes(adblockId)) {
           payload.subscriptions[`url:${url}`] = url;
         } else {
           payload.subscriptions[adblockId] = url;
@@ -765,6 +780,7 @@ const SyncService = (function getSyncService() {
     for (const id in guide) {
       payload.channels[guide[id].name] = guide[id].enabled;
     }
+    log('sync - sync payload', payload);
     return payload;
   };
 
@@ -829,7 +845,7 @@ const SyncService = (function getSyncService() {
         .catch((error) => {
           syncNotifier.emit('extension.name.updated.error');
           // eslint-disable-next-line no-console
-          console.log('message server returned error: ', error);
+          console.log('sync server returned error: ', error);
         });
     });
   };
@@ -891,7 +907,7 @@ const SyncService = (function getSyncService() {
     if (calledPreviously === undefined) {
       setTimeout(() => {
         onFilterListsSubAdded(sub, true);
-      }, 500);
+      }, 1000);
       return;
     }
     let containsPauseFilter = false;
@@ -1152,6 +1168,11 @@ const SyncService = (function getSyncService() {
           successCallback(text, response.status);
         }
         if (!response.ok) {
+          log('sync server returned error, status', response.status);
+          if (response.status === 304) {
+            log('response', response);
+            return;
+          }
           if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
             setTimeout(() => {
               requestSyncData(successCallback, errorCallback, attemptCount, shouldForce);
@@ -1165,7 +1186,7 @@ const SyncService = (function getSyncService() {
         }
       })
       .catch((error) => {
-        log('message server returned error: ', error);
+        log('sync server returned error: ', error);
         errorCallback(error.message);
       });
   };

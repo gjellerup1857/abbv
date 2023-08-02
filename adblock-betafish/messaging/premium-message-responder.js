@@ -1,11 +1,11 @@
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, openTab, isTrustedSenderDomain,
+/* global browser, isTrustedSender, openTab,
    processMessageResponse */
 
 import { License, replacedCounts, channels } from '../picreplacement/check';
 import { channelsNotifier } from '../picreplacement/channels';
 import SyncService from '../picreplacement/sync-service';
-import { getSettings } from '../prefs/settings';
+import { getSettings } from '../prefs/background';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 
 /**
@@ -54,7 +54,7 @@ function listen(type, filters, newFilter) {
       filters.set('sync', newFilter);
       break;
     default:
-        // do nothing
+    // do nothing
   }
 }
 
@@ -84,6 +84,22 @@ function onConnect(uiPort) {
 }
 browser.runtime.onConnect.addListener(onConnect);
 
+const injectScript = async function (scriptFileName, tabId, frameId) {
+  try {
+    if (browser.scripting) {
+      await browser.scripting.executeScript({
+        target: { tabId, frameIds: [frameId] },
+        files: [scriptFileName],
+      });
+    } else {
+      await browser.tabs.executeScript(tabId, { file: scriptFileName, frameId, runAt: 'document_start' });
+    }
+  } catch (error) {
+    /* eslint-disable-next-line no-console */
+    console.error(error);
+  }
+};
+
 /**
  * Process complex messages related to the 'License' object
  *
@@ -91,25 +107,21 @@ browser.runtime.onConnect.addListener(onConnect);
 License.ready().then(() => {
   browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message === 'load_my_adblock') {
-      if (sender.url && sender.url.startsWith('http') && License.isActiveLicense() && getSettings().picreplacement) {
-        const logError = function (e) {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        };
-        browser.tabs.executeScript(sender.tab.id, { file: 'adblock-picreplacement.js', frameId: sender.frameId, runAt: 'document_start' }).catch(logError);
+      if (
+        sender.url && sender.url.startsWith('http')
+        && License.isActiveLicense()
+        && getSettings().picreplacement
+      ) {
+        void injectScript('adblock-picreplacement.js', sender.tab.id, sender.frameId);
       }
       if (
         License.isActiveLicense()
-          && sender.url
-          && sender.url.startsWith('http')
-          && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control-push.txt')
-          && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
+        && sender.url
+        && sender.url.startsWith('http')
+        && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
+        && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
       ) {
-        const logError = function (e) {
-          // eslint-disable-next-line no-console
-          console.error(e);
-        };
-        browser.tabs.executeScript(sender.tab.id, { file: 'adblock-picreplacement-push-notification-wrapper-cs.js', runAt: 'document_start' }).catch(logError);
+        void injectScript('adblock-picreplacement-push-notification-wrapper-cs.js', sender.tab.id, sender.frameId);
       }
       sendResponse({});
     }

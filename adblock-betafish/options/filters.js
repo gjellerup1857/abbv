@@ -16,13 +16,22 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global settings, SubscriptionAdapter, browser,
+/* global settings, SubscriptionAdapter,
    translate, updateAcceptableAdsUI,
    delayedSubscriptionSelection, startSubscriptionSelection, selected, activateTab, License,
    MABPayment, getStorageCookie, setStorageCookie, THIRTY_MINUTES_IN_MILLISECONDS,
    updateSocialIconsVisibility, initializeProxies, SubscriptionsProxy, send,
    connectUIPort, isDistractionControlURL
    */
+
+function fixFilterList(item, adblockId) {
+  if (item && item.url === 'https://fanboy.co.nz/fanboy-annoyance.txt') {
+    // eslint-disable-next-line no-param-reassign
+    item.adblockId = 'annoyances';
+    return { item, adblockId: 'annoyances' };
+  }
+  return { item, adblockId };
+}
 
 function isAcceptableAds(filterList) {
   if (!filterList) {
@@ -132,8 +141,7 @@ FilterListUtil.sortFilterListArrays = () => {
 FilterListUtil.getFilterListType = (filterList) => {
   let filterListType = '';
   if (
-    filterList.adblockId === 'adblock_custom'
-    || filterList.adblockId === 'easylist'
+    filterList.adblockId === 'easylist'
     || filterList.adblockId === 'anticircumvent'
     || filterList.adblockId === 'acceptable_ads'
     || filterList.adblockId === 'acceptable_ads_privacy'
@@ -157,14 +165,24 @@ FilterListUtil.getFilterListType = (filterList) => {
   return filterListType;
 };
 
-FilterListUtil.prepareSubscriptions = (subs) => {
+FilterListUtil.prepareSubscriptions = (subParameter) => {
+  const subs = subParameter;
+  for (const [adblockIdKey, entry] of Object.entries(subs)) {
+    const { item } = fixFilterList(entry, adblockIdKey);
+    // if it exists, treat the old FanBoy's Annoyances FL as if it is
+    // the new FB Annoyances
+    if (entry.url === 'https://fanboy.co.nz/fanboy-annoyance.txt') {
+      delete subs.annoyances;
+      delete subs['url:https://fanboy.co.nz/fanboy-annoyance.txt'];
+      subs.annoyances = item;
+    }
+  }
   FilterListUtil.cachedSubscriptions = subs;
-  for (const adblockId in subs) {
-    if (adblockId) {
-      const entry = subs[adblockId];
+  for (const [adblockIdKey, entry] of Object.entries(subs)) {
+    if (adblockIdKey) {
       if (entry && !isDistractionControlURL(entry.url)) {
-        entry.label = translateIDs(adblockId);
-        entry.adblockId = adblockId;
+        entry.label = translateIDs(adblockIdKey);
+        entry.adblockId = adblockIdKey;
         const filterListType = FilterListUtil.getFilterListType(entry);
         filterListSections[filterListType].array.push(entry);
       }
@@ -990,6 +1008,7 @@ async function onFilterChangeHandler(action, items) {
 
     let adblockId = await SubscriptionAdapter.getIdFromURL(item.url);
     const { param1, param2 } = window;
+    ({ item, adblockId } = fixFilterList(item, adblockId));
 
     if (adblockId) {
       updateItem(item, adblockId);

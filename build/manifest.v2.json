@@ -1,0 +1,64 @@
+{
+  "manifest_version": 2,
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "polyfill.js",
+      "ext/common.js",
+      "ext/background.js",
+      "abp-background.js",
+      "pubnub.min.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/adblock-16.png",
+      "19": "icons/adblock-19.png",
+      "20": "icons/adblock-20.png",
+      "32": "icons/adblock-32.png",
+      "38": "icons/adblock-38.png",
+      "40": "icons/adblock-40.png"
+    },
+    "default_popup": "adblock-button-popup.html",
+    "default_title": "__MSG_name__"
+  },
+  "minimum_chrome_version": "77.0",
+  "minimum_opera_version": "64.0",
+  "permissions": [
+    "<all_urls>",
+    "alarms",
+    "contextMenus",
+    "idle",
+    "notifications",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webNavigation",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "web_accessible_resources": [
+    "adblock-uiscripts-adblock-wizard.css",
+    "adblock-ads-allowed-icon.svg",
+    "adblock-ads-blocked-icon.svg",
+    "adblock-wizard_sync_cta.svg",
+    "adblock-yt-manage.css",
+    "icons/icon24.png",
+    "icons/ab-19.png",
+    "icons/adblock-20.svg",
+    "icons/dark_theme/logo.svg",
+    "icons/default_theme/logo.svg",
+    "fonts/lato-ext-italic.woff",
+    "fonts/lato-italic.woff",
+    "fonts/lato-ext-bolditalic.woff",
+    "fonts/lato-bolditalic.woff",
+    "fonts/lato-ext-regular.woff",
+    "fonts/lato-regular.woff",
+    "fonts/lato-ext-bold.woff",
+    "fonts/lato-bold.woff",
+    "fonts/font-face.css",
+    "icons/MaterialIcons-Regular.woff2",
+    "icons/adblock-icons.woff2",
+    "purify.min.js"
+  ]
+}

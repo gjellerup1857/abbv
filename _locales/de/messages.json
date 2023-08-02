@@ -475,10 +475,6 @@
     "message": "Akzeptable Werbung",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock – eigene Filter",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2849,22 +2845,6 @@
     "message": "Möchten Sie AdBlock aktivieren und die Seite neu laden?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Newsletter-Popups",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Bild-in-Bild-Videos",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Umfragen",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "\"Benachrichtigungen erlauben\"-Anfragen",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Nächst.",
     "description": "Button label text for help flow in popup menu."
@@ -3660,10 +3640,6 @@
   "feature_disabled": {
     "message": "Funktion deaktiviert",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Anscheinend haben Sie diese Funktion nicht aktiviert. Vielleicht können wir das Problem durch Aktivieren beheben.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock aktualisiert jetzt Ihre Einstellungen.",

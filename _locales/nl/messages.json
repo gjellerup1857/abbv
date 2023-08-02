@@ -475,10 +475,6 @@
     "message": "Acceptabele advertenties",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Aangepaste AdBlock-filters",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2849,22 +2845,6 @@
     "message": "Wil je AdBlock inschakelen en de pagina herladen?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Pop-ups van nieuwsbrieven",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Zwevende video's",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Enquêtes",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Verzoeken tot \"meldingen toestaan\"",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Volgende",
     "description": "Button label text for help flow in popup menu."
@@ -3660,10 +3640,6 @@
   "feature_disabled": {
     "message": "Functie uitgeschakeld",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Het lijkt erop dat je die functie niet hebt ingeschakeld. Laten we eens kijken of de functie gebruiken het probleem verhelpt.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock update nu je voorkeuren.",

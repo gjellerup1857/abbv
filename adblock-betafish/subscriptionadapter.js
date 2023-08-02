@@ -14,20 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser */
+/* global  */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import abRecommendationData from './data/betafish-subscriptions.json';
+
+const legacyDistractionControlIDs = {
+  'distraction-control-video': 'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
+  'distraction-control-survey': 'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
+  'distraction-control-newsletter': 'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
+  'distraction-control-push': 'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
+};
 
 // Adapters & helpers to add the legacy AB 'id' to the ABP subscriptions
 // Also adds the 'language' and 'hidden' properties
 const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const addAdBlockProperties = function (sub) {
     let subscription = Object.assign({}, sub);
-    const url = subscription.url || subscription.mv2URL;
+    const { url } = subscription;
     if (abRecommendationData[url]) {
       subscription = Object.assign(subscription, abRecommendationData[url]);
       if (Object.prototype.hasOwnProperty.call(sub, 'languages')) {
@@ -38,9 +43,6 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       }
     }
     subscription.correctedURL = subscription.url;
-    if (browser.runtime.getManifest().manifest_version === 2) {
-      subscription.correctedURL = subscription.mv2URL || subscription.url;
-    }
     return subscription;
   };
 
@@ -67,6 +69,37 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     }
     return null;
   };
+
+  // Get the MV2 URL for the corresponding ID
+  const getV2URLFromID = function (searchID) {
+    for (const url in abRecommendationData) {
+      const subscription = abRecommendationData[url];
+      const { id } = subscription;
+      if (searchID === id && !url.includes('/v3/')) {
+        return url;
+      }
+    }
+    return null;
+  };
+
+  // Get the MV2 URL for the corresponding URL
+  // if not found, return the passed parameter
+  const getV2URLFromURL = function (searchURL) {
+    const subscription = abRecommendationData[searchURL];
+    if (subscription && subscription.id) {
+      return getV2URLFromID(subscription.id);
+    }
+    return searchURL;
+  };
+
+  // determine if the specified filter list is a legacy
+  // Distraction Control filter list
+  // returns true if the ID is a legacy DC filter list URL
+  //         false otherwise
+  const isLegacyDistractionControlById = function (id) {
+    return Object.prototype.hasOwnProperty.call(legacyDistractionControlIDs, id);
+  };
+
 
   // determine if the specified filter list is language specific
   // returns the boolean language attribue (if found)
@@ -152,13 +185,14 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
         index = rareFilterLists[sub.url];
       }
       index = parseInt(index, 10);
-      if (index < 32) {
+      // We can only use 31 bits because the leftmost bit is the signed bit
+      if (index < 31) {
         resultA |= (2 ** index); // eslint-disable-line no-bitwise
       } else {
-        resultB |= (2 ** (index - 32)); // eslint-disable-line no-bitwise
+        resultB |= (2 ** (index - 31)); // eslint-disable-line no-bitwise
       }
     });
-    return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(32, '0');
+    return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(31, '0');
   };
 
   // Get all subscriptions in the AB format
@@ -194,7 +228,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       const {
         url, type, title, homepage, hidden, subscribed, index,
       } = userSubs[adblockId];
-      if (type === 'distraction-control') {
+      if (url === 'https://easylist-downloads.adblockplus.org/adblock_premium.txt') {
         result[adblockId] = {};
         result[adblockId].subscribed = subscribed;
         result[adblockId].adblockId = adblockId;
@@ -231,7 +265,11 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     getAllSubscriptionsMinusText,
     getDCSubscriptionsMinusText,
     getIdFromURL,
+    isLegacyDistractionControlById,
+    legacyDistractionControlIDs,
     isLanguageSpecific,
+    getV2URLFromID,
+    getV2URLFromURL,
   };
 }());
 

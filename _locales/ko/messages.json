@@ -475,10 +475,6 @@
     "message": "허용할만한 광고",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock 사용자 필터",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2841,22 +2837,6 @@
     "message": "AdBlock을 켜고 페이지를 새로 고침 하시겠습니까?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "뉴스레터 팝업",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "떠다니는 영상",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "설문 조사",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "“알림 권한 허용” 요청",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "다음",
     "description": "Button label text for help flow in popup menu."
@@ -3648,10 +3628,6 @@
   "feature_disabled": {
     "message": "기능 비활성화됨",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "그 기능이 활성화되지 않은 것 같습니다. 그 기능을 활성화하는 것이 문제를 해결하는 데 도움이 되는지 확인해봐요.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock이 환경 설정을 업데이트하고 있습니다.",

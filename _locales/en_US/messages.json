@@ -479,10 +479,6 @@
     "message": "Acceptable Ads",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "AdBlock custom filters",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2657,6 +2653,10 @@
     "message": "OK",
     "description": "Message for help flow in popup menu."
   },
+  "enable": {
+    "message": "Enable",
+    "description": "button text in the help flow in popup menu."
+  },
   "page_is_whitelisted": {
     "message": "This page is on your allowlist, which is why you're seeing an ad.",
     "description": "Message for help flow in popup menu."
@@ -2817,6 +2817,10 @@
     "message": "Which Distractions?",
     "description": "Message for help flow in popup menu."
   },
+  "enable_distraction_control": {
+    "message": "Looks like you do not have Distraction Control enabled. Let’s see if opting into that fixes the issue.",
+    "description": "Message for help flow in popup menu."
+  },
   "distractions_control_details": {
     "message": "Additional details on distractions blocked by AdBlock Premium can be found [[here]].",
     "description": "Message for help flow in popup menu."
@@ -2852,22 +2856,6 @@
   "resume_reload_distraction": {
     "message": "Do you want to enable AdBlock and reload the page?",
     "description": "panel text on the help flow in popup menu."
-  },
-  "newsletter_popups": {
-    "message": "Newsletter pop-ups",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Floating videos",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Surveys",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "“Allow Notifications” requests",
-    "description": "Checbox label text for help flow in popup menu."
   },
   "next": {
     "message": "Next",
@@ -3672,10 +3660,6 @@
   "feature_disabled": {
     "message": "Feature Disabled",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Looks like you do not have that feature enabled. Let’s see if opting into that fixes the issue.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock is updating your preferences now.",

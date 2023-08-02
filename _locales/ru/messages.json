@@ -475,10 +475,6 @@
     "message": "Приемлемая реклама",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Пользовательские фильтры AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2849,22 +2845,6 @@
     "message": "Включить AdBlock и перезагрузить страницу?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Уведомления о новостной рассылке",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Всплывающие видео",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Опросы",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Запросы на отображение уведомлений",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Далее",
     "description": "Button label text for help flow in popup menu."
@@ -3660,10 +3640,6 @@
   "feature_disabled": {
     "message": "Функция отключена",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Похоже, у вас не включена эта функция. Попробуем включить ее, чтобы решить вашу проблему.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "AdBlock обновляет ваши настройки.",

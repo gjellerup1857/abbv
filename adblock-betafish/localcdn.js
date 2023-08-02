@@ -24,7 +24,7 @@
 import getAvailableFiles from './localFilesIndex';
 import {
   getSettings, settings,
-} from './prefs/settings';
+} from './prefs/background';
 import {
   parseUri,
   chromeStorageGetHelper,

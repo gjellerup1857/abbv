@@ -16,9 +16,8 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext, getSettings, settings,  twitchChannelNamePages,
-   ytChannelNamePages, updateButtonUIAndContextMenus,  */
-
+/* global browser, ext, twitchChannelNamePages, ytChannelNamePages,
+   updateButtonUIAndContextMenus,  */
 
 import * as info from 'info';
 import { Prefs } from './alias/prefs';
@@ -38,13 +37,14 @@ import LocalDataCollection from './localdatacollection';
 import { License, channels } from './picreplacement/check';
 import ServerMessages from './servermessages';
 import { setUninstallURL } from './alias/uninstall';
+import * as prefs from './prefs/background';
+import { getSettings } from './prefs/background';
 
 import {
-  parseUri,
   createFilterMetaData,
   chromeStorageSetHelper,
   isEmptyObject,
-  determineUserLanguage,
+  parseUri,
   sessionStorageGet,
   sessionStorageSet,
 } from './utilities/background/bg-functions';
@@ -268,6 +268,11 @@ const removeCustomFilterForHost = function (host) {
 // so some JavaScript is injected into the active tab, which does the confirmation for us.
 // If the user confirms the removal of the entries, then they are removed, and the page reloaded.
 const confirmRemovalOfCustomFiltersOnHost = function (host, activeTabId) {
+  if (!browser.tabs.executeScript) {
+    /* eslint-disable-next-line no-console */
+    console.error('confirmRemovalOfCustomFiltersOnHost disable for MV3 extensions');
+    return; // this function isn't supported under MV3, and shouldn't be invoked for MV3 extensions.
+  }
   const customFilterCount = countCache.getCustomFilterCount(host);
   const confirmationText = browser.i18n.getMessage('confirm_undo_custom_filters', [customFilterCount, host]);
   const messageListenerFN = function (request) {
@@ -291,6 +296,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   confirmRemovalOfCustomFiltersOnHost(message.host, message.activeTabId);
   sendResponse({});
 });
+
 
 // Reload already opened tab
 // Input:
@@ -652,100 +658,21 @@ const getCurrentTabInfo = function (secondTime, tabId) {
   });
 };
 
-// BETA CODE
-if (browser.runtime.id === adblocBetaID) {
-  // Display beta page after each update for beta-users only
-  browser.runtime.onInstalled.addListener((details) => {
-    if (details.reason === 'update' || details.reason === 'install') {
-      browser.tabs.create({ url: 'https://getadblock.com/beta' });
-    }
-  });
-}
-
 const updateStorageKey = 'last_known_version';
-if (browser.runtime.id) {
-  let updateTabRetryCount = 0;
-  const getUpdatedURL = function () {
-    const encodedVersion = encodeURIComponent('5.7.0');
-    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${TELEMETRY.userId}&bc=${Prefs.blocked_total}`;
-    updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
-    return updatedURL;
-  };
-  const waitForUserAction = function () {
-    browser.tabs.onCreated.removeListener(waitForUserAction);
-    setTimeout(() => {
-      updateTabRetryCount += 1;
-      // eslint-disable-next-line no-use-before-define
-      openUpdatedPage();
-    }, 10000); // 10 seconds
-  };
-  const openUpdatedPage = async function () {
-    const updatedURL = await getUpdatedURL();
-    browser.tabs.create({ url: updatedURL });
-  };
-  const shouldShowUpdate = function () {
-    const checkQueryState = function () {
-      browser.idle.queryState(30).then((state) => {
-        if (state === 'active') {
-          openUpdatedPage();
-        } else {
-          browser.tabs.onCreated.removeListener(waitForUserAction);
-          browser.tabs.onCreated.addListener(waitForUserAction);
-        }
-      });
-    };
-    const checkLicense = function () {
-      if (!License.isActiveLicense()) {
-        checkQueryState();
-      }
-    };
-    if (browser.management && browser.management.getSelf) {
-      browser.management.getSelf().then((extensionInfo) => {
-        if (extensionInfo && extensionInfo.installType !== 'admin') {
-          License.ready().then(checkLicense);
-        }
-      });
-    } else {
-      License.ready().then(checkLicense);
-    }
-  };
-  const slashUpdateReleases = ['5.7.0', '5.8.0'];
-  // Display updated page after each update
-  browser.runtime.onInstalled.addListener(async (details) => {
-    let {
-      last_known_version: lastKnownVersion,
-    } = await browser.storage.local.get(updateStorageKey);
-    if (!lastKnownVersion) {
-      lastKnownVersion = localStorage.getItem(updateStorageKey);
-    }
-    const currentVersion = browser.runtime.getManifest().version;
-    // don't open the /update page for Ukraine or Russian users.
-    const shouldShowUpdateForLocale = function () {
-      const language = determineUserLanguage();
-      return !(language && (language.startsWith('ru') || language.startsWith('uk')));
-    };
-    if (
-      details.reason === 'update'
-      && shouldShowUpdateForLocale()
-      && slashUpdateReleases.includes(currentVersion)
-      && !slashUpdateReleases.includes(lastKnownVersion)
-      && browser.runtime.id !== adblocBetaID
-    ) {
-      settings.onload().then(async () => {
-        if (!getSettings().suppress_update_page) {
-          await getUserId();
-          Prefs.untilLoaded.then(shouldShowUpdate);
-        }
-      });
-    }
-    // We want to move away from localStorage, so remove item if it exists.
-    localStorage.removeItem(updateStorageKey);
-    // Update version in browser.storage.local. We intentionally ignore the
-    // returned promise.
-    browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
-  });
-}
+browser.runtime.onInstalled.addListener(async (details) => {
+  // Display beta page after each update for beta-users only
+  if ((details.reason === 'update' || details.reason === 'install')
+    && browser.runtime.id === adblocBetaID) {
+    browser.tabs.create({ url: 'https://getadblock.com/beta' });
+  }
 
+  // We want to move away from localStorage, so remove item if it exists.
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(updateStorageKey);
+  }
+  // Update version in browser.storage.local.
+  void browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
+});
 
 const openTab = function (url) {
   browser.tabs.create({ url });
@@ -856,9 +783,9 @@ const getDebugInfo = function () {
 
     // Get settings
     const adblockSettings = {};
-    const settings = getSettings();
-    for (const setting in settings) {
-      adblockSettings[setting] = JSON.stringify(settings[setting]);
+    const settingsObj = getSettings();
+    for (const [key, value] of Object.entries(settingsObj)) {
+      adblockSettings[key] = JSON.stringify(value);
     }
 
     response.settings = adblockSettings;
@@ -868,7 +795,7 @@ const getDebugInfo = function () {
     otherInfo.osVersion = TELEMETRY.osVersion;
     otherInfo.os = TELEMETRY.os;
 
-    if (localStorage && localStorage.length) {
+    if (typeof localStorage !== 'undefined' && localStorage.length) {
       otherInfo.localStorageInfo = {};
       otherInfo.localStorageInfo.length = localStorage.length;
       let inx = 1;
@@ -959,6 +886,7 @@ initialize.then(async () => {
   await IPMTelemetry.untilLoaded();
   IPMTelemetry.start();
   revalidateAllowlistingStates();
+  prefs.migrateUserData();
 });
 
 // Create the "blockage stats" for the uninstall logic ...
@@ -998,7 +926,6 @@ Object.assign(self, {
   countCache,
   updateCustomFilterCountMap,
   removeCustomFilterForHost,
-  confirmRemovalOfCustomFiltersOnHost,
   reloadTab,
   isSelectorFilter,
   isWhitelistFilter,

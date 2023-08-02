@@ -475,10 +475,6 @@
     "message": "Anúncios Aceitáveis",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Filtros personalizados do AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"
@@ -2829,22 +2825,6 @@
     "message": "Deseja ativar o AdBlock e recarregar a página?",
     "description": "panel text on the help flow in popup menu."
   },
-  "newsletter_popups": {
-    "message": "Pop-ups de newsletters",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "autoplay_videos": {
-    "message": "Vídeos flutuantes",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "surveys": {
-    "message": "Inquéritos",
-    "description": "Checbox label text for help flow in popup menu."
-  },
-  "allow_notification_requests": {
-    "message": "Pedidos de \"Permitir Notificações\"",
-    "description": "Checbox label text for help flow in popup menu."
-  },
   "next": {
     "message": "Próximo",
     "description": "Button label text for help flow in popup menu."
@@ -3636,10 +3616,6 @@
   "feature_disabled": {
     "message": "Funcionalidade Desativada",
     "description": "Title text on panel in the help flow"
-  },
-  "feature_disabled_text": {
-    "message": "Parece que não tem essa funcionalidade ativa. Veremos se a ativar corrigirá o problema.",
-    "description": "text on panel in the help flow"
   },
   "updating_preferences": {
     "message": "O AdBlock está agora a atualizar as suas preferências.",

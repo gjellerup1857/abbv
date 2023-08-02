@@ -183,6 +183,13 @@ a .link-text-color:hover {
 #local_cdn_option {
   display: none;
 }
+[class*="manifest-specific"] {
+  display: none;
+}
+.manifest-v3 .manifest-specific-v3,
+.manifest-v2 .manifest-specific-v2 {
+  display: flex;
+}
 
 /* BUTTONS */
 
@@ -1201,7 +1208,26 @@ section .theme-section-row {
 }
 
 #distractioncontrol .page-title .newLabelText {
-  margin-right: 10px;
+  margin-left: 10px;
+}
+
+#distractioncontrol .page-title .md-stack {
+  display: flex;
+  align-items: center;
+  height: 25px;
+  margin-right: 3px;
+}
+
+#distractioncontrol .page-title .switch {
+  margin-right: 30px;
+  left: 10px;
+  top: -3px;
+  display: none;
+}
+
+#distractioncontrol .page-title .switch span:last-child {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .dc_subscription {
@@ -1275,18 +1301,19 @@ section .theme-section-row {
   justify-content: center;
   border-radius: 6px;
 }
-.left_dc_subscription {
+.right_dc_subscription {
   display: flex;
   flex-direction: row;
-  width: calc(100% - 190px);
+  width: calc(100% - 230px);
 }
-.left_dc_subscription .checkbox {
+.right_dc_subscription .checkbox {
   flex-shrink: 0;
 }
 .dc_image_wrapper {
   position: relative;
   min-height: 105px;
   cursor: auto;
+  left: 185px;
 }
 .dc_image_wrapper > img {
   width: 188px;
@@ -1316,6 +1343,7 @@ section .theme-section-row {
 .dc_section_padding {
   padding: 15px;
   cursor: auto;
+  margin-left: -17px;
 }
 .dc-icons {
   color: var(--dc-icon-color);

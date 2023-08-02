@@ -6,8 +6,7 @@
  * - use the term 'whitelisted' instead of 'allowlisted' for now
  * - call renderIcons() at the end of the module for all platforms,
  *   not just Chromium
- * - added the showIconBadgeCTA, getNewBadgeTextReason functions, and related
- *   message listeners
+ * - added the showIconBadgeCTA, getNewBadgeTextReason functions
  */
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
@@ -334,13 +333,10 @@ export async function showIconBadgeCTA(showBadge, reason) {
       chromeStorageDeleteHelper(statsInIconKey); // remove the data, since we no longer need it
       browser.tabs.query({}).then((tabs) => {
         for (const tab of tabs) {
-          browser.browserAction.setBadgeText({
-            tabId: tab.id,
-            text: '',
-          });
+          setBadge(tab.id, { number: '' });
         }
       });
-      browser.browserAction.setBadgeText({ text: '' });
+      browser.action.setBadgeText({ text: '' });
     }
   }
 };

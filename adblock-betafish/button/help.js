@@ -151,7 +151,12 @@ const transitionTo = function (segueToId, backIconClicked) {
           textSpan.append(document.createTextNode(' '));
         }
         if (content.displayURL) {
-          const displayURL = ellipsis(pageInfo.url.origin + pageInfo.url.pathname, 90);
+          let displayURL = '';
+          if (typeof pageInfo.url === 'object') {
+            displayURL = ellipsis(pageInfo.url.origin + pageInfo.url.pathname, 90);
+          } else if (typeof pageInfo.url === 'string') {
+            displayURL = ellipsis(pageInfo.url, 90);
+          }
           textSpan.text(displayURL);
           textSpan.addClass('url-info');
         }
@@ -272,6 +277,7 @@ const backClickHandler = function () {
     segueBreadCrumb.pop(); // remove current page
     const lastSegueId = segueBreadCrumb[segueBreadCrumb.length - 1]; // now get the previous page
     transitionTo(lastSegueId, true);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filterUpdateError = false;
   } else {
     logHelpFlowResults('backIcon');
@@ -329,7 +335,7 @@ const postLoadInitialize = function () {
   $('#separator_help').show();
 };
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const showHelpSetupPage = function () {
   loadHTMLSegments().then(() => {
     postLoadInitialize();

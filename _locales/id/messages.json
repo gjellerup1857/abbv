@@ -409,10 +409,6 @@
     "message": "Iklan Yang Diperbolehkan",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "Kostum penyaring AdBlock",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

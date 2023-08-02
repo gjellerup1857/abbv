@@ -120,18 +120,9 @@ async function addSubscriptions() {
     }
   }
 
-  // Show first run page or the updates page. The latter is only shown
-  // on Chromium (since the current updates page announces features that
-  // aren't new to Firefox users), and only if this version of the
-  // updates page hasn't been shown yet.
-
+  // Show first run page.
   if (firstRun && !Prefs.suppress_first_run_page) {
-    // Always show the first run page if a data corruption was detected
-    // (either through failure of reading from or writing to storage.local).
-    // The first run page could notify the user about the data corruption.
-    if (firstRun || dataCorrupted) {
-      openInstalled();
-    }
+    openInstalled();
   }
 }
 
@@ -159,13 +150,13 @@ const initialize = ewe.start({
   version: info.addonVersion,
   bundledSubscriptionsPath: "/data/rules/abp",
 }).then(async (eweFirstRun) => {
-  eweFirstRun.warnings.forEach(console.warn);
-  await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
-  await testStorage().catch(() => { setDataCorrupted(true); })
   await detectFirstRun(
     eweFirstRun.foundSubscriptions,
     eweFirstRun.foundStorage
   );
+  eweFirstRun.warnings.forEach(console.warn);
+  await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
+  await testStorage().catch(() => { setDataCorrupted(true); })
   // adding default filter lists
   await addSubscriptions();
   await removeSubscriptions();

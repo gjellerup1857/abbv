@@ -2,25 +2,9 @@ default:
   image: node:16.15.0
 
 stages:
-  - unit_test
   - build
   - check_filesizes
   - testpages
-
-################################################################################
-# Unit tests
-################################################################################
-
-unit_tests:
-  stage: unit_test
-  before_script:
-    - apt-get update
-    - apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
-    - npm run submodules:update
-    - npm ci
-  script:
-    - npm run test-snippets
-  allow_failure: true
 
 # ################################################################################
 # # Build
@@ -34,19 +18,29 @@ build:
     - npm ci
   script:
     # Create extension builds
-    - npx gulp build -t chrome --unhandled-rejections=strict
-    - npx gulp build -t firefox --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 3 --unhandled-rejections=strict
+    - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 2 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 3 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
     - npx gulp source
     # Attach commit hash to build files
-    - mv adblockchrome-*.zip adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
-    - mv adblockfirefox-*.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    - mv adblockchrome-*-mv3.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    - mv adblockbetachrome-*-mv2.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    - mv adblockbetachrome-*-mv3.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
     - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
       - adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
-      - adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
-      - adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+      - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+      - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 # ################################################################################
 # # Check filesizes
@@ -67,15 +61,21 @@ build:
        exit 0;
      fi
 
-check_filesizes:chrome:
+check_filesizes:chrome_mv2:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
-check_filesizes:firefox:
+check_filesizes:chrome_mv3:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+
+
+check_filesizes:firefox_mv2:
+  extends: .check_filesizes
+  variables:
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 ################################################################################
 # Ad filtering tests
@@ -97,7 +97,7 @@ check_filesizes:firefox:
   script:
     - cd testpages.adblockplus.org &&
       docker build -t testpages --build-arg EXTENSION_FILE=$EXTENSION . &&
-      docker run --shm-size=256m -e SKIP_EXTENSION_DOWNLOAD="true" -e GREP="^.*$BROWSER((?!Subscriptions).)*\$" testpages
+      docker run --shm-size=256m -e SKIP_EXTENSION_DOWNLOAD="true" -e GREP="$PARAMETERS" testpages
   after_script:
     - docker cp $(docker ps -aqf ancestor=testpages):/testpages.adblockplus.org/test/screenshots .
       2> /dev/null
@@ -117,26 +117,58 @@ check_filesizes:firefox:
     - when: manual
       allow_failure: true
 
-testpages:chrome:latest:
+testpages:MV3:chrome:latest:
   extends: .testpages
   variables:
     BROWSER: chromium latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    SKIP: Subscriptions|Sitekey|Header
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:chrome:oldest:
+testpages:MV3:edge:latest:
   extends: .testpages
   variables:
-    BROWSER: chromium 77.0.3865.0
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}.zip
+    BROWSER: edge latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    SKIP: Subscriptions|Sitekey|Header
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:firefox:latest:
+testpages:MV2:chrome:latest:
+  extends: .testpages
+  variables:
+    BROWSER: chromium latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
+testpages:MV2:edge:latest:
+  extends: .testpages
+  variables:
+    BROWSER: edge latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
+testpages:MV2:firefox:latest:
   extends: .testpages
   variables:
     BROWSER: firefox latest
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
 
-testpages:firefox:oldest:
+testpages:MV2:chrome:oldest:
+  extends: .testpages
+  variables:
+    BROWSER: chromium 77.0.3865.0
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'
+
+testpages:MV2:firefox:oldest:
   extends: .testpages
   variables:
     BROWSER: firefox 75.0
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}.xpi
+    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    SKIP: Subscriptions
+    PARAMETERS: '^.*$BROWSER((?!$SKIP).)*$'

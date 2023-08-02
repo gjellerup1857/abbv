@@ -459,10 +459,6 @@
     "message": "الإعلانات المقبولة",
     "description": "A filter list"
   },
-  "filteradblock_custom": {
-    "message": "مرشّحات AdBlock المخصّصة",
-    "description": "A filter list"
-  },
   "filtereasylist": {
     "message": "EasyList",
     "description": "A filter list"

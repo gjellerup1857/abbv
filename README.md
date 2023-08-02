@@ -43,7 +43,7 @@ e.g. after checking out a new revison.
 
 Run the following command in the project directory:
 
-`npx gulp build -t {chrome|firefox} [-c development]`
+`npx gulp build -t {chrome|firefox} -m {2|3}`
 
 This will create a build with a name in the form
 _adblockpluschrome-n.n.n.zip_ or _adblockplusfirefox-n.n.n.xpi_. These builds
@@ -55,7 +55,7 @@ unpacked loaded in development mode for testing (same as devenv builds below).
 To simplify the process of testing your changes you can create an unpacked
 development environment. For that run one of the following command:
 
-`npx gulp devenv -t {chrome|firefox}`
+`npx gulp devenv -t {chrome|firefox} -m {2|3}`
 
 This will create a _devenv.*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
@@ -70,6 +70,13 @@ Two other build options are provided to aid in testing of the extension.
 `--ext-version` - specifiying this parameter at build time will override the version specified in the `build/config/base.mjs` file.  Most information about the format of the version in the manifest.json file can be found [here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format).
 
 `--ext-id` - specifiying this parameter at build time will override the Firefox / Mozilla extension id specified in the `build/manifest.json` file. More information about the format and when to provide the Extension / Add-on ID can be found [here](https://extensionworkshop.com/documentation/develop/extensions-and-the-add-on-id/).
+
+`--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.*_ directory in the project directory)  This option is only applicable to developer ('devenv') builds.
+
+`--manifest-path` specifiying this parameter at build time will override the default 'base' manifest file that used during the build process.  It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension.  The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file.   The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
+
+`npx gulp devenv -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
+
 
 ## Code Style
 
