@@ -103,8 +103,6 @@ In order to run the unit test suite you need
 please run `npm install` in the repository directory in order to install the
 required dependencies.
 
-You will also need to access to the [abp-snippets repository](https://gitlab.com/eyeo/adblockplus/abp-snippets).
-
 ### Running Snippets tests
 
 The `./tests/snippets/browser` folder contains the unit tests files.
