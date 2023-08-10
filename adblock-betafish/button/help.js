@@ -138,7 +138,7 @@ const transitionTo = function (segueToId, backIconClicked) {
           linkAnchor.attr('id', i18nReplacementElId);
           selected(linkAnchor, () => {
             let urlToOpen = content.linkURL;
-            if (!/^https:/.test(urlToOpen)) {
+            if (!/^(https|mailto):/.test(urlToOpen)) {
               urlToOpen = browser.runtime.getURL(urlToOpen);
             }
             browser.runtime.sendMessage({ command: 'openTab', urlToOpen });
