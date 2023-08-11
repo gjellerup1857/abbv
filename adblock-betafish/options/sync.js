@@ -16,9 +16,9 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global License, localizePage, SyncService, translate, FIVE_SECONDS,
-   settingsNotifier, processReplacementChildren, MABPayment, storageSet, storageGet,
-   determineUserLanguage, initializeProxies, licenseNotifier, browser, settings,
+/* global License, SyncService, translate, FIVE_SECONDS,
+   settingsNotifier, MABPayment, storageSet, storageGet,
+   determineUserLanguage, initializeProxies, licenseNotifier, settings,
    send, info
     */
 
@@ -256,9 +256,9 @@ const onSyncDataInitialGetError = async function () {
       return;
     }
     const dialogText = translate('sync_confirmation_message_I')
-                       + translate('sync_confirmation_message_II')
-                       + translate('sync_confirmation_message_III')
-                       + translate('sync_confirmation_message_IV');
+      + translate('sync_confirmation_message_II')
+      + translate('sync_confirmation_message_III')
+      + translate('sync_confirmation_message_IV');
     // eslint-disable-next-line no-alert
     if (window.confirm(dialogText)) {
       showAddDeviceTextBox();
