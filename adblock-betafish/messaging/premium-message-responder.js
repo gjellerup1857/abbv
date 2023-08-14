@@ -140,10 +140,6 @@ License.ready().then(() => {
     }
     const { command } = message;
     switch (command) {
-      case 'setWhitelistCTAStatus':
-        License.shouldShowWhitelistCTA(message.isEnabled);
-        sendResponse({});
-        break;
       case 'cleanUpSevenDayAlarm':
         License.cleanUpSevenDayAlarm();
         sendResponse({});
@@ -179,6 +175,10 @@ License.ready().then(() => {
         break;
       case 'setBlacklistCTAStatus':
         License.shouldShowBlacklistCTA(message.isEnabled);
+        sendResponse({});
+        break;
+      case 'setWhitelistCTAStatus':
+        License.shouldShowWhitelistCTA(message.isEnabled);
         sendResponse({});
         break;
       default:
