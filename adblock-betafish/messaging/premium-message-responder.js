@@ -128,7 +128,9 @@ License.ready().then(() => {
   });
 
   /**
-   * Process general messages related to the 'License' object
+   * Process general messages related to the 'License' object,
+   * which require sender validation. (These may come from content scripts,
+   * where the sender URL is the page, not the extension.)
    *
    */
   /* eslint-disable consistent-return */
@@ -138,10 +140,6 @@ License.ready().then(() => {
     }
     const { command } = message;
     switch (command) {
-      case 'setBlacklistCTAStatus':
-        License.shouldShowBlacklistCTA(message.isEnabled);
-        sendResponse({});
-        break;
       case 'setWhitelistCTAStatus':
         License.shouldShowWhitelistCTA(message.isEnabled);
         sendResponse({});
@@ -162,6 +160,11 @@ License.ready().then(() => {
     }
   });
 
+  /**
+   * Process general messages related to the 'License' object,
+   * which do not require sender validation (or come from injected files)
+   *
+   */
   /* eslint-disable consistent-return */
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { command } = message;
@@ -173,6 +176,10 @@ License.ready().then(() => {
       case 'payment_success':
         License.activate();
         sendResponse({ ack: true });
+        break;
+      case 'setBlacklistCTAStatus':
+        License.shouldShowBlacklistCTA(message.isEnabled);
+        sendResponse({});
         break;
       default:
     }
