@@ -39,6 +39,14 @@ export enum CommandName {
 }
 
 /**
+ * A map that contains the version for each command.
+ */
+export const CommandVersion: Record<CommandName, number> = {
+  [CommandName.createOnPageDialog]: 1,
+  [CommandName.createTab]: 1,
+};
+
+/**
  * The required IPM command meta data.
  */
 export interface CommandMetaData {

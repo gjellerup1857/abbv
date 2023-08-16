@@ -15,16 +15,16 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as logger from "../../utilities/background";
-import { Prefs } from "../../alias/prefs";
+import * as logger from '../../utilities/background';
+import { Prefs } from '../../alias/prefs';
 import {
-    Behavior,
-    Command,
-    CommandActor,
-    CommandName,
-    Content,
-    commandLibraryVersion
-} from "./command-library.types";
+  Behavior,
+  Command,
+  CommandActor,
+  CommandName,
+  CommandVersion,
+  Content,
+} from './command-library.types';
 
 /**
  * A list of known commands.
@@ -34,7 +34,7 @@ const knownCommandsList = Object.values(CommandName);
 /**
  * The key for the command storage.
  */
-const commandStorageKey = "ipm_commands";
+const commandStorageKey = 'ipm_commands';
 
 /**
  * Map of known command actors
@@ -55,13 +55,13 @@ const unexecutableCommands = new Map<Command, boolean>();
  * @returns True if the command is a valid IPM command, false if not
  */
 function isCommand(candidate: unknown): candidate is Command {
-    return (
-        typeof candidate === "object" &&
-        candidate !== null &&
-        "version" in candidate &&
-        "ipm_id" in candidate &&
-        "command_name" in candidate
-    );
+  return (
+    typeof candidate === 'object'
+        && candidate !== null
+        && 'version' in candidate
+        && 'ipm_id' in candidate
+        && 'command_name' in candidate
+  );
 }
 
 /**
@@ -71,11 +71,11 @@ function isCommand(candidate: unknown): candidate is Command {
  * @param actor - Command actor
  */
 export function setCommandActor(
-    commandName: CommandName,
-    actor: CommandActor
+  commandName: CommandName,
+  actor: CommandActor,
 ): void {
-    actorByCommandName.set(commandName, actor);
-    retryExecuteCommands(commandName);
+  actorByCommandName.set(commandName, actor);
+  retryExecuteCommands(commandName);
 }
 
 /**
@@ -85,10 +85,10 @@ export function setCommandActor(
  * @returns Whether the command can be processed
  */
 function canProcessCommand(command: Command): boolean {
-    return (
-        command.version === commandLibraryVersion &&
-        knownCommandsList.includes(command.command_name)
-    );
+  return (
+    knownCommandsList.includes(command.command_name)
+    && command.version === CommandVersion[command.command_name]
+  );
 }
 
 /**
@@ -97,14 +97,14 @@ function canProcessCommand(command: Command): boolean {
  * @param ipmId - IPM ID
  */
 export function dismissCommand(ipmId: string): void {
-    const command = getCommand(ipmId);
-    if (!command) {
-        return;
-    }
+  const command = getCommand(ipmId);
+  if (!command) {
+    return;
+  }
 
-    const commandStorage = Prefs.get(commandStorageKey);
-    delete commandStorage[command.ipm_id];
-    Prefs.set(commandStorageKey, commandStorage);
+  const commandStorage = Prefs.get(commandStorageKey);
+  delete commandStorage[command.ipm_id];
+  Prefs.set(commandStorageKey, commandStorage);
 }
 
 /**
@@ -115,17 +115,17 @@ export function dismissCommand(ipmId: string): void {
  * @returns command behavior
  */
 export function getBehavior(ipmId: string): Behavior | null {
-    const command = getCommand(ipmId);
-    if (!command) {
-        return null;
-    }
+  const command = getCommand(ipmId);
+  if (!command) {
+    return null;
+  }
 
-    const actor = actorByCommandName.get(command.command_name);
-    if (!actor) {
-        return null;
-    }
+  const actor = actorByCommandName.get(command.command_name);
+  if (!actor) {
+    return null;
+  }
 
-    return actor.getBehavior(command);
+  return actor.getBehavior(command);
 }
 
 /**
@@ -136,8 +136,8 @@ export function getBehavior(ipmId: string): Behavior | null {
  * @returns command
  */
 function getCommand(ipmId: string): Command | null {
-    const commandStorage = Prefs.get(commandStorageKey);
-    return commandStorage[ipmId] || null;
+  const commandStorage = Prefs.get(commandStorageKey);
+  return commandStorage[ipmId] || null;
 }
 
 /**
@@ -148,17 +148,17 @@ function getCommand(ipmId: string): Command | null {
  * @returns command content
  */
 export function getContent(ipmId: string): Content | null {
-    const command = getCommand(ipmId);
-    if (!command) {
-        return null;
-    }
+  const command = getCommand(ipmId);
+  if (!command) {
+    return null;
+  }
 
-    const actor = actorByCommandName.get(command.command_name);
-    if (!actor) {
-        return null;
-    }
+  const actor = actorByCommandName.get(command.command_name);
+  if (!actor) {
+    return null;
+  }
 
-    return actor.getContent(command);
+  return actor.getContent(command);
 }
 
 /**
@@ -169,8 +169,8 @@ export function getContent(ipmId: string): Content | null {
  * @returns Whether the command with the given id has already been processed
  */
 function hasProcessedCommand(ipmId: string): boolean {
-    const commandStorage = Prefs.get(commandStorageKey);
-    return ipmId in commandStorage;
+  const commandStorage = Prefs.get(commandStorageKey);
+  return ipmId in commandStorage;
 }
 
 /**
@@ -179,14 +179,14 @@ function hasProcessedCommand(ipmId: string): boolean {
  * @param commandName - Command name
  */
 function retryExecuteCommands(commandName: CommandName): void {
-    for (const [command, isInitialization] of unexecutableCommands) {
-        if (command.command_name !== commandName) {
-            continue;
-        }
-
-        unexecutableCommands.delete(command);
-        executeIPMCommand(command, isInitialization);
+  for (const [command, isInitialization] of unexecutableCommands) {
+    if (command.command_name !== commandName) {
+      continue;
     }
+
+    unexecutableCommands.delete(command);
+    executeIPMCommand(command, isInitialization);
+  }
 }
 
 /**
@@ -195,9 +195,9 @@ function retryExecuteCommands(commandName: CommandName): void {
  * @param command The command from the IPM server
  */
 function storeCommandData(command: Command): void {
-    const storage = Prefs.get(commandStorageKey);
-    storage[command.ipm_id] = command;
-    Prefs.set(commandStorageKey, storage);
+  const storage = Prefs.get(commandStorageKey);
+  storage[command.ipm_id] = command;
+  Prefs.set(commandStorageKey, storage);
 }
 
 /**
@@ -208,54 +208,54 @@ function storeCommandData(command: Command): void {
  *   module initializes
  */
 export function executeIPMCommand(
-    command: unknown,
-    isInitialization: boolean = false
+  command: unknown,
+  isInitialization: boolean = false,
 ): void {
-    if (!isCommand(command)) {
-        logger.error("[ipm]: Invalid command received.");
-        return;
+  if (!isCommand(command)) {
+    logger.error('[ipm]: Invalid command received.');
+    return;
+  }
+
+  if (!canProcessCommand(command)) {
+    logger.error('[ipm]: Unknown command name received:', command.command_name);
+    return;
+  }
+
+  const actor = actorByCommandName.get(command.command_name);
+  if (!actor) {
+    logger.warn('[ipm]: No actor found:', command.command_name);
+    unexecutableCommands.set(command, isInitialization);
+    return;
+  }
+
+  if (!actor.isValidCommand(command)) {
+    logger.error('[ipm]: Invalid parameters received.');
+    return;
+  }
+
+  if (!isInitialization) {
+    if (hasProcessedCommand(command.ipm_id)) {
+      logger.error('[ipm]: Campaign already processed:', command.ipm_id);
+      return;
     }
 
-    if (!canProcessCommand(command)) {
-        logger.error("[ipm]: Unknown command name received:", command.command_name);
-        return;
-    }
+    storeCommandData(command);
+  }
 
-    const actor = actorByCommandName.get(command.command_name);
-    if (!actor) {
-        logger.warn("[ipm]: No actor found:", command.command_name);
-        unexecutableCommands.set(command, isInitialization);
-        return;
-    }
-
-    if (!actor.isValidCommand(command)) {
-        logger.error("[ipm]: Invalid parameters received.");
-        return;
-    }
-
-    if (!isInitialization) {
-        if (hasProcessedCommand(command.ipm_id)) {
-            logger.error("[ipm]: Campaign already processed:", command.ipm_id);
-            return;
-        }
-
-        storeCommandData(command);
-    }
-
-    actor.handleCommand(command.ipm_id);
+  actor.handleCommand(command.ipm_id);
 }
 
 /**
  * Initializes command library
  */
 async function start(): Promise<void> {
-    await Prefs.untilLoaded;
+  await Prefs.untilLoaded;
 
-    // Reinitialize commands from storage
-    const commandStorage = Prefs.get(commandStorageKey);
-    for (const command of Object.values(commandStorage)) {
-        executeIPMCommand(command, true);
-    }
+  // Reinitialize commands from storage
+  const commandStorage = Prefs.get(commandStorageKey);
+  for (const command of Object.values(commandStorage)) {
+    executeIPMCommand(command, true);
+  }
 }
 
 void start().catch(logger.error);

@@ -1,3 +1,4 @@
+/* eslint-env node */
 
 module.exports = {
   env: {
@@ -106,6 +107,7 @@ module.exports = {
     'no-continue': 'off',
     'no-restricted-syntax': 'off',
     'no-void': 'off',
+    'no-use-before-define': 'off',
     // The no-shadow rule must be used from @typescript-eslint instead of
     // eslint, because it triggers false positives for any enum declaration.
     // See https://typescript-eslint.io/rules/no-shadow/#how-to-use
