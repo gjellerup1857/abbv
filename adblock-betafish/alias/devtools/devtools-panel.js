@@ -15,11 +15,11 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 // This file is based on this similar ABP file:
-// vendor/adblockplusui/js/pages/devtools-panel.js
+// adblockplusui/js/pages/devtools-panel.js
 
 "use strict";
 
-const {getMessage} = browser.i18n;
+const { getMessage } = browser.i18n;
 
 initI18n();
 
@@ -32,13 +32,11 @@ const maxTitleLength = 1000;
 
 let lastFilterQuery = null;
 
-browser.runtime.sendMessage({type: "types.get"})
-  .then(filterTypes =>
-  {
+browser.runtime.sendMessage({ type: "types.get" })
+  .then(filterTypes => {
     const filterTypesElem = document.getElementById("filter-type");
     const filterStyleElem = document.createElement("style");
-    for (const type of filterTypes)
-    {
+    for (const type of filterTypes) {
       filterStyleElem.innerHTML +=
         `#items[data-filter-type=${type}] tr:not([data-type=${type}])` +
         "{display: none;}";
@@ -49,14 +47,12 @@ browser.runtime.sendMessage({type: "types.get"})
     document.body.appendChild(filterStyleElem);
   });
 
-function generateFilter(request, options = {})
-{
-  let {allowlisted = false, domainSpecific = false} = options;
+function generateFilter(request, options = {}) {
+  let { allowlisted = false, domainSpecific = false } = options;
   let filterText = request.url.replace(/^[\w-]+:\/+(?:www\.)?/, "||");
   const filterOptions = [];
 
-  if (request.type == "POPUP")
-  {
+  if (request.type == "POPUP") {
     filterOptions.push("popup");
 
     if (request.url == "about:blank")
@@ -83,15 +79,13 @@ function generateFilter(request, options = {})
   };
 }
 
-function createActionButton(action, stringId, filter, callback)
-{
+function createActionButton(action, stringId, filter, callback) {
   const button = document.createElement("span");
 
   button.textContent = getMessage(stringId);
   button.classList.add("action");
 
-  button.addEventListener("click", async() =>
-  {
+  button.addEventListener("click", async () => {
     await browser.runtime.sendMessage({
       type: "filters." + action,
       text: filter.text
@@ -103,8 +97,7 @@ function createActionButton(action, stringId, filter, callback)
   return button;
 }
 
-function onUrlClick(event)
-{
+function onUrlClick(event) {
   if (event.button != 0)
     return;
 
@@ -116,21 +109,17 @@ function onUrlClick(event)
   event.preventDefault();
 }
 
-function getTitleText(str)
-{
+function getTitleText(str) {
   return promisedPlatform
-    .then((platform) =>
-    {
+    .then((platform) => {
       // Firefox doesn't wrap tooltip strings without whitespace characters
       // so we have to split up the string into individual lines
       // https://bugzilla.mozilla.org/show_bug.cgi?id=805039
-      if (platform === "gecko")
-      {
+      if (platform === "gecko") {
         const maxLineCount = maxTitleLength / 50;
 
         let lines = str.match(/.{1,50}/g);
-        if (lines.length > maxLineCount)
-        {
+        if (lines.length > maxLineCount) {
           // Text is too long to display in full so we cut out the middle part
           lines = [
             ...lines.slice(0, maxLineCount / 2),
@@ -154,19 +143,16 @@ function getTitleText(str)
     });
 }
 
-function onFilterRemoved(oldFilter)
-{
+function onFilterRemoved(oldFilter) {
   const rows = document.querySelectorAll(`[data-filter="${oldFilter.text}"]`);
-  for (const row of rows)
-  {
+  for (const row of rows) {
     const onFilterChanged = onFilterChangedByRow.get(row);
     onFilterChanged(null);
   }
 }
 
-function createRecord(request, filter, options = {})
-{
-  const {hasChanged = false, initialFilter = null} = options;
+function createRecord(request, filter, options = {}) {
+  const { hasChanged = false, initialFilter = null } = options;
   const template = document.querySelector("template").content.firstElementChild;
   const row = document.importNode(template, true);
   row.dataset.type = request.type;
@@ -178,8 +164,7 @@ function createRecord(request, filter, options = {})
   const urlElement = row.querySelector(".url");
   const actionWrapper = row.querySelector(".action-wrapper");
 
-  const onFilterChanged = (newFilter) =>
-  {
+  const onFilterChanged = (newFilter) => {
     const newRow = createRecord(
       request,
       newFilter || initialFilter,
@@ -195,8 +180,7 @@ function createRecord(request, filter, options = {})
   };
   onFilterChangedByRow.set(row, onFilterChanged);
 
-  if (request.url)
-  {
+  if (request.url) {
     setElementText(
       urlElement, "devtools_request_url",
       [request.url, request.rewrittenUrl]
@@ -204,48 +188,40 @@ function createRecord(request, filter, options = {})
 
     const originalUrl = urlElement.querySelector("[data-i18n-index='0']");
     originalUrl.classList.add("url");
-    getTitleText(request.url).then((title) =>
-    {
+    getTitleText(request.url).then((title) => {
       originalUrl.setAttribute("title", title);
     });
     originalUrl.setAttribute("href", request.url);
     originalUrl.setAttribute("target", "_blank");
 
-    if (request.type != "POPUP")
-    {
+    if (request.type != "POPUP") {
       originalUrl.addEventListener("click", onUrlClick);
     }
 
-    if (request.rewrittenUrl)
-    {
+    if (request.rewrittenUrl) {
       const rewrittenUrl = urlElement.querySelector("[data-i18n-index='1'");
       rewrittenUrl.classList.add("url-rewritten");
-      getTitleText(request.rewrittenUrl).then((title) =>
-      {
+      getTitleText(request.rewrittenUrl).then((title) => {
         rewrittenUrl.setAttribute("title", title);
       });
       rewrittenUrl.setAttribute("href", request.rewrittenUrl);
       rewrittenUrl.setAttribute("target", "_blank");
       rewrittenUrl.addEventListener("click", onUrlClick);
     }
-    else
-    {
+    else {
       urlElement.innerHTML = "";
       urlElement.appendChild(originalUrl);
     }
   }
-  else
-  {
+  else {
     urlElement.innerHTML = "&nbsp;";
   }
 
-  if (filter)
-  {
+  if (filter) {
     const filterElement = row.querySelector(".filter");
     const originElement = row.querySelector(".origin");
 
-    getTitleText(filter.text).then((title) =>
-    {
+    getTitleText(filter.text).then((title) => {
       filterElement.setAttribute("title", title);
     });
     filterElement.textContent = filter.text;
@@ -254,8 +230,7 @@ function createRecord(request, filter, options = {})
 
     if (filter.subscription)
       originElement.textContent = filter.subscription;
-    else
-    {
+    else {
       if (filter.userDefined)
         originElement.textContent = getMessage("devtools_filter_origin_custom");
       else
@@ -270,18 +245,16 @@ function createRecord(request, filter, options = {})
     // that were created by an action button on this page while it's open,
     // because those should be removed instead to undo the action
     if (!filter.allowlisted && request.type != "ELEMHIDE" &&
-      request.type != "SNIPPET" && !hasChanged)
-    {
+      request.type != "SNIPPET" && !hasChanged) {
       actionWrapper.appendChild(createActionButton(
         "add",
         "devtools_action_unblock",
-        generateFilter(request, {allowlisted: true}),
+        generateFilter(request, { allowlisted: true }),
         onFilterChanged
       ));
     }
 
-    if (filter.userDefined)
-    {
+    if (filter.userDefined) {
       actionWrapper.appendChild(createActionButton(
         "remove",
         "devtools_action_remove",
@@ -291,12 +264,11 @@ function createRecord(request, filter, options = {})
     }
   }
   // We cannot generate blocking filters for the top-level frame
-  else if (request.type !== "DOCUMENT")
-  {
+  else if (request.type !== "DOCUMENT") {
     actionWrapper.appendChild(createActionButton(
       "add",
       "devtools_action_block",
-      generateFilter(request, {domainSpecific: request.specificOnly}),
+      generateFilter(request, { domainSpecific: request.specificOnly }),
       onFilterChanged
     ));
   }
@@ -307,8 +279,7 @@ function createRecord(request, filter, options = {})
   return row;
 }
 
-function shouldFilterRow(row, query)
-{
+function shouldFilterRow(row, query) {
   const elementsToSearch = [
     row.getElementsByClassName("filter"),
     row.getElementsByClassName("origin"),
@@ -316,10 +287,8 @@ function shouldFilterRow(row, query)
     row.getElementsByClassName("url")
   ];
 
-  for (const elements of elementsToSearch)
-  {
-    for (const element of elements)
-    {
+  for (const elements of elementsToSearch) {
+    for (const element of elements) {
       if (element.innerText.search(query) != -1)
         return false;
     }
@@ -327,10 +296,8 @@ function shouldFilterRow(row, query)
   return true;
 }
 
-function performSearch(table, query)
-{
-  for (const row of table.rows)
-  {
+function performSearch(table, query) {
+  for (const row of table.rows) {
     if (shouldFilterRow(row, query))
       row.classList.add("filtered-by-search");
     else
@@ -338,37 +305,30 @@ function performSearch(table, query)
   }
 }
 
-function cancelSearch(table)
-{
+function cancelSearch(table) {
   for (const row of table.rows)
     row.classList.remove("filtered-by-search");
 }
 
-document.addEventListener("DOMContentLoaded", () =>
-{
+document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("items");
   const table = container.querySelector("tbody");
 
   document.querySelector("[data-i18n='devtools_footer'] > a")
-    .addEventListener("click", () =>
-    {
+    .addEventListener("click", () => {
       browser.devtools.inspectedWindow.reload();
     }, false);
 
-  document.getElementById("filter-state").addEventListener("change", (event) =>
-  {
+  document.getElementById("filter-state").addEventListener("change", (event) => {
     container.dataset.filterState = event.target.value;
   }, false);
 
-  document.getElementById("filter-type").addEventListener("change", (event) =>
-  {
+  document.getElementById("filter-type").addEventListener("change", (event) => {
     container.dataset.filterType = event.target.value;
   }, false);
 
-  ext.onMessage.addListener((message) =>
-  {
-    switch (message.type)
-    {
+  ext.onMessage.addListener((message) => {
+    switch (message.type) {
       case "add-record":
         table.appendChild(createRecord(message.request, message.filter));
         break;
@@ -392,10 +352,8 @@ document.addEventListener("DOMContentLoaded", () =>
     }
   });
 
-  window.addEventListener("message", (event) =>
-  {
-    switch (event.data.type)
-    {
+  window.addEventListener("message", (event) => {
+    switch (event.data.type) {
       case "performSearch":
         performSearch(table, event.data.queryString);
         lastFilterQuery = event.data.queryString;

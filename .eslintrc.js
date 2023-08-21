@@ -130,9 +130,8 @@ module.exports = {
     'import/resolver': {
       node: {
         paths: [
-          'vendor/adblockplusui/lib/',
-          'vendor/adblockplusui/adblockpluschrome/lib/',
-          'vendor/adblockplusui/adblockpluschrome/adblockpluscore/lib',
+          'adblockplusui/lib/',
+          'adblockplusui/adblockpluschrome/lib/',
         ],
       },
     },

@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EventEmitter } from "../../../vendor/adblockplusui/adblockpluschrome/lib/events.js";
+import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events.js";
 import { SessionStorage } from "./session.js";
 
 /**

@@ -67,7 +67,7 @@ export default {
       './prefs.js': path.resolve('', './adblock-betafish/alias/prefs.js'),
       '../../../adblockpluschrome/lib/prefs': path.resolve('', './adblock-betafish/alias/prefs.js'),
       './options': '../../adblock-betafish/alias/options.js',
-      '../../lib/pages/options.js': '../../../../adblock-betafish/alias/options.js',
+      '../../lib/pages/options.js': '../../../adblock-betafish/alias/options.js',
       './icon': '../../adblock-betafish/alias/icon.js',
       './storage/tab-session.js': path.resolve('', './adblock-betafish/alias/storage/tab-session.js'),
       subscriptionInit: '../../adblock-betafish/alias/subscriptionInit.js',
@@ -77,8 +77,7 @@ export default {
       '../../../vendor/webext-sdk/dist/ewe-api.js': path.resolve('', 'vendor/webext-sdk/dist/ewe-api.js'),
     },
     modules: [
-      'vendor/adblockplusui/adblockpluschrome/lib',
-      'vendor/adblockplusui/lib',
+      'adblockplusui/adblockpluschrome/lib',
       'build/templates',
       'node_modules',
     ],

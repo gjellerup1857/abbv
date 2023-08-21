@@ -37,7 +37,7 @@ import dialogHtml from './dialog.html';
 
 import { isMessage } from '../../polyfills/shared/index';
 import { StartInfo } from '../shared/index';
-import * as api from '../../../vendor/adblockplusui/js/api/index';
+import * as api from '../../../adblockplusui/js/api/index';
 
 
 /**

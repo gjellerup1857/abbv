@@ -20,7 +20,7 @@
    addCustomFilter, */
 
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
-import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
+import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
 import { getSettings, settings } from './prefs/background';
 
 const twitchChannelNamePages = new Map();
@@ -30,10 +30,10 @@ const twitchChannelNamePages = new Map();
 // and update the URLs in the Page and Frame objects
 const twitchHistoryStateUpdateHandler = async function (details) {
   if (details
-      && Object.prototype.hasOwnProperty.call(details, 'frameId')
-      && Object.prototype.hasOwnProperty.call(details, 'tabId')
-      && Object.prototype.hasOwnProperty.call(details, 'url')
-      && details.transitionType === 'link') {
+    && Object.prototype.hasOwnProperty.call(details, 'frameId')
+    && Object.prototype.hasOwnProperty.call(details, 'tabId')
+    && Object.prototype.hasOwnProperty.call(details, 'url')
+    && details.transitionType === 'link') {
     const myURL = new URL(details.url);
     if (myURL.hostname === 'www.twitch.tv') {
       const myFrame = ext.getFrame(details.tabId, details.frameId);

@@ -8,7 +8,7 @@ import { Prefs } from './prefs';
 import * as info from 'info';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import rulesIndex from "@adblockinc/rules/adblock";
-import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port.js";
+import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { getUserId } from '../id/background/index';
 
 let firstRun;

@@ -20,9 +20,9 @@
 import * as info from "info";
 
 import * as ewe from "../../vendor/webext-sdk/dist/ewe-api.js";
-import { installHandler } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/events.js";
-import { port } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port.js";
-import { EventEmitter } from "../../vendor/adblockplusui/adblockpluschrome/lib/events.js";
+import { installHandler } from "../../adblockplusui/adblockpluschrome/lib/messaging/events.js";
+import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
+import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events.js";
 
 const keyPrefix = "pref:";
 

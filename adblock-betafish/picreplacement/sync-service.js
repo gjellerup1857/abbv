@@ -26,7 +26,7 @@
 
 import { TELEMETRY } from '../telemetry/background';
 import { getUserId } from '../id/background/index';
-import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 // check.js imports disableSync from here
 // eslint-disable-next-line import/no-cycle

@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, LocalCDN */
 
-import { EventEmitter } from '../../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from '../../../adblockplusui/adblockpluschrome/lib/events';
 import ServerMessages from '../../servermessages';
 import TelemetryBase from './telemetry-base';
 import postData from '../../fetch-util';

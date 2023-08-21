@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import { EventEmitter } from '../../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from '../../../adblockplusui/adblockpluschrome/lib/events';
 
 import {
   chromeStorageSetHelper,

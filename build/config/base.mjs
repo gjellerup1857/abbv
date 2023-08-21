@@ -24,7 +24,7 @@ export default {
       {
         dest: 'polyfill.js',
         src: [
-          'vendor/adblockplusui/adblockpluschrome/lib/polyfill.js',
+          'adblockplusui/adblockpluschrome/lib/polyfill.js',
         ],
       },
       {
@@ -32,12 +32,12 @@ export default {
         src: [
           'adblock-betafish/extension/bootstrap/serviceworkerInit.js',
           'adblock-betafish/prefs/background/settings.js',
-          'vendor/adblockplusui/adblockpluschrome/lib/devtools.js',
-          'vendor/adblockplusui/adblockpluschrome/lib/debug.js',
+          'adblockplusui/adblockpluschrome/lib/devtools.js',
+          'adblockplusui/adblockpluschrome/lib/debug.js',
           'adblock-betafish/alias/subscriptionInit.js',
           'adblock-betafish/alias/contentFiltering.js',
-          'vendor/adblockplusui/adblockpluschrome/lib/messageResponder.js',
-          'vendor/adblockplusui/adblockpluschrome/lib/filterConfiguration.js',
+          'adblockplusui/adblockpluschrome/lib/messageResponder.js',
+          'adblockplusui/adblockpluschrome/lib/filterConfiguration.js',
           'adblock-betafish/jquery/jquery-3.5.1.min.js',
           'adblock-betafish/errorreporting.js',
           'adblock-betafish/alias/parseFilter.js',
@@ -123,7 +123,7 @@ export default {
       {
         dest: 'ext',
         src: [
-          'vendor/adblockplusui/adblockpluschrome/ext/**',
+          'adblockplusui/adblockpluschrome/ext/**',
         ],
       },
       {
@@ -139,10 +139,10 @@ export default {
           'adblock-betafish/adblock.css',
           'adblock-betafish/picreplacement/contentscript-loader.js',
           'adblock-betafish/picreplacement/premium.preload.js',
-          'vendor/adblockplusui/adblockpluschrome/devtools.html',
-          'vendor/adblockplusui/devtools-panel.js',
+          'adblockplusui/adblockpluschrome/devtools.html',
+          'adblockplusui/devtools-panel.js',
           'adblock-betafish/alias/i18n.js',
-          'vendor/adblockplusui/proxy.html',
+          'adblockplusui/proxy.html',
         ],
       },
     ],

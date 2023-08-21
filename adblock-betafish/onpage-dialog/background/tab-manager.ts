@@ -18,8 +18,9 @@
 import { Tabs } from 'webextension-polyfill';
 import * as browser from 'webextension-polyfill';
 
-import { port } from '../../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port';
+import { port } from '../../../adblockplusui/adblockpluschrome/lib/messaging/port';
 import { TabSessionStorage } from '../../alias/storage/tab-session';
+
 import { getLocaleInfo } from '../../i18n/background';
 import {
   createSafeOriginUrl,
@@ -32,6 +33,7 @@ import { License } from '../../picreplacement/check';
 import * as logger from '../../utilities/background';
 import { MessageSender, TabRemovedEventData } from '../../polyfills/background';
 import { getSettings } from '../../prefs/background/settings';
+
 import {
   shouldBeDismissed,
   shouldBeShown,
@@ -301,14 +303,14 @@ async function showDialog(
       allFrames: false,
       cssOrigin: 'user',
       runAt: 'document_start',
-    }).catch((error) => {
+    }).catch((error: any) => {
       logger.error('Injection of adblock-onpage-dialog-user.css failed');
       logger.error(error);
     });
     await browser.tabs.executeScript(tabId, {
       file: 'onpage-dialog.postload.js',
       allFrames: false,
-    }).catch((error) => {
+    }).catch((error: any) => {
       logger.error('Injection of onpage-dialog-cs.js failed');
       logger.error(error);
     });

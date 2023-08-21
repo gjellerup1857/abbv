@@ -28,7 +28,7 @@
 "use strict";
 
 import * as ewe from "../../vendor/webext-sdk/dist/ewe-api";
-import { port as messagingPort } from "../../vendor/adblockplusui/adblockpluschrome/lib/messaging/port";
+import { port as messagingPort } from "../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { SessionStorage } from "./storage/session.js";
 
 /**

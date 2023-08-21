@@ -21,7 +21,7 @@
 
 import { Prefs } from 'prefs';
 import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
-import { setBadge } from '../vendor/adblockplusui/adblockpluschrome/lib/browserAction';
+import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
 import ServerMessages from './servermessages';
 import { log } from './utilities/background/bg-functions';
 

@@ -16,12 +16,11 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global settings, getSettings, setSetting, ,
-   browser, , , ext */
+/* global settings, getSettings, browser */
 
 import { contentTypes } from 'adblockpluscore/lib/contentTypes';
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
-import { EventEmitter } from '../../vendor/adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
 import {
   SKINNYTALL,
   SKINNYWIDE,
@@ -368,10 +367,10 @@ export class Channels {
         return;
       }
       if (request
-          && request.tabId
-          && filter
-          && filter.type === 'elemhide'
-          && filter.selector && filter.enabled) {
+        && request.tabId
+        && filter
+        && filter.type === 'elemhide'
+        && filter.selector && filter.enabled) {
         const msgDetail = { hidingSelector: filter.selector, command: 'addSelector' };
         browser.tabs.sendMessage(request.tabId, msgDetail, { frameId: request.frameId });
       } else if (request

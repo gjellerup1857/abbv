@@ -25,8 +25,8 @@ import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 
 import { TELEMETRY, IPM as IPMTelemetry } from './telemetry/background';
 import { getUserId } from './id/background/index';
-import { Stats, getBlockedPerPage } from '../vendor/adblockplusui/adblockpluschrome/lib/stats';
-import { revalidateAllowlistingStates } from '../vendor/adblockplusui/adblockpluschrome/lib/allowlisting';
+import { Stats, getBlockedPerPage } from '../adblockplusui/adblockpluschrome/lib/stats';
+import { revalidateAllowlistingStates } from '../adblockplusui/adblockpluschrome/lib/allowlisting';
 import { initialize } from './alias/subscriptionInit';
 import SyncService from './picreplacement/sync-service';
 

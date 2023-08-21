@@ -1,5 +1,5 @@
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, tryToUnwhitelist, getUserFilters,
+/* global browser, isTrustedSender,  tryToUnwhitelist, getUserFilters,
    createDomainAllowlistFilter, addCustomFilter, countCache, checkUpdateProgress,
    adblockIsPaused, pageIsWhitelisted, adblockIsDomainPaused, getCurrentTabInfo,
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
@@ -12,7 +12,7 @@
 import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 import {
   toPlainFilterError,
-} from '../../vendor/adblockplusui/adblockpluschrome/lib/messaging/types';
+} from '../../adblockplusui/adblockpluschrome/lib/messaging/types';
 
 import {
   getSettings, setSetting, settings, settingsNotifier, isValidTheme,

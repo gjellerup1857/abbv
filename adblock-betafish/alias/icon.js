@@ -29,8 +29,8 @@
 import * as info from "info";
 
 import { TabSessionStorage } from "./storage/tab-session.js";
-import { allowlistingState } from "../../vendor/adblockplusui/adblockpluschrome/lib/allowlisting";
-import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../vendor/adblockplusui/adblockpluschrome/lib/browserAction";
+import { allowlistingState } from "../../adblockplusui/adblockpluschrome/lib/allowlisting";
+import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../adblockplusui/adblockpluschrome/lib/browserAction";
 
 import {
   chromeStorageSetHelper,
