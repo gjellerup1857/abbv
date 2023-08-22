@@ -18,6 +18,7 @@
 import * as browser from 'webextension-polyfill';
 import { ExtendedInstallType } from 'adblock-betafish/management';
 import {
+  CommandName,
   createSafeOriginUrl,
   dismissCommand,
   getBehavior,
@@ -59,7 +60,7 @@ const openNewtabOnUpdated = (
   const onUpdatedHandler = openNewtabOnUpdatedHandlerByIPMids.get(ipmId);
   openNewtabOnUpdatedHandlerByIPMids.delete(ipmId);
   browser.tabs.onUpdated.removeListener(onUpdatedHandler);
-  recordEvent(ipmId, NewTabEventType.loaded);
+  recordEvent(ipmId, CommandName.createTab, NewTabEventType.loaded);
 };
 
 
@@ -94,7 +95,7 @@ async function openNewtab(
     return null;
   });
   if (tab !== null) {
-    recordEvent(ipmId, NewTabEventType.created);
+    recordEvent(ipmId, CommandName.createTab, NewTabEventType.created);
     dismissCommand(ipmId);
   }
 }

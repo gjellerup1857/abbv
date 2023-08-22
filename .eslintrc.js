@@ -81,6 +81,8 @@ module.exports = {
         'language_tag',
         'app_version',
         'command_library_version',
+        'command_name',
+        'command_version',
         'install_type',
         'device_id',
         'user_time',

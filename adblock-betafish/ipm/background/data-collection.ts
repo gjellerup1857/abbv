@@ -18,7 +18,7 @@
 import * as info from 'info';
 import * as browser from 'webextension-polyfill';
 
-import { commandLibraryVersion } from './command-library.types';
+import { CommandName, CommandVersion, commandLibraryVersion } from './command-library.types';
 import {
   BaseAttributes,
   DataType,
@@ -92,7 +92,7 @@ async function getBaseAttributes(): Promise<BaseAttributes> {
  * @param name The event name
  * @returns A fully qualified event data object
  */
-async function getEventData(ipmId: string, name: string): Promise<EventData> {
+async function getEventData(ipmId: string, command: CommandName, name: string): Promise<EventData> {
   return {
     type: DataType.event,
     device_id: await getUserId(),
@@ -103,6 +103,8 @@ async function getEventData(ipmId: string, name: string): Promise<EventData> {
     attributes: {
       ...(await getBaseAttributes()),
       ipm_id: ipmId,
+      command_name: command,
+      command_version: CommandVersion[command],
     },
   };
 }
@@ -166,9 +168,13 @@ export async function clearEvents(): Promise<void> {
  * @param ipmId - The IPM ID
  * @param name - The name of the event to record
  */
-export async function recordEvent(ipmId: string, name: string): Promise<void> {
+export async function recordEvent(
+  ipmId: string,
+  command: CommandName,
+  name: string,
+): Promise<void> {
   await Prefs.untilLoaded;
-  const eventData = await getEventData(ipmId, name);
+  const eventData = await getEventData(ipmId, command, name);
   const eventStorage = Prefs.get(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
   Prefs.set(eventStorageKey, eventStorage);

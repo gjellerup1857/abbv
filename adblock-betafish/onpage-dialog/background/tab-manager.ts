@@ -23,6 +23,7 @@ import { TabSessionStorage } from '../../alias/storage/tab-session';
 
 import { getLocaleInfo } from '../../i18n/background';
 import {
+  CommandName,
   createSafeOriginUrl,
   dismissCommand,
   getBehavior,
@@ -153,7 +154,7 @@ async function handleCloseMessage(
   }
 
   void dismissDialog(sender.page.id, ipmId);
-  recordEvent(ipmId, DialogEventType.closed);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.closed);
 }
 
 /**
@@ -184,7 +185,7 @@ async function handleContinueMessage(
   void browser.tabs.create({ url: targetUrl });
 
   void dismissDialog(sender.page.id, ipmId);
-  recordEvent(ipmId, DialogEventType.buttonClicked);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.buttonClicked);
 }
 
 /**
@@ -244,7 +245,7 @@ async function handlePingMessage(
   }
 
   void dismissDialog(sender.page.id, ipmId);
-  recordEvent(ipmId, DialogEventType.ignored);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.ignored);
 }
 
 /**
@@ -259,7 +260,7 @@ function handleTabRemovedEvent(data: TabRemovedEventData): void {
   }
 
   void dismissDialog(tabId, ipmId);
-  recordEvent(ipmId, DialogEventType.ignored);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.ignored);
 }
 
 /**
@@ -316,7 +317,7 @@ async function showDialog(
     });
   }
 
-  recordEvent(ipmId, DialogEventType.injected);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.injected);
 }
 
 /**
