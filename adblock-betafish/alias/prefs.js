@@ -56,7 +56,7 @@ defaults.blocked_total = 0;
  * @type {string[]}
  */
 defaults.bypass_authorizedKeys = [
-    `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsCtBp9/0qCM5lp0lJVSx
+  `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsCtBp9/0qCM5lp0lJVSx
 IAGgWZsX50xeJfBq6OkfsI+305Yj0igVfyVASOaC1fc2JRHD/uAOKk47SiPcBkiz
 mPHUt9ziOtAEkW7GrU6gaVOSwp26vUbSuvg9ouut5U2m8ULOyzp+WyU8nCzTPV5o
 AvCta04bK9or4UnyTRKyqADlNwz7WnH+0QiHYbgtfE/E3rowEoMEAC44C7OiawCm
@@ -187,16 +187,20 @@ defaults.onpage_dialog_command_stats = {};
  * @type {Object}
  */
 defaults.onpage_dialog_timing_configurations = {
-    after_web_allowlisting: {
-        cooldownDuration: 24,
-        maxAllowlistingDelay: 2,
-        maxDisplayCount: 3
-    },
-    revisit_web_allowlisted_site: {
-        cooldownDuration: 48,
-        maxDisplayCount: 3,
-        minAllowlistingDelay: 48 * 60
-    }
+  after_web_allowlisting: {
+    cooldownDuration: 24,
+    maxAllowlistingDelay: 2,
+    maxDisplayCount: 3
+  },
+  revisit_web_allowlisted_site: {
+    cooldownDuration: 48,
+    maxDisplayCount: 3,
+    minAllowlistingDelay: 48 * 60
+  },
+  after_navigation: {
+    cooldownDuration: 1,
+    maxDisplayCount: 1
+  },
 };
 
 /**
@@ -225,238 +229,238 @@ defaults.ping_server_url = 'https://ping.getadblock.com/stats/';
   * @static
   */
 export let Prefs = {
-    /**
-     * Retrieves the given preference.
-     *
-     * @param {string} preference
-     * @return {any}
-     */
-    get(preference) {
-        let result = (preference in overrides ? overrides : defaults)[preference];
+  /**
+   * Retrieves the given preference.
+   *
+   * @param {string} preference
+   * @return {any}
+   */
+  get(preference) {
+    let result = (preference in overrides ? overrides : defaults)[preference];
 
-        // Object preferences are mutable, so we need to clone them to avoid
-        // accidentally modifying the preference when modifying the object
-        if (typeof result === "object")
-            result = JSON.parse(JSON.stringify(result));
+    // Object preferences are mutable, so we need to clone them to avoid
+    // accidentally modifying the preference when modifying the object
+    if (typeof result === "object")
+      result = JSON.parse(JSON.stringify(result));
 
-        return result;
-    },
+    return result;
+  },
 
-    /**
-     * Resets the given preference to its default value.
-     *
-     * @param {string} preference
-     * @return {Promise} A promise that resolves when the underlying
-                         browser.storage.local.set/remove() operation completes
-     */
-    reset(preference) {
-        return Prefs.set(preference, defaults[preference]);
-    },
+  /**
+   * Resets the given preference to its default value.
+   *
+   * @param {string} preference
+   * @return {Promise} A promise that resolves when the underlying
+                       browser.storage.local.set/remove() operation completes
+   */
+  reset(preference) {
+    return Prefs.set(preference, defaults[preference]);
+  },
 
-    /**
-     * Sets the given preference.
-     *
-     * @param {string} preference
-     * @param {any}    value
-     * @return {Promise} A promise that resolves when the underlying
-                         browser.storage.local.set/remove() operation completes
-     */
-    set(preference, value) {
-        let defaultValue = defaults[preference];
+  /**
+   * Sets the given preference.
+   *
+   * @param {string} preference
+   * @param {any}    value
+   * @return {Promise} A promise that resolves when the underlying
+                       browser.storage.local.set/remove() operation completes
+   */
+  set(preference, value) {
+    let defaultValue = defaults[preference];
 
-        if (typeof value != typeof defaultValue)
-            throw new Error("Attempt to change preference type");
+    if (typeof value != typeof defaultValue)
+      throw new Error("Attempt to change preference type");
 
-        if (value == defaultValue) {
-            let oldValue = overrides[preference];
-            delete overrides[preference];
+    if (value == defaultValue) {
+      let oldValue = overrides[preference];
+      delete overrides[preference];
 
-            // Firefox 66 fails to emit storage.local.onChanged events for falsey
-            // values. https://bugzilla.mozilla.org/show_bug.cgi?id=1541449
-            if (!oldValue &&
-                info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66)
-                onStorageChanged({ [prefToKey(preference)]: { oldValue } }, "local");
+      // Firefox 66 fails to emit storage.local.onChanged events for falsey
+      // values. https://bugzilla.mozilla.org/show_bug.cgi?id=1541449
+      if (!oldValue &&
+        info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66)
+        onStorageChanged({ [prefToKey(preference)]: { oldValue } }, "local");
 
-            return browser.storage.local.remove(prefToKey(preference));
-        }
+      return browser.storage.local.remove(prefToKey(preference));
+    }
 
-        overrides[preference] = value;
-        return (customSave.get(preference) || savePref)(preference);
-    },
+    overrides[preference] = value;
+    return (customSave.get(preference) || savePref)(preference);
+  },
 
-    /**
-     * Adds a callback that is called when the
-     * value of a specified preference changed.
-     *
-     * @param {string}   preference
-     * @param {function} callback
-     */
-    on(preference, callback) {
-        eventEmitter.on(preference, callback);
-    },
+  /**
+   * Adds a callback that is called when the
+   * value of a specified preference changed.
+   *
+   * @param {string}   preference
+   * @param {function} callback
+   */
+  on(preference, callback) {
+    eventEmitter.on(preference, callback);
+  },
 
-    /**
-     * Removes a callback for the specified preference.
-     *
-     * @param {string}   preference
-     * @param {function} callback
-     */
-    off(preference, callback) {
-        eventEmitter.off(preference, callback);
-    },
+  /**
+   * Removes a callback for the specified preference.
+   *
+   * @param {string}   preference
+   * @param {function} callback
+   */
+  off(preference, callback) {
+    eventEmitter.off(preference, callback);
+  },
 
-    /**
-     * Reads the documentation_link preference and substitutes placeholders.
-     *
-     * @param {string} linkID
-     * @return {string}
-     */
-    getDocLink(linkID) {
-        return this.documentation_link
-            .replace(/%LINK%/g, linkID)
-            .replace(/%LANG%/g, browser.i18n.getUILanguage());
-    },
+  /**
+   * Reads the documentation_link preference and substitutes placeholders.
+   *
+   * @param {string} linkID
+   * @return {string}
+   */
+  getDocLink(linkID) {
+    return this.documentation_link
+      .replace(/%LINK%/g, linkID)
+      .replace(/%LANG%/g, browser.i18n.getUILanguage());
+  },
 
-    /**
-     * A promise that is fullfilled when all preferences have been loaded.
-     * Wait for this promise to be fulfilled before using preferences during
-     * extension initialization.
-     *
-     * @type {Promise}
-     */
-    untilLoaded: null
+  /**
+   * A promise that is fullfilled when all preferences have been loaded.
+   * Wait for this promise to be fulfilled before using preferences during
+   * extension initialization.
+   *
+   * @type {Promise}
+   */
+  untilLoaded: null
 };
 
 function keyToPref(key) {
-    if (key.indexOf(keyPrefix) != 0)
-        return null;
+  if (key.indexOf(keyPrefix) != 0)
+    return null;
 
-    return key.substr(keyPrefix.length);
+  return key.substr(keyPrefix.length);
 }
 
 function prefToKey(pref) {
-    return keyPrefix + pref;
+  return keyPrefix + pref;
 }
 
 function savePref(pref) {
-    return browser.storage.local.set({ [prefToKey(pref)]: overrides[pref] });
+  return browser.storage.local.set({ [prefToKey(pref)]: overrides[pref] });
 }
 
 let customSave = new Map();
 if (info.platform == "gecko" && parseInt(info.platformVersion, 10) < 66) {
-    // Saving one storage value causes all others to be saved as well for
-    // Firefox versions <66. Make sure that updating ad counter doesn't cause
-    // the filters data to be saved frequently as a side-effect.
-    let promise = null;
-    customSave.set("blocked_total", pref => {
-        if (!promise) {
-            promise = new Promise((resolve, reject) => {
-                setTimeout(
-                    () => {
-                        promise = null;
-                        savePref(pref).then(resolve, reject);
-                    },
-                    60 * 1000
-                );
-            });
-        }
-        return promise;
-    });
+  // Saving one storage value causes all others to be saved as well for
+  // Firefox versions <66. Make sure that updating ad counter doesn't cause
+  // the filters data to be saved frequently as a side-effect.
+  let promise = null;
+  customSave.set("blocked_total", pref => {
+    if (!promise) {
+      promise = new Promise((resolve, reject) => {
+        setTimeout(
+          () => {
+            promise = null;
+            savePref(pref).then(resolve, reject);
+          },
+          60 * 1000
+        );
+      });
+    }
+    return promise;
+  });
 }
 
 function addPreference(pref) {
-    Object.defineProperty(Prefs, pref, {
-        get() {
-            return Prefs.get(pref);
-        },
-        set(value) {
-            Prefs.set(pref, value);
-        },
-        enumerable: true
-    });
+  Object.defineProperty(Prefs, pref, {
+    get() {
+      return Prefs.get(pref);
+    },
+    set(value) {
+      Prefs.set(pref, value);
+    },
+    enumerable: true
+  });
 }
 
 function onStorageChanged(changes) {
-    for (let key in changes) {
-        let pref = keyToPref(key);
-        if (pref && pref in defaults) {
-            let change = changes[key];
-            if ("newValue" in change && change.newValue != defaults[pref])
-                overrides[pref] = change.newValue;
-            else
-                delete overrides[pref];
+  for (let key in changes) {
+    let pref = keyToPref(key);
+    if (pref && pref in defaults) {
+      let change = changes[key];
+      if ("newValue" in change && change.newValue != defaults[pref])
+        overrides[pref] = change.newValue;
+      else
+        delete overrides[pref];
 
-            eventEmitter.emit(pref);
-        }
+      eventEmitter.emit(pref);
     }
+  }
 }
 
 async function init() {
-    let prefs = Object.keys(defaults);
-    prefs.forEach(addPreference);
+  let prefs = Object.keys(defaults);
+  prefs.forEach(addPreference);
 
-    let isEdgeChromium = info.application == "edge" &&
-        info.platform == "chromium";
+  let isEdgeChromium = info.application == "edge" &&
+    info.platform == "chromium";
 
-    // When upgrading from EdgeHTML to Edge Chromium (v79) data stored in
-    // browser.storage.local gets corrupted.
-    // To fix it, we have to call JSON.parse twice.
-    // See: https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/152
-    if (isEdgeChromium) {
-        let items = await browser.storage.local.get(null);
+  // When upgrading from EdgeHTML to Edge Chromium (v79) data stored in
+  // browser.storage.local gets corrupted.
+  // To fix it, we have to call JSON.parse twice.
+  // See: https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/152
+  if (isEdgeChromium) {
+    let items = await browser.storage.local.get(null);
 
-        let fixedItems = {};
-        for (let key in items) {
-            if (typeof items[key] == "string") {
-                try {
-                    fixedItems[key] = JSON.parse(JSON.parse(items[key]));
-                }
-                catch (e) { }
-            }
-        }
-
-        await browser.storage.local.set(fixedItems);
-    }
-
-    {
-        let items = await browser.storage.local.get(prefs.map(prefToKey));
-        for (let key in items)
-            overrides[keyToPref(key)] = items[key];
-    }
-
-    if ("managed" in browser.storage) {
+    let fixedItems = {};
+    for (let key in items) {
+      if (typeof items[key] == "string") {
         try {
-            let items = await browser.storage.managed.get(null);
-            for (let key in items)
-                defaults[key] = items[key];
+          fixedItems[key] = JSON.parse(JSON.parse(items[key]));
         }
-        catch (e) {
-            // Opera doesn't support browser.storage.managed, but instead of simply
-            // removing the API, it gives an asynchronous error which we ignore here.
-        }
+        catch (e) { }
+      }
     }
 
-    browser.storage.onChanged.addListener(onStorageChanged);
+    await browser.storage.local.set(fixedItems);
+  }
 
-    // Initialize notifications_ignoredcategories pseudo preference
-    Object.defineProperty(Prefs, "notifications_ignoredcategories", {
-        get() {
-            return ewe.notifications.getIgnoredCategories();
-        },
-        set(value) {
-            ewe.notifications.toggleIgnoreCategory("*", !!value);
-        },
-        enumerable: true
-    });
+  {
+    let items = await browser.storage.local.get(prefs.map(prefToKey));
+    for (let key in items)
+      overrides[keyToPref(key)] = items[key];
+  }
 
-    ewe.notifications.on(
-        "ignored-category-added",
-        () => eventEmitter.emit("notifications_ignoredcategories")
-    );
-    ewe.notifications.on(
-        "ignored-category-removed",
-        () => eventEmitter.emit("notifications_ignoredcategories")
-    );
+  if ("managed" in browser.storage) {
+    try {
+      let items = await browser.storage.managed.get(null);
+      for (let key in items)
+        defaults[key] = items[key];
+    }
+    catch (e) {
+      // Opera doesn't support browser.storage.managed, but instead of simply
+      // removing the API, it gives an asynchronous error which we ignore here.
+    }
+  }
+
+  browser.storage.onChanged.addListener(onStorageChanged);
+
+  // Initialize notifications_ignoredcategories pseudo preference
+  Object.defineProperty(Prefs, "notifications_ignoredcategories", {
+    get() {
+      return ewe.notifications.getIgnoredCategories();
+    },
+    set(value) {
+      ewe.notifications.toggleIgnoreCategory("*", !!value);
+    },
+    enumerable: true
+  });
+
+  ewe.notifications.on(
+    "ignored-category-added",
+    () => eventEmitter.emit("notifications_ignoredcategories")
+  );
+  ewe.notifications.on(
+    "ignored-category-removed",
+    () => eventEmitter.emit("notifications_ignoredcategories")
+  );
 }
 
 Prefs.untilLoaded = init();
@@ -479,8 +483,8 @@ port.on("prefs.get", (message, sender) => Prefs[message.key]);
  * @returns {string|string[]|number|boolean|undefined}
  */
 port.on(
-    "prefs.set",
-    async (message, sender) => Prefs[message.key] = message.value
+  "prefs.set",
+  async (message, sender) => Prefs[message.key] = message.value
 );
 
 /**
@@ -491,10 +495,10 @@ port.on(
  * @returns {?boolean}
  */
 port.on("prefs.toggle", async (message, sender) => {
-    if (message.key == "notifications_ignoredcategories")
-        return ewe.notifications.toggleIgnoreCategory("*");
+  if (message.key == "notifications_ignoredcategories")
+    return ewe.notifications.toggleIgnoreCategory("*");
 
-    return Prefs[message.key] = !Prefs[message.key];
+  return Prefs[message.key] = !Prefs[message.key];
 });
 
 /**
@@ -506,17 +510,17 @@ port.on("prefs.toggle", async (message, sender) => {
  * @returns {string}
  */
 port.on("prefs.getDocLink", (message, sender) => {
-    let { application, platform } = info;
-    if (platform == "chromium" && application != "opera" && application != "edge")
-        application = "chrome";
-    else if (platform == "gecko")
-        application = "firefox";
+  let { application, platform } = info;
+  if (platform == "chromium" && application != "opera" && application != "edge")
+    application = "chrome";
+  else if (platform == "gecko")
+    application = "firefox";
 
-    return Prefs.getDocLink(message.link.replace("{browser}", application));
+  return Prefs.getDocLink(message.link.replace("{browser}", application));
 });
 
 installHandler("prefs", null, (emit, action) => {
-    const onChanged = () => emit(Prefs[action]);
-    Prefs.on(action, onChanged);
-    return () => Prefs.off(action, onChanged);
+  const onChanged = () => emit(Prefs[action]);
+  Prefs.on(action, onChanged);
+  return () => Prefs.off(action, onChanged);
 });

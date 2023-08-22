@@ -15,13 +15,15 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as eweImport from '../../../vendor/webext-sdk/dist/ewe-api.js';
+import { Tabs } from 'webextension-polyfill';
+import { domainSuffixes, parseDomains } from 'adblockpluscore/lib/url';
+import * as eweImport from '../../../vendor/webext-sdk/dist/ewe-api';
 
-import { Prefs } from '../../alias/prefs.js';
+import { Prefs } from '../../alias/prefs';
 
 import * as logger from '../../utilities/background';
 import { isFilterMetadata } from '../../polyfills/background';
-import { Timing, isTiming } from './middleware';
+import { DialogBehavior, Timing, isTiming } from './middleware';
 import { Stats } from './stats.types';
 import { TimingConfiguration } from './timing.types';
 
@@ -141,25 +143,95 @@ export function shouldBeDismissed(timing: Timing, stats: Stats): boolean {
 }
 
 /**
- * Determines whether command should be shown
+   * Checks whether the tab URL is a match to the domain(s) on the command
+   * @param tabDomain - the domain of the tab
+   * @param domains - the domains
+   * @return true if the tab URL is a match to the domain(s) on the command
+   */
+const isActiveOnDomain = function (
+  tabDomain: string,
+  domains: Map<string, boolean>,
+): boolean {
+  // If no domains are set the rule matches everywhere
+  if (!domains) {
+    return true;
+  }
+  let docDomain = tabDomain;
+  if (docDomain === null) {
+    docDomain = '';
+  } else if (docDomain[docDomain.length - 1] === '.') {
+    docDomain = docDomain.substring(0, docDomain.length - 1);
+  }
+  // If the document has no host name, match only if the command
+  // isn't restricted to specific domains
+  if (!docDomain) {
+    return !!domains.get('');
+  }
+
+  for (docDomain of domainSuffixes(docDomain)) {
+    const isDomainIncluded = domains.get(docDomain);
+    if (typeof isDomainIncluded !== 'undefined') {
+      return isDomainIncluded;
+    }
+  }
+
+  return !!domains.get('');
+};
+
+/**
+ * Determines whether afterNavigation command should be shown
  *
- * @param timing - Timing name
- * @param tabId - Tab ID
+ * @param behavior - Behavior for the command
+ * @param tab - Tab
  * @param stats - On-page stats
  *
  * @returns whether command should be shown
  */
-export async function shouldBeShown(
-  timing: Timing,
-  tabId: number,
+function shouldBeShownForAfterNavigation(
+  behavior: DialogBehavior,
+  tab: Tabs.Tab,
+  stats: Stats,
+): boolean {
+  const { timing } = behavior;
+  // Ignore commands that should have already been dismissed
+  if (shouldBeDismissed(timing, stats)) {
+    logger.debug('[onpage-dialog]: No more dialogs to show for command');
+    return false;
+  }
+  // if there are no domains, then it should be shown
+  if (!behavior.domain_list) {
+    return true;
+  }
+  const parsedDomains = parseDomains(behavior.domain_list, ',');
+  if (!parsedDomains) {
+    return true;
+  }
+  const tabURL = new URL(tab.url || '');
+  return isActiveOnDomain(tabURL.hostname, parsedDomains);
+}
+
+/**
+ * Determines whether afterWebAllowlisting or the
+ * revisitWebAllowlisted command should be shown
+ *
+ * @param behavior - Behavior for the command
+ * @param tab - Tab
+ * @param stats - On-page stats
+ *
+ * @returns whether command should be shown
+ */
+async function shouldBeShownForAfterWebAllowlisting(
+  behavior: DialogBehavior,
+  tab: Tabs.Tab,
   stats: Stats,
 ): Promise<boolean> {
+  const { timing } = behavior;
+  const tabId = tab.id || 0;
   const config = knownConfigs.get(timing);
   if (!config) {
     logger.debug('[onpage-dialog]: Unknown timing');
     return false;
   }
-
   const allowlistingTime = await getAllowlistingTime(tabId);
   if (allowlistingTime === null) {
     logger.debug('[onpage-dialog]: Not allowlisted');
@@ -194,7 +266,41 @@ export async function shouldBeShown(
     return false;
   }
 
+  // Check if there are domains for the command
+  if (behavior.domain_list) {
+    const parsedDomains = parseDomains(behavior.domain_list, ',');
+    if (!parsedDomains) {
+      return true;
+    }
+    const tabURL = new URL(tab.url || '');
+    return isActiveOnDomain(tabURL.hostname, parsedDomains);
+  }
   return true;
+}
+/**
+ * Determines whether command should be shown
+ *
+ * @param timing - Timing
+ * @param tab - Tab
+ * @param stats - On-page stats
+ *
+ * @returns whether command should be shown
+ */
+export async function shouldBeShown(
+  behavior: DialogBehavior,
+  tab: Tabs.Tab,
+  stats: Stats,
+): Promise<boolean> {
+  const { timing } = behavior;
+
+  if (Timing.afterNavigation === timing) {
+    return shouldBeShownForAfterNavigation(behavior, tab, stats);
+  }
+  if (Timing.afterWebAllowlisting === timing
+    || Timing.revisitWebAllowlisted === timing) {
+    return shouldBeShownForAfterWebAllowlisting(behavior, tab, stats);
+  }
+  return false;
 }
 
 /**
