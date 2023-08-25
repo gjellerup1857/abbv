@@ -23,7 +23,7 @@
 
 /** @module contentFiltering */
 
-import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
+import * as ewe from "@eyeo/webext-sdk";
 import * as snippets from "@eyeo/snippets";
 
 function loadSnippets() {

@@ -18,8 +18,9 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global License*/
 
+import * as ewe from '@eyeo/webext-sdk';
+
 import ServerMessages from './servermessages';
-import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 import { createFilterMetaData } from './utilities/background/bg-functions';
 
 const authorizedKeys = [

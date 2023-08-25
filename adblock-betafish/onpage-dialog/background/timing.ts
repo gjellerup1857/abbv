@@ -17,7 +17,7 @@
 
 import { Tabs } from 'webextension-polyfill';
 import { domainSuffixes, parseDomains } from 'adblockpluscore/lib/url';
-import * as eweImport from '../../../vendor/webext-sdk/dist/ewe-api';
+import * as ewe from '@eyeo/webext-sdk';
 
 import { Prefs } from '../../alias/prefs';
 
@@ -26,10 +26,6 @@ import { isFilterMetadata } from '../../polyfills/background';
 import { DialogBehavior, Timing, isTiming } from './middleware';
 import { Stats } from './stats.types';
 import { TimingConfiguration } from './timing.types';
-
-// We cannot declare EWE as an ambient module, so we need to assign it
-// to an interface instead, until we import it as an npm module
-const ewe = eweImport as unknown as EWE;
 
 /**
  * Key for on-page dialog timing configurations storage

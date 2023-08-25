@@ -17,7 +17,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global  */
 
-import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
+import * as ewe from '@eyeo/webext-sdk';
 import abRecommendationData from './data/betafish-subscriptions.json';
 
 const legacyDistractionControlIDs = {

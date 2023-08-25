@@ -19,8 +19,9 @@
 /* global browser, channels, replacedCounts, getSettings
     BigInt, LocalCDN,  */
 
+import * as ewe from '@eyeo/webext-sdk';
+
 import { Prefs } from '../../alias/prefs';
-import * as ewe from '../../../vendor/webext-sdk/dist/ewe-api';
 import ServerMessages from '../../servermessages';
 import SubscriptionAdapter from '../../subscriptionadapter';
 import { getUserId } from '../../id/background/index';

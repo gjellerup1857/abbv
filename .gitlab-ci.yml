@@ -14,7 +14,6 @@ build:
   stage: build
   before_script:
     - apt-get install git
-    - npm run submodules:update
     - npm ci
   script:
     # Create extension builds

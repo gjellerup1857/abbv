@@ -19,7 +19,7 @@
 /* global browser, ext,
    addCustomFilter, */
 
-import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
+import * as ewe from '@eyeo/webext-sdk';
 import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
 import { getSettings, settings } from './prefs/background';
 

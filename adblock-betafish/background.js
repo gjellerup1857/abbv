@@ -19,9 +19,10 @@
 /* global browser, ext, twitchChannelNamePages, ytChannelNamePages,
    updateButtonUIAndContextMenus,  */
 
+import * as ewe from '@eyeo/webext-sdk';
+
 import * as info from 'info';
 import { Prefs } from './alias/prefs';
-import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
 
 import { TELEMETRY, IPM as IPMTelemetry } from './telemetry/background';
 import { getUserId } from './id/background/index';

@@ -15,7 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as ewe from "../../vendor/webext-sdk/dist/ewe-api.js";
+import * as ewe from "@eyeo/webext-sdk";
+
 import { showOptions } from "../../lib/pages/options.js";
 import { installHandler } from "./messaging/events.js";
 import { port } from "./messaging/port.js";

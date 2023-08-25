@@ -16,12 +16,12 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, parseFilter, chromeStorageSetHelper */
+/* global browser, chromeStorageSetHelper */
 
 // Module for removing individual filters from filter lists
 // An 'advance' feature, used on the Customize tab, titled "disabled filters"
 
-import * as ewe from '../vendor/webext-sdk/dist/ewe-api';
+import * as ewe from '@eyeo/webext-sdk';
 
 const ExcludeFilter = (function excludeFilter() {
   const excludeFiltersKey = 'exclude_filters';

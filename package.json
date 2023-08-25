@@ -20,10 +20,7 @@
     "prettier": "prettier --check adblock-betafish/**/*.{css,json,html}",
     "prettier-fix": "prettier --write adblock-betafish/**/*.{css,json,html}",
     "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
-    "submodules:update": "git submodule update --init --recursive",
-    "postinstall": "npm run install-webext-sdk && npm run build-webext-sdk && npm run build-rule-index",
-    "install-webext-sdk": "npm install --loglevel=error --no-audit --no-fund --no-optional --prefix ./vendor/webext-sdk || echo 'Skipping SDK installation'",
-    "build-webext-sdk": "npm run --prefix ./vendor/webext-sdk build -- --config-name sdk --no-devtool || echo 'Skipping SDK build'",
+    "postinstall": "npm run build-rule-index",
     "build-rule-index": "npm explore @adblockinc/rules -- npm run build adblock"
   },
   "devDependencies": {
@@ -71,6 +68,7 @@
   "dependencies": {
     "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#090b82a5f45b144e649d0f17faee0cbfad7fd624",
     "@eyeo/snippets": "0.8.1",
+    "@eyeo/webext-sdk": "0.9.0",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",

@@ -22,15 +22,7 @@ Then install the above requirements and run the commands below from within Bash.
 
 ### Updating the dependencies
 
-In order to build the extension, you need to run the
-
-`npm run submodules:update`
-
-script.
-
-_Note: when building from a source archive, the above step must be skipped._
-
-Run the following command to install all of the required packages
+In order to build the extension, you need to run the following command to install all of the required packages
 
 `npm install`
 

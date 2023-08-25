@@ -29,13 +29,13 @@ interface FiltersGetAllowingFiltersOptions {
     types?: string[] = ["document"];
 }
 
-declare interface EWE {
-    filters: {
+declare module "@eyeo/webext-sdk" {
+    declare namespace filters {
         /**
          * Returns the allowing filters that will be effective when the given
          * document will be reloaded
          */
-        getAllowingFilters: (
+        const getAllowingFilters: (
             /**
              * ID of tab to look up
              */
@@ -53,13 +53,13 @@ declare interface EWE {
          *
          * @returns filter metadata
          */
-        getMetadata: (text: string) => Promise<?object>;
-    };
+        const getMetadata: (text: string) => Promise<?object>;
+    }
 
-    notifications: {
+    declare namespace notifications {
         /**
          * Returns the list of ignored notification categories
          */
-        getIgnoredCategories: () => string[];
-    };
+        const getIgnoredCategories: () => string[];
+    }
 }

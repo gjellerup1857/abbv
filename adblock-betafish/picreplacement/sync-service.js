@@ -24,10 +24,11 @@
 
 /** @module SyncService */
 
+import * as ewe from '@eyeo/webext-sdk';
+
 import { TELEMETRY } from '../telemetry/background';
 import { getUserId } from '../id/background/index';
 import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
-import * as ewe from '../../vendor/webext-sdk/dist/ewe-api';
 // check.js imports disableSync from here
 // eslint-disable-next-line import/no-cycle
 import { License } from './check';

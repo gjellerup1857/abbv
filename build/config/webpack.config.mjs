@@ -72,9 +72,6 @@ export default {
       './storage/tab-session.js': path.resolve('', './adblock-betafish/alias/storage/tab-session.js'),
       subscriptionInit: '../../adblock-betafish/alias/subscriptionInit.js',
       uninstall: '../../adblock-betafish/alias/uninstall.js',
-      '../vendor/webext-sdk/dist/ewe-api.js': path.resolve('', 'vendor/webext-sdk/dist/ewe-api.js'),
-      '../../vendor/webext-sdk/dist/ewe-api.js': path.resolve('', 'vendor/webext-sdk/dist/ewe-api.js'),
-      '../../../vendor/webext-sdk/dist/ewe-api.js': path.resolve('', 'vendor/webext-sdk/dist/ewe-api.js'),
     },
     modules: [
       'adblockplusui/adblockpluschrome/lib',
