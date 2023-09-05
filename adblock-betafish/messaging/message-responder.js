@@ -41,6 +41,7 @@ import ExcludeFilter from '../excludefilter';
 import messageValidator from './messagevalidator';
 import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
 import { createFilterMetaData } from '../utilities/background/bg-functions';
+import { getReadyState } from '../testing/ready-state/background/index.ts';
 
 const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -141,6 +142,23 @@ settings.onload().then(() => {
     }
   });
   settingsNotifier.on('settings.changed', getListener('settings', 'changed'));
+});
+
+/**
+ * Process messages for testing purposes
+ *
+ */
+/* eslint-disable consistent-return */
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+
+  if (message.command !== 'testing.getReadyState') {
+    return;
+  }
+
+  return processMessageResponse(sendResponse, getReadyState());
 });
 
 /**

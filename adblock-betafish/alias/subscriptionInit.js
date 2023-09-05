@@ -27,6 +27,7 @@ import * as ewe from "@eyeo/webext-sdk";
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { getUserId } from '../id/background/index';
+import {setReadyState, ReadyState} from "../../adblock-betafish/testing/ready-state/background/index.ts";
 
 let firstRun;
 let reinitialized = false;
@@ -177,6 +178,8 @@ const initialize = ewe.start({
   // adding default filter lists
   await addSubscriptions();
   await removeSubscriptions();
+
+  setReadyState(ReadyState.started);
 });
 
 
