@@ -2,7 +2,38 @@
 
 UNRELEASED:
 
+Version: 5.10.0, Date: 2023-09-06
+- Updated the eyeo's Web Extension Ad Blocking Toolkit to version 0.9.0
+- Replaced the vendor/webext-sdk git submodule with @eyeo/webext-sdk npm package
+- Updated the eyeo snippets dependency to 0.8.1
+- Updated the create_on_page_dialog command; added a `domain_list` parameter
+- Added the command name and version to IPM event object request
+- Changed the IPM versioning from command library level to command level
+- Removed the adblockplusui git dependency; added a copy of the required adblockplusui files in their own directory
+- Fixed an issue with the contact link in the AdBlock help flow
+- Fixed an issue with the allowlist and hiding wizards showing multiple a CTA times
+- Updated the AdBlock configuration files to remove an unnecessary steps
+
 Version: 5.9.0, Date: 2023-08-02
+- Added a new IPM command to open a new tab
+- Updated the Distraction Control options page tab
+- Added the new, combined Distraction Control filter list
+- Fixed an error that occurred during the sending of the telemetry request
+- Added support for a Manifest V3 (MV3) compliant build of AdBlock
+  - Fixed the MV3 beta build process
+  - Update the AdBlock popup menu work in an MV3 environment
+  - Integrate static filter lists for MV3
+  - Fixed the AdBlock icon block counter
+  - Updated the trigger mechanism that opens the first run page
+  - Added support for the new, MV3 specific execute script API
+  - Fixed context menus in an MV3 environment
+  - Added a new `isPinned` parameter to the telemetry request
+  - Removed the obsolete AdBlock custom filter list
+- Upgraded the adblockpluscore dependency to 0.11.0
+- Upgraded the webext-SDK dependency to 0.8.1
+- Updated the CI script to run tests on the Edge browser
+- Added the missing variables in the CI script
+- Updated the CI script to run tests on the MV3 builds in the CI scrip
 
 Version: 5.8.1, Date: 2023-07-20
 - Updated the bundled Snippets library to 0.7.0
