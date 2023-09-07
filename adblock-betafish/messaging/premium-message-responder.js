@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, openTab,
+/* global browser, isTrustedSender, isTrustedSenderDomain, openTab,
    processMessageResponse */
 
 import * as ewe from '@eyeo/webext-sdk';
@@ -166,8 +166,6 @@ License.ready().then(() => {
         License.updatePeriodically();
         sendResponse({});
         break;
-      case 'isActiveLicense':
-        return processMessageResponse(sendResponse, License.isActiveLicense());
       case 'shouldShowMyAdBlockEnrollment':
         return processMessageResponse(sendResponse, License.shouldShowMyAdBlockEnrollment());
       default:
@@ -181,6 +179,9 @@ License.ready().then(() => {
    */
   /* eslint-disable consistent-return */
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (!isTrustedSenderDomain(sender)) {
+      return;
+    }
     const { command } = message;
     switch (command) {
       case 'openPremiumPayURL':
@@ -191,6 +192,8 @@ License.ready().then(() => {
         License.activate();
         sendResponse({ ack: true });
         break;
+      case 'isActiveLicense':
+        return processMessageResponse(sendResponse, License.isActiveLicense());
       case 'setBlacklistCTAStatus':
         License.shouldShowBlacklistCTA(message.isEnabled);
         sendResponse({});

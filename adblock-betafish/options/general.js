@@ -22,7 +22,7 @@
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
    SubscriptionsProxy, DataCollectionV2, browser, LocalCDN, send */
 
-// Handle incoming clicks from bandaids.js & '/installed'
+// Handle incoming clicks from content scripts on getadblock.com
 try {
   if (parseUri.parseSearch(window.location.search).aadisabled === 'true') {
     $('#acceptable_ads_info').show();

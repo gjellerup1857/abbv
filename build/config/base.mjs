@@ -52,6 +52,7 @@ export default {
           'adblock-betafish/notifications/background/notifications.js',
           'adblock-betafish/messaging/premium-message-responder.js',
           'adblock-betafish/messaging/message-responder.js',
+          'adblock-betafish/api/protected/background/getadblock.js',
           'adblock-betafish/ipm/background/index.ts',
           'adblock-betafish/onpage-dialog/background/index.ts',
           'adblock-betafish/new-tab/background/index.ts',
@@ -160,8 +161,8 @@ export default {
         src: 'adblock-betafish/functions.js',
       },
       {
-        dest: 'adblock-bandaids.js',
-        src: 'adblock-betafish/bandaids.js',
+        dest: 'adblock-getadblock.js',
+        src: 'adblock-betafish/api/protected/content/getadblock.js',
       },
       {
         dest: 'adblock-yt-cs.js',

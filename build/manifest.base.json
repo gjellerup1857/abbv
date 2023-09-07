@@ -48,7 +48,7 @@
     {
       "all_frames": true,
       "js": [
-        "adblock-bandaids.js"
+        "adblock-getadblock.js"
       ],
       "matches": [
         "*://*.getadblock.com/*",

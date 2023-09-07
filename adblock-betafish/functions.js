@@ -50,13 +50,6 @@ const onReady = function (callback) {
   }
 };
 
-// Excecute any bandaid for the specific site, if the bandaids.js was loaded.
-onReady(() => {
-  if (typeof runBandaids === 'function') {
-    runBandaids();
-  }
-});
-
 // Inputs:
 //   - messageName : Str
 //   - substitutions : Array of Str or a String
