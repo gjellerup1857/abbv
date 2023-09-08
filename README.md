@@ -33,11 +33,15 @@ e.g. after checking out a new revison.
 
 ### Building the extension
 
-Run the following command in the project directory:
+Run one of the following commands in the project directory:
 
 `npx gulp build -t {chrome|firefox} -m {2|3}`
 
-This will create a build with a name in the form
+`npm run build:release {chrome|firefox}`
+
+The second is a shorter version of the first, and it will build only a manifest v2 version.
+
+Both will create a build with a name in the form
 _adblockpluschrome-n.n.n.zip_ or _adblockplusfirefox-n.n.n.xpi_. These builds
 are unsigned. They can be submitted as-is to the extension stores, or if
 unpacked loaded in development mode for testing (same as devenv builds below).
@@ -45,11 +49,17 @@ unpacked loaded in development mode for testing (same as devenv builds below).
 ### Development environment
 
 To simplify the process of testing your changes you can create an unpacked
-development environment. For that run one of the following command:
+development environment. For that run one of the following commands:
 
 `npx gulp devenv -t {chrome|firefox} -m {2|3}`
 
-This will create a _devenv.*_ directory in the project directory. You can load
+`npm run build:dev {chrome|firefox}`
+
+`npm run build:dev:all`
+
+The second two are aliases for the first. Both build manifest v2 versions, where the second also by default builds both the Chrome and Firefox versions.
+
+All will create a _devenv.*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
 Chromium-based browsers, and under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development
