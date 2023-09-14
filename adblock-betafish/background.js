@@ -24,26 +24,27 @@ import * as ewe from '@eyeo/webext-sdk';
 import * as info from 'info';
 import { Prefs } from './alias/prefs';
 
-import { TELEMETRY, IPM as IPMTelemetry } from './telemetry/background';
-import { getUserId } from './id/background/index';
-import { Stats, getBlockedPerPage } from '../adblockplusui/adblockpluschrome/lib/stats';
-import { revalidateAllowlistingStates } from '../adblockplusui/adblockpluschrome/lib/allowlisting';
-import { initialize } from './alias/subscriptionInit';
-import SyncService from './picreplacement/sync-service';
-
-import SubscriptionAdapter from './subscriptionadapter';
-import DataCollectionV2 from './datacollection.v2';
 import { getNewBadgeTextReason } from './alias/icon';
-import LocalDataCollection from './localdatacollection';
+import { getUserId } from './id/background/index';
+import { initialize } from './alias/subscriptionInit';
+import { IPM as IPMTelemetry, TELEMETRY } from './telemetry/background';
+import { getBlockedPerPage, Stats } from '../adblockplusui/adblockpluschrome/lib/stats';
+import { getSettings, settings } from './prefs/background';
 import { License, channels } from './picreplacement/check';
-import ServerMessages from './servermessages';
+import { revalidateAllowlistingStates } from '../adblockplusui/adblockpluschrome/lib/allowlisting';
 import { setUninstallURL } from './alias/uninstall';
+
+import DataCollectionV2 from './datacollection.v2';
+import LocalDataCollection from './localdatacollection';
+import ServerMessages from './servermessages';
+import SubscriptionAdapter from './subscriptionadapter';
+import SyncService from './picreplacement/sync-service';
 import * as prefs from './prefs/background';
-import { getSettings } from './prefs/background';
 
 import {
   createFilterMetaData,
   chromeStorageSetHelper,
+  determineUserLanguage,
   isEmptyObject,
   parseUri,
   sessionStorageGet,
@@ -660,6 +661,86 @@ const getCurrentTabInfo = function (secondTime, tabId) {
 };
 
 const updateStorageKey = 'last_known_version';
+
+const showUpdatePage = async function (details) {
+  let updateTabRetryCount = 0;
+
+  const getUpdatedURL = async function () {
+    const encodedVersion = encodeURIComponent('5.10.1');
+    const userID = await getUserId();
+    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${userID}&bc=${Prefs.blocked_total}`;
+    updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
+    return updatedURL;
+  };
+
+  const waitForUserAction = function () {
+    browser.tabs.onCreated.removeListener(waitForUserAction);
+    setTimeout(() => {
+      updateTabRetryCount += 1;
+      // eslint-disable-next-line no-use-before-define
+      openUpdatedPage();
+    }, 10000); // 10 seconds
+  };
+
+  const openUpdatedPage = async function () {
+    const updatedURL = await getUpdatedURL();
+    browser.tabs.create({ url: updatedURL });
+  };
+
+  const shouldShowUpdate = async function () {
+    const checkQueryState = async function () {
+      const state = await browser.idle.queryState(30);
+      if (state === 'active') {
+        openUpdatedPage();
+      } else {
+        browser.tabs.onCreated.removeListener(waitForUserAction);
+        browser.tabs.onCreated.addListener(waitForUserAction);
+      }
+    };
+
+    const checkLicense = function () {
+      if (!License.isActiveLicense()) {
+        checkQueryState();
+      }
+    };
+
+    const extensionInfo = await browser.management.getSelf();
+    if (extensionInfo.installType !== 'admin') {
+      await License.ready();
+      checkLicense();
+    }
+  };
+
+  const slashUpdateReleases = ['5.10.1'];
+  const {
+    last_known_version: lastKnownVersion,
+  } = await browser.storage.local.get(updateStorageKey);
+
+  const currentVersion = browser.runtime.getManifest().version;
+
+  // don't open the /update page for Ukraine or Russian users.
+  const shouldShowUpdateForLocale = function () {
+    const language = determineUserLanguage();
+    return !(language && (language.startsWith('ru') || language.startsWith('uk')));
+  };
+
+  if (
+    details.reason === 'update'
+    && shouldShowUpdateForLocale()
+    && slashUpdateReleases.includes(currentVersion)
+    && !slashUpdateReleases.includes(lastKnownVersion)
+    && browser.runtime.id !== adblocBetaID
+  ) {
+    await settings.onload();
+    if (!getSettings().suppress_update_page) {
+      await getUserId();
+      await Prefs.untilLoaded;
+      shouldShowUpdate();
+    }
+  }
+};
+
+
 browser.runtime.onInstalled.addListener(async (details) => {
   // Display beta page after each update for beta-users only
   if ((details.reason === 'update' || details.reason === 'install')
@@ -671,6 +752,7 @@ browser.runtime.onInstalled.addListener(async (details) => {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(updateStorageKey);
   }
+  await showUpdatePage(details);
   // Update version in browser.storage.local.
   void browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
 });
