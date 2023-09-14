@@ -21,10 +21,12 @@ import {
   Behavior,
   Command,
   CommandActor,
+  CommandEventType,
   CommandName,
   CommandVersion,
   Content,
 } from './command-library.types';
+import { recordEvent } from './data-collection';
 
 /**
  * A list of known commands.
@@ -246,6 +248,25 @@ export function executeIPMCommand(
 }
 
 /**
+ * Removes all commands & records a IPM cancelled event
+ * that match the function parameter
+ *
+ */
+export async function removeAllCommands(name: CommandName): Promise<void> {
+  await Prefs.untilLoaded;
+
+  // Remove all commands in storage
+  const commandStorage = Prefs.get(commandStorageKey);
+  for (const command of Object.values(commandStorage)) {
+    if (isCommand(command) && name === command.command_name) {
+      logger.debug('[ipm]: removing command ', command.ipm_id, command.command_name);
+      recordEvent(command.ipm_id, command.command_name, CommandEventType.ipmCancelled);
+      dismissCommand(command.ipm_id);
+    }
+  }
+}
+
+/**
  * Initializes command library
  */
 async function start(): Promise<void> {
@@ -258,4 +279,4 @@ async function start(): Promise<void> {
   }
 }
 
-void start().catch(logger.error);
+export const commandLibraryStarted = start().catch(logger.error);

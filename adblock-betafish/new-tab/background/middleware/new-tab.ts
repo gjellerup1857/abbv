@@ -52,7 +52,8 @@ function isNewTabCommand(command: Command): command is NewTabCommand {
   const validationErrors = validateParams(command, paramDefinitionList);
 
   if (validationErrors.length === 0) {
-    return true;
+    logger.error('[new-tab]: create-tab commands are currently disabled');
+    return false;
   }
 
   logger.error(

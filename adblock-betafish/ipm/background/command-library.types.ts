@@ -39,6 +39,13 @@ export enum CommandName {
 }
 
 /**
+ * General Command events
+ */
+export enum CommandEventType {
+  ipmCancelled = 'ipm_cancelled',
+}
+
+/**
  * A map that contains the version for each command.
  */
 export const CommandVersion: Record<CommandName, number> = {
