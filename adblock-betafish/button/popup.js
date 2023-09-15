@@ -297,8 +297,8 @@ const start = async function () {
 
     if (
       pageInfo.url
-          && /ab_channel/.test(pageInfo.url.href)
-          && (pageInfo.url.hostname === 'www.youtube.com' && info.youTubeChannelName)
+      && /ab_channel/.test(pageInfo.url.href)
+      && (pageInfo.url.hostname === 'www.youtube.com' && info.youTubeChannelName)
     ) {
       $('#yt_channelname').text(info.youTubeChannelName);
       $('#yt_channelname').css('display', 'inline-flex');
@@ -314,8 +314,8 @@ const start = async function () {
     }
     if (
       pageInfo.url
-          && /ab_channel/.test(pageInfo.url.href)
-          && (pageInfo.url.hostname === 'www.twitch.tv' && info.twitchChannelName)
+      && /ab_channel/.test(pageInfo.url.href)
+      && (pageInfo.url.hostname === 'www.twitch.tv' && info.twitchChannelName)
     ) {
       $('#twitch_channelname').text(info.twitchChannelName);
       $('#twitch_channelname').css('display', 'inline-flex');
@@ -331,9 +331,9 @@ const start = async function () {
     }
     if (
       pageInfo.url
-          && pageInfo.url.hostname === 'www.youtube.com'
-          && pageInfo.url.pathname !== '/feed/channels'
-          && info.settings.youtube_manage_subscribed
+      && pageInfo.url.hostname === 'www.youtube.com'
+      && pageInfo.url.pathname !== '/feed/channels'
+      && info.settings.youtube_manage_subscribed
     ) {
       show(['div_manage_subscribed_channel']);
     }
@@ -344,16 +344,16 @@ const start = async function () {
 
     // CTAs
     if (!userClosedVPNCta // VPN CTA
-          && !info.disabledSite
-          && !info.whitelisted
+      && !info.disabledSite
+      && !info.whitelisted
     ) {
       show(['div_vpn_cta']);
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'vpn_cta_seen' });
     } else if ( // Premium CTAs
       info.showMABEnrollment
-          && userClosedCta
-          && showThemesCTA
-          && userClosedFreeDCCta
+      && userClosedCta
+      && showThemesCTA
+      && userClosedFreeDCCta
     ) {
       show(['div_premium_themes_cta']);
       $('#div_premium_themes_cta').attr('data-theme-cta', info.popupMenuThemeCTA);
@@ -373,23 +373,23 @@ const start = async function () {
     }
     if (
       info.settings.sync_settings
-          && info.lastGetStatusCode === 400
-          && info.lastGetErrorResponse
-          && info.lastGetErrorResponse.code === 'invalid_sync_version'
+      && info.lastGetStatusCode === 400
+      && info.lastGetErrorResponse
+      && info.lastGetErrorResponse.code === 'invalid_sync_version'
     ) {
       show(['div_sync_outofdate_error_msg']);
       sendMessageWithNoResponse({ command: 'resetLastGetStatusCode' }); // reset the code, so it doesn't show again.
       sendMessageWithNoResponse({ command: 'resetLastGetErrorResponse' }); // reset the code, so it doesn't show again.
     } else if (
       !info.settings.sync_settings
-          && (info.lastGetStatusCode === 403
-            || info.lastPostStatusCode === 403)
+      && (info.lastGetStatusCode === 403
+        || info.lastPostStatusCode === 403)
     ) {
       show(['div_sync_removed_error_msg', 'sync_removed_error_msg_part_1']);
       sendMessageWithNoResponse({ command: 'SyncService.resetAllErrors' }); // reset all of  the errors, so it doesn't show again.
     } else if (
       (info.lastPostStatusCode >= 400 || info.lastPostStatusCode === 0)
-          && info.settings.sync_settings
+      && info.settings.sync_settings
     ) {
       show(['div_sync_error_msg']);
       sendMessageWithNoResponse({ command: 'resetLastPostStatusCode' }); // reset the code, so it doesn't show again.
@@ -412,10 +412,10 @@ const start = async function () {
 
     if (
       !info.settings.display_menu_stats
-          || info.paused
-          || info.domainPaused
-          || info.disabledSite
-          || info.whitelisted
+      || info.paused
+      || info.domainPaused
+      || info.disabledSite
+      || info.whitelisted
     ) {
       $('#block_counts').hide();
     }
@@ -524,13 +524,6 @@ const start = async function () {
     }
   });
 
-  selected('#div_myadblock_enrollment_v2', () => {
-    browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'myadblock_cta_clicked' });
-    browser.runtime.sendMessage({ command: 'openPremiumPayURL' }).then(() => {
-      closePopup();
-    });
-  });
-
   selected('#svg_options', async () => {
     storageSet(popupMenuDCCtaClosedKey, true);
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'options_clicked' });
@@ -547,8 +540,7 @@ const start = async function () {
 
   selected('#div_myadblock_enrollment_v2', async () => {
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'myadblock_cta_clicked' });
-    const response = await browser.runtime.sendMessage({ command: 'License.MAB_CONFIG', url: 'payURL' });
-    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: response.url });
+    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: pageInfo.premiumPayURL });
     closePopup();
   });
 

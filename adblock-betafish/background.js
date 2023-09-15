@@ -615,6 +615,7 @@ const getCurrentTabInfo = function (secondTime, tabId) {
           lastGetErrorResponse: SyncService.getLastGetErrorResponse(),
           lastPostStatusCode: SyncService.getLastPostStatusCode(),
           newBadgeTextReason: getNewBadgeTextReason(),
+          premiumPayURL: License.MAB_CONFIG.payURL,
         };
         if (!disabledSite) {
           result.whitelisted = !!(await ewe.filters.getAllowingFilters(page.id)).length;
