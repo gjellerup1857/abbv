@@ -2,6 +2,12 @@
 
 UNRELEASED:
 
+Version: 5.10.1, Date: 2023-09-18
+- Show the /update page to let users know about the AdBlock Premium
+- Added code to remove any un-processed In Product Messages (IPMs)
+- Fixed an issue with AdBlock Premium on a MV3 build
+- Added an alias to the build script
+
 Version: 5.10.0, Date: 2023-09-06
 - Updated the eyeo's Web Extension Ad Blocking Toolkit to version 0.9.0
 - Replaced the vendor/webext-sdk git submodule with @eyeo/webext-sdk npm package
