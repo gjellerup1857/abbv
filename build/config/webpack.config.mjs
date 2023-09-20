@@ -60,6 +60,7 @@ export default {
   },
   resolve: {
     alias: {
+      '~': path.resolve('', './adblock-betafish/'),
       events$: 'events.js',
       punycode$: 'punycode.js',
       url$: 'url.js',

@@ -98,6 +98,12 @@ The following npm commands are then available:
 * `npm run prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.
 * `npm run html-hint` runs HTMLhint and flags any issues with the HTML templates such as missing `DOCTYPE`, tags and/or attributes. This does not run on pre-commits so it must be run manually. New AdBlock custom attributes should be added in `/rules/static/custom_attributes.json`. If mistakenly flagged, standard HTML attributes should be added in `/rules/static/aria_attributes.json` or `/rules/static/mapped_attributes.json`.
 
+### Aliases
+
+As we update the extension structure and add Typescript, we will find ourselves importing files from mutiple levels within peer directories, as well as relocating files within a given subdirectory. To help make this easier, we have added a `~` shortcut, which maps to `adblock-betafish`.
+
+This means that rather than needing to use `../` to navigate out of a file's directory, the import address can be given from the perspective of `adblock-betafish`. So an import like `from '../../ipm/background/command-library.types';` can be replaced with from `'~/ipm/background/command-library.types';`.
+
 ## Developer Guide
 
 General guidelines for developing AdBlock specific code.
