@@ -16,6 +16,11 @@
  */
 
 /**
+ * Key for on-page dialog timing configurations storage
+ */
+export const configsStorageKey = 'onpage_dialog_timing_configurations';
+
+/**
  * On-page UI timing configuration
  */
 export interface TimingConfiguration {

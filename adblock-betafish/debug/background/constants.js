@@ -15,21 +15,36 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Key for stats storage
- */
-export const statsStorageKey = 'onpage_dialog_command_stats';
+/* For ESLint: List any global identifiers used in this file below */
 
-/**
- * On-page UI command stats
- */
-export interface Stats {
-    /**
-     * Count indicating how often the UI was displayed
-     */
-    displayCount: number;
-    /**
-     * Timestamp indicating when the UI was last display
-     */
-    lastDisplayTime: number;
-}
+import {
+  commandStats,
+  commandStorageKey,
+} from '~/ipm/background/command-library.types';
+
+import {
+  eventStorageKey,
+} from '~/ipm/background/data-collection.types';
+
+import {
+  configsStorageKey,
+} from '~/onpage-dialog/background/timing.types';
+
+import {
+  statsStorageKey,
+} from '~/onpage-dialog/background/stats.types';
+
+const IPM_CONSTANTS = [
+  /* IPM values */
+  commandStats,
+  commandStorageKey,
+  eventStorageKey,
+
+  /* OPD values */
+  statsStorageKey,
+  configsStorageKey,
+];
+
+const NO_DATA = 'no data';
+
+export { IPM_CONSTANTS, NO_DATA };

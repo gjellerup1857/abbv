@@ -16,12 +16,7 @@
  */
 
 import { Prefs } from '../../alias/prefs.js';
-import { Stats } from './stats.types';
-
-/**
- * Key for stats storage
- */
-const statsStorageKey = 'onpage_dialog_command_stats';
+import { Stats, statsStorageKey } from './stats.types';
 
 /**
  * Clears stats for given IPM ID

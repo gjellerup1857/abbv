@@ -99,6 +99,10 @@ $(async () => {
     content.push('=== Other Info ===');
     content.push(JSON.stringify(theDebugInfo.otherInfo, null, '\t'));
 
+    content.push('');
+    content.push('=== IPM Info ===');
+    content.push(JSON.stringify(theDebugInfo.ipmInfo, null, '\t'));
+
     // Put it together to put into the textbox
     debugInfo = content.join('\n');
 

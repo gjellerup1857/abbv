@@ -24,6 +24,22 @@ import { installHandler } from "../../adblockplusui/adblockpluschrome/lib/messag
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events.js";
 
+import {
+  commandStats,
+} from '../ipm/background/command-library.types';
+
+import {
+  eventStorageKey,
+} from '../ipm/background/data-collection.types';
+
+import {
+  configsStorageKey,
+} from '../onpage-dialog/background/timing.types';
+
+import {
+  statsStorageKey,
+} from '../onpage-dialog/background/stats.types';
+
 const keyPrefix = "pref:";
 
 let eventEmitter = new EventEmitter();
@@ -158,7 +174,7 @@ defaults.ipm_commands = {};
  *
  * @type {Object}
  */
-defaults.ipm_commands_stats = {};
+defaults[commandStats] = {};
 
 /**
  * Trusted origin for URLs used in IPMs
@@ -179,14 +195,14 @@ defaults.logger_log_level = 3;
  *
  * @type {Object}
  */
-defaults.onpage_dialog_command_stats = {};
+defaults[statsStorageKey] = {};
 
 /**
  * Map of on-page dialog timing configurations
  *
  * @type {Object}
  */
-defaults.onpage_dialog_timing_configurations = {
+defaults[configsStorageKey] = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,
@@ -208,7 +224,7 @@ defaults.onpage_dialog_timing_configurations = {
  *
  * @type {Object}
  */
-defaults.ipm_events = [];
+defaults[eventStorageKey] = [];
 
 /**
  * The URL of the IPM server.

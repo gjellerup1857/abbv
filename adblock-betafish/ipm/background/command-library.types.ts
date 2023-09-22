@@ -21,6 +21,16 @@
 export const commandLibraryVersion = 1;
 
 /**
+ * The key for the command storage.
+ */
+export const commandStorageKey = 'ipm_commands';
+
+/**
+ * The key for the map of command stats.
+ */
+export const commandStats = 'ipm_commands_stats';
+
+/**
  * Command behavior
  */
 export interface Behavior { }

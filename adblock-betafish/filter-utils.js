@@ -14,22 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* For ESLint: List any global identifiers used in this file below */
+/* global  */
 
-/**
- * Key for stats storage
- */
-export const statsStorageKey = 'onpage_dialog_command_stats';
+import * as ewe from '@eyeo/webext-sdk';
 
-/**
- * On-page UI command stats
- */
-export interface Stats {
-    /**
-     * Count indicating how often the UI was displayed
-     */
-    displayCount: number;
-    /**
-     * Timestamp indicating when the UI was last display
-     */
-    lastDisplayTime: number;
+async function getUserFilters() {
+  return ewe.filters.getUserFilters();
 }
+
+export {
+  getUserFilters,
+};

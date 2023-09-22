@@ -25,12 +25,7 @@ import * as logger from '../../utilities/background';
 import { isFilterMetadata } from '../../polyfills/background';
 import { DialogBehavior, Timing, isTiming } from './middleware';
 import { Stats } from './stats.types';
-import { TimingConfiguration } from './timing.types';
-
-/**
- * Key for on-page dialog timing configurations storage
- */
-const configsStorageKey = 'onpage_dialog_timing_configurations';
+import { configsStorageKey, TimingConfiguration } from './timing.types';
 
 /**
  * Timing configurations

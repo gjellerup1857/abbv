@@ -16,13 +16,22 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext, twitchChannelNamePages, ytChannelNamePages,
-   updateButtonUIAndContextMenus,  */
+/* global browser, ext, twitchChannelNamePages, ytChannelNamePages */
 
 import * as ewe from '@eyeo/webext-sdk';
 
 import * as info from 'info';
 import { Prefs } from './alias/prefs';
+
+import { getCustomFilterMetaData, getDebugInfo } from './debug/background';
+import { getUserFilters } from './filter-utils';
+import {
+  adblockIsDomainPaused,
+  adblockIsPaused,
+  pausedFilterText1,
+  pausedFilterText2,
+  saveDomainPauses,
+} from './pause/background';
 
 import { getNewBadgeTextReason } from './alias/icon';
 import { getUserId } from './id/background/index';
@@ -45,10 +54,7 @@ import {
   createFilterMetaData,
   chromeStorageSetHelper,
   determineUserLanguage,
-  isEmptyObject,
   parseUri,
-  sessionStorageGet,
-  sessionStorageSet,
 } from './utilities/background/bg-functions';
 
 // Message verification
@@ -190,10 +196,6 @@ const createDomainAllowlistFilter = async function (pageUrl, origin) {
 };
 
 // UNWHITELISTING
-
-async function getUserFilters() {
-  return ewe.filters.getUserFilters();
-}
 
 const isWhitelistFilter = function (text) {
   return /^@@/.test(text);
@@ -357,180 +359,6 @@ const pageIsWhitelisted = async function (page) {
   return (whitelisted !== undefined && whitelisted !== null);
 };
 
-const pausedKey = 'paused';
-// white-list all blocking requests regardless of frame / document, but still allows element hiding
-const pausedFilterText1 = '@@*';
-// white-list all documents, which prevents element hiding
-const pausedFilterText2 = '@@*$document';
-
-// Get or set if AdBlock is paused
-// Inputs: newValue (optional boolean): if true, AdBlock will be paused, if
-// false, AdBlock will not be paused.
-// Returns: undefined if newValue was specified, otherwise it returns true
-// if paused, false otherwise.
-const adblockIsPaused = function (newValue) {
-  if (newValue === undefined) {
-    return (sessionStorageGet(pausedKey) === true);
-  }
-
-  if (newValue === true) {
-    chromeStorageSetHelper(pausedKey, true, () => {
-      ewe.filters.add([pausedFilterText1]);
-      ewe.filters.add([pausedFilterText2]);
-    });
-  } else {
-    ewe.filters.remove([pausedFilterText1]);
-    ewe.filters.remove([pausedFilterText2]);
-    browser.storage.local.remove(pausedKey);
-  }
-  sessionStorageSet(pausedKey, newValue);
-  return undefined;
-};
-
-const domainPausedKey = 'domainPaused';
-
-// Helper that saves the domain pauses
-// Inputs:  domainPauses (required object): domain pauses to save
-// Returns: undefined
-const saveDomainPauses = function (domainPauses) {
-  chromeStorageSetHelper(domainPausedKey, domainPauses);
-  sessionStorageSet(domainPausedKey, domainPauses);
-};
-
-// Helper that removes any domain pause filter rules based on tab events
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          newDomain (optional string): the current domain of the tab
-// Returns: undefined
-const domainPauseChangeHelper = function (tabId, newDomain) {
-  // get stored domain pauses
-  const storedDomainPauses = sessionStorageGet(domainPausedKey);
-
-  // check if any of the stored domain pauses match the affected tab
-  for (const aDomain in storedDomainPauses) {
-    if (storedDomainPauses[aDomain] === tabId && aDomain !== newDomain) {
-      // Remove the filter that white-listed the domain
-      ewe.filters.remove([`@@${aDomain}$document`]);
-      delete storedDomainPauses[aDomain];
-
-      // save updated domain pauses
-      saveDomainPauses(storedDomainPauses);
-    }
-  }
-  updateButtonUIAndContextMenus();
-};
-
-// Handle the effects of a tab update event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (required object with a url property): contains the
-// new url for the tab
-//          tab (optional Tab object): the affected tab
-// Returns: undefined
-const domainPauseNavigationHandler = function (tabId, changeInfo) {
-  if (changeInfo === undefined || changeInfo.url === undefined || tabId === undefined) {
-    return;
-  }
-
-  const newDomain = parseUri(changeInfo.url).host;
-
-  domainPauseChangeHelper(tabId, newDomain);
-};
-
-// Handle the effects of a tab remove event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (optional object): info about the remove event
-// Returns: undefined
-const domainPauseClosedTabHandler = function (tabId) {
-  if (tabId === undefined) {
-    return;
-  }
-
-  domainPauseChangeHelper(tabId);
-};
-
-// Get or set if AdBlock is domain paused for the domain of the specified tab
-// Inputs:  activeTab (optional object with url and id properties): the paused tab
-//          newValue (optional boolean): if true, AdBlock will be domain paused
-// on the tab's domain, if false, AdBlock will not be domain paused on that domain.
-// Returns: undefined if activeTab and newValue were specified; otherwise if activeTab
-// is specified it returns true if domain paused, false otherwise; finally it returns
-// the complete storedDomainPauses if activeTab is not specified
-
-const adblockIsDomainPaused = function (activeTab, newValue) {
-  // get stored domain pauses
-  let storedDomainPauses = sessionStorageGet(domainPausedKey);
-
-  // return the complete list of stored domain pauses if activeTab is undefined
-  if (activeTab === undefined) {
-    return storedDomainPauses;
-  }
-
-  // return a boolean indicating whether the domain is paused if newValue is undefined
-  const activeDomain = parseUri(activeTab.url).host;
-  if (newValue === undefined) {
-    if (storedDomainPauses) {
-      return Object.prototype.hasOwnProperty.call(storedDomainPauses, activeDomain);
-    }
-    return false;
-  }
-
-  // create storedDomainPauses object if needed
-  if (!storedDomainPauses) {
-    storedDomainPauses = {};
-  }
-
-  // set or delete a domain pause
-  if (newValue === true) {
-    // add a domain pause
-    ewe.filters.add([`@@${activeDomain}$document`]);
-    storedDomainPauses[activeDomain] = activeTab.id;
-    browser.tabs.onUpdated.removeListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.removeListener(domainPauseClosedTabHandler);
-    browser.tabs.onUpdated.addListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.addListener(domainPauseClosedTabHandler);
-  } else {
-    // remove the domain pause
-    ewe.filters.remove([`@@${activeDomain}$document`]);
-    delete storedDomainPauses[activeDomain];
-  }
-
-  // save the updated list of domain pauses
-  saveDomainPauses(storedDomainPauses);
-  return undefined;
-};
-
-// If AdBlock was paused on shutdown (adblock_is_paused is true), then
-// unpause / remove the white-list all entry at startup.
-browser.storage.local.get(pausedKey).then((response) => {
-  if (response[pausedKey]) {
-    initialize.then(() => {
-      ewe.filters.remove([pausedFilterText1]);
-      ewe.filters.remove([pausedFilterText2]);
-      browser.storage.local.remove(pausedKey);
-    });
-  }
-});
-
-
-// If AdBlock was domain paused on shutdown, then unpause / remove
-// all domain pause white-list entries at startup.
-browser.storage.local.get(domainPausedKey).then((response) => {
-  const storedDomainPauses = response[domainPausedKey];
-  if (!isEmptyObject(storedDomainPauses)) {
-    initialize.then(() => {
-      for (const aDomain in storedDomainPauses) {
-        ewe.filters.remove([`@@${aDomain}$document`]);
-      }
-      browser.storage.local.remove(domainPausedKey);
-    });
-  }
-});
-
-browser.commands.onCommand.addListener((command) => {
-  if (command === 'toggle_pause') {
-    adblockIsPaused(!adblockIsPaused());
-    ServerMessages.recordGeneralMessage('pause_shortcut_used');
-  }
-});
 
 const getTab = function (tabId) {
   return new Promise((resolve) => {
@@ -760,182 +588,6 @@ browser.runtime.onInstalled.addListener(async (details) => {
 
 const openTab = function (url) {
   browser.tabs.create({ url });
-};
-
-// These functions are usually only called by content scripts.
-
-// DEBUG INFO
-
-async function getCustomFilterMetaData() {
-  const currentUserFilters = await getUserFilters();
-  if (!currentUserFilters || currentUserFilters.length === 0) {
-    return Promise.resolve({});
-  }
-  /* eslint-disable consistent-return */
-  return Promise.all(
-    currentUserFilters.map(async (rule) => {
-      if (rule && rule.text) {
-        try {
-          const metaData = await ewe.filters.getMetadata(rule.text);
-          return { text: rule.text, metaData };
-        } catch {
-          return { text: rule.text };
-        }
-      }
-    }),
-  );
-}
-const getDebugAlarmInfo = async () => {
-  const response = {};
-  const alarms = await browser.alarms.getAll();
-  if (alarms && alarms.length > 0) {
-    response['Alarm info'] = `length: ${alarms.length}`;
-    for (let i = 0; i < alarms.length; i++) {
-      const alarm = alarms[i];
-      response[`${i} Alarm Name`] = alarm.name;
-      response[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime).toLocaleString();
-    }
-  } else {
-    response['No alarm info'] = 'No alarm info';
-  }
-  return response;
-};// end of getDebugAlarmInfo()
-
-const getDebugLicenseInfo = async () => {
-  const response = {};
-  if (License.isActiveLicense()) {
-    response.licenseInfo = {};
-    response.licenseInfo.extensionGUID = await getUserId();
-    response.licenseInfo.licenseId = License.get().licenseId;
-    if (getSettings().sync_settings) {
-      const syncInfo = {};
-      syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
-      syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
-      syncInfo.SyncCommitLog = SyncService.getSyncLog();
-      response.syncInfo = syncInfo;
-    }
-    response['License Installation Date'] = await License.getLicenseInstallationDate();
-    const customChannelId = channels.getIdByName('CustomChannel');
-    if (channels.getGuide()[customChannelId].enabled) {
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      const result = await customChannel.getTotalBytesInUse();
-      response['Custom Channel total bytes in use'] = result;
-    }
-  }
-  return response;
-};
-
-// Get debug info as a JSON object for bug reporting and ad reporting
-const getDebugInfo = function () {
-  return new Promise(async (resolve) => {
-    const response = {};
-    response.otherInfo = {};
-    const { otherInfo } = response;
-
-    // Is this installed build of AdBlock the official one?
-    if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
-      otherInfo.buildtype = ' Beta';
-    } else if (browser.runtime.id === 'gighmmpiobklfepjocnamgkkbiglidom'
-      || browser.runtime.id === 'aobdicepooefnbaeokijohmhjlleamfj'
-      || browser.runtime.id === 'ndcileolkflehcjpmjnfbnaibdcgglog'
-      || browser.runtime.id === 'jid1-NIfFY2CA8fy1tg@jetpack') {
-      otherInfo.buildtype = ' Stable';
-    } else {
-      otherInfo.buildtype = ' Unofficial';
-    }
-
-    // Get AdBlock version
-    otherInfo.version = browser.runtime.getManifest().version;
-
-    // Get subscribed filter lists
-    const subscriptionInfo = {};
-    const subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
-    for (const id in subscriptions) {
-      if (subscriptions[id].subscribed) {
-        subscriptionInfo[id] = {};
-        subscriptionInfo[id].lastSuccess = new Date(subscriptions[id].lastSuccess * 1000);
-        subscriptionInfo[id].lastDownload = new Date(subscriptions[id].lastDownload * 1000);
-        subscriptionInfo[id].downloadStatus = subscriptions[id].downloadStatus;
-      }
-    }
-    response.subscriptions = subscriptionInfo;
-
-    const userFilters = await getUserFilters();
-    if (userFilters && userFilters.length) {
-      response.customFilters = userFilters.map(filter => filter.text).join('\n');
-    }
-
-    // Get settings
-    const adblockSettings = {};
-    const settingsObj = getSettings();
-    for (const [key, value] of Object.entries(settingsObj)) {
-      adblockSettings[key] = JSON.stringify(value);
-    }
-
-    response.settings = adblockSettings;
-    response.prefs = JSON.stringify(Prefs);
-    otherInfo.browser = TELEMETRY.browser;
-    otherInfo.browserVersion = TELEMETRY.browserVersion;
-    otherInfo.osVersion = TELEMETRY.osVersion;
-    otherInfo.os = TELEMETRY.os;
-
-    if (typeof localStorage !== 'undefined' && localStorage.length) {
-      otherInfo.localStorageInfo = {};
-      otherInfo.localStorageInfo.length = localStorage.length;
-      let inx = 1;
-      for (const key in localStorage) {
-        otherInfo.localStorageInfo[`key${inx}`] = key;
-        inx += 1;
-      }
-    } else {
-      otherInfo.localStorageInfo = 'no data';
-    }
-    otherInfo.isAdblockPaused = adblockIsPaused();
-    otherInfo.licenseState = License.get().status;
-    otherInfo.licenseVersion = License.get().lv;
-
-    // Get 'Stats' size
-    otherInfo.rawStatsSize = await LocalDataCollection.getRawStatsSize();
-
-    // Get total pings
-    const storageResponse = await browser.storage.local.get('total_pings');
-    otherInfo.totalPings = storageResponse.totalPings || 0;
-
-    // Add exclude filters (if there are any)
-    const excludeFiltersKey = 'exclude_filters';
-    const secondResponse = await browser.storage.local.get(excludeFiltersKey);
-    if (secondResponse && secondResponse[excludeFiltersKey]) {
-      response.excludedFilters = secondResponse[excludeFiltersKey];
-    }
-
-    // Add JavaScript exception error (if there is one)
-    const errorKey = 'errorkey';
-    const errorResponse = await browser.storage.local.get(errorKey);
-    if (errorResponse && errorResponse[errorKey]) {
-      otherInfo[errorKey] = errorResponse[errorKey];
-    }
-
-    // Add any migration messages (if there are any)
-    const migrateLogMessageKey = 'migrateLogMessageKey';
-    const migrateLogMessageResponse = await browser.storage.local.get(migrateLogMessageKey);
-    if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
-      const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
-      for (let i = 0; i < messages.length; i++) {
-        const key = `migration_message_${i}`;
-        otherInfo[key] = messages[i];
-      }
-    }
-
-    otherInfo.alarmInfo = await getDebugAlarmInfo();
-    if (browser.permissions && browser.permissions.getAll) {
-      otherInfo.hostPermissions = await browser.permissions.getAll();
-    } else {
-      otherInfo.hostPermissions = 'no data';
-    }
-    otherInfo.licenseInfo = await getDebugLicenseInfo();
-    otherInfo.customRuleMetaData = await getCustomFilterMetaData();
-    resolve(response);
-  }); // end of Promise
 };
 
 // Called when user explicitly requests filter list updates
