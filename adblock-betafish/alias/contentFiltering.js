@@ -25,6 +25,7 @@
 
 import * as ewe from "@eyeo/webext-sdk";
 import * as snippets from "@eyeo/snippets";
+import { service as mlService } from "@eyeo/mlaf";
 
 function loadSnippets() {
   ewe.snippets.setLibrary({
@@ -33,3 +34,5 @@ function loadSnippets() {
   });
 };
 loadSnippets();
+
+browser.runtime.onMessage.addListener(mlService.messageListener);
