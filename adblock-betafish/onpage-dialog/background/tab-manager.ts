@@ -101,7 +101,9 @@ async function dismissDialog(
   logger.debug('[onpage-dialog]: Dismiss dialog');
   try {
     await sendMessage(tabId, { type: 'onpage-dialog.hide' } as HideMessage);
-    await assignedIpmIds.delete(tabId);
+    await assignedIpmIds.transaction(async () => {
+      await assignedIpmIds.delete(tabId);
+    });
   } catch (ex) {
     // Ignore if tab has already been removed
   }
@@ -308,7 +310,9 @@ async function showDialog(
   stats: Stats,
 ): Promise<void> {
   logger.debug('[onpage-dialog]: Show dialog');
-  await assignedIpmIds.set(tabId, ipmId);
+  await assignedIpmIds.transaction(async () => {
+    await assignedIpmIds.set(tabId, ipmId);
+  });
 
   setStats(ipmId, {
     displayCount: stats.displayCount + 1,
