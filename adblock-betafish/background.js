@@ -490,6 +490,7 @@ const getCurrentTabInfo = function (secondTime, tabId) {
 };
 
 const updateStorageKey = 'last_known_version';
+const isUpdatePageEngaged = false;
 
 const showUpdatePage = async function (details) {
   let updateTabRetryCount = 0;
@@ -581,7 +582,9 @@ browser.runtime.onInstalled.addListener(async (details) => {
   if (typeof localStorage !== 'undefined') {
     localStorage.removeItem(updateStorageKey);
   }
-  await showUpdatePage(details);
+  if (isUpdatePageEngaged) {
+    await showUpdatePage(details);
+  }
   // Update version in browser.storage.local.
   void browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
 });
