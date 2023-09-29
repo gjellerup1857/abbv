@@ -18,14 +18,15 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
+import * as logger from '../../utilities/background/logger.ts';
 
-import { telemetryNotifier } from './telemetry-ping';
-import TelemetryBase from './telemetry-base';
+import { chromeStorageSetHelper } from '../../utilities/background/bg-functions';
+import { clearEvents, executeIPMCommand, getPayload } from '../../ipm/background/index.ts';
 import postData from '../../fetch-util';
 import { Prefs } from '../../alias/prefs';
-import { chromeStorageSetHelper } from '../../utilities/background/bg-functions';
-import * as logger from '../../utilities/background/logger.ts';
-import { clearEvents, executeIPMCommand, getPayload } from '../../ipm/background/index.ts';
+import ServerMessages from '../../servermessages';
+import TelemetryBase from './telemetry-base';
+import { telemetryNotifier } from './telemetry-ping';
 
 
 class IPMTelemetry extends TelemetryBase {
@@ -90,6 +91,7 @@ class IPMTelemetry extends TelemetryBase {
     void clearEvents();
     const response = await postData(Prefs.get(this.hostURLPref), pingData).catch((error) => {
       logger.error('ipm ping error', error);
+      ServerMessages.recordGeneralMessage('ipm ping error', undefined, { error });
     });
     IPMTelemetry.processResponse(response);
   }

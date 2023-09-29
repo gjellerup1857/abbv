@@ -40,11 +40,13 @@ import {
   shouldBeShown,
   start as setupTimings,
 } from './timing';
-import { Message } from '../../polyfills/shared';
+import { Message, ErrorMessage } from '../../polyfills/shared';
 import { HideMessage, PingMessage, StartInfo } from '../shared';
 import {
   DialogBehavior,
   DialogEventType,
+  DialogErrorEventType,
+  DialogExitEventType,
   isDialogBehavior,
   isDialogContent,
   setDialogCommandHandler,
@@ -136,6 +138,7 @@ function handleCommand(ipmId: string): void {
     lastDisplayTime: 0,
   });
   unassignedIpmIds.add(ipmId);
+  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.received);
 }
 
 /**
@@ -202,14 +205,18 @@ async function handleGetMessage(
 ): Promise<StartInfo | null> {
   const ipmId = await assignedIpmIds.get(sender.page.id);
   if (!ipmId) {
+    logger.debug('[onpage-dialog]: get no IPM id');
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.get_no_ipm_found);
     return null;
   }
 
   const content = getContent(ipmId);
   if (!isDialogContent(content)) {
+    logger.debug('[onpage-dialog]: get no dialog found');
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.get_no_dialog_found);
     return null;
   }
-
+  logger.debug('[onpage-dialog]: get');
   return {
     content,
     localeInfo: getLocaleInfo(),
@@ -228,11 +235,13 @@ async function handlePingMessage(
 ): Promise<void> {
   const ipmId = await assignedIpmIds.get(sender.page.id);
   if (!ipmId) {
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.ping_no_ipm_found);
     return;
   }
 
   const behavior = getBehavior(ipmId);
   if (!behavior || !isDialogBehavior(behavior)) {
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.ping_no_behavior_found);
     return;
   }
 
@@ -241,11 +250,33 @@ async function handlePingMessage(
     behavior.displayDuration === 0
         || message.displayDuration < behavior.displayDuration
   ) {
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.initial_ping);
     return;
   }
 
   void dismissDialog(sender.page.id, ipmId);
   recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.ignored);
+}
+
+/**
+ * Handles "onpage-dialog.error" messages
+ *
+ * @param message - ErrorMessage
+ * @param sender - Message sender
+ *
+ * @returns on-page dialog initialization information
+ */
+async function handleErrorMessage(
+  message: ErrorMessage,
+  sender: MessageSender,
+): Promise<void> {
+  const ipmId = await assignedIpmIds.get(sender.page.id);
+  if (!ipmId) {
+    recordEvent(null, CommandName.createOnPageDialog, DialogErrorEventType.error_no_ipm_found);
+    recordEvent(ipmId, CommandName.createOnPageDialog, `${message.type}.${message.error}`);
+    return;
+  }
+  recordEvent(ipmId, CommandName.createOnPageDialog, `${message.type}.${message.error}`);
 }
 
 /**
@@ -351,6 +382,7 @@ async function handleTabsUpdatedEvent(
     // Ignore and dismiss command if user has Premium
     if (License.isActiveLicense()) {
       logger.debug('[tm]: User has Premium');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_premium_user);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -358,6 +390,7 @@ async function handleTabsUpdatedEvent(
     // Ignore and dismiss command if user opted-out of 'surveys'
     if (getSettings().show_survey === false) {
       logger.debug('[onpage-dialog]:show_survey - disabled');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_disabled);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -365,6 +398,7 @@ async function handleTabsUpdatedEvent(
     // Ignore and dismiss command if user opted-out of 'surveys'
     if (getSettings().suppress_surveys) {
       logger.debug('[onpage-dialog]:suppress_surveys - enabled');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_suppress_surveys);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -372,6 +406,7 @@ async function handleTabsUpdatedEvent(
     // Ignore and dismiss command if user opted-out of 'on page messages'
     if (getSettings().onpageMessages === false) {
       logger.debug('[onpage-dialog]:onpageMessages - disabled');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_opm_disabled);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -380,6 +415,8 @@ async function handleTabsUpdatedEvent(
     const behavior = getBehavior(ipmId);
     if (!isDialogBehavior(behavior)) {
       logger.debug('[onpage-dialog]: No command behavior');
+      recordEvent(ipmId, CommandName.createOnPageDialog,
+        DialogErrorEventType.tab_no_behavior_found);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -388,6 +425,7 @@ async function handleTabsUpdatedEvent(
     const stats = getStats(ipmId);
     if (!isStats(stats)) {
       logger.debug('[onpage-dialog]: No command stats');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.tab_no_stats_found);
       dismissDialogCommand(ipmId);
       continue;
     }
@@ -413,12 +451,14 @@ async function start(): Promise<void> {
   port.on('onpage-dialog.continue', handleContinueMessage);
   port.on('onpage-dialog.get', handleGetMessage);
   port.on('onpage-dialog.ping', handlePingMessage);
+  port.on('onpage-dialog.error', handleErrorMessage);
 
   ext.addTrustedMessageTypes(null, [
     'onpage-dialog.continue',
     'onpage-dialog.close',
     'onpage-dialog.get',
     'onpage-dialog.ping',
+    'onpage-dialog.error',
   ]);
 
   // Dismiss command when tab used for storing session data gets closed,

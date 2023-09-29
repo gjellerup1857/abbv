@@ -21,3 +21,11 @@
 export interface Message {
     type: string;
 }
+
+/**
+ * Temporary interface for error message object,
+ * as passed from the content script to background page
+ */
+export interface ErrorMessage extends Message {
+  error: string,
+}

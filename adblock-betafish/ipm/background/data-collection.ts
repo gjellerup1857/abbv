@@ -169,12 +169,12 @@ export async function clearEvents(): Promise<void> {
  * @param name - The name of the event to record
  */
 export async function recordEvent(
-  ipmId: string,
+  ipmId: string | null,
   command: CommandName,
   name: string,
 ): Promise<void> {
   await Prefs.untilLoaded;
-  const eventData = await getEventData(ipmId, command, name);
+  const eventData = await getEventData(ipmId || 'no ipm value', command, name);
   const eventStorage = Prefs.get(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
   Prefs.set(eventStorageKey, eventStorage);
