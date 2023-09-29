@@ -69,10 +69,10 @@
     "npm": ">=7"
   },
   "dependencies": {
-    "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#090b82a5f45b144e649d0f17faee0cbfad7fd624",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5de545e",
     "@eyeo/mlaf": "0.3.3",
     "@eyeo/snippets": "0.9.0",
-    "@eyeo/webext-sdk": "0.9.0",
+    "@eyeo/webext-sdk": "0.10.1",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
