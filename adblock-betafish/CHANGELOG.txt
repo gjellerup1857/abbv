@@ -1,6 +1,14 @@
 ## Versions ##
 
-UNRELEASED:
+Version: 5.11.0, Date: 2023-10-08
+- Fixed a race condition that could occur with tab-session storage
+- Added temporary debug IPM event messages
+- Updated the Snippet dependency to 0.9.0
+- Updated the eyeo's Web Extension Ad Blocking Toolkit to version 0.10.1
+- Added a new machine learning dependency
+- Removed the September 2023 campaign code
+- Added a webpack alias
+- Added the IPM data to the debug data
 
 Version: 5.10.1, Date: 2023-09-18
 - Show the /update page to let users know about the AdBlock Premium
