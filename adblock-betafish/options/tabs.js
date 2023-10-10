@@ -19,7 +19,7 @@
 /* global browser, License, localizePage, determineUserLanguage, getStorageCookie, setStorageCookie,
    THIRTY_MINUTES_IN_MILLISECONDS, checkForUnSyncError, addUnSyncErrorClickHandler, translate,
    splitMessageWithReplacementText, setLangAndDirAttributes, storageSet, storageGet,
-   initializeProxies, ServerMessages */
+   initializeProxies, ServerMessages, settings:true, */
 
 const userSeenNewDCPageKey = 'options_menu_dc_key';
 let userSeenNewDCPage = storageGet(userSeenNewDCPageKey);
@@ -157,7 +157,7 @@ function loadTabPanelScript($activeTabPanel) {
 
   if (alreadyLoaded) {
     return;
-  } // dont' load twice the same script
+  } // don't load the same script twice
 
   // Don't use $().append(scriptTag) because CSP blocks eval
   scriptTag.src = scriptToLoad;
@@ -218,6 +218,12 @@ const displayMABFeedbackCTA = function () {
   }
 };
 
+const hideAdvancedOptionsWhenNeeded = function () {
+  if (!settings.show_advanced_options) {
+    $('.advanced').hide();
+  }
+};
+
 // Load all HTML templates in respective tab panels
 // and translate strings on load completion
 function loadTabPanelsHTML() {
@@ -253,6 +259,7 @@ function loadTabPanelsHTML() {
         checkForUnSyncError();
         addUnSyncErrorClickHandler();
         shouldShowDCNewIcon();
+        hideAdvancedOptionsWhenNeeded();
       }
     });
   });

@@ -17,10 +17,9 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global parseUri, settings:true, abpPrefPropertyNames, settingsNotifier, SubscriptionAdapter,
-   DownloadableSubscription, Subscription, Prefs, synchronizer, filterStorage, filterNotifier,
-   updateAcceptableAdsUI, activateTab, MABPayment, License, autoReloadingPage:true,
+   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License, autoReloadingPage:true,
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
-   SubscriptionsProxy, DataCollectionV2, browser, LocalCDN, send */
+   SubscriptionsProxy, DataCollectionV2, LocalCDN, send */
 
 // Handle incoming clicks from content scripts on getadblock.com
 try {
@@ -53,9 +52,7 @@ const initialize = async function init() {
   for (const name in settings) {
     $(`#enable_${name}`).prop('checked', settings[name]);
   }
-  if (!settings.show_advanced_options) {
-    $('.advanced').hide();
-  }
+
   if (!settings.youtube_manage_subscribed) {
     $('#youtube_manage_subscribed_link').removeClass('link-text-color');
     $('#youtube_manage_subscribed_link').removeClass('pointer');
