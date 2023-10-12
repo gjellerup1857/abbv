@@ -126,13 +126,6 @@ License.ready().then(() => {
   browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message === 'load_my_adblock') {
       if (
-        sender.url && sender.url.startsWith('http')
-        && License.isActiveLicense()
-        && getSettings().picreplacement
-      ) {
-        void injectScript('adblock-picreplacement.js', sender.tab.id, sender.frameId);
-      }
-      if (
         License.isActiveLicense()
         && sender.url
         && sender.url.startsWith('http')
@@ -406,3 +399,26 @@ License.ready().then(() => {
 
   channelsNotifier.on('channels.changed', getListener('channels', 'changed'));
 });
+
+const webNavigationHandler = async function (details) {
+  await License.ready();
+  const {
+    url = '', documentLifecycle = 'active', tabId, frameId,
+  } = details;
+  if (
+    url.startsWith('http')
+    && License.isActiveLicense()
+    && documentLifecycle === 'active'
+    && getSettings().picreplacement
+  ) {
+    void injectScript('adblock-picreplacement.js', tabId, frameId);
+  }
+};
+
+/**
+ * Initializes module
+ */
+const start = function () {
+  browser.webNavigation.onCommitted.addListener(webNavigationHandler);
+};
+start();
