@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Behavior, Command, Content } from '../../../ipm/background';
+import { LicenseStateBehavior, Command, Content } from '../../../ipm/background';
 
 /**
  * Timing name
@@ -29,7 +29,7 @@ export enum Timing {
 /**
  * On-page dialog behavior
  */
-export interface DialogBehavior extends Behavior {
+export interface DialogBehavior extends LicenseStateBehavior {
     /**
      * On-page dialog display duration in minutes
      */
@@ -113,6 +113,7 @@ export interface DialogParams {
     button_label: string;
     button_target: string;
     domain_list?: string;
+    license_state_list?: string;
 }
 
 /**

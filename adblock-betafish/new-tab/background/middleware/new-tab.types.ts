@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Behavior, Command } from '../../../ipm/background';
+import { LicenseStateBehavior, Command } from '../../../ipm/background';
 
 /**
  * New tab event names
@@ -28,7 +28,7 @@ export enum NewTabEventType {
 /**
  * New tab behavior
  */
-export interface NewTabBehavior extends Behavior {
+export interface NewTabBehavior extends LicenseStateBehavior {
   /**
    * Target page to open
    */
@@ -40,6 +40,7 @@ export interface NewTabBehavior extends Behavior {
  */
 export interface NewTabParams {
   url: string;
+  license_state_list?: string;
 }
 
 /**

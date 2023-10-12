@@ -19,8 +19,10 @@ import {
   Command,
   CommandHandler,
   CommandName,
+  defaultLicenseState,
   ParamDefinitionList,
   isSafeUrl,
+  isValidLicenseStates,
   setCommandActor,
   validateParams,
 } from '../../../ipm/background';
@@ -38,6 +40,10 @@ const paramDefinitionList: ParamDefinitionList<NewTabParams> = [
   {
     name: 'url',
     validate: isSafeUrl,
+  },
+  {
+    name: 'license_state_list',
+    validate: isValidLicenseStates,
   },
 ];
 
@@ -94,6 +100,7 @@ function getBehavior(command: Command): NewTabBehavior | null {
 
   return {
     target: command.url,
+    license_state_list: command.license_state_list || defaultLicenseState,
   };
 }
 

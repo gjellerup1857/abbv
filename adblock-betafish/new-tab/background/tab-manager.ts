@@ -21,13 +21,13 @@ import {
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
+  doesLicenseStateMatch,
   getBehavior,
   recordEvent,
 } from '../../ipm/background';
-import { License } from '../../picreplacement/check';
+
 import * as logger from '../../utilities/background';
 import { getSettings, settings } from '../../prefs/background/settings';
-
 import {
   NewTabEventType,
   isNewTabBehavior,
@@ -63,7 +63,6 @@ const openNewtabOnUpdated = (
   recordEvent(ipmId, CommandName.createTab, NewTabEventType.loaded);
 };
 
-
 /**
  * Opens the new tab to the URL specified on the IPM command
  *
@@ -80,6 +79,13 @@ async function openNewtab(
     dismissCommand(ipmId);
     return;
   }
+  // Ignore and dismiss command if License states doesn't match the license state of the command
+  if (!await doesLicenseStateMatch(behavior)) {
+    logger.debug('[new-tab]: License state mis-match');
+    dismissCommand(ipmId);
+    return;
+  }
+
   const targetUrl = createSafeOriginUrl(behavior.target);
   if (!targetUrl) {
     dismissCommand(ipmId);
@@ -181,11 +187,6 @@ const onUpdated = (
  */
 async function handleCommand(ipmId: string): Promise<void> {
   logger.debug('[new-tab]:tab manager handleCommand', ipmId);
-  await License.ready();
-  if (License.isActiveLicense()) {
-    dismissCommand(ipmId);
-    return;
-  }
 
   const { installType } = await browser.management.getSelf();
   if ((installType as ExtendedInstallType) === 'admin') {

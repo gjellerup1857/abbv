@@ -19,10 +19,12 @@ import {
   Command,
   CommandHandler,
   CommandName,
+  defaultLicenseState,
   ParamDefinitionList,
   isNotEmpty,
   isSafeUrl,
   isValidDomainList,
+  isValidLicenseStates,
   setCommandActor,
   validateParams,
 } from '../../../ipm/background';
@@ -71,6 +73,10 @@ const paramDefinitionList: ParamDefinitionList<DialogParams> = [
     name: 'domain_list',
     validate: isValidDomainList,
   },
+  {
+    name: 'license_state_list',
+    validate: isValidLicenseStates,
+  },
 ];
 
 /**
@@ -114,6 +120,7 @@ function getBehavior(command: Command): DialogBehavior | null {
     target: command.button_target,
     timing: command.timing,
     domain_list: command.domain_list,
+    license_state_list: command.license_state_list || defaultLicenseState,
   };
 }
 

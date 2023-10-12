@@ -36,6 +36,16 @@ export const commandStats = 'ipm_commands_stats';
 export interface Behavior { }
 
 /**
+ * Command behavior
+ */
+export interface LicenseStateBehavior extends Behavior {
+  /**
+   * A comma separate list of Premium license state(s)
+   */
+  license_state_list: string;
+}
+
+/**
  * Handler that gets called when command gets executed
  */
 export type CommandHandler = (ipmId: string) => void;
@@ -44,8 +54,8 @@ export type CommandHandler = (ipmId: string) => void;
  * An enum containing all known command names.
  */
 export enum CommandName {
-    createOnPageDialog = 'create_on_page_dialog',
-    createTab = 'create_tab'
+  createOnPageDialog = 'create_on_page_dialog',
+  createTab = 'create_tab'
 }
 
 /**
@@ -59,26 +69,26 @@ export enum CommandEventType {
  * A map that contains the version for each command.
  */
 export const CommandVersion: Record<CommandName, number> = {
-  [CommandName.createOnPageDialog]: 2,
-  [CommandName.createTab]: 1,
+  [CommandName.createOnPageDialog]: 3,
+  [CommandName.createTab]: 2,
 };
 
 /**
  * The required IPM command meta data.
  */
 export interface CommandMetaData {
-    /**
-     * The command library version.
-     */
-    version: number;
-    /**
-     * The name of the command.
-     */
-    command_name: CommandName;
-    /**
-     * The IPM id.
-     */
-    ipm_id: string;
+  /**
+   * The command library version.
+   */
+  version: number;
+  /**
+   * The name of the command.
+   */
+  command_name: CommandName;
+  /**
+   * The IPM id.
+   */
+  ipm_id: string;
 }
 
 /**
@@ -95,26 +105,26 @@ export interface Content { }
  * Command actor
  */
 export interface CommandActor {
-    /**
-     * Retrieves the actor-specific command behavior
-     *
-     * @param command - Command
-     */
-    getBehavior: (command: Command) => Behavior | null;
-    /**
-     * Retrieves the actor-specific command content
-     *
-     * @param command - Command
-     */
-    getContent: (command: Command) => Content | null;
-    /**
-     * Handles given command
-     */
-    handleCommand: CommandHandler;
-    /**
-     * Checks whether the given command is valid for the actor
-     *
-     * @returns whether the given command is valid for the actor
-     */
-    isValidCommand: (command: Command) => boolean;
+  /**
+   * Retrieves the actor-specific command behavior
+   *
+   * @param command - Command
+   */
+  getBehavior: (command: Command) => Behavior | null;
+  /**
+   * Retrieves the actor-specific command content
+   *
+   * @param command - Command
+   */
+  getContent: (command: Command) => Content | null;
+  /**
+   * Handles given command
+   */
+  handleCommand: CommandHandler;
+  /**
+   * Checks whether the given command is valid for the actor
+   *
+   * @returns whether the given command is valid for the actor
+   */
+  isValidCommand: (command: Command) => boolean;
 }

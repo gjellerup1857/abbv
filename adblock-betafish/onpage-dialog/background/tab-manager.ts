@@ -26,11 +26,11 @@ import {
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
+  doesLicenseStateMatch,
   getBehavior,
   getContent,
   recordEvent,
 } from '../../ipm/background';
-import { License } from '../../picreplacement/check';
 import * as logger from '../../utilities/background';
 import { MessageSender, TabRemovedEventData } from '../../polyfills/background';
 import { getSettings } from '../../prefs/background/settings';
@@ -383,14 +383,6 @@ async function handleTabsUpdatedEvent(
 
   /* eslint-disable no-await-in-loop */
   for (const ipmId of unassignedIpmIds) {
-    // Ignore and dismiss command if user has Premium
-    if (License.isActiveLicense()) {
-      logger.debug('[tm]: User has Premium');
-      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_premium_user);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-
     // Ignore and dismiss command if user opted-out of 'surveys'
     if (getSettings().show_survey === false) {
       logger.debug('[onpage-dialog]:show_survey - disabled');
@@ -423,6 +415,13 @@ async function handleTabsUpdatedEvent(
         DialogErrorEventType.tab_no_behavior_found);
       dismissDialogCommand(ipmId);
       continue;
+    }
+
+    // Ignore and dismiss command if License states doesn't match the license state of the command
+    if (!await doesLicenseStateMatch(behavior)) {
+      logger.debug('[onpage-dialog]: License state mis-match');
+      dismissCommand(ipmId);
+      return;
     }
 
     // Ignore and dismiss command if it has no stats

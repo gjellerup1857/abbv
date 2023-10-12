@@ -16,6 +16,7 @@
  */
 
 import { isValidHostname, parseDomains } from 'adblockpluscore/lib/url';
+import { isValidLicenseState } from './license';
 import { Command } from './command-library.types';
 import { ParamDefinitionList, ParamValidator } from './param-validator.types';
 import { createSafeOriginUrl } from './url';
@@ -35,6 +36,23 @@ export const isNumeric: ParamValidator = param => typeof param === 'number' && !
  * @returns Whether the param is a string that's not empty
  */
 export const isNotEmpty: ParamValidator = param => typeof param === 'string' && param.length > 0;
+
+/**
+ * Checks whether the given parameter contains only values of type LicenseState.
+ *
+ * @param param The parameter to validate
+ * @returns Whether the parameter contains only values of type LicenseState
+ */
+export const isValidLicenseStates: ParamValidator = (param: unknown): boolean => {
+  if (!param) {
+    return true;
+  }
+  if (typeof param !== 'string') {
+    return false;
+  }
+  const licenseStates = param.split(',');
+  return licenseStates.every(state => isValidLicenseState(state));
+};
 
 /**
  * Checks whether the given parameter is a safe URL string.
