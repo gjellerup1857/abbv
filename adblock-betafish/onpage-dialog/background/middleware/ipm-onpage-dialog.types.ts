@@ -74,6 +74,7 @@ export enum DialogEventType {
     closed = 'dialog_closed',
     ignored = 'dialog_ignored',
     injected = 'dialog_injected',
+    injected_error = 'dialog_injected_error',
     initial_ping = 'ping.initial',
     received = 'received',
 }
