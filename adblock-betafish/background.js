@@ -490,13 +490,13 @@ const getCurrentTabInfo = function (secondTime, tabId) {
 };
 
 const updateStorageKey = 'last_known_version';
-const isUpdatePageEngaged = false;
+const isUpdatePageEngaged = true;
 
 const showUpdatePage = async function (details) {
   let updateTabRetryCount = 0;
 
   const getUpdatedURL = async function () {
-    const encodedVersion = encodeURIComponent('5.10.1');
+    const encodedVersion = encodeURIComponent('5.12.0');
     const userID = await getUserId();
     let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${userID}&bc=${Prefs.blocked_total}`;
     updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
@@ -541,17 +541,18 @@ const showUpdatePage = async function (details) {
     }
   };
 
-  const slashUpdateReleases = ['5.10.1'];
+  const slashUpdateReleases = ['5.12.0'];
   const {
     last_known_version: lastKnownVersion,
   } = await browser.storage.local.get(updateStorageKey);
 
   const currentVersion = browser.runtime.getManifest().version;
 
-  // don't open the /update page for Ukraine or Russian users.
+  // only open the /update page for English, French, German, Spanish, and Dutch users.
   const shouldShowUpdateForLocale = function () {
-    const language = determineUserLanguage();
-    return !(language && (language.startsWith('ru') || language.startsWith('uk')));
+    const slashUpdateLanguagess = ['en', 'fr', 'de', 'es', 'nl'];
+    const language = determineUserLanguage().substring(0, 2);
+    return slashUpdateLanguagess.includes(language);
   };
 
   if (
