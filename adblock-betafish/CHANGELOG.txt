@@ -1,5 +1,13 @@
 ## Versions ##
 
+Version: 5.12.0, Date: 2023-10-16
+- Show the /update page to let users know about the AdBlock Premium
+- Fixed an issue with the Premium Image Swap feature
+- Fixed an issue with AdBlock toolbar icon incorrectly showing as allowlisted when ad blocking is active
+- Fixed an issue with on page dialog in the Opera search results page
+- Fixed an issue on the AdBlock Options page incorrectly showing advanced options when the page is manually reloaded
+- Added the 'license' parameter to the IPM request, and now include when processing IPM commands
+
 Version: 5.11.0, Date: 2023-10-08
 - Fixed a race condition that could occur with tab-session storage
 - Added temporary debug IPM event messages
