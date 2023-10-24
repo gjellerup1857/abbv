@@ -11,6 +11,9 @@
       "*": [
         "*",
         "adblock-betafish/*"
+      ],
+      "~/*": [
+        "./adblock-betafish/*"
       ]
     },
     "module": "es2020",

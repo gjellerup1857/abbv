@@ -54,7 +54,6 @@ export default {
           'adblock-betafish/messaging/message-responder.js',
           'adblock-betafish/api/protected/background/getadblock.js',
           'adblock-betafish/ipm/background/index.ts',
-          'adblock-betafish/ipm/background/command-removal.ts',
           'adblock-betafish/onpage-dialog/background/index.ts',
           'adblock-betafish/new-tab/background/index.ts',
         ],

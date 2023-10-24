@@ -279,4 +279,4 @@ async function start(): Promise<void> {
   }
 }
 
-export const commandLibraryStarted = start().catch(logger.error);
+start().catch(logger.error);
