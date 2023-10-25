@@ -133,12 +133,16 @@ async function dismissDialog(
  * Handles commands
  *
  * @param ipmId - IPM ID
+ * @param isInitialization Whether the command is being restored when the
+ *   module initializes
  */
-function handleCommand(ipmId: string): void {
-  setStats(ipmId, {
-    displayCount: 0,
-    lastDisplayTime: 0,
-  });
+function handleCommand(ipmId: string, isInitialization: boolean): void {
+  if (!isInitialization) {
+    setStats(ipmId, {
+      displayCount: 0,
+      lastDisplayTime: 0,
+    });
+  }
   unassignedIpmIds.add(ipmId);
   recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.received);
 }

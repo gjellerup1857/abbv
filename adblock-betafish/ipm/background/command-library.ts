@@ -244,7 +244,7 @@ export function executeIPMCommand(
     storeCommandData(command);
   }
 
-  actor.handleCommand(command.ipm_id);
+  actor.handleCommand(command.ipm_id, isInitialization);
 }
 
 /**

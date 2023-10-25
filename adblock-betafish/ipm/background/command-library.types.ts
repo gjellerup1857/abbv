@@ -47,8 +47,12 @@ export interface LicenseStateBehavior extends Behavior {
 
 /**
  * Handler that gets called when command gets executed
+ *
+ * @param ipmId - IPM ID
+ * @param isInitialization Whether the command is being restored when the
+ *   module initializes
  */
-export type CommandHandler = (ipmId: string) => void;
+export type CommandHandler = (ipmId: string, isInitialization: boolean) => void;
 
 /**
  * An enum containing all known command names.
