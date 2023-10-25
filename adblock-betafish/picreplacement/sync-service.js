@@ -20,12 +20,12 @@
    getUserFilters, Prefs, abpPrefPropertyNames,
    adblockIsDomainPaused, PubNub, adblockIsPaused,
    pausedFilterText1, pausedFilterText2,
-   isWhitelistFilter, getCustomFilterMetaData */
+   isWhitelistFilter */
 
 /** @module SyncService */
 
 import * as ewe from '@eyeo/webext-sdk';
-
+import { getCustomFilterMetaData } from '../debug/background';
 import { TELEMETRY } from '../telemetry/background';
 import { getUserId } from '../id/background/index';
 import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
@@ -753,11 +753,10 @@ const SyncService = (function getSyncService() {
         }
       }
     }
-    let userFilters = await getUserFilters();
-    userFilters = userFilters.map(filter => filter.text).sort();
-    payload.customFilterRules = cleanCustomFilter(userFilters);
-
-    const metaDataArr = await getCustomFilterMetaData();
+    const userFilters = await getUserFilters();
+    const userFiltersTexts = userFilters.map(filter => filter.text).sort();
+    payload.customFilterRules = cleanCustomFilter(userFiltersTexts);
+    const metaDataArr = await getCustomFilterMetaData(userFilters);
     if (metaDataArr && metaDataArr.length) {
       const ruleMetaData = {};
       for (let inx = 0; inx < metaDataArr.length; inx++) {
