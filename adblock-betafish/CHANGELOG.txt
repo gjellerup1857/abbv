@@ -1,4 +1,11 @@
 ## Versions ##
+Version: 5.13.0, Date: 2023-10-30
+- Show the /update page to let users know about the AdBlock Premium
+- Updated the Snippet dependency to 0.10.0
+- Fixed an issue with the premium sync feature not synchronizing custom rules
+- Removed the temporary code that removed the IPM 'create tab' commands
+- Removed the unused `custom-subscriptions.json` file
+- Fixed an issue with IPM command statistics being reset on extension start up
 
 Version: 5.12.0, Date: 2023-10-16
 - Show the /update page to let users know about the AdBlock Premium
