@@ -121,7 +121,7 @@ async function getDeviceData(): Promise<DeviceData> {
     device_id: await getUserId(),
     attributes: {
       ...(await getBaseAttributes()),
-      blocked_total: Prefs.get('blocked_total'),
+      blocked_total: (Prefs as any).blocked_total,
       license_status:
                 License.isActiveLicense() ? LicenseState.active : LicenseState.inactive,
     },
