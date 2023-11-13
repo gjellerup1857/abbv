@@ -1,4 +1,9 @@
 ## Versions ##
+
+Version: 5.14.0, Date: 2023-11-13
+- Show the /update page to let users know about the AdBlock Premium
+- Fixed an issue the block count parameter in the IPM request
+
 Version: 5.13.0, Date: 2023-10-30
 - Show the /update page to let users know about the AdBlock Premium
 - Updated the Snippet dependency to 0.10.0
