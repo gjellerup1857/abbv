@@ -65,8 +65,8 @@
     "source-map-loader": "4.0.0"
   },
   "engines": {
-    "node": ">=16.10.0 <17.0.0",
-    "npm": ">=7"
+    "node": ">=18.17.1 <19",
+    "npm": "9"
   },
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5de545e",
