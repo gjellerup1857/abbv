@@ -32,7 +32,6 @@ import {
   NewTabCommand,
   NewTabParams,
 } from './new-tab.types';
-import { determineUserLanguage } from '../../../utilities/background/bg-functions';
 
 /**
  * List of new tab parameter definitions
@@ -49,18 +48,6 @@ const paramDefinitionList: ParamDefinitionList<NewTabParams> = [
 ];
 
 /**
- * Determines if this installation should ignore the
- * 'create_tab' command by checking the user's language
- *
- * @returns Whether the command should be processed
- */
-function shouldIgnoreCommand(): boolean {
-  const languagesToIgnore = ['en', 'fr', 'de', 'es', 'nl'];
-  const userLanguage = determineUserLanguage().substring(0, 2);
-  return languagesToIgnore.includes(userLanguage);
-}
-
-/**
  * Runs parameter validation on the given command to check whether it can be
  * worked with. Will log validation errors.
  *
@@ -68,10 +55,6 @@ function shouldIgnoreCommand(): boolean {
  * @returns Whether the command is a valid NewTabCommand and can be worked with
  */
 function isNewTabCommand(command: Command): command is NewTabCommand {
-  if (shouldIgnoreCommand()) {
-    logger.error('[new-tab]: create-tab commands are currently disabled for this locale');
-    return false;
-  }
   const validationErrors = validateParams(command, paramDefinitionList);
   if (validationErrors.length === 0) {
     return true;
