@@ -17,8 +17,8 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, translate, BlacklistUi, bindEnterClickToDefault, mayOpenDialogUi:true,
-   setLangAndDirAttributes, rightClickedItem:true, loadWizardResources, i18nJoin,
-   processReplacementChildrenInContent, isLangRTL */
+   setLangAndDirAttributes, rightClickedItem:true, loadWizardResources,
+   isLangRTL */
 
 // Global lock so we can't open more than once on a tab.
 if (typeof window.mayOpenDialogUi === 'undefined') {
@@ -28,7 +28,7 @@ if (typeof window.mayOpenDialogUi === 'undefined') {
 // This script is injected each time the white list wizard is selected. Until we switch to ES6
 // modules (aka import) we need to protect the code in a namespace so classes aren't declared
 // multiple times.
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function topOpenBlacklistUI(options) {
   // DragElement makes a given DOM element draggable. It assumes the element is positioned
   // absolutely and adjusts the element's `top` and `left` styles directly.

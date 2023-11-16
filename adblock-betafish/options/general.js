@@ -17,9 +17,16 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global parseUri, settings:true, abpPrefPropertyNames, settingsNotifier, SubscriptionAdapter,
-   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License, autoReloadingPage:true,
+   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License,
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
    SubscriptionsProxy, DataCollectionV2, LocalCDN, send */
+
+// ESLint doesn't notice that we're setting autoReloadingPage in this file,
+// so we need to disable @typescript-eslint/no-unused-vars specifically for this
+// particular global
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* global autoReloadingPage:true */
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 // Handle incoming clicks from content scripts on getadblock.com
 try {

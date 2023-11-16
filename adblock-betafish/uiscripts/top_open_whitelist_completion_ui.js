@@ -32,7 +32,7 @@ if (typeof window.mayOpenDialogUi === 'undefined') {
 
 // topOpenWhitelistUI displays the whitelist wizard completion page if it's not already open.
 // See README for details.
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function topOpenWhitelistCompletionUI(options) {
   if (!mayOpenDialogUi) {
     return;

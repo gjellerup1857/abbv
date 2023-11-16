@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, createFilterMetaData, Prefs, settings,
+/* global browser, settings,
    syncErrorCode, translate, checkForSyncError, isSelectorFilter, activateTab, License,
    MABPayment, DOMPurify, initializeProxies, FiltersProxy, send, sendTypeMessage  */
 

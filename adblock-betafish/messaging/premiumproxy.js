@@ -1,6 +1,22 @@
+/*
+ * This file is part of AdBlock  <https://getadblock.com/>,
+ * Copyright (C) 2013-present  Adblock, Inc.
+ *
+ * AdBlock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * AdBlock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /* For ESLint: List any global identifiers used in this file below */
-/* global EventEmitter, send, browser
-*/
+/* global EventEmitter, send, browser */
 
 /**
  * Act as Proxy to the Premium modules - License, Channels, CustomChannel, SyncService
@@ -13,10 +29,11 @@ const licenseNotifier = new EventEmitter();
 let License;
 let localLicense = {};
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeLicense() {
   const returnPropertiesAsFunctions = ['shouldShowMyAdBlockEnrollment', 'isActiveLicense', 'shouldShowPremiumCTA', 'getFormattedActiveSinceDate', 'isLicenseCodeValid'];
   localLicense = await send('getLicenseConfig');
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   License = new Proxy(localLicense, {
     get(obj, prop) {
       if (returnPropertiesAsFunctions.includes(prop)) {
@@ -30,10 +47,10 @@ async function initializeLicense() {
   });
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const channelsNotifier = new EventEmitter();
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class channels {
   static getIdByName = name => send('channels.getIdByName', { name });
 
@@ -50,7 +67,7 @@ class channels {
   static setEnabled = (channelId, enabled) => send('channels.setEnabled', { channelId, enabled });
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class customChannel {
   static isMaximumAllowedImages = () => send('customchannel.isMaximumAllowedImages');
 
@@ -61,12 +78,12 @@ class customChannel {
   static removeListingByURL = url => send('customchannel.removeListingByURL', { url });
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeChannels() {
   channels.channelGuide = await channels.getGuide();
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class SyncService {
   static enableSync = initialGet => send('SyncService.enableSync', { initialGet });
 
@@ -92,7 +109,7 @@ class SyncService {
 }
 
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializePremiumPort() {
   const premiumPort = browser.runtime.connect({ name: 'premium' });
   premiumPort.onMessage.addListener(async (message) => {

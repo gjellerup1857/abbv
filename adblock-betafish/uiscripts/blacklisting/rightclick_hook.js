@@ -17,7 +17,7 @@
 
 // Record the last element to be right-clicked, since that information isn't
 // passed to the contextmenu click handler that calls top_open_blacklist_ui
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars */
 let rightClickedItem = null;
 
 if (document.body) {
@@ -25,6 +25,7 @@ if (document.body) {
     rightClickedItem = e.srcElement;
   });
   document.body.addEventListener('click', () => {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     rightClickedItem = null;
   });
 }

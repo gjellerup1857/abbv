@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, onReady, DOMPurify, parseUri */
+/* global browser, DOMPurify, parseUri */
 
 if (window.top === window.self && /^www\.youtube\.com$/.test(window.location.hostname) === true) {
   /*

@@ -16,8 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, translate, determineUserLanguage, initializeSettings, settings, send,
-*/
+/* global browser, determineUserLanguage, initializeSettings, settings, send */
 
 let debugInfo;
 let textDebugInfo = '';

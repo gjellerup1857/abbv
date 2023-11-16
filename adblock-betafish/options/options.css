@@ -1502,7 +1502,7 @@ section#waitlist-cta > section#waitlist-tooltip:hover {
   box-shadow: 0px 5px 10px var(--mail-dialog-drop-shadow-color);
   border-radius: 3px;
 }
-#mail-dialog-header {
+.mail-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1529,7 +1529,7 @@ section#waitlist-cta > section#waitlist-tooltip:hover {
 #mail-dialog-done-content {
   display: none;
 }
-#mail-dialog-body {
+.mail-dialog-body {
   margin-top: 13px;
   width: 100%;
   color: var(--mail-dialog-content-text-color);

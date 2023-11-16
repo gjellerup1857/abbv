@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log,  */
+/* global browser */
 
 // If the computer is currently active, then schedules a function to be executed
 // once when the computer is idle or locked

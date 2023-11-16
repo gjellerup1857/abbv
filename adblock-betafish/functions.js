@@ -17,7 +17,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log, License, runBandaids, openTab */
+/* global browser, log */
 
 // Set to true to get noisier console.log statements
 const VERBOSE_DEBUG = false;
@@ -632,4 +632,5 @@ Object.assign(window, {
   localizePage,
   ellipsis,
   connectUIPort,
+  onReady,
 });

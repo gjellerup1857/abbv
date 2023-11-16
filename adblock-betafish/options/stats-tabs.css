@@ -600,11 +600,11 @@ span [i18n="stats_opt_in_msg"] {
   height: max-content;
 }
 
-#delete-overlay-content {
+.delete-overlay-content {
   padding: 16px;
 }
 
-#delete-overlay-title-div {
+.delete-overlay-title-div {
   display: flex;
   justify-content: space-between;
   line-height: 22px;
@@ -613,7 +613,7 @@ span [i18n="stats_opt_in_msg"] {
   background: var(--primary-panel-bg-color);
   color: var(--stats-overlay-text-color);
 }
-#delete-overlay-title-div i {
+.delete-overlay-title-div i {
   color: var(--stats-main-text-color);
 }
 
@@ -623,12 +623,12 @@ span [i18n="stats_opt_in_msg"] {
   color: var(--stats-main-text-color);
 }
 
-#delete-overlay-msg-content {
+.delete-overlay-msg-content {
   padding: 16px 0;
   color: var(--stats-overlay-text-color);
 }
 
-#delete-overlay-footer-div {
+.delete-overlay-footer-div {
   padding-right: 16px;
   padding-bottom: 16px;
   margin-right: 16px;

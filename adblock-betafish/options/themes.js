@@ -16,8 +16,8 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global  translate, License, MABPayment, settingsNotifier, localizePage, settings,
-   browser, isValidTheme, initializeProxies, send
+/* global  translate, License, MABPayment, settingsNotifier, settings,
+   isValidTheme, initializeProxies, send
  */
 
 (function onThemesLoaded() {

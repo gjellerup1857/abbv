@@ -219,7 +219,7 @@ button.premium-cta-close:hover {
   justify-content: center;
   align-items: center;
 }
-#newText_v2 {
+.newText_v2 {
   color: white;
   background-color: #03bcfc;
   font-weight: bold;

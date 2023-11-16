@@ -15,9 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* For ESLint: List any global identifiers used in this file below */
-/* global  */
-
 import { SessionStorage } from '../alias/storage/session';
 
 const sessionStorageKey = 'ab:CustomFilterRandomName';

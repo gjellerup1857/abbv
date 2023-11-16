@@ -23,7 +23,7 @@
 /**
  * Registers and emits named events.
  */
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class EventEmitter {
   constructor() {
     this.listeners = new Map();
@@ -108,13 +108,13 @@ class EventEmitter {
 }
 
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function send(command, args) {
   const updatedArgs = Object.assign({}, { command }, args);
   return browser.runtime.sendMessage(updatedArgs);
 }
 
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function sendTypeMessage(type, args) {
   const updatedArgs = Object.assign({}, { type }, args);
   return browser.runtime.sendMessage(updatedArgs);

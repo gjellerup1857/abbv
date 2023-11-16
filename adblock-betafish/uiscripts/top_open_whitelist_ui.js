@@ -32,7 +32,7 @@ if (typeof window.mayOpenDialogUi === 'undefined') {
 
 // topOpenWhitelistUI displays the whitelist wizard if it's not already open. See README for
 // details.
-/* eslint-disable-next-line no-unused-vars */
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function topOpenWhitelistUI(options) {
   // DragElement makes a given DOM element draggable. It assumes the element is positioned
   // absolutely and adjusts the element's `top` and `left` styles directly.

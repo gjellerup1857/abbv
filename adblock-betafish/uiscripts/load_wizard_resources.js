@@ -21,7 +21,7 @@
 // Binds keypress enter to trigger click action on
 // default button or trigger click action on focused
 // button.
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function bindEnterClickToDefault($dialog) {
   if (window.GLOBAL_BIND_ENTER_CLICK_TO_DEFAULT) {
     return;
@@ -38,7 +38,7 @@ function bindEnterClickToDefault($dialog) {
 // Inputs:
 //   - $base : jQuery Element to attach the CSS as children
 //   - callback : function to call when loading is complete
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function loadWizardResources($base, callback) {
   function loadCss(cssSrc) {
     const cssUrl = browser.runtime.getURL(cssSrc);

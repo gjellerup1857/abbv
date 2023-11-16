@@ -16,8 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, translate, onReady, imageSizesMap,
-   base64toBlob  */
+/* global browser, translate, onReady */
 
 const { hostname } = window.location;
 let totalSwaps = 0;

@@ -15,9 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* For ESLint: List any global identifiers used in this file below */
-/* global browser  */
-
 /*
     This content script, when injected into tab, will
     wrap the Notification.requestPermission function, so that it will

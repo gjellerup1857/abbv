@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function sendContentToBack() {
   // Objects and embeds can catch our clicks unless we lay a div over
   // them.  But even then they can catch our clicks unless they were loaded
