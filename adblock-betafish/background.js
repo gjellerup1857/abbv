@@ -496,7 +496,7 @@ const showUpdatePage = async function (details) {
   let updateTabRetryCount = 0;
 
   const getUpdatedURL = async function () {
-    const encodedVersion = encodeURIComponent('5.14.0');
+    const encodedVersion = encodeURIComponent('5.15.0');
     const userID = await getUserId();
     let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${userID}&bc=${Prefs.blocked_total}`;
     updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
@@ -541,7 +541,7 @@ const showUpdatePage = async function (details) {
     }
   };
 
-  const slashUpdateReleases = ['5.14.0'];
+  const slashUpdateReleases = ['5.15.0'];
   const {
     last_known_version: lastKnownVersion,
   } = await browser.storage.local.get(updateStorageKey);
