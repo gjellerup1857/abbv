@@ -148,6 +148,7 @@ class TelemetryBase {
       ss: settingsObj.suppress_surveys ? '1' : '0',
       sfrp: settingsObj.suppress_first_run_page ? '1' : '0',
       opm: settingsObj.onpageMessages ? '1' : '0',
+      sendadwallmessages: Prefs.send_ad_wall_messages ? '1' : '0',
       subs: subsStr,
     };
 

@@ -28,7 +28,7 @@ import {
 } from '../../utilities/background/bg-functions';
 
 export const settingsNotifier = new EventEmitter();
-const abpPrefPropertyNames = ['show_statsinicon', 'shouldShowBlockElementMenu', 'show_devtools_panel'];
+const abpPrefPropertyNames = ['show_statsinicon', 'shouldShowBlockElementMenu', 'show_devtools_panel', 'send_ad_wall_messages'];
 const validThemes = ['default_theme', 'dark_theme', 'watermelon_theme', 'solarized_theme', 'solarized_light_theme', 'rebecca_purple_theme', 'ocean_theme', 'sunshine_theme'];
 
 
