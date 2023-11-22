@@ -29,3 +29,11 @@ export interface Message {
 export interface ErrorMessage extends Message {
   error: string,
 }
+
+/**
+ * Temporary interface for the ad wall message object,
+ * as passed from the content script to background page
+ */
+export interface AdWallMessage extends Message {
+  userLoggedIn: string,
+}

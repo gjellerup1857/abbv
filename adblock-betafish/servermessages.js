@@ -20,6 +20,7 @@
 
 import { log, determineUserLanguage, getUserAgentInfo } from './utilities/background/index';
 import { getUserId } from './id/background/index';
+import { Prefs } from '~/alias/prefs';
 
 // Log an 'error' message on GAB log server.
 const ServerMessages = (function serverMessages() {
@@ -125,6 +126,13 @@ const ServerMessages = (function serverMessages() {
     void recordMessageWithUserID(msg, 'general', callback, additionalParams);
   };
 
+  // Log a ad wall specific 'general' message on GAB log server.
+  const recordAdWallMessage = function (msg, userLoggedIn) {
+    if (Prefs.get('send_ad_wall_messages')) {
+      void recordMessageWithUserID(msg, 'general', null, { userLoggedIn });
+    }
+  };
+
   // Log a 'adreport' message on GAB log server.
   const recordAdreportMessage = function (msg, callback, additionalParams) {
     void recordMessageWithUserID(msg, 'adreport', callback, additionalParams);
@@ -153,12 +161,13 @@ const ServerMessages = (function serverMessages() {
   };
 
   return {
-    recordErrorMessage,
+    recordAdreportMessage,
+    recordAdWallMessage,
     recordAnonymousMessage,
     recordAnonymousErrorMessage,
-    recordStatusMessage,
+    recordErrorMessage,
     recordGeneralMessage,
-    recordAdreportMessage,
+    recordStatusMessage,
     sendMessageToBackupLogServer,
   };
 }());

@@ -241,6 +241,13 @@ defaults.ipm_server_url = 'https://ipm.adblock.dev/api/stats';
 defaults.ping_server_url = 'https://ping.getadblock.com/stats/';
 
 /**
+ * Whether to send ad wall related log event messages
+ *
+ * @type {boolean}
+ */
+defaults.send_ad_wall_messages = true;
+
+/**
   * @namespace
   * @static
   */

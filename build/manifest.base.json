@@ -69,7 +69,8 @@
     {
       "all_frames": true,
       "js": [
-        "adblock-yt-cs.js"
+        "adblock-yt-cs.js",
+        "yt-wall-detection.preload.js"
       ],
       "matches": [
         "*://*.youtube.com/*"

@@ -24,7 +24,8 @@
  */
 const settingsNotifier = new EventEmitter();
 let localsettings = {};
-/* eslint-disable-next-line no-unused-vars */
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let settings = {};
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const isValidTheme = async name => send('isValidTheme', { name });

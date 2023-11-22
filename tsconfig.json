@@ -4,13 +4,15 @@
     "typeRoots": [
       "node_modules/@types",
       "node_modules/web-ext-types",
-      "adblock-betafish/**/*"
+      "adblock-betafish/**/*",
+      "src/**/*"
     ],
     "baseUrl": ".",
     "paths": {
       "*": [
         "*",
-        "adblock-betafish/*"
+        "adblock-betafish/*",
+        "src/*"
       ],
       "~/*": [
         "./adblock-betafish/*"
@@ -28,7 +30,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "adblock-betafish/**/*"
+    "adblock-betafish/**/*",
+    "src/**/*"
   ],
   "compileOnSave": false
 }

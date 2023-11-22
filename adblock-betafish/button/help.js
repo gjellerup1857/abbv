@@ -24,7 +24,7 @@ let cleanSegueHTML;
 let cleanSectionHTML;
 let segueBreadCrumb = [];
 let popupMenuHelpMap = {};
-/* eslint-disable-next-line no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let filterUpdateError = false;
 let logSent = false;
 let closeKeydownHandler;
