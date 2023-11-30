@@ -274,12 +274,12 @@ export default {
         src: 'adblock-betafish/options/general.html',
       },
       {
-        dest: 'adblock-options-distractioncontrol.js',
-        src: 'adblock-betafish/options/distractioncontrol.js',
+        dest: 'adblock-options-premium-filters.js',
+        src: 'adblock-betafish/options/premium-filters.js',
       },
       {
-        dest: 'adblock-options-distractioncontrol.html',
-        src: 'adblock-betafish/options/distractioncontrol.html',
+        dest: 'adblock-options-premium-filters.html',
+        src: 'adblock-betafish/options/premium-filters.html',
       },
       {
         dest: 'adblock-options-filters.js',

@@ -2809,15 +2809,15 @@
     "message": "哪些干擾內容？",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "關於 AdBlock Premium 阻擋干擾內容的詳細資訊請參閱[[此處]]。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "如果您想調整干擾控制功能的偏好設定，請到[[此處]]。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "若要聯絡我們的支援團隊，請前往[[幫助中心]]。",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "不用，謝謝",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "如果您改變主意，可以從[[這裡]]啟用額外的干擾控制功能。",
     "description": "text in the help flow"
   },

@@ -2809,15 +2809,15 @@
     "message": "どれですか？",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "AdBlock Premiumによってブロックされた気が散る要素について詳しくは[[こちら]]をご覧ください。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "ディストラクション管理機能の設定を変更したい場合は、[[こちら]]をクリックしてください。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "サポートチームに連絡するには、私たちの[[ヘルプセンター]]に連絡してください。",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "要らない",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "気が変われば、[[こちら]]からディストラクション管理の機能を追加で有効にすることができます。",
     "description": "text in the help flow"
   },

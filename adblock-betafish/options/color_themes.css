@@ -22,8 +22,10 @@
   --popup-separator-color: var(--gray3);
   --popup-accent-hovered-color: var(--gray3);
   --premium-badge-bg-color: var(--popup-background-color);
-  --popup-entry-hovered-bg-color: #000000; /* unused on popup menu */
-  --popup-block-ads-bg-color: #333333; /* unused on popup menu */
+  --popup-entry-hovered-bg-color: #000000;
+  /* unused on popup menu */
+  --popup-block-ads-bg-color: #333333;
+  /* unused on popup menu */
   --block-count-color: var(--red3);
   --popup-help-button-bg-color: #e40d0d;
   --popup-button-text: white;
@@ -37,8 +39,10 @@
   --popup-background-color: var(--gray1);
   --popup-card-background-color: var(--gray2);
   --popup-url-text-color: var(--gray1);
-  --disabled-link-color: #c6c6c6; /* unused on popup menu */
-  --popup-divider-line-color: var(--gray3); /* unused on popup menu */
+  --disabled-link-color: #c6c6c6;
+  /* unused on popup menu */
+  --popup-divider-line-color: var(--gray3);
+  /* unused on popup menu */
   --popup-button-background-color: var(--gray1);
   --popup-button-outline-color: var(--gray2);
   --popup-button-reenable-bg-color: var(--red2);
@@ -131,11 +135,10 @@
   --mail-dialog-border-color: #c6c6c6;
   --mail-dialog-link-color: #0047ff;
   --mail-dialog-drop-shadow-color: rgba(51, 51, 51, 0.2);
-  --dc-icon-color: white;
-  --dc-list-title: white;
-  --dc-warning-color: #000000;
-  --dc-warning-bg-color: #fff2bf;
+  --pf-icon-color: var(--gray1);
+  --pf-list-title: white;
 }
+
 #default_theme {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: var(--gray1);
@@ -248,11 +251,10 @@
   --mail-dialog-border-color: #c6c6c6;
   --mail-dialog-link-color: #0047ff;
   --mail-dialog-drop-shadow-color: rgba(51, 51, 51, 0.2);
-  --dc-icon-color: var(--gray1);
-  --dc-list-title: var(--gray1);
-  --dc-warning-color: #000000;
-  --dc-warning-bg-color: #fff2bf;
+  --pf-icon-color: var(--gray1);
+  --pf-list-title: var(--gray1);
 }
+
 #solarized_theme,
 [data-theme-cta="solarized_theme"] {
   /* Needed for Pop-up Menu */
@@ -371,11 +373,10 @@
   --mail-dialog-border-color: #c6c6c6;
   --mail-dialog-link-color: #00a498;
   --mail-dialog-drop-shadow-color: rgba(0, 0, 0, 0.15);
-  --dc-icon-color: var(--gray1);
-  --dc-list-title: #90a2a2;
-  --dc-warning-color: #ffffff;
-  --dc-warning-bg-color: ##fff2bf;
+  --pf-icon-color: #90a2a2;
+  --pf-list-title: #90a2a2;
 }
+
 #solarized_light_theme,
 [data-theme-cta="solarized_light_theme"] {
   /* Needed for Pop-up Menu */
@@ -495,11 +496,10 @@
   --mail-dialog-border-color: #c6c6c6;
   --mail-dialog-link-color: #00a498;
   --mail-dialog-drop-shadow-color: rgba(51, 51, 51, 0.2);
-  --dc-icon-color: var(--gray1);
-  --dc-list-title: #657b83;
-  --dc-warning-color: #000000;
-  --dc-warning-bg-color: #fff2bf;
+  --pf-icon-color: var(--gray1);
+  --pf-list-title: #657b83;
 }
+
 #rebecca_purple_theme {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
@@ -549,6 +549,7 @@
   --popup-link-hovered: var(--block-count-color);
   --premium-badge: var(--popup-accent-color);
 }
+
 #watermelon_theme,
 [data-theme-cta="watermelon_theme"] {
   /* Needed for Pop-up Menu */
@@ -605,6 +606,7 @@
   --popup-themes-cta-background-on-hover: #333333;
   --popup-themes-cta-color-on-hover: white;
 }
+
 #ocean_theme,
 [data-theme-cta="ocean_theme"] {
   /* Needed for Pop-up Menu */
@@ -661,6 +663,7 @@
   --popup-themes-cta-background-on-hover: #333333;
   --popup-themes-cta-color-on-hover: white;
 }
+
 #sunshine_theme,
 [data-theme-cta="sunshine_theme"] {
   /* Needed for Pop-up Menu */

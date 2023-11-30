@@ -2809,15 +2809,15 @@
     "message": "Quali elementi di distrazione?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "[[Qui]] puoi trovare i dettagli aggiuntivi sulle distrazioni bloccate da AdBlock Premium.",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Se vuoi regolare le preferenze per le funzioni di Controllo distrazioni, puoi farlo [[qui]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Per contattare la squadra di assistenza, visita il nostro [[Centro assistenza]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "No, grazie",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Se cambi idea, puoi attivare funzioni aggiuntive di Controllo distrazioni [[qui]].",
     "description": "text in the help flow"
   },

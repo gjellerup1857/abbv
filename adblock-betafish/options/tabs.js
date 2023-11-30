@@ -21,8 +21,8 @@
    splitMessageWithReplacementText, setLangAndDirAttributes, storageSet, storageGet,
    initializeProxies, ServerMessages, settings:true, */
 
-const userSeenNewDCPageKey = 'options_menu_dc_key';
-let userSeenNewDCPage = storageGet(userSeenNewDCPageKey);
+const userSeenNewPFPageKey = 'options_menu_pf_key';
+let userSeenNewPFPage = storageGet(userSeenNewPFPageKey);
 
 const syncMessageContainer = '<div class="sync-message-container"></div>';
 
@@ -80,33 +80,33 @@ function getSyncOutOfDateMessageDiv(id) {
 }
 
 function showNewIcon() {
-  $('#dcIcon').fadeOut();
-  $('#new-dc-icon').fadeIn();
-  $('#dc-menu-item').addClass('newItem');
+  $('#pfIcon').fadeOut();
+  $('#new-pf-icon').fadeIn();
+  $('#pf-menu-item').addClass('newItem');
 }
 
-function showDcIcon() {
-  $('#dcIcon').fadeIn();
-  $('#new-dc-icon').fadeOut();
-  $('#dc-menu-item').removeClass('newItem');
+function showPFIcon() {
+  $('#pfIcon').fadeIn();
+  $('#new-pf-icon').fadeOut();
+  $('#pf-menu-item').removeClass('newItem');
 }
 
 function hideBothIcons() {
-  $('#dcIcon').fadeOut();
-  $('#new-dc-icon').fadeOut();
-  $('#dc-menu-item').removeClass('newItem');
+  $('#pfIcon').fadeOut();
+  $('#new-pf-icon').fadeOut();
+  $('#pf-menu-item').removeClass('newItem');
 }
 
 function checkWindowWidth() {
   const currentWidth = $(window).width();
   const minimumWindowWidthFullMenu = 871;
-  if (!userSeenNewDCPage) {
+  if (!userSeenNewPFPage) {
     showNewIcon();
   } else if (currentWidth <= minimumWindowWidthFullMenu) {
-    if (!userSeenNewDCPage) {
+    if (!userSeenNewPFPage) {
       showNewIcon();
     } else {
-      showDcIcon();
+      showPFIcon();
     }
   } else {
     hideBothIcons();
@@ -114,16 +114,16 @@ function checkWindowWidth() {
 }
 
 function shouldShowDCNewIcon() {
-  if (!userSeenNewDCPage) {
+  if (!userSeenNewPFPage) {
     window.addEventListener('resize', checkWindowWidth);
     checkWindowWidth();
   }
 }
 
-function checkDCNewIcon(tabID) {
-  if (tabID === '#distractioncontrol') {
-    userSeenNewDCPage = true;
-    storageSet(userSeenNewDCPageKey, userSeenNewDCPage);
+function checkPFNewIcon(tabID) {
+  if (tabID === '#premium-filters') {
+    userSeenNewPFPage = true;
+    storageSet(userSeenNewPFPageKey, userSeenNewPFPage);
     checkWindowWidth();
   }
 }
@@ -190,7 +190,7 @@ function activateTab(tabHref) {
 
   displayActiveTab($activeTab);
 
-  checkDCNewIcon(tabID);
+  checkPFNewIcon(tabID);
 }
 
 // displayMABFeedbackCTA checks if the user has set their language to english and

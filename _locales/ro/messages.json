@@ -2797,15 +2797,15 @@
     "message": "Ce distrageri?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Detalii suplimentare despre distragerile blocate de AdBlock Premium pot fi găsite [[here]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Dacă vreți să vă ajustați preferințele caracteristicilor funcției Control de distrageri, puteți face acest lucru [[aici]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Pentru a contacta echipa noastră de asistență, vizitați [[Centrul de ajutor]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3641,7 +3641,7 @@
     "message": "Nu, mulțumesc",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Dacă vă răzgândiți, puteți activa caracteristici suplimentare ale Controlului de distragere [[here]].",
     "description": "text in the help flow"
   },

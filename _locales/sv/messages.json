@@ -2809,15 +2809,15 @@
     "message": "Vilka distraktioner?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Ytterligare detaljer om distraktioner som blockerats av AdBlock Premium hittas [[här]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Om du vill justera dina inställningar angående funktionerna för Distraktionskontroll kan du göra det [[här]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "För att kontakta vårt supportteam, besök vårt [[Hjälpcenter]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "Nej tack",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Om du ändrar dig kan du aktivera ytterligare funktioner för Distraktionskontroll [[här]].",
     "description": "text in the help flow"
   },

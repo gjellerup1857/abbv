@@ -324,5 +324,35 @@
     "id": "96932CD9-6DDF-4D97-B92F-FDF747B6FAA2",
     "adblockId": "nordic",
     "index": 55
+  },
+  "https://easylist-downloads.adblockplus.org/cookie-filter-list.txt": {
+    "id": "588470E8-E163-4CD9-A909-521B2A3BE73F",
+    "adblockId": "cookies-premium",
+    "index": 56
+  },
+  "https://easylist-downloads.adblockplus.org/v3/full/cookie-filter-list.txt": {
+    "id": "588470E8-E163-4CD9-A909-521B2A3BE73F",
+    "adblockId": "cookies-premium",
+    "index": 56
+  },
+  "https://easylist-downloads.adblockplus.org/turkish-filters+easylist.txt": {
+    "id": "D99D3350-7F11-43E1-87CB-FDE0C78E8CD6",
+    "adblockId": "turkish",
+    "index": 57
+  },
+  "https://easylist-downloads.adblockplus.org/v3/full/turkish-filters+easylist.txt": {
+    "id": "D99D3350-7F11-43E1-87CB-FDE0C78E8CD6",
+    "adblockId": "turkish",
+    "index": 57
+  },
+  "https://easylist-downloads.adblockplus.org/japanese-filters+easylist.txt": {
+    "id": "361001BD-8F57-4736-97B1-F332C3D79E5D",
+    "adblockId": "japanese",
+    "index": 58
+  },
+  "https://easylist-downloads.adblockplus.org/v3/full/japanese-filters+easylist.txt": {
+    "id": "361001BD-8F57-4736-97B1-F332C3D79E5D",
+    "adblockId": "japanese",
+    "index": 58
   }
 }

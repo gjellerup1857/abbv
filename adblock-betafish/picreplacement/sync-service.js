@@ -68,8 +68,16 @@ const SyncService = (function getSyncService() {
   // sync feature was added to AdBlock, therefore these filter lists should be sent
   // with an ID of 'url:...' instead of the id in the betafish-subscriptions.json file
   // any adds to the the betafish-subscriptions.json file should be added here as well.
-  const sendFilterListByURL = ['nordic', 'annoyances',
-    'fb_notifications', 'easylist_plus_romanian', 'idcac'];
+  const sendFilterListByURL = [
+    'nordic',
+    'annoyances',
+    'fb_notifications',
+    'easylist_plus_romanian',
+    'idcac',
+    'cookies-premium',
+    'turkish',
+    'japanese',
+  ];
   const { flavor } = getUserAgentInfo();
   const { os } = getUserAgentInfo();
 

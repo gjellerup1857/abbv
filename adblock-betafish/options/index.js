@@ -28,14 +28,16 @@
 
     */
 
-const DISTRACTION_CONTROL_URL_LIST = [
+const PREMIUM_FILTER_URL_LIST = [
   'https://easylist-downloads.adblockplus.org/adblock_premium.txt',
   'https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt',
+  'https://easylist-downloads.adblockplus.org/cookie-filter-list.txt',
+  'https://easylist-downloads.adblockplus.org/v3/full/cookie-filter-list.txt',
 ];
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
-function isDistractionControlURL(url) {
-  return DISTRACTION_CONTROL_URL_LIST.includes(url);
+function isPremiumFilterListURL(url) {
+  return PREMIUM_FILTER_URL_LIST.includes(url);
 }
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
@@ -63,6 +65,8 @@ const rateUsCtaKey = 'rate-us-cta-clicked';
 const vpnWaitlistCtaKey = 'vpn-waitlist-cta-clicked';
 /* eslint-disable-next-line no-unused-vars */
 const mailCtaKey = 'mail-cta-clicked';
+/* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
+const premiumFiltersCtaKey = 'premium-filters-cta-clicked';
 
 const info = {};
 const FIVE_SECONDS = 5000;

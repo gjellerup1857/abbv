@@ -2809,15 +2809,15 @@
     "message": "Что вам мешает?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Дополнительную информацию об отвлекающих элементах, которые может заблокировать AdBlock Premium, вы найдете [[здесь]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Чтобы настроить управление отвлекающими элементами, перейдите [[сюда]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Чтобы связаться с нашей службой поддержки, перейдите на страницу [[центра помощи]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "Нет, спасибо",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Если вы передумаете, дополнительные функции управления отвлекающими элементами можно включить [[здесь]].",
     "description": "text in the help flow"
   },

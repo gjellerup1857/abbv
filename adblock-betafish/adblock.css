@@ -141,10 +141,8 @@ Global Styles
   --image-swap-section-bg-selected: var(--background-color);
   --sync-error-msg-background-color: var(--options-button-bg-hover);
   --sync-msg-color: var(--options-button-text);
-  --dc-icon-color: var(--gray1);
-  --dc-list-title: var(--gray1);
-  --dc-warning-color: #000000;
-  --dc-warning-bg-color: #fff2bf;
+  --pf-icon-color: var(--gray1);
+  --pf-list-title: var(--gray1);
   /* Aliases for Themes CTA:
      normally these are defined by other custom properties, but here they are set
      with the solarized colors since it's the default Theme CTA to use */
@@ -193,23 +191,28 @@ Global Styles
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
 }
+
 body {
   margin: 0;
   font-size: 16px;
   font-style: normal;
   font-family: "Lato", Arial, sans-serif;
 }
+
 a {
   text-decoration: none;
   cursor: pointer;
 }
+
 textarea::-webkit-scrollbar {
   width: 14px;
 }
+
 textarea::-webkit-scrollbar-track {
   box-shadow: none;
   -webkit-box-shadow: none;
 }
+
 textarea::-webkit-scrollbar-thumb {
   border-radius: 6px;
   background-color: #e6e6e6;
@@ -243,7 +246,8 @@ Icons global styling (needs to @import 'fonts/font-face.css')
   cursor: pointer;
   font-weight: normal;
   font-style: normal;
-  font-size: 24px; /* Preferred icon size */
+  font-size: 24px;
+  /* Preferred icon size */
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -289,21 +293,27 @@ Icons global styling (needs to @import 'fonts/font-face.css')
 .material-icons.md-14 {
   font-size: 14px;
 }
+
 .material-icons.md-18 {
   font-size: 18px;
 }
+
 .material-icons.md-20 {
   font-size: 20px;
 }
+
 .material-icons.md-24 {
   font-size: 24px;
 }
+
 .material-icons.md-36 {
   font-size: 36px;
 }
+
 .material-icons.md-48 {
   font-size: 48px;
 }
+
 .material-icons.md-64 {
   font-size: 64px;
 }
@@ -311,18 +321,23 @@ Icons global styling (needs to @import 'fonts/font-face.css')
 .adblock-icon.md-14 {
   font-size: 18px;
 }
+
 .adblock-icon.md-18 {
   font-size: 18px;
 }
+
 .adblock-icon.md-24 {
   font-size: 24px;
 }
+
 .adblock-icon.md-36 {
   font-size: 36px;
 }
+
 .adblock-icon.md-48 {
   font-size: 48px;
 }
+
 .adblock-icon.md-64 {
   font-size: 64px;
 }
@@ -330,18 +345,23 @@ Icons global styling (needs to @import 'fonts/font-face.css')
 .adblock-icons.md-14 {
   font-size: 18px;
 }
+
 .adblock-icons.md-18 {
   font-size: 18px;
 }
+
 .adblock-icons.md-24 {
   font-size: 24px;
 }
+
 .adblock-icons.md-36 {
   font-size: 36px;
 }
+
 .adblock-icons.md-48 {
   font-size: 48px;
 }
+
 .adblock-icons.md-64 {
   font-size: 64px;
 }
@@ -350,6 +370,7 @@ Icons global styling (needs to @import 'fonts/font-face.css')
 .material-icons.md-dark {
   color: rgba(0, 0, 0, 0.54);
 }
+
 .material-icons.md-dark.md-inactive {
   color: rgba(0, 0, 0, 0.26);
 }
@@ -358,6 +379,7 @@ Icons global styling (needs to @import 'fonts/font-face.css')
 .material-icons.md-light {
   color: rgba(255, 255, 255, 1);
 }
+
 .material-icons.md-light.md-inactive {
   color: rgba(255, 255, 255, 0.3);
 }

@@ -27,7 +27,7 @@
     "prettier-fix": "prettier --write adblock-betafish/**/*.{css,json,html}",
     "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
     "postinstall": "npm run build-rule-index",
-    "build-rule-index": "npm explore @adblockinc/rules -- npm run build adblock"
+    "build-rule-index": "npm explore @adblockinc/rules -- npm install && npm explore @adblockinc/rules -- npm run build adblock"
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
@@ -75,7 +75,7 @@
     "npm": "9"
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5de545e",
+    "@adblockinc/rules": "git+https://gitlab.com/adblockinc/ext/rules.git#da834913",
     "@eyeo/mlaf": "0.3.3",
     "@eyeo/snippets": "0.10.0",
     "@eyeo/webext-sdk": "0.10.1",

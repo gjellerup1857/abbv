@@ -2801,15 +2801,15 @@
     "message": "어느 방해 요소인가요?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "AdBlock Premium이 차단한 방해 요소에 대한 추가적인 정보는 [[here]] 에서 볼 수 있습니다.",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "방해 요소 제어에 대한 설정을 변경하고 싶다면, [[here]] 에서 할 수 있어요.",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "고객 지원에 연락하고 싶다면, 저희의 [[고객 지원]]을 방문해주세요.",
     "description": "Message for help flow in popup menu."
   },
@@ -3641,7 +3641,7 @@
     "message": "괜찮습니다",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "마음이 바뀌었다면, [[here]] 에서 추가적인 방해 요소 관리 기능을 활성화할 수 있습니다.",
     "description": "text in the help flow"
   },

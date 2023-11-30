@@ -2797,15 +2797,15 @@
     "message": "Τι είδους διαφήμιση;",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Πρόσθετες λεπτομέρειες σχετικά με τις διαφημίσεις που αποκλείονται με το AdBlock Premium μπορείτε να βρείτε [[εδώ]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Αν θέλετε να προσαρμόσετε τις προτιμήσεις σας για το Distraction Control, μπορείτε να το κάνετε [[εδώ]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Για να επικοινωνήσετε με την ομάδα υποστήριξης, επισκεφθείτε το [[Κέντρο βοήθειας]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3613,7 +3613,7 @@
     "message": "Όχι, ευχαριστώ",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Εάν αλλάξετε γνώμη, μπορείτε να ενεργοποιήσετε πρόσθετες δυνατότητες του Distraction Control [[εδώ]].",
     "description": "text in the help flow"
   },

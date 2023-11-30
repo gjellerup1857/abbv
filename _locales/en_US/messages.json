@@ -459,6 +459,22 @@
     "message": "Show links to the filter lists",
     "description": "Label to display filter list links"
   },
+  "premium_filters_title": {
+    "message": "Premium Filters",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "Take control of your browser and browse the way you want to with Premium filters!",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "Say goodbye to newsletter pop-ups, floating videos, site notifications survey requests with Distraction Control.",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "Hide most cookie warnings on popular sites. ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "filterantisocial": {
     "message": "Antisocial filter list (removes social media buttons)",
     "description": "A filter list"
@@ -2825,15 +2841,15 @@
     "message": "Looks like you do not have Distraction Control enabled. Let’s see if opting into that fixes the issue.",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Additional details on distractions blocked by AdBlock Premium can be found [[here]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "If you would like to adjust your preferences for Distraction Control features you may do so [[here]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "To contact our support team, visit our [[Help Center]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3593,13 +3609,45 @@
     "message": "Distraction Control",
     "description": "Name of a Premium option"
   },
-  "take_control": {
-    "message": "Take control of your browser and browse the way you want to!",
-    "description": "Description of the distraction control option"
+  "premium_filters": {
+    "message": "Premium Filters",
+    "description": "Name of a Premium Filters tab"
   },
   "goodbye_distractions": {
     "message": "Say goodbye to newsletter pop-ups, floating videos, and other annoying distractions with Distraction Control.",
     "description": "Description of the distraction control option"
+  },
+  "take_control": {
+    "message": "Take control of your browser and browse the way you want to!",
+    "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Premium filter lists are maintained by our team and offer exclusive benefits above and beyond our standard filters.",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "Take control of your browser and browse the way you want to!",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "Say goodbye to newsletter pop-ups, floating videos, site notifications survey requests with Distraction Control.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Cookie Consent Cutter",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "Hide most cookie warnings on popular sites.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "By turning this feature on you acknowledge that it hides tracking consent requests.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "By default, we block third-party trackers, though not first party trackers, which are exclusive to the website you may visit and important for your user experience.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
   },
   "please_note": {
     "message": "Please note: ",
@@ -3620,6 +3668,18 @@
   "distraction_control_example": {
     "message": "Distraction Control example",
     "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Distraction Control feature."
+  },
+  "cookie_consent_cutter": {
+    "message": "Cookie Consent Cutter",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "Hide most cookie warnings on popular sites.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "example of a web page with Cookie Consent Cutter enabled",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "block_site_notifications": {
     "message": "Block Site Notifications",
@@ -3677,7 +3737,7 @@
     "message": "No thanks",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "If you change your mind you can enable additional Distraction Control features [[here]].",
     "description": "text in the help flow"
   },

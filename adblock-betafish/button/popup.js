@@ -601,7 +601,7 @@ const start = async function () {
     event.stopPropagation();
     storageSet(popupMenuDCCtaClosedKey, true);
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'premium_dc_cta_clicked' });
-    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html#distractioncontrol') });
+    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html#premiumfilters') });
     closePopup();
   });
 

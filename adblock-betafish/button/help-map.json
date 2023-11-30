@@ -785,8 +785,8 @@
             "text": "got_it"
           },
           {
-            "text": "where_to_enable_dc",
-            "linkURL": "/options.html#distractioncontrol"
+            "text": "where_to_enable_pf",
+            "linkURL": "/options.html#premiumfilters"
           }
         ]
       }
@@ -891,7 +891,7 @@
       {
         "content": [
           {
-            "text": "distractions_control_details",
+            "text": "premium_filters_details",
             "linkURL": "https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control"
           }
         ]
@@ -899,15 +899,15 @@
       {
         "content": [
           {
-            "text": "distractions_control_options",
-            "linkURL": "/options.html#distractioncontrol"
+            "text": "premium_filters_options",
+            "linkURL": "/options.html#premiumfilters"
           }
         ]
       },
       {
         "content": [
           {
-            "text": "distractions_control_help",
+            "text": "premium_filters_help",
             "linkURL": "https://help.getadblock.com/"
           }
         ]

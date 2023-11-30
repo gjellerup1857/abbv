@@ -2785,7 +2785,7 @@
     "message": "Wspaniale, problem został rozwiązany.",
     "description": "message text on the help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Aby skontaktować się z naszym zespołem pomocy technicznej, odwiedź nasze [[Centrum Pomocy]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3585,7 +3585,7 @@
     "message": "Nie, dziękuję",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Jeśli zmienisz zdanie, możesz włączyć dodatkowe funkcje Kontrola Oczyszczania [[tutaj]].",
     "description": "text in the help flow"
   },

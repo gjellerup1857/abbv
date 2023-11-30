@@ -441,6 +441,7 @@ export const License = (function getLicense() {
       }
       setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
       SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control' });
+      SubscriptionAdapter.unsubscribe({ adblockId: 'cookies-premium' });
       browser.alarms.clear(licenseAlarmName);
     },
     ready() {

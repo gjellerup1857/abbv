@@ -2801,15 +2801,15 @@
     "message": "Hangi dağınıklıklar?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "AdBlock Premium tarafından engellenen dikkat dağıtıcılarla ilgili ek ayrıntılar [[here]] bulunabilir",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Dikkat Dağıtma Kontrolü özellikleri için tercihlerinizi ayarlamak isterseniz bunu [[buradan]] yapabilirsiniz.",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Destek ekibimizle iletişime geçmek için [[Yardım Merkezimizi]] ziyaret edin.",
     "description": "Message for help flow in popup menu."
   },
@@ -3645,7 +3645,7 @@
     "message": "Teşekkür yok",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Fikrinizi değiştirirseniz, ek Dikkat Dağıtma Kontrolü özelliklerini [[buradan]] etkinleştirebilirsiniz.\n",
     "description": "text in the help flow"
   },

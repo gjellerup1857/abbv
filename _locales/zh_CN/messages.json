@@ -2809,15 +2809,15 @@
     "message": "哪些干扰？",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "单击[[此处]] 查看 AdBlock Premium 所拦截干扰的其他详情。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "如果希望调整“干扰控制”功能的首选项，请单击[[此处]]。",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "如需联系我们的支持团队，请访问我们的[[帮助中心]]。",
     "description": "Message for help flow in popup menu."
   },
@@ -3653,7 +3653,7 @@
     "message": "不了，谢谢",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "如果您改变主意，可以单击[[此处]] 启用其他“干扰控制”功能。",
     "description": "text in the help flow"
   },

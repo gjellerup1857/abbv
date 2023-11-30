@@ -2801,15 +2801,15 @@
     "message": "Mitkä häiriöt?",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_details": {
+  "premium_filters_details": {
     "message": "Lisätietoja AdBlock Premiumin estämistä häiriöistä löytyy [[täältä]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_options": {
+  "premium_filters_options": {
     "message": "Jos haluat muuttaa Häiriöhallinnan asetuksia, voit tehdä niin [[täällä]].",
     "description": "Message for help flow in popup menu."
   },
-  "distractions_control_help": {
+  "premium_filters_help": {
     "message": "Ottaaksesi yhteyttä tukeemme, vieraile [[tukikeskuksessamme]].",
     "description": "Message for help flow in popup menu."
   },
@@ -3645,7 +3645,7 @@
     "message": "Ei kiitos",
     "description": "button text in the help flow"
   },
-  "where_to_enable_dc": {
+  "where_to_enable_pf": {
     "message": "Jos muutat mieltäsi, voit ottaa lisää Häiriöhallinnan ominaisuuksia käyttöön [[täältä]].",
     "description": "text in the help flow"
   },

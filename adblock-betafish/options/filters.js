@@ -16,12 +16,14 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global settings, SubscriptionAdapter,
-   translate, updateAcceptableAdsUI,
-   delayedSubscriptionSelection, startSubscriptionSelection, selected, activateTab, License,
-   MABPayment, getStorageCookie, setStorageCookie, THIRTY_MINUTES_IN_MILLISECONDS,
-   updateSocialIconsVisibility, initializeProxies, SubscriptionsProxy, send,
-   connectUIPort, isDistractionControlURL
+/* global activateTab, connectUIPort, delayedSubscriptionSelection,
+   getStorageCookie, initializeProxies,
+   isPremiumFilterListURL, License,
+   MABPayment, premiumFiltersCtaKey, selected, send, ServerMessages,
+   setStorageCookie, settings, startSubscriptionSelection, storageGet,
+   storageSet, SubscriptionAdapter, SubscriptionsProxy,
+   THIRTY_MINUTES_IN_MILLISECONDS,
+   translate, updateAcceptableAdsUI, updateSocialIconsVisibility,
    */
 
 function fixFilterList(item, adblockId) {
@@ -180,7 +182,7 @@ FilterListUtil.prepareSubscriptions = (subParameter) => {
   FilterListUtil.cachedSubscriptions = subs;
   for (const [adblockIdKey, entry] of Object.entries(subs)) {
     if (adblockIdKey) {
-      if (entry && !isDistractionControlURL(entry.url)) {
+      if (entry && !isPremiumFilterListURL(entry.url)) {
         entry.label = translateIDs(adblockIdKey);
         entry.adblockId = adblockIdKey;
         const filterListType = FilterListUtil.getFilterListType(entry);
@@ -917,7 +919,7 @@ CustomFilterListUploadUtil.bindControls = () => {
 
     const existingFilterList = FilterListUtil.checkUrlForExistingFilterList(url);
     if (existingFilterList) {
-      if (isDistractionControlURL(url)) {
+      if (isPremiumFilterListURL(url)) {
         return;
       }
       CustomFilterListUploadUtil.updateExistingFilterList(existingFilterList);
@@ -944,7 +946,7 @@ async function onFilterChangeHandler(action, items) {
   if (Array.isArray(items)) {
     [item] = items;
   }
-  if (item && isDistractionControlURL(item.url)) {
+  if (item && isPremiumFilterListURL(item.url)) {
     return;
   }
   // A user can either add, remove or update a filter list from the UI.
@@ -1052,6 +1054,20 @@ async function onFilterChangeHandler(action, items) {
   }
 }
 
+async function initPremiumFiltersCTA() {
+  const userClosedpremiumFiltersCTA = storageGet(premiumFiltersCtaKey);
+  if (!userClosedpremiumFiltersCTA) {
+    ServerMessages.recordGeneralMessage('premium_filter_list_cta_clicked');
+    $('#premium-filter-list-cta').fadeIn(1000);
+    $('#btnPremiumFilterLearnMore').on('click', () => {
+      storageSet(premiumFiltersCtaKey, true);
+      $('#premium-filter-list-cta').fadeOut(1000);
+      activateTab('#mab');
+    });
+    ServerMessages.recordGeneralMessage('premium_filter_list_cta_seen');
+  }
+}
+
 $(async () => {
   // Retrieves list of filter lists from the background.
   const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
@@ -1148,4 +1164,5 @@ $(async () => {
   $('a.link-to-tab').on('click', (event) => {
     activateTab($(event.target).attr('href'));
   });
+  initPremiumFiltersCTA();
 });
