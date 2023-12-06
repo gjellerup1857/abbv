@@ -22,7 +22,27 @@ import { LicenseStateBehavior, Command } from '../../../ipm/background';
  */
 export enum NewTabEventType {
   created = 'tab_created',
-  loaded = 'tab_loaded'
+  loaded = 'tab_loaded',
+  received = 'received',
+  has_content = 'has_content',
+}
+
+/**
+ * New tab error event names
+ */
+export enum NewTabErrorEventType {
+  noBehaviorFound = 'error_no_behavior',
+  licenseStateNoMatch = 'license_state_no_match',
+  noUrlFound = 'error_no_url',
+  tabCreationError = 'tab_creation_error'
+}
+
+/**
+ * New tab exit event names
+ */
+export enum NewTabExitEventType {
+  admin = 'newtab_admin',
+  disabled = 'newtab_disabled',
 }
 
 /**

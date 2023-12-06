@@ -30,6 +30,8 @@ import * as logger from '../../utilities/background';
 import { getSettings, settings } from '../../prefs/background/settings';
 import {
   NewTabEventType,
+  NewTabExitEventType,
+  NewTabErrorEventType,
   isNewTabBehavior,
   setNewTabCommandHandler,
 } from './middleware';
@@ -40,6 +42,14 @@ const onCreatedHandlerByIPMids = new Map();
 const onUpdatedHandlerByIPMids = new Map();
 
 const openNewtabOnUpdatedHandlerByIPMids = new Map();
+
+let newTabCounter = 0;
+
+/**
+ *  Count interval at which to send the number of new tabs opened
+ *  that are not blank (HTTP/S and browser pages)
+ */
+const newTabMessageSendTrigger = [1, 10, 20, 100, 200];
 
 /**
  * Event handler for the on tab updated event
@@ -76,18 +86,21 @@ async function openNewtab(
   const behavior = getBehavior(ipmId);
   if (!isNewTabBehavior(behavior)) {
     logger.debug('[new-tab]: No command behavior');
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
     dismissCommand(ipmId);
     return;
   }
   // Ignore and dismiss command if License states doesn't match the license state of the command
   if (!await doesLicenseStateMatch(behavior)) {
     logger.debug('[new-tab]: License state mis-match');
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.licenseStateNoMatch);
     dismissCommand(ipmId);
     return;
   }
 
   const targetUrl = createSafeOriginUrl(behavior.target);
   if (!targetUrl) {
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
     dismissCommand(ipmId);
     return;
   }
@@ -98,6 +111,7 @@ async function openNewtab(
 
   tab = await browser.tabs.create({ url: targetUrl }).catch((error) => {
     logger.error('[new-tab]: create tab error', error);
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.tabCreationError);
     return null;
   });
   if (tab !== null) {
@@ -174,6 +188,10 @@ const onUpdated = (
   // Open our own new tab only when a new tab gets opened
   // that isn't part of the user browsing the web.
   if (tab.url && /^https?:/.test(tab.url)) {
+    newTabCounter += 1;
+    if (newTabMessageSendTrigger.includes(newTabCounter)) {
+      recordEvent(ipmId, CommandName.createTab, `${NewTabEventType.has_content}:${newTabCounter}`);
+    }
     return;
   }
 
@@ -190,6 +208,7 @@ async function handleCommand(ipmId: string): Promise<void> {
 
   const { installType } = await browser.management.getSelf();
   if ((installType as ExtendedInstallType) === 'admin') {
+    recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.admin);
     dismissCommand(ipmId);
     return;
   }
@@ -198,6 +217,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   // Ignore and dismiss command if user opted-out of 'surveys'
   if (getSettings().suppress_update_page) {
     logger.debug('[new-tab]:suppress_update_page - true');
+    recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.disabled);
     dismissCommand(ipmId);
     return;
   }
@@ -210,6 +230,8 @@ async function handleCommand(ipmId: string): Promise<void> {
   browser.tabs.onCreated.addListener(onCreatedHandler);
   browser.tabs.onRemoved.addListener(onRemoved);
   browser.tabs.onUpdated.addListener(onUpdatedHandler);
+  recordEvent(ipmId, CommandName.createTab, NewTabEventType.received);
+  newTabCounter = 0;
 }
 
 
