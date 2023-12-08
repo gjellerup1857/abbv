@@ -21,6 +21,15 @@
 
 import * as ewe from '@eyeo/webext-sdk';
 
+
+import {
+  getWebAllowlistingFilterCount,
+  getPopupAllowlistingFilterCount,
+  getCustomizedFilterCount,
+  getWizardFilterCount,
+  getMissingFilterCount,
+} from './custom-rule';
+
 import { Prefs } from '../../alias/prefs';
 import ServerMessages from '../../servermessages';
 import SubscriptionAdapter from '../../subscriptionadapter';
@@ -150,6 +159,11 @@ class TelemetryBase {
       opm: settingsObj.onpageMessages ? '1' : '0',
       sendadwallmessages: Prefs.send_ad_wall_messages ? '1' : '0',
       subs: subsStr,
+      customfc: await getCustomizedFilterCount(),
+      missingfc: await getMissingFilterCount(),
+      popfc: await getPopupAllowlistingFilterCount(),
+      wafc: await getWebAllowlistingFilterCount(),
+      wizardfc: await getWizardFilterCount(),
     };
 
     if (typeof LocalCDN !== 'undefined') {

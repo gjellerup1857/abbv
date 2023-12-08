@@ -1,0 +1,112 @@
+/*
+ * This file is part of AdBlock  <https://getadblock.com/>,
+ * Copyright (C) 2013-present  Adblock, Inc.
+ *
+ * AdBlock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * AdBlock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* For ESLint: List any global identifiers used in this file below */
+/* global ewe */
+
+const allowListingFiltersRegex = new RegExp(/^allowing$/);
+const allFilterTypesRegex = new RegExp(/.*/);
+
+/**
+ * Returns the number of currently active filters that match the parameters
+ *
+ * @param type The type of filter list rule
+ *
+ * @returns {number} The filter count
+ */
+async function getFiltersByType(typeRegEx) {
+  return (await ewe.filters.getUserFilters()).filter(
+    filter => filter.type.match(typeRegEx) && filter.enabled,
+  );
+}
+
+/**
+ * Returns the number of currently active filters that match the parameters
+ *
+ * @param origin The origin from the meta that must be matched.
+ *
+ * @returns {number} The filter count
+ */
+async function getFilterCountForOrigin(filters, origin) {
+  // collect the origin from the metadata
+  const filtersMetadata = await Promise.all(
+    filters.map(async (rule) => {
+      const metadata = await ewe.filters.getMetadata(rule.text)
+        .catch(() => null);
+      return metadata && metadata.origin;
+    }),
+  );
+  // count the ones that originated in the web
+  return filtersMetadata.filter(data => data === origin).length;
+}
+
+
+/**
+ * Returns the number of currently active filters that have been added using
+ * the experimental allowlisting functionality (i.e. that originated in the
+ * web, and not in the extension popup).
+ *
+ * @returns {number} The filter count
+ */
+export async function getWebAllowlistingFilterCount() {
+  // count the ones that originated in the web
+  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'web');
+}
+
+/**
+ * Returns the number of currently active filters that have been added using
+ * the extension popup menu
+ *
+ * @returns {number} The filter count
+ */
+export async function getPopupAllowlistingFilterCount() {
+  // count the ones that originated from the popup menu
+  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'popup');
+}
+
+/**
+ * Returns the number of currently active filters that have been added using
+ * the Customize tab of the Options page
+ *
+ * @returns {number} The filter count
+ */
+export async function getCustomizedFilterCount() {
+  // count the ones that originated from the popup menu
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'customize');
+}
+
+/**
+ * Returns the number of currently active filters that have been added using
+ * either of the wizards
+ *
+ * @returns {number} The filter count
+ */
+export async function getWizardFilterCount() {
+  // count the ones that originated from the popup menu
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'wizard');
+}
+
+/**
+ * Returns the number of currently active filters that don't have any
+ * meta data associated with them
+ *
+ * @returns {number} The filter count
+ */
+export async function getMissingFilterCount() {
+  // count the ones that originated from the popup menu
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), null);
+}

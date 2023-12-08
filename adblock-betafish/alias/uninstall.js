@@ -24,32 +24,7 @@
 import { Prefs } from './prefs';
 import SubscriptionAdapter from '../subscriptionadapter';
 import { getUserId } from '../id/background/index';
-
-/**
- * Returns the number of currently active filters that have been added using
- * the experimental allowlisting functionality (i.e. that originated in the
- * web, and not in the extension popup).
- *
- * @returns {number} The filter count
- */
-async function getWebAllowlistingFilterCount() {
-  // get all allowlisting filters that are enabled
-  const filters = (await ewe.filters.getUserFilters()).filter(
-    filter => filter.type === 'allowing' && filter.enabled,
-  );
-
-  // collect the origin from the metadata
-  const filtersMetadata = await Promise.all(
-    filters.map(async (rule) => {
-      const metadata = await ewe.filters.getMetadata(rule.text)
-        .catch(() => null);
-      return metadata && metadata.origin;
-    }),
-  );
-
-  // count the ones that originated in the web
-  return filtersMetadata.filter(data => data === 'web').length;
-}
+import { getWebAllowlistingFilterCount } from '../telemetry/background/custom-rule';
 
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
