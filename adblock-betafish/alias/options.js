@@ -29,7 +29,7 @@
 
 import * as ewe from "@eyeo/webext-sdk";
 import { port as messagingPort } from "../../adblockplusui/adblockpluschrome/lib/messaging/port";
-import { SessionStorage } from "./storage/session.js";
+import { SessionStorage } from "../../adblockplusui/adblockpluschrome/lib/storage/session.js";
 
 /**
  * Key to store/retrieve an optional message to send to the options page after

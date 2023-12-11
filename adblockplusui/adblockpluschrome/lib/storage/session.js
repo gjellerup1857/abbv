@@ -1,3 +1,9 @@
+/**
+ * This file is based on the respective file in adblockplusui@3.19
+ * Modifications:
+ * - None
+ */
+
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
  * Copyright (C) 2006-present eyeo GmbH

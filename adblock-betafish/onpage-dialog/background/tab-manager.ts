@@ -19,7 +19,7 @@ import { Tabs } from 'webextension-polyfill';
 import * as browser from 'webextension-polyfill';
 
 import { port } from '../../../adblockplusui/adblockpluschrome/lib/messaging/port';
-import { TabSessionStorage } from '../../alias/storage/tab-session';
+import { TabSessionStorage } from '../../../adblockplusui/adblockpluschrome/lib/storage/tab-session';
 
 import { getLocaleInfo } from '../../i18n/background';
 import {

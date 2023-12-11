@@ -23,7 +23,7 @@ import {
 
 // The following path to the session module was modified from the original source,
 // because the webpack `alias` configuration does not apply to TypeScript files
-import { SessionStorage } from "../../../../../adblock-betafish/alias/storage/session";
+import { SessionStorage } from "../../../../adblockpluschrome/lib/storage/session";
 
 // We want to obtain the reference to the global object from a
 // dedicated service eventually, so let's prepare for that.

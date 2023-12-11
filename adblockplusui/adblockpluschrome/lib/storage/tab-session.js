@@ -1,3 +1,9 @@
+/**
+ * This file is based on the respective file in adblockplusui@3.19
+ * Modifications:
+ * - None
+ */
+
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
  * Copyright (C) 2006-present eyeo GmbH
@@ -15,9 +21,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events.js";
-import { SessionStorage } from "./session.js";
+import {EventEmitter} from "../events.js";
+import {SessionStorage} from "./session.js";
 
 /**
  * Session storage instance for storing tab-specific data.

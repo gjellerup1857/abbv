@@ -70,7 +70,6 @@ export default {
       './options': '../../adblock-betafish/alias/options.js',
       '../../lib/pages/options.js': '../../../adblock-betafish/alias/options.js',
       './icon': '../../adblock-betafish/alias/icon.js',
-      './storage/tab-session.js': path.resolve('', './adblock-betafish/alias/storage/tab-session.js'),
       subscriptionInit: '../../adblock-betafish/alias/subscriptionInit.js',
       uninstall: '../../adblock-betafish/alias/uninstall.js',
     },

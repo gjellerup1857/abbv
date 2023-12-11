@@ -23,7 +23,7 @@
 // Paying for this extension supports the work on AdBlock.  Thanks very much.
 
 import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
-import { TabSessionStorage } from '../alias/storage/tab-session';
+import { TabSessionStorage } from '../../adblockplusui/adblockpluschrome/lib/storage/tab-session';
 
 import { getUserId } from '../id/background/index';
 import { Channels } from './channels';
