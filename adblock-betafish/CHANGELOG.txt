@@ -1,7 +1,14 @@
 ## Versions ##
 
+Version: 5.16.0, Date: 2023-12-11
+- Show the /update page to let users know about AdBlock Premium
+- In preparation for manifest V3, and to help us better understand how our users use AdBlock, we've added custom filter metadata counts to the ping data
+- Added the Cookie Consent Cutter premium filter list
+- Added two new language-specific filter lists - Japanese and Turkish
+- Added temporary debug IPM event messages for the create_tab command
+
 Version: 5.15.0, Date: 2023-11-26
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Added telemetry (with an option to opt-out) data to gauge how many of our users are affected by the YouTube ad wall
 - Removed temporary IPM code that ignores certain commands for certain users
 - Updated the Node dependency to 18.17
@@ -9,11 +16,11 @@ Version: 5.15.0, Date: 2023-11-26
 - Added a lint step to the GitLab CI/CD script
 
 Version: 5.14.0, Date: 2023-11-13
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Fixed an issue with the block count parameter in the IPM request
 
 Version: 5.13.0, Date: 2023-10-30
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Updated the Snippet dependency to 0.10.0
 - Fixed an issue with the premium sync feature not synchronizing custom rules
 - Removed the temporary code that removed the IPM 'create tab' commands
@@ -21,7 +28,7 @@ Version: 5.13.0, Date: 2023-10-30
 - Fixed an issue with IPM command statistics being reset on extension start-up
 
 Version: 5.12.0, Date: 2023-10-16
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Fixed an issue with the Premium Image Swap feature
 - Fixed an issue with the AdBlock toolbar icon incorrectly showing as allowlisted when ad blocking is active
 - Fixed an issue with on-page dialog in the Opera search results page
@@ -39,7 +46,7 @@ Version: 5.11.0, Date: 2023-10-08
 - Added the IPM data to the debug data
 
 Version: 5.10.1, Date: 2023-09-18
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Added code to remove any un-processed In Product Messages (IPMs)
 - Fixed an issue with AdBlock Premium on a MV3 build
 - Added an alias to the build script
@@ -84,7 +91,7 @@ Version: 5.8.0, Date: 2023-06-29
 - Fixed an issue with the initialization of the uninstal URL
 - Updated the telemetry data that is sent to the in-product messaging (IPM) server
 - Added support for a new on page dialog
-- Continue to show the /update page to let users know about the AdBlock Premium
+- Continue to show the /update page to let users know about AdBlock Premium
 
 Version: 5.7.0, Date: 2023-06-09
  - Updated the bundled Snippets library to 0.6.2
@@ -92,12 +99,12 @@ Version: 5.7.0, Date: 2023-06-09
  - Updated the extension for Premium users so that web based allow listed rules are removed
 
 Version: 5.6.0, Date: 2023-05-01
-- Continue to show the /update page to let users know about the AdBlock Premium
+- Continue to show the /update page to let users know about AdBlock Premium
 - Provide experimental Flattr API to some websites
 - Expanded partner access to experimental allowlisting API
 
 Version: 5.5.0, Date: 2023-04-14
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 - Added sending telemetry data to a new in-product messaging (IPM) server
 - Added a new query string parameter to the un-install page which will provide information on whether the user has used the experimental allowlisting feature
 
@@ -106,7 +113,7 @@ Version: 5.4.2, Date: 2023-02-21
 
 Version: 5.4.1, Date: 2023-02-12
 - Fixed the on click event handler for the "Upgrade your AdBlock" CTA in the AdBlock popup menu
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 
 Version: 5.4.0, Date: 2023-02-02
 - Modified or updated several JavaScript modules to work in a service worker environment in preparation for migration to manifest V3.
@@ -124,11 +131,11 @@ Version: 5.4.0, Date: 2023-02-02
   - web ext SDK to 0.7.2
 
 Version: 5.3.3, Date: 2022-12-19
-- Stop opening the /update page to let users know about the AdBlock Premium
+- Stop opening the /update page to let users know about AdBlock Premium
 - Added the Crotian locale to update an old Chrome web store Crotian listing
 
 Version: 5.3.2, Date: 2022-11-18
-- Show the /update page to let users know about the AdBlock Premium
+- Show the /update page to let users know about AdBlock Premium
 
 Version: 5.3.1, Date: 2022-11-16
 - Fixed an issue with the sending of telemetry
