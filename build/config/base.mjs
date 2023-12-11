@@ -127,9 +127,15 @@ export default {
         src: 'adblock-betafish/fonts/font-face.css',
       },
       {
-        dest: 'ext',
+        dest: 'ext/',
         src: [
           'adblockplusui/adblockpluschrome/ext/**',
+        ],
+      },
+      {
+        dest: 'skin/',
+        src: [
+          'adblockplusui/skin/devtools-panel.css',
         ],
       },
       {
@@ -146,6 +152,8 @@ export default {
           'adblock-betafish/picreplacement/contentscript-loader.js',
           'adblock-betafish/picreplacement/premium.preload.js',
           'adblockplusui/adblockpluschrome/devtools.html',
+          'adblockplusui/adblockpluschrome/devtools.js',
+          'adblockplusui/devtools-panel.html',
           'adblockplusui/devtools-panel.js',
           'adblock-betafish/alias/i18n.js',
           'adblockplusui/proxy.html',
@@ -480,22 +488,6 @@ export default {
       {
         dest: 'adblock-options-sync.js',
         src: 'adblock-betafish/options/sync.js',
-      },
-      {
-        dest: 'devtools-panel.html',
-        src: 'adblock-betafish/alias/devtools/devtools-panel.html',
-      },
-      {
-        dest: 'devtools.js',
-        src: 'adblock-betafish/alias/devtools/devtools.js',
-      },
-      {
-        dest: 'skin/devtools-panel.css',
-        src: 'adblock-betafish/alias/devtools/devtools-panel.css',
-      },
-      {
-        dest: 'ext/devtools.js',
-        src: 'adblock-betafish/alias/devtools/ext/devtools.js',
       },
       {
         dest: 'icons/ab-16.png',

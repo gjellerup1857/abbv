@@ -1,3 +1,10 @@
+/**
+ * This file is based on the respective file in adblockplusui@3.15.2
+ * Modifications:
+ * - Updated panel name and icon file name
+ *   Name and icon file from adblockplusui are specific to Adblock Plus
+ */
+
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
  * Copyright (C) 2006-present eyeo GmbH
@@ -32,7 +39,7 @@ let panelWindow = null;
     if (enabled)
     {
       let panel = await browser.devtools.panels.create(
-        "Adblock Plus", "icons/abp-32.png", "devtools-panel.html"
+        "AdBlock", "icons/ab-32.png", "devtools-panel.html"
       );
 
       panel.onShown.addListener(window =>
