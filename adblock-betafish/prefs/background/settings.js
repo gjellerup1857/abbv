@@ -43,7 +43,6 @@ function Settings() {
     show_block_counts_help_link: true,
     display_menu_stats: true,
     show_survey: true,
-    local_cdn: false,
     picreplacement: false,
     twitch_hiding: false,
     onpageMessages: true,

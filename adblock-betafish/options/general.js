@@ -19,7 +19,7 @@
 /* global parseUri, settings:true, abpPrefPropertyNames, settingsNotifier, SubscriptionAdapter,
    Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License,
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
-   SubscriptionsProxy, DataCollectionV2, LocalCDN, send */
+   SubscriptionsProxy, DataCollectionV2, send */
 
 // ESLint doesn't notice that we're setting autoReloadingPage in this file,
 // so we need to disable @typescript-eslint/no-unused-vars specifically for this
@@ -40,10 +40,6 @@ try {
 // Check or uncheck each loaded DOM option checkbox according to the
 // user's saved settings.
 const initialize = async function init() {
-  let isLocalCDNAvailable = await send('LocalCDN.isAvailable');
-  if (isLocalCDNAvailable) {
-    $('#local_cdn_option').css('display', 'flex');
-  }
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
 
   // if the user is currently subscribed to AA
@@ -143,16 +139,6 @@ const initialize = async function init() {
         DataCollectionV2.start();
       } else {
         DataCollectionV2.end();
-      }
-    }
-    // if the user enables/disable Local CDN
-    // start or end the Local CDN
-    isLocalCDNAvailable = await send('LocalCDN.isAvailable');
-    if (isLocalCDNAvailable && name === 'local_cdn') {
-      if (isEnabled) {
-        LocalCDN.start();
-      } else {
-        LocalCDN.end();
       }
     }
     // if the user enables/disable YouTube Channel allowlisting

@@ -22,7 +22,7 @@
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
    getDebugInfo, addYTChannelListeners, removeYTChannelListeners, openYTManagedSubPage,
    addTwitchAllowlistListeners, removeTwitchAllowlistListeners, abpPrefPropertyNames,
-   pausedFilterText1, pausedFilterText2, updateCustomFilterCountMap, LocalCDN
+   pausedFilterText1, pausedFilterText2, updateCustomFilterCountMap
 */
 
 import * as ewe from '@eyeo/webext-sdk';
@@ -313,31 +313,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       openTab(message.urlToOpen);
       sendResponse({});
       break;
-    default:
-  }
-});
-
-/**
- * Process messages for the LocalCDN
- *
- */
-/* eslint-disable consistent-return */
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (!isTrustedSender(sender)) {
-    return;
-  }
-  const { command } = message;
-  switch (command) {
-    case 'LocalCDN.start':
-      LocalCDN.start();
-      sendResponse({});
-      break;
-    case 'LocalCDN.end':
-      LocalCDN.end();
-      sendResponse({});
-      break;
-    case 'LocalCDN.isAvailable':
-      return processMessageResponse(sendResponse, (typeof LocalCDN === 'object'));
     default:
   }
 });

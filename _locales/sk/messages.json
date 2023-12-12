@@ -1847,10 +1847,6 @@
     "message": "Zobraziť AdBlock v jazyku",
     "description": "Text shown before language selector drop-down."
   },
-  "local_cdn_option": {
-    "message": "Povoliť Local content caching pre populárne webové knižnice",
-    "description": "Option to let the user enable Local CDN feature."
-  },
   "myadblockoptions": {
     "message": "MyAdBlock",
     "description": "The text of the menu item in the popup menu that takes you to the MyAdBlock Options page"

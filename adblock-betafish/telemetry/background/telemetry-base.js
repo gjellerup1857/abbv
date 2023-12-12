@@ -16,8 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, channels, replacedCounts, getSettings
-    BigInt, LocalCDN,  */
+/* global browser, channels, replacedCounts, getSettings, BigInt */
 
 import * as ewe from '@eyeo/webext-sdk';
 
@@ -145,7 +144,6 @@ class TelemetryBase {
       pc: totalPings,
       dcv2: settingsObj.data_collection_v2 ? '1' : '0',
       ldc: settingsObj.local_data_collection ? '1' : '0',
-      cdn: settingsObj.local_cdn ? '1' : '0',
       rc: await replacedCounts.getTotalAdsReplaced(),
       to: themeOptionsPage,
       tm: themePopupMenu,
@@ -165,14 +163,6 @@ class TelemetryBase {
       wafc: await getWebAllowlistingFilterCount(),
       wizardfc: await getWizardFilterCount(),
     };
-
-    if (typeof LocalCDN !== 'undefined') {
-      data.cdnr = await LocalCDN.getRedirectCount();
-      data.cdnd = await LocalCDN.getDataCount();
-    } else {
-      data.cdnr = 0;
-      data.cdnd = 0;
-    }
 
     // only on Chrome, Edge, or Firefox
     if ((this.flavor === 'E' || this.flavor === 'CM' || this.flavor === 'F') && Prefs.blocked_total) {

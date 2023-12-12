@@ -1893,10 +1893,6 @@
     "message": "AdBlock 顯示語言為",
     "description": "Text shown before language selector drop-down."
   },
-  "local_cdn_option": {
-    "message": "啟動熱門網站庫的本機內容快取",
-    "description": "Option to let the user enable Local CDN feature."
-  },
   "myadblockoptions": {
     "message": "MyAdBlock",
     "description": "The text of the menu item in the popup menu that takes you to the MyAdBlock Options page"

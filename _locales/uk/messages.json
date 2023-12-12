@@ -1677,10 +1677,6 @@
     "message": "Показувати AdBlock на",
     "description": "Text shown before language selector drop-down."
   },
-  "local_cdn_option": {
-    "message": "Дозволити локальне кешування вмісту для популярних бібліотек сайтів",
-    "description": "Option to let the user enable Local CDN feature."
-  },
   "myadblockoptions": {
     "message": "MyAdBlock",
     "description": "The text of the menu item in the popup menu that takes you to the MyAdBlock Options page"

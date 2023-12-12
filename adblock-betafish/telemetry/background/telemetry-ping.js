@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, LocalCDN */
+/* global browser */
 
 import { EventEmitter } from '../../../adblockplusui/adblockpluschrome/lib/events';
 import ServerMessages from '../../servermessages';
@@ -97,12 +97,6 @@ class Telemetry extends TelemetryBase {
     if (browser.management && browser.management.getSelf) {
       const info = await browser.management.getSelf();
       pingData.it = info.installType.charAt(0);
-    }
-    if (typeof LocalCDN !== 'undefined') {
-      const missedVersions = LocalCDN.getMissedVersions();
-      if (missedVersions) {
-        ServerMessages.recordGeneralMessage('cdn_miss_stats', undefined, { cdnm: missedVersions });
-      }
     }
     return this.sendPingData(pingData);
   }

@@ -1889,10 +1889,6 @@
     "message": "Afișați AdBlock în",
     "description": "Text shown before language selector drop-down."
   },
-  "local_cdn_option": {
-    "message": "Activați memorarea în cache a conținutului local pentru bibliotecile populare ale site-urilor web",
-    "description": "Option to let the user enable Local CDN feature."
-  },
   "myadblockoptions": {
     "message": "MyAdBlock",
     "description": "The text of the menu item in the popup menu that takes you to the MyAdBlock Options page"

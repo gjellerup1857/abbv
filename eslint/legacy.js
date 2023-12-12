@@ -66,7 +66,6 @@ module.exports = {
         'show_statsinpopup',
         'display_menu_stats',
         'show_survey',
-        'local_cdn',
         'twitch_hiding',
         'color_themes',
         'original_sid',

@@ -250,10 +250,6 @@ export default {
         src: 'adblock-betafish/messaging/premiumproxy.js',
       },
       {
-        dest: 'adblock-options-localcdnproxy.js',
-        src: 'adblock-betafish/messaging/localcdnproxy.js',
-      },
-      {
         dest: 'adblock-options-tabs.css',
         src: 'adblock-betafish/options/tabs.css',
       },

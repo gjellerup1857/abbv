@@ -107,12 +107,6 @@ async function getBuildOptions(isDevenv, isSource) {
 
   opts.webpackInfo = configParser.getSection(configName, 'webpack');
   opts.mapping = configParser.getSection(configName, 'mapping');
-  if (opts.target === 'chrome') {
-    opts.mapping.copy.push({
-      dest: 'localLib/jquery',
-      src: ['adblock-betafish/localLib/jquery/*'],
-    });
-  }
   opts.unitTests = configParser.getSection(configName, 'unitTests');
   opts.basename = configParser.getSection(configName, 'basename');
   opts.version = configParser.getSection(configName, 'version');
