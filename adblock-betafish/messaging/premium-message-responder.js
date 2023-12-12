@@ -118,6 +118,21 @@ const injectScript = async function (scriptFileName, tabId, frameId) {
   }
 };
 
+function getPremiumAssociatedObject() {
+  return {
+    getFormattedActiveSinceDate: License.getFormattedActiveSinceDate(),
+    MAB_CONFIG: License.MAB_CONFIG,
+    shouldShowMyAdBlockEnrollment: License.shouldShowMyAdBlockEnrollment(),
+    shouldShowPremiumCTA: License.shouldShowPremiumCTA(),
+    isActiveLicense: License.isActiveLicense(),
+    isLicenseCodeValid: License.isLicenseCodeValid(),
+    pageReloadedOnSettingChangeKey: License.pageReloadedOnSettingChangeKey,
+    userClosedSyncCTAKey: License.userClosedSyncCTAKey,
+    userSawSyncCTAKey: License.userSawSyncCTAKey,
+    themesForCTA: License.userSawSyncCTAKey,
+  };
+}
+
 /**
  * Process complex messages related to the 'License' object
  *
@@ -140,8 +155,8 @@ License.ready().then(() => {
 
   /**
    * Process general messages related to the 'License' object,
-   * which require sender validation. (These may come from content scripts,
-   * where the sender URL is the page, not the extension.)
+   * which require sender validation. (These may come from extension pages,
+   * where the sender URL starts with the extension URL)
    *
    */
   /* eslint-disable consistent-return */
@@ -151,6 +166,12 @@ License.ready().then(() => {
     }
     const { command } = message;
     switch (command) {
+      case 'getLicenseConfig': {
+        const response = getPremiumAssociatedObject();
+        Object.assign(response, License.get());
+        sendResponse(response);
+        return;
+      }
       case 'cleanUpSevenDayAlarm':
         License.cleanUpSevenDayAlarm();
         sendResponse({});
@@ -166,8 +187,8 @@ License.ready().then(() => {
   });
 
   /**
-   * Process general messages related to the 'License' object,
-   * which do not require sender validation (or come from injected files)
+   * Process general messages related to the 'License' object
+   * which require domain validation (the messages come from injected content scripts / files)
    *
    */
   /* eslint-disable consistent-return */
@@ -187,6 +208,19 @@ License.ready().then(() => {
         break;
       case 'isActiveLicense':
         return processMessageResponse(sendResponse, License.isActiveLicense());
+      default:
+    }
+  });
+
+  /**
+   * Process the message related to getting the 'License' object
+   * which do not require sender validation (or come from injected files)
+   *
+   */
+  /* eslint-disable consistent-return */
+  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    const { command } = message;
+    switch (command) {
       case 'setBlacklistCTAStatus':
         License.shouldShowBlacklistCTA(message.isEnabled);
         sendResponse({});
@@ -196,31 +230,6 @@ License.ready().then(() => {
         sendResponse({});
         break;
       default:
-    }
-  });
-
-  /**
-   * Process the message related to getting the 'License' object
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.command === 'getLicenseConfig') {
-      sendResponse({});
-      const response = {
-        getFormattedActiveSinceDate: License.getFormattedActiveSinceDate(),
-        MAB_CONFIG: License.MAB_CONFIG,
-        shouldShowMyAdBlockEnrollment: License.shouldShowMyAdBlockEnrollment(),
-        shouldShowPremiumCTA: License.shouldShowPremiumCTA(),
-        isActiveLicense: License.isActiveLicense(),
-        isLicenseCodeValid: License.isLicenseCodeValid(),
-        pageReloadedOnSettingChangeKey: License.pageReloadedOnSettingChangeKey,
-        userClosedSyncCTAKey: License.userClosedSyncCTAKey,
-        userSawSyncCTAKey: License.userSawSyncCTAKey,
-        themesForCTA: License.userSawSyncCTAKey,
-      };
-      Object.assign(response, License.get());
-      return Promise.resolve(response);
     }
   });
 
