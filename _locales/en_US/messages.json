@@ -395,6 +395,14 @@
     "message": "Fetching... please wait.",
     "description": "Status label when selecting a new filter list"
   },
+  "bundledlabel": {
+    "message": "Bundled.",
+    "description": "Status label for a bundled filter list"
+  },
+  "subscribedlabel": {
+    "message": "Subscribed.",
+    "description": "Status label when selecting a new bundled filter list"
+  },
   "ab_filters_subscription_lastDownload_invalidURL": {
     "message": "Failed, not a valid address",
     "description": "Filter lists tab of the Options page: Message when you subscribe to a non-list URL."

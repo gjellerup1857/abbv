@@ -23,11 +23,13 @@
    setStorageCookie, settings, startSubscriptionSelection, storageGet,
    storageSet, SubscriptionAdapter, SubscriptionsProxy,
    THIRTY_MINUTES_IN_MILLISECONDS,
-   translate, updateAcceptableAdsUI, updateSocialIconsVisibility,
+   translate, updateAcceptableAdsUI, updateSocialIconsVisibility, browser,
    */
 
-function fixFilterList(item, adblockId) {
-  if (item && item.url === 'https://fanboy.co.nz/fanboy-annoyance.txt') {
+const FANBOY_ANNOYANCE_URL = 'https://fanboy.co.nz/fanboy-annoyance.txt';
+
+function fixFanboyFilter(item, adblockId) {
+  if (item?.url === FANBOY_ANNOYANCE_URL) {
     // eslint-disable-next-line no-param-reassign
     item.adblockId = 'annoyances';
     return { item, adblockId: 'annoyances' };
@@ -49,8 +51,71 @@ function isAcceptableAdsPrivacy(filterList) {
   return filterList.adblockId === 'acceptable_ads_privacy';
 }
 
+function replaceAnnoyances(subsList) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const oldAnnoyancesIndex = subsList.findIndex(([_, { url }]) => url === FANBOY_ANNOYANCE_URL);
+  const containsOldAnnoyances = oldAnnoyancesIndex > -1;
+
+  if (containsOldAnnoyances) {
+    // Get Fanboy Old Annoyances and update data
+    const [adblockIdKey, entry] = subsList[oldAnnoyancesIndex];
+    const { item } = fixFanboyFilter(entry, adblockIdKey);
+
+    // Remove duplicate subs if they exist, then add the updated old annoyances
+    const subslistFiltered = subsList.filter(([adblockId]) => !(adblockId === `url:${FANBOY_ANNOYANCE_URL}` || adblockId === 'annoyances'));
+    subslistFiltered.push(['annoyances', item]);
+
+    return subslistFiltered;
+  }
+
+  return subsList;
+}
+
+function updateForV3(list) {
+  if (browser.runtime.getManifest().manifest_version === 3) {
+    return list.filter(([adblockId]) => adblockId !== 'warning_removal');
+  }
+
+  return list;
+}
+
+function cleanUpSubs(subs) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const subsWithoutPremium = subs.filter(([_, entry]) => !isPremiumFilterListURL(entry.url));
+  const subsWithoutAnnoyances = replaceAnnoyances(subsWithoutPremium);
+  const subsByVersion = updateForV3(subsWithoutAnnoyances);
+
+  return subsByVersion;
+}
+
+function addLabelAndId(entry, adblockIdKey) {
+  return {
+    ...entry,
+    label: translateIDs(adblockIdKey),
+    adblockId: adblockIdKey,
+  };
+}
+
+// Iterates through the subscriptions list, finds each sub's kind
+// and adds it to the correct category (filterListSections[kind].array)
+// in a copy of filterListSections.
+// Intended to be reassigned to the filterListSections variable.
+// Inputs:
+//    sectionedList:object - Data structure defined as filterListSections.
+//    subsArray:array - Subscriptions data in array form.
+function addFiltersToArray(sectionedList, subsArray) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const getTypeAndAddToList = (sectionedListCopy, [_, sub]) => {
+    const filterListType = FilterListUtil.getFilterListType(sub);
+    sectionedListCopy[filterListType].array.push(sub);
+    return sectionedListCopy;
+  };
+
+  return subsArray.reduce(getTypeAndAddToList, { ...sectionedList });
+}
+
 // Contains all filter lists and their respective containers.
-const filterListSections = {
+let filterListSections = {
   adblockFilterList: {
     array: [],
     $container: $('#ad_blocking_list'),
@@ -167,30 +232,24 @@ FilterListUtil.getFilterListType = (filterList) => {
   return filterListType;
 };
 
-FilterListUtil.prepareSubscriptions = (subParameter) => {
-  const subs = subParameter;
-  for (const [adblockIdKey, entry] of Object.entries(subs)) {
-    const { item } = fixFilterList(entry, adblockIdKey);
-    // if it exists, treat the old FanBoy's Annoyances FL as if it is
-    // the new FB Annoyances
-    if (entry.url === 'https://fanboy.co.nz/fanboy-annoyance.txt') {
-      delete subs.annoyances;
-      delete subs['url:https://fanboy.co.nz/fanboy-annoyance.txt'];
-      subs.annoyances = item;
-    }
-  }
-  FilterListUtil.cachedSubscriptions = subs;
-  for (const [adblockIdKey, entry] of Object.entries(subs)) {
-    if (adblockIdKey) {
-      if (entry && !isPremiumFilterListURL(entry.url)) {
-        entry.label = translateIDs(adblockIdKey);
-        entry.adblockId = adblockIdKey;
-        const filterListType = FilterListUtil.getFilterListType(entry);
-        filterListSections[filterListType].array.push(entry);
-      }
-    }
-  }
+// Prepare Subscriptions
+//   -- remove premium or any problematic subscriptions
+//   -- remove the subscriptions that are not allowed for this manifest version
+//   -- adds additional properties for the UI
+//   -- calls function to categorize the subscriptions
+//   -- sorts the subscriptions alphabetically by category
+// Inputs:
+//    subs:object - Map for subscription lists taken from the background.
+FilterListUtil.prepareSubscriptions = (subs) => {
+  const subsAsArray = Object.entries(subs);
+  const cleanedSubs = cleanUpSubs(subsAsArray);
+  // eslint-disable-next-line arrow-body-style
+  const processedSubs = cleanedSubs.map(([adblockIdKey, entry]) => {
+    return [adblockIdKey, addLabelAndId(entry, adblockIdKey)];
+  });
 
+  FilterListUtil.cachedSubscriptions = Object.fromEntries(processedSubs);
+  filterListSections = addFiltersToArray(filterListSections, processedSubs);
   FilterListUtil.sortFilterListArrays();
 };
 
@@ -214,6 +273,17 @@ FilterListUtil.updateSubscriptionInfoAll = () => {
   for (const adblockId in cachedSubscriptions) {
     FilterListUtil.updateSubscriptionInfoForId(adblockId);
   }
+};
+
+const mv3SubscriptionText = (sub) => {
+  // In this case, the subscription has been added or removed and re-added
+  // in this session and we want to reflect that action
+  if (!Object.hasOwn(sub, 'downloadable') || sub._lastDownload < 0) {
+    return translate('subscribedlabel');
+  }
+
+  // Otherwise, it is an existing bundled subscription
+  return translate('bundledlabel');
 };
 
 // Updates info text for a specific filter list.
@@ -271,6 +341,9 @@ FilterListUtil.updateSubscriptionInfoForId = (adblockId) => {
     } else {
       text = translate('updateddaysago', [days]);
     }
+  // Applies to subscriptions that are bundled in MV3
+  } else if (!subscription.downloadable && subscription.subscribed) {
+    text = mv3SubscriptionText(subscription);
   }
 
   $infoLabel.text(text);
@@ -518,12 +591,10 @@ function getDefaultFilterUI(filterList, checkboxID, filterListType) {
 
   const $infoSpan = $('<span>')
     .addClass('subscription_info')
-    .attr('aria-hidden', true)
-    .text(filterList.subscribed && !filterList._lastDownload ? translate('fetchinglabel') : '');
+    .attr('aria-hidden', true);
 
   const $timestampSpan = $('<span>')
-    .addClass('timestamp_info')
-    .text(filterList.subscribed && !filterList._lastDownload ? translate('fetchinglabel') : '');
+    .addClass('timestamp_info');
 
   const $infoSection = $('<div>')
     .append($infoSpan)
@@ -1010,7 +1081,7 @@ async function onFilterChangeHandler(action, items) {
 
     let adblockId = await SubscriptionAdapter.getIdFromURL(item.url);
     const { param1, param2 } = window;
-    ({ item, adblockId } = fixFilterList(item, adblockId));
+    ({ item, adblockId } = fixFanboyFilter(item, adblockId));
 
     if (adblockId) {
       updateItem(item, adblockId);
