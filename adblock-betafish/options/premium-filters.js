@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global translate, License, MABPayment, processReplacementChildrenInContent,
    activateTab, browser, initializeProxies, send,
-   SubscriptionsProxy, isPremiumFilterListURL   */
+   SubscriptionsProxy, isPremiumFilterListURL, SubscriptionAdapter   */
 
 
 // the elements array below are in the order they appear on the page
@@ -31,16 +31,14 @@ const premiumFiltersUIitems = [
     urlToOpen: 'https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control',
     imageURL: 'icons/distraction-control-video.svg',
     topLineClass: '',
-    filterlistURL: 'https://easylist-downloads.adblockplus.org/adblock_premium.txt',
   },
   {
-    id: 'adblock-cookie-block',
+    id: 'cookies-premium',
     title: translate('cookie_consent_cutter_title'),
     description: translate('cookie_consent_cutter_description'),
     disclaimer: `${translate('cookie_consent_cutter_desclaimer_I')} ${translate('cookie_consent_cutter_desclaimer_II')}`,
     imageURL: 'icons/cookie_consent_cutter.svg',
     topLineClass: 'top-line',
-    filterlistURL: 'https://easylist-downloads.adblockplus.org/cookie-filter-list.txt',
   },
 ];
 
@@ -142,14 +140,13 @@ async function getDefaultPFFilterUI(entry, isActiveLicense) {
       .append($lensIcon)
       .append($checkedCircleIcon);
 
-    const subscribed = await SubscriptionsProxy.has(entry.filterlistURL);
+    const subscribed = await SubscriptionsProxy.has(entry.url);
     $checkBox.on('change', async function onOptionSelectionChange() {
       const isEnabled = $(this).is(':checked');
       if (isEnabled) {
-        await SubscriptionsProxy.add(entry.filterlistURL);
-        await SubscriptionsProxy.sync(entry.filterlistURL);
+        await SubscriptionsProxy.add(entry.url);
       } else {
-        await SubscriptionsProxy.remove(entry.filterlistURL);
+        await SubscriptionsProxy.remove(entry.url);
       }
     });
 
@@ -204,8 +201,10 @@ async function getDefaultPFFilterUI(entry, isActiveLicense) {
 }
 
 const preparePFItems = async function preparePFItems(isActiveLicense) {
-  for (const id in premiumFiltersUIitems) {
-    const entry = premiumFiltersUIitems[id];
+  const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
+  for (const index in premiumFiltersUIitems) {
+    const entry = premiumFiltersUIitems[index];
+    entry.url = subs[entry.id].url;
     // eslint-disable-next-line no-await-in-loop
     $('#premium-filter-lists').append(await getDefaultPFFilterUI(entry, isActiveLicense));
   }
