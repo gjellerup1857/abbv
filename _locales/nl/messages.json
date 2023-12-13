@@ -3565,9 +3565,65 @@
     "message": "Afleidingscontrole",
     "description": "Name of a Premium option"
   },
+  "premium_filters_title": {
+    "message": "Premium filters",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "Neem de controle over uw browser en browse zoals u dat wilt met premium filters!",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "Zeg vaarwel tegen pop-ups voor nieuwsbrieven, zwevende video's, sitemeldingen en enquêteverzoeken met Distraction Control.",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "Verberg de meeste cookiewaarschuwingen op populaire sites. ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "take_control": {
-    "message": "Neem de controle over je browser en surf online zoals jij dat wilt!",
+    "message": "Neem de controle over uw browser en browse zoals u dat wilt!",
     "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Lijsten met premium filters worden bijgehouden door ons team en bieden exclusieve voordelen boven op onze standaard filters.",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "Neem de controle over uw browser en browse zoals u dat wilt!",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "Zeg vaarwel tegen pop-ups voor nieuwsbrieven, zwevende video's, sitemeldingen en enquêteverzoeken met Distraction Control.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Blokkering van pop-ups voor cookietoestemming",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "Verberg de meeste cookiewaarschuwingen op populaire sites.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "Als u deze functie inschakelt, erkent u dat deze toestemmingsverzoeken voor tracking verbergt.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "We blokkeren standaard trackers van derden, maar niet first-party trackers, die exclusief zijn voor de website die u bezoekt en die belangrijk zijn voor uw gebruikerservaring.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Blokkering van pop-ups voor cookietoestemming",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "Verberg de meeste cookiewaarschuwingen op populaire sites.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "voorbeeld van een webpagina waarop de Cookie Consent Cutter is ingeschakeld",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "goodbye_distractions": {
     "message": "Zeg maar dag tegen pop-ups van nieuwsbrieven, zwevende video's en andere irritante afleidingen met Afleidingscontrole.",

@@ -3565,9 +3565,65 @@
     "message": "干擾控制",
     "description": "Name of a Premium option"
   },
+  "premium_filters_title": {
+    "message": "Premium篩選器",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "善用Premium篩選器，掌控您的瀏覽器，以您想要的悠遊網路！",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "利用干擾控制功能幫您甩開電子報訂閱彈出視窗、浮動式影片、網站通知問卷調查請求的干擾。",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "隱藏熱門網站上大多數的cookie警告視窗。 ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "take_control": {
-    "message": "掌控您的瀏覽器，依您的喜好瀏覽！",
+    "message": "掌控您的瀏覽器，以您想要的悠遊網路！",
     "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Premium篩選清單是由我們的團隊負責維護，可提供遠勝我們標準篩選器的專屬優勢。",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "掌控您的瀏覽器，以您想要的悠遊網路！",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "利用干擾控制功能幫您甩開電子報訂閱彈出視窗、浮動式影片、網站通知問卷調查請求的干擾。",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Cookie同意要求視窗攔截程式",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "隱藏熱門網站上大多數的cookie警告視窗。",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "開啟這項功能即表示您知道它會隱藏追蹤同意請求。",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "在預設情況下，我們會攔截第三方追蹤器，但不攔截第一方的追蹤器，這是您所造訪的網站專用的追蹤器，對於您的使用者體驗有莫大影響。",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Cookie同意要求視窗攔截程式",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "隱藏熱門網站上大多數的cookie警告視窗。",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "已啟用Cookie同意要求視窗攔截程式的網頁範例",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "goodbye_distractions": {
     "message": "利用干擾控制功能，告別電子報彈出視窗、浮動視窗影片以及其他擾人的內容。",

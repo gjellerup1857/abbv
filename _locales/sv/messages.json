@@ -3561,6 +3561,66 @@
     "message": "Lär dig mer",
     "description": "GFC messaging on the popup menu"
   },
+  "premium_filters_title": {
+    "message": "Premiumfilter",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "Ta kontroll över din webbläsare och surfa precis som du vill med premiumfilter!",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "Säg farväl till popup-fönster för nyhetsbrev, flytande videor, webbplatsaviseringar och enkätförfrågningar med Distraction Control.",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "Dölj de flesta notifikationer om cookies på populära webbplatser. ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
+  "take_control": {
+    "message": "Ta kontroll över din webbläsare och surfa precis som du vill!",
+    "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Listor över premiumfilter underhålls av vårt team och erbjuder exklusiva förmåner utöver våra standardfilter.",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "Ta kontroll över din webbläsare och surfa precis som du vill!",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "Säg farväl till popup-fönster för nyhetsbrev, flytande videor, webbplatsaviseringar och enkätförfrågningar med Distraction Control.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Blockerare av popup-fönster för cookies",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "Dölj de flesta notifikationer om cookies på populära webbplatser.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "Genom att aktivera denna funktion bekräftar du att förfrågningar om samtycke till spårningscookies döljs.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "Som standard blockerar vi spårningstjänster från tredje part, dock inte spårningstjänster från första part, som är exklusiva för de webbplatser du besöker och viktiga för din användarupplevelse.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Blockerare av popup-fönster för cookies",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "Dölj de flesta notifikationer om cookies på populära webbplatser.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "exempel på webbsida med aktiverad blockerare av popup-fönster för cookies",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
+  },
   "distraction_control": {
     "message": "Distraktionskontroll",
     "description": "Name of a Premium option"

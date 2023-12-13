@@ -3565,9 +3565,65 @@
     "message": "Contrôle des distractions",
     "description": "Name of a Premium option"
   },
+  "premium_filters_title": {
+    "message": "Filtres Premium",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "Prenez le contrôle de votre navigateur et naviguez comme vous le souhaitez avec les filtres Premium !",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "Dites adieu aux fenêtres contextuelles des lettres d’information, aux vidéos flottantes, aux notifications de site et aux demandes d’enquête grâce au contrôle des sources de distractions.",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "Masquez la plupart des avertissements relatifs aux cookies sur les sites populaires. ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "take_control": {
-    "message": "Prenez le contrôle de votre navigateur et surfez comme vous le souhaitez !",
+    "message": "Prenez le contrôle de votre navigateur et naviguez comme vous le souhaitez !",
     "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Les listes de filtres Premium sont gérées par notre équipe et offrent des avantages exclusifs par rapport à nos filtres standard.",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "Prenez le contrôle de votre navigateur et naviguez comme vous le souhaitez !",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "Dites adieu aux fenêtres contextuelles des lettres d’information, aux vidéos flottantes, aux notifications de site et aux demandes d’enquête grâce au contrôle des sources de distractions.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Masquage du consentement aux cookies",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "Masquez la plupart des avertissements relatifs aux cookies sur les sites populaires.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "En activant cette fonction, vous reconnaissez qu’elle masque les demandes de consentement au suivi.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "Par défaut, nous bloquons les traqueurs tiers, mais pas les traqueurs propres au site web que vous visitez et qui sont importants pour votre expérience d’utilisateur.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Masquage du consentement aux cookies",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "Masquez la plupart des avertissements relatifs aux cookies sur les sites populaires.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "exemple de page web avec Masquage du consentement aux cookies activé",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "goodbye_distractions": {
     "message": "Avec le contrôle des distractions, dites adieu aux fenêtres pop-up des bulletins d'information, aux vidéos flottantes et aux autres distractions gênantes.",

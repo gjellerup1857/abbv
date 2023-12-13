@@ -3565,9 +3565,65 @@
     "message": "Controle de distrações",
     "description": "Name of a Premium option"
   },
+  "premium_filters_title": {
+    "message": "Filtros do Premium",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "Assuma o controle do seu navegador e navegue da forma que desejar com os filtros do Premium!",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "Diga adeus a janelas pop-up de newsletters, vídeos flutuantes, notificações de sites e solicitações de pesquisas com o Controle de distrações.",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "Oculte a maioria dos avisos de cookies nos sites populares. ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "take_control": {
-    "message": "Controle o seu navegador e navegue como quiser!",
+    "message": "Assuma o controle do seu navegador e navegue da forma que desejar!",
     "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "As listas de filtros do Premium são mantidas pela nossa equipe e oferecem benefícios exclusivos muito além dos nossos filtros padrão.",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "Assuma o controle do seu navegador e navegue da forma que desejar!",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "Diga adeus a janelas pop-up de newsletters, vídeos flutuantes, notificações de sites e solicitações de pesquisas com o Controle de distrações.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Cutter de consentimento de cookies",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "Oculte a maioria dos avisos de cookies nos sites populares.",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "Ao ativar o recurso, você autoriza que ele oculte solicitações de consentimento de rastreamento.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "Por padrão, bloqueamos rastreadores de terceiros, que são exclusivos dos sites que você visita e são importantes para a sua experiência de usuário.",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Cutter de consentimento de cookies",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "Oculte a maioria dos avisos de cookies nos sites populares.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "exemplo de página da Web com cutter de consentimento de cookies",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "goodbye_distractions": {
     "message": "Diga adeus aos pop-ups de boletins, vídeos flutuantes e outras distrações irritantes com o Controle de distrações.",

@@ -3565,9 +3565,65 @@
     "message": "分心控制",
     "description": "Name of a Premium option"
   },
+  "premium_filters_title": {
+    "message": "Premium 筛选器",
+    "description": "The title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_subtitle": {
+    "message": "使用 Premium 筛选器掌控自己的浏览器，随心所欲畅快浏览！",
+    "description": "The sub title of the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_1": {
+    "message": "通过干扰控制功能，告别新闻通讯弹窗、浮动视频、网站通知和调查请求。",
+    "description": "Line / row 1 on the the Premium CTA on the Filters list tab"
+  },
+  "premium_filters_content_row_2": {
+    "message": "隐藏热门网站上的绝大多数 Cookie 警告。 ",
+    "description": "Line / row 2 on the Premium CTA on the Filters list tab"
+  },
   "take_control": {
-    "message": "控制您的浏览器，按照您想要的方式浏览！",
+    "message": "掌控自己的浏览器，随心所欲畅快浏览！",
     "description": "Description of the distraction control option"
+  },
+  "premium_filters_maintained": {
+    "message": "Premium 筛选清单由我们的团队维护，提供远超我们标准筛选器的专属益处。",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_I": {
+    "message": "掌控自己的浏览器，随心所欲畅快浏览！",
+    "description": "Description of the Premium filter lists"
+  },
+  "distraction_control_description_II": {
+    "message": "通过干扰控制功能，告别新闻通讯弹窗、浮动视频、网站通知和调查请求。",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_title": {
+    "message": "Cookie 弹窗拦截器",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_description": {
+    "message": "隐藏热门网站上的绝大多数 Cookie 警告。",
+    "description": "Description of the Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_I": {
+    "message": "开启此功能，即表示您了解该功能将隐藏跟踪同意请求。",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter_desclaimer_II": {
+    "message": "我们默认拦截第三方跟踪程序，但不会拦截第一方跟踪程序，后者是您访问的网站专有的跟踪程序，对于您的用户体验十分重要。",
+    "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
+  },
+  "cookie_consent_cutter": {
+    "message": "Cookie 弹窗拦截器",
+    "description": "Name of a Premium option."
+  },
+  "hide_most_cookie": {
+    "message": "隐藏热门网站上的绝大多数 Cookie 警告。",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "cookie_consent_cutter_preview_example": {
+    "message": "启用了 Cookie 弹窗拦截器的网页示例",
+    "description": "Text in the alt attribute of an image in the Options page mab that visualizes the Cookie Consent Cutter feature."
   },
   "goodbye_distractions": {
     "message": "借助“分心控制”，告别通讯弹窗、浮动视频和其他恼人的分心内容。",
