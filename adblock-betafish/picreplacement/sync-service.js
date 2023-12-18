@@ -81,6 +81,9 @@ const SyncService = (function getSyncService() {
   const { flavor } = getUserAgentInfo();
   const { os } = getUserAgentInfo();
 
+  const periodicSyncAlarmName = 'periodicSyncAlarm';
+  const periodicSyncInterval = 10; // sync interval in minutes
+
   function setCommitVersion(newVersionNum) {
     syncCommitVersion = newVersionNum;
   }
@@ -984,6 +987,25 @@ const SyncService = (function getSyncService() {
     getSyncData();
   }
 
+  function processPeriodicSyncAlarm(alarm) {
+    if (alarm.name !== periodicSyncAlarmName) {
+      return;
+    }
+
+    processUserSyncRequest();
+  }
+
+  function stopPeriodicSync() {
+    browser.alarms.onAlarm.removeListener(processPeriodicSyncAlarm);
+    browser.alarms.clear(periodicSyncAlarmName);
+  }
+
+  function startPeriodicSync() {
+    stopPeriodicSync();
+    browser.alarms.onAlarm.addListener(processPeriodicSyncAlarm);
+    browser.alarms.create(periodicSyncAlarmName, { periodInMinutes: periodicSyncInterval });
+  }
+
   async function enablePubNub() {
     pubnub = new PubNub({
       subscribeKey: License.MAB_CONFIG.subscribeKey,
@@ -1052,11 +1074,16 @@ const SyncService = (function getSyncService() {
       }
       // wait a moment at start to allow all of the backgound scripts to load
       setTimeout(() => {
-        enablePubNub();
+        if (typeof PubNub !== 'undefined') {
+          enablePubNub();
+        } else {
+          // If we don't have PubNub, we need to periodically run a sync ourselves.
+          startPeriodicSync();
+        }
       }, 1000);
 
-      window.addEventListener('online', updateNetworkStatus);
-      window.addEventListener('offline', updateNetworkStatus);
+      self.addEventListener('online', updateNetworkStatus);
+      self.addEventListener('offline', updateNetworkStatus);
     };
 
     if (initialGet) {
@@ -1082,6 +1109,7 @@ const SyncService = (function getSyncService() {
   }
 
   const disableSync = function (removeName) {
+    stopPeriodicSync();
     setSetting('sync_settings', false);
     syncCommitVersion = 0;
     disablePubNub();
@@ -1126,8 +1154,8 @@ const SyncService = (function getSyncService() {
 
     // eslint-disable-next-line no-use-before-define
     License.licenseNotifier.off('license.expired', processDisableSync);
-    window.removeEventListener('online', updateNetworkStatus);
-    window.removeEventListener('offline', updateNetworkStatus);
+    self.removeEventListener('online', updateNetworkStatus);
+    self.removeEventListener('offline', updateNetworkStatus);
   };
 
   const processDisableSync = function () {
