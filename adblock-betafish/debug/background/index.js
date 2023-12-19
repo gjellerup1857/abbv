@@ -111,7 +111,7 @@ const getDebugLicenseInfo = async () => {
       const syncInfo = {};
       syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
       syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
-      syncInfo.SyncCommitLog = SyncService.getSyncLog();
+      syncInfo.SyncCommitLog = await SyncService.getSyncLog();
       response.syncInfo = syncInfo;
     }
     response['License Installation Date'] = await License.getLicenseInstallationDate();
@@ -279,7 +279,6 @@ const getDebugInfo = function () {
 
     otherInfo.licenseInfo = await getDebugLicenseInfo();
     otherInfo.customRuleMetaData = await getCustomFilterMetaData(userFilters);
-
     resolve(response);
   });
 };
