@@ -20,7 +20,7 @@
  * @overview Migrates existing data from older versions
  */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 async function unsubscribeToFilterList(url) {
   if (await ewe.subscriptions.has(url)) {

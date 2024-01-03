@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, ext, twitchChannelNamePages, ytChannelNamePages */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 import * as info from 'info';
 import { Prefs } from './alias/prefs';

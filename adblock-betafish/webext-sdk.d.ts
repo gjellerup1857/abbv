@@ -29,7 +29,7 @@ interface FiltersGetAllowingFiltersOptions {
     types?: string[] = ["document"];
 }
 
-declare module "@eyeo/webext-sdk" {
+declare module "@eyeo/webext-ad-filtering-solution" {
     declare namespace filters {
         /**
          * Returns the allowing filters that will be effective when the given

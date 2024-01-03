@@ -19,7 +19,7 @@
 /* global settings, getSettings, browser */
 
 import { contentTypes } from 'adblockpluscore/lib/contentTypes';
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
 import {
   SKINNYTALL,

@@ -20,7 +20,7 @@
    adblockIsDomainPaused, getUserFilters, */
 
 import * as info from 'info';
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import SubscriptionAdapter from './subscriptionadapter';
 import postData from './fetch-util';
 import { getSettings, settings, setSetting } from './prefs/background';

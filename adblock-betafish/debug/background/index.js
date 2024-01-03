@@ -17,7 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser  */
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 import { Prefs } from '~/alias/prefs';
 import { getUserFilters } from '~/filter-utils';
@@ -62,16 +62,16 @@ async function getCustomFilterMetaData(currentUserFilters) {
   if (!currentUserFilters || currentUserFilters.length === 0) {
     return Promise.resolve({});
   }
-  /* eslint-disable consistent-return */
   return Promise.all(
+    /* eslint-disable-next-line consistent-return */
     currentUserFilters.map(async (rule) => {
       if (rule && rule.text) {
-        try {
-          const metaData = await ewe.filters.getMetadata(rule.text);
-          return { text: rule.text, metaData };
-        } catch {
+        const metaData = await ewe.filters.getMetadata(rule.text);
+        if (!metaData) {
           return { text: rule.text };
         }
+
+        return { text: rule.text, metaData };
       }
     }),
   );

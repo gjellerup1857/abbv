@@ -21,7 +21,7 @@
 // Module for removing individual filters from filter lists
 // An 'advance' feature, used on the Customize tab, titled "disabled filters"
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 const ExcludeFilter = (function excludeFilter() {
   const excludeFiltersKey = 'exclude_filters';

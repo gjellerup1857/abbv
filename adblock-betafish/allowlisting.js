@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global License*/
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 import ServerMessages from './servermessages';
 import { createFilterMetaData } from './utilities/background/bg-functions';
@@ -72,8 +72,7 @@ async function removeWebAllowlistingFilters() {
 
   const allowlistingFiltersWithMetadata = await Promise.all(
     allowlistingFilters.map(async (filter) => {
-      const metadata = await ewe.filters.getMetadata(filter.text)
-        .catch(() => null);
+      const metadata = await ewe.filters.getMetadata(filter.text);
       return { filter, metadata };
     }),
   );

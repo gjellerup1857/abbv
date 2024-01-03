@@ -19,7 +19,7 @@
 /* global browser, getSettings, settings, addCustomFilter, getUserFilters,
    isWhitelistFilter */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 const ytChannelNamePages = new Map();
 

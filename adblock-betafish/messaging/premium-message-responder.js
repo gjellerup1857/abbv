@@ -19,7 +19,7 @@
 /* global browser, isTrustedSender, isTrustedSenderDomain, openTab,
    processMessageResponse */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 import { License, replacedCounts, channels } from '../picreplacement/check';
 import { channelsNotifier } from '../picreplacement/channels';

@@ -44,16 +44,11 @@ async function getFiltersByType(typeRegEx) {
 async function getFilterCountForOrigin(filters, origin) {
   // collect the origin from the metadata
   const filtersMetadata = await Promise.all(
-    filters.map(async (rule) => {
-      const metadata = await ewe.filters.getMetadata(rule.text)
-        .catch(() => null);
-      return metadata && metadata.origin;
-    }),
+    filters.map(async filter => ewe.filters.getMetadata(filter.text)),
   );
-  // count the ones that originated in the web
-  return filtersMetadata.filter(data => data === origin).length;
+  // count the ones that originated from the given origin
+  return filtersMetadata.filter(data => data && data.origin === origin).length;
 }
-
 
 /**
  * Returns the number of currently active filters that have been added using

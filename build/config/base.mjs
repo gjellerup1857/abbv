@@ -610,8 +610,8 @@ export default {
         src: 'adblock-betafish/alias/managed-storage-schema.json',
       },
       {
-        dest: 'vendor/@eyeo/webext-sdk/content.js',
-        src: 'node_modules/@eyeo/webext-sdk/dist/ewe-content.js',
+        dest: 'vendor/@eyeo/webext-ad-filtering-solution/content.js',
+        src: 'node_modules/@eyeo/webext-ad-filtering-solution/dist/ewe-content.js',
       },
     ],
   },

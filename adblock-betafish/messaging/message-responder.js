@@ -25,7 +25,7 @@
    pausedFilterText1, pausedFilterText2, updateCustomFilterCountMap
 */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import {
   toPlainFilterError,
 } from '../../adblockplusui/adblockpluschrome/lib/messaging/types';

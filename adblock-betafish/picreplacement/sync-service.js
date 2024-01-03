@@ -24,7 +24,7 @@
 
 /** @module SyncService */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import { getCustomFilterMetaData } from '../debug/background';
 import { TELEMETRY } from '../telemetry/background';
 import { getUserId } from '../id/background/index';

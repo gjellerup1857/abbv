@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as ewe from "@eyeo/webext-sdk";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.command !== "parseFilter" || !message.filterTextToParse) {

@@ -27,7 +27,7 @@
 
 "use strict";
 
-import * as ewe from "@eyeo/webext-sdk";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { port as messagingPort } from "../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { SessionStorage } from "../../adblockplusui/adblockpluschrome/lib/storage/session.js";
 

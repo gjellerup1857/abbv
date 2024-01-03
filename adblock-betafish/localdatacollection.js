@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, adblockIsPaused, replacedCounts */
 
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import { getSettings, setSetting, settings } from './prefs/background';
 import { isEmptyObject, chromeStorageSetHelper } from './utilities/background/bg-functions';
 

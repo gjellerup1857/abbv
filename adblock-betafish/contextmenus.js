@@ -20,7 +20,7 @@
    License, reloadTab, getSettings, tryToUnwhitelist */
 
 import { Prefs } from 'prefs';
-import * as ewe from '@eyeo/webext-sdk';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
 import ServerMessages from './servermessages';
 import { log } from './utilities/background/bg-functions';

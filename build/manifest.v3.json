@@ -15,13 +15,12 @@
     "default_popup": "adblock-button-popup.html",
     "default_title": "__MSG_name__"
   },
-  "minimum_chrome_version": "102.0",
+  "minimum_chrome_version": "111.0",
   "declarative_net_request": {},
   "permissions": [
     "alarms",
     "contextMenus",
     "declarativeNetRequestWithHostAccess",
-    "declarativeNetRequestFeedback",
     "idle",
     "notifications",
     "scripting",
