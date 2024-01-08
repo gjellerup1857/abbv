@@ -311,6 +311,8 @@ FilterListUtil.updateSubscriptionInfoForId = (adblockId) => {
       synchronize_connection_error: translate('ab_filters_subscription_lastDownload_connectionError'),
       synchronize_invalid_data: translate('ab_filters_subscription_lastDownload_invalidData'),
       synchronize_checksum_mismatch: translate('ab_filters_subscription_lastDownload_checksumMismatch'),
+      synchronize_diff_error: translate('ab_filters_subscription_lastDownload_diffError'),
+      synchronize_diff_too_many_filters: translate('ab_filters_subscription_lastDownload_diffTooManyFilters'),
     };
     if (subscription.downloadStatus in map) {
       text = map[subscription.downloadStatus];

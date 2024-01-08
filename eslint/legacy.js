@@ -47,6 +47,8 @@ module.exports = {
         'synchronize_connection_error',
         'synchronize_invalid_data',
         'synchronize_checksum_mismatch',
+        'synchronize_diff_error',
+        'synchronize_diff_too_many_filters',
         'error_msg_header',
         'error_msg_help_us',
         'error_msg_thank_you',

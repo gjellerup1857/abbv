@@ -419,6 +419,14 @@
     "message": "Failed, checksum mismatch",
     "description": "Filter lists tab of the Options page: Corrupted filter list file."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Filter list update could not be applied due to an internal error.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Filter list update could not be applied due to browser limitations. Updating to a newer extension version may fix this problem.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "invalidListUrl": {
     "message": "Invalid list URL. It'll be deleted.",
     "description": "Message when you subscribe to a non-list URL"
