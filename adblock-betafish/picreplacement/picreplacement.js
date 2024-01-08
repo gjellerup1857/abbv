@@ -722,14 +722,19 @@ const checkElement = function (element) {
 };
 
 // when the page has completed loading:
-// 1) get the currently loaded CSS hiding rules
-// 2) find any hidden elements using the hiding rules from #1 that meet the
+// 1) check the settings object to verify that image swap is enabled
+// 2) get the currently loaded CSS hiding rules (if available)
+// 3) find any hidden elements using the hiding rules from #1 that meet the
 //    minimum dimensions required. if so, add them to an array
-// 3) find any hidden elements that were captured from the hideElement() function that meet the
+// 4) find any hidden elements that were captured from the hideElement() function that meet the
 //    minimum dimensions required. if so, add them to an array
-// 4) sort the array by size -- we want to replace the large elements first
-// 5) process the sorted array, attempting to do a pic replacment for each element
-onReady(() => {
+// 5) sort the array by size -- we want to replace the large elements first
+// 6) process the sorted array, attempting to do a pic replacment for each element
+onReady(async () => {
+  const settings = await browser.runtime.sendMessage({ command: 'getSettings' });
+  if (!settings || !settings.picreplacement) {
+    return;
+  }
   let elementsData = [];
 
   for (let i = 0; i < cssRules.length; i++) {

@@ -25,7 +25,8 @@
         "ext/content.js",
         "adblock-functions.js",
         "contentscript-loader.js",
-        "premium.preload.js"
+        "premium.preload.js",
+        "adblock-picreplacement.js"
       ],
       "match_about_blank": true,
       "matches": [

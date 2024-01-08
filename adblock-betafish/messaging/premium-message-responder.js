@@ -24,7 +24,6 @@ import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import { License, replacedCounts, channels } from '../picreplacement/check';
 import { channelsNotifier } from '../picreplacement/channels';
 import SyncService from '../picreplacement/sync-service';
-import { getSettings } from '../prefs/background';
 
 /**
  * Process events related to the Premium object - License, Channels, and Sync-Service
@@ -408,26 +407,3 @@ License.ready().then(() => {
 
   channelsNotifier.on('channels.changed', getListener('channels', 'changed'));
 });
-
-const webNavigationHandler = async function (details) {
-  await License.ready();
-  const {
-    url = '', documentLifecycle = 'active', tabId, frameId,
-  } = details;
-  if (
-    url.startsWith('http')
-    && License.isActiveLicense()
-    && documentLifecycle === 'active'
-    && getSettings().picreplacement
-  ) {
-    void injectScript('adblock-picreplacement.js', tabId, frameId);
-  }
-};
-
-/**
- * Initializes module
- */
-const start = function () {
-  browser.webNavigation.onCommitted.addListener(webNavigationHandler);
-};
-start();
