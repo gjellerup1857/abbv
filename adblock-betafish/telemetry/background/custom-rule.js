@@ -35,6 +35,17 @@ async function getFiltersByType(typeRegEx) {
 }
 
 /**
+ * Returns true if the meta-data matches the origin
+ *
+ * @param data The filter metadata from the filter.
+ * @param origin The origin from that must be matched.
+ *
+ * @returns {boolean} true if parameters match
+ */
+function doesOriginMatch(data, origin) {
+  return (data && data.origin === origin) || (!data && data === origin);
+}
+/**
  * Returns the number of currently active filters that match the parameters
  *
  * @param origin The origin from the meta that must be matched.
@@ -47,7 +58,7 @@ async function getFilterCountForOrigin(filters, origin) {
     filters.map(async filter => ewe.filters.getMetadata(filter.text)),
   );
   // count the ones that originated from the given origin
-  return filtersMetadata.filter(data => data && data.origin === origin).length;
+  return filtersMetadata.filter(data => doesOriginMatch(data, origin)).length;
 }
 
 /**
@@ -58,7 +69,7 @@ async function getFilterCountForOrigin(filters, origin) {
  * @returns {number} The filter count
  */
 export async function getWebAllowlistingFilterCount() {
-  // count the ones that originated in the web
+  // count the filters that originated in the web
   return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'web');
 }
 
@@ -69,7 +80,7 @@ export async function getWebAllowlistingFilterCount() {
  * @returns {number} The filter count
  */
 export async function getPopupAllowlistingFilterCount() {
-  // count the ones that originated from the popup menu
+  // count the filters that originated from the popup menu
   return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'popup');
 }
 
@@ -80,7 +91,7 @@ export async function getPopupAllowlistingFilterCount() {
  * @returns {number} The filter count
  */
 export async function getCustomizedFilterCount() {
-  // count the ones that originated from the popup menu
+  // count the filters that originated from the customize tab
   return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'customize');
 }
 
@@ -91,7 +102,7 @@ export async function getCustomizedFilterCount() {
  * @returns {number} The filter count
  */
 export async function getWizardFilterCount() {
-  // count the ones that originated from the popup menu
+  // count the filters that originated from either of the wizards
   return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'wizard');
 }
 
@@ -102,6 +113,6 @@ export async function getWizardFilterCount() {
  * @returns {number} The filter count
  */
 export async function getMissingFilterCount() {
-  // count the ones that originated from the popup menu
+  // count the filters that don't have meta data
   return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), null);
 }
