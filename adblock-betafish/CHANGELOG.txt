@@ -1,5 +1,24 @@
 ## Versions ##
 
+Version: 5.17.0, Date: 2024-01-10
+- Fixed an issue when trying to subscribe to the Premium filter lists in the manifest version 3 build of AdBlock
+- Fixed an issue with the collection of the debug data when the Premium sync feature was enabled
+- Fixed an issue with incorrect data in the Telemetry request
+- Fixed an issue with the "Don't show me this message again" option on the AdBlock "hide an element" wizard
+- Fixed an issue with element hide filter hits not being displayed in the AdBlock devtools tab
+- In preparation for migrating AdBlock to manifest version 3, the following changes were made:
+  - the Local CDN feature has been removed
+  - the Premium Sync feature will now periodically check for setting updates
+  - removed the Adblock Warning Removal filter list
+- Improved the Premium image swap feature
+- Added translations for the Premium Cookie Consent Cutter filter list
+- To help with the automated testing process, a new message handler was added to get the ready state of the extension
+- Users with the browser language set to either Uzbek or Kazakh will now automatically be subscribed to the Russian & Ukrainian filter list
+- Updated EyeO webext-ad-filtering-solution to version 1.1.1
+- Updated the test URLs and docker image version in the CI script for AdBlock
+- Moved several aliased files into adblockplusui directory
+- Reverted the changes to the license text file
+
 Version: 5.16.0, Date: 2023-12-11
 - Show the /update page to let users know about AdBlock Premium
 - In preparation for manifest V3, and to help us better understand how our users use AdBlock, we've added custom filter metadata counts to the ping data
