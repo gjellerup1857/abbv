@@ -1,5 +1,8 @@
 ## Versions ##
 
+Version: 5.17.1, Date: 2024-01-15
+- This release fixes a major performance problem that was introduced in AdBlock 5.17.0
+
 Version: 5.17.0, Date: 2024-01-10
 - Fixed an issue when trying to subscribe to the Premium filter lists in the manifest version 3 build of AdBlock
 - Fixed an issue with the collection of the debug data when the Premium sync feature was enabled
