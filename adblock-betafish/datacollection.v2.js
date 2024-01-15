@@ -74,7 +74,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
       }
       const subscriptions = await ewe.subscriptions.getForFilter(text);
       subscriptions.forEach((sub) => {
-        if (sub.enabled && sub.url && sub.downloadable) {
+        if (sub.enabled && sub.url && sub.updatable) {
           const subURL = sub.url.substring(0, 256);
           if (!dataCollectionCache.filters[text].subscriptions.includes(subURL)) {
             dataCollectionCache.filters[text].subscriptions.push(subURL);

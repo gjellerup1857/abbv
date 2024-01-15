@@ -25,7 +25,7 @@
 class SubscriptionsProxy {
   static add = (url, properties = {}) => sendTypeMessage('subscriptions.add', { url, properties });
 
-  static getDownloadable = () => sendTypeMessage('subscriptions.get');
+  static getSubscriptions = () => sendTypeMessage('subscriptions.get');
 
   static sync = url => sendTypeMessage('subscriptions.sync', { url });
 

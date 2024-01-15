@@ -100,9 +100,9 @@ export function toPlainSubscription(subscription)
 {
   let obj = toPlainObject(
     [
-      "downloadable", "downloadStatus", "enabled", "homepage", "version",
+      "downloading", "downloadStatus", "enabled", "homepage", "version",
       "lastDownload", "lastSuccess", "softExpiration", "expires", "title",
-      "url", "downloading"
+      "updatable", "url"
     ],
     subscription
   );

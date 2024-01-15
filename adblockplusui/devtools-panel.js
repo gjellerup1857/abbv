@@ -295,7 +295,7 @@ function getFilterInfo(filter, subscriptions)
   let subscriptionTitle = null;
   for (const subscription of subscriptions)
   {
-    if (!subscription.downloadable)
+    if (!subscription.updatable)
     {
       userDefined = true;
       break;

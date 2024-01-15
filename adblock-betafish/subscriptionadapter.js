@@ -149,7 +149,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   // without the filter contents (text)
   const getSubscriptionsMinusText = async function () {
     const result = {};
-    const subscriptions = await ewe.subscriptions.getDownloadable();
+    const subscriptions = await ewe.subscriptions.getSubscriptions();
     subscriptions.forEach(async (subscription) => {
       const tempSub = addAdBlockProperties(subscription);
       // if the subscription doesn't have a 'adblockId' property, use the 'URL' as an
@@ -176,7 +176,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   const getSubscriptionsChecksum = async function () {
     let resultA = 0;
     let resultB = 0;
-    const subscriptions = await ewe.subscriptions.getDownloadable();
+    const subscriptions = await ewe.subscriptions.getSubscriptions();
     subscriptions.forEach(async (subscription) => {
       const sub = addAdBlockProperties(subscription);
       let index = sub.index || 0; // 0 is the 'unkown' index

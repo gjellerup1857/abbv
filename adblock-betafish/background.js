@@ -598,7 +598,7 @@ const openTab = function (url) {
 
 // Called when user explicitly requests filter list updates
 async function updateFilterLists() {
-  const subscriptions = await ewe.subscriptions.getDownloadable();
+  const subscriptions = await ewe.subscriptions.getSubscriptions();
   subscriptions.forEach(async (subscription) => {
     await ewe.subscriptions.sync(subscription.url);
   });
@@ -610,7 +610,7 @@ async function updateFilterLists() {
 async function checkUpdateProgress() {
   let inProgress = false;
   let filterError = false;
-  const subscriptions = await ewe.subscriptions.getDownloadable();
+  const subscriptions = await ewe.subscriptions.getSubscriptions();
   subscriptions.forEach(async (subscription) => {
     if (subscription.downloading) {
       inProgress = true;

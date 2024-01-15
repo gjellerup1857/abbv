@@ -278,7 +278,7 @@ FilterListUtil.updateSubscriptionInfoAll = () => {
 const mv3SubscriptionText = (sub) => {
   // In this case, the subscription has been added or removed and re-added
   // in this session and we want to reflect that action
-  if (!Object.hasOwn(sub, 'downloadable') || sub._lastDownload < 0) {
+  if (!Object.hasOwn(sub, 'updatable') || sub._lastDownload < 0) {
     return translate('subscribedlabel');
   }
 
@@ -342,7 +342,7 @@ FilterListUtil.updateSubscriptionInfoForId = (adblockId) => {
       text = translate('updateddaysago', [days]);
     }
   // Applies to subscriptions that are bundled in MV3
-  } else if (!subscription.downloadable && subscription.subscribed) {
+  } else if (!subscription.updatable && subscription.subscribed) {
     text = mv3SubscriptionText(subscription);
   }
 
