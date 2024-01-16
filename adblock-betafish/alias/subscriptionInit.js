@@ -102,14 +102,19 @@ function removeSubscriptions() {
 
 async function openInstalled() {
   const userID = await getUserId();
+
+  const installPageUrl = new URL("https://getadblock.com/installed");
+  installPageUrl.searchParams.set("u", userID);
+  installPageUrl.searchParams.set("lg", browser.i18n.getUILanguage());
+  installPageUrl.searchParams.set("dc", dataCorrupted);
+  installPageUrl.searchParams.set("an", info.addonName);
+  installPageUrl.searchParams.set("av", info.addonVersion);
+  installPageUrl.searchParams.set("ap", info.application);
+  installPageUrl.searchParams.set("apv", info.applicationVersion);
+  installPageUrl.searchParams.set("p", info.platform);
+  installPageUrl.searchParams.set("pv", info.platformVersion);
   browser.tabs.create({
-    url:
-      "https://getadblock.com/installed/?u=" +
-      userID +
-      "&lg=" +
-      browser.i18n.getUILanguage() +
-      "&dc=" +
-      dataCorrupted
+    url: installPageUrl.href
   });
 }
 
