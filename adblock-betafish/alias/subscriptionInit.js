@@ -27,11 +27,17 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { getUserId } from '../id/background/index';
-import {setReadyState, ReadyState} from "../../adblock-betafish/testing/ready-state/background/index.ts";
+import { setReadyState, ReadyState } from "../../adblock-betafish/testing/ready-state/background/index.ts";
 
 let firstRun;
 let reinitialized = false;
 let dataCorrupted = false;
+
+const defaultSubscriptionIds = [
+  "8C13E995-8F06-4927-BEA7-6C845FB7EEBF",
+  "0798B6A2-94A4-4ADF-89ED-BEC112FC4C7F",
+  "D4028CDD-3D39-4624-ACC7-8140F4EC3238"
+];
 
 /**
  * If there aren't any filters, the default subscriptions are added.
@@ -121,7 +127,22 @@ async function openInstalled() {
 
 async function addSubscriptions() {
   if (firstRun || reinitialized) {
-    await ewe.subscriptions.addDefaults();
+    try {
+      await ewe.subscriptions.addDefaults();
+    }
+    catch (ex) {
+      console.error("Failed to add default filter lists:", ex);
+
+      // We don't want to keep the extension in a broken state, so we
+      // try to individually add default subscriptions ourselves
+      const recommendations = ewe.subscriptions.getRecommendations();
+      for (const recommendation of recommendations) {
+        if (!defaultSubscriptionIds.includes(recommendation.id))
+          continue;
+
+        await ewe.subscriptions.add(recommendation.url);
+      }
+    }
   }
   // Remove "acceptable ads" if Gecko
   if (firstRun) {
