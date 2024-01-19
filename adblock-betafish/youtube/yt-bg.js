@@ -16,10 +16,10 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, getSettings, settings, addCustomFilter, getUserFilters,
-   isWhitelistFilter */
+/* global browser, addCustomFilter, getUserFilters, isWhitelistFilter */
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import { settings, getSettings } from '~/prefs/background/settings';
 
 const ytChannelNamePages = new Map();
 
@@ -99,7 +99,14 @@ const injectManagedContentScript = async function (details, historyUpdated) {
   }
 };
 
-const managedSubPageCompleted = function (details) {
+const managedSubPageCompleted = async (details) => {
+  await settings.onload();
+
+  if (!getSettings().youtube_channel_whitelist || !getSettings().youtube_manage_subscribed) {
+    browser.webNavigation.onCompleted.removeListener(managedSubPageCompleted, webRequestFilter);
+    return;
+  }
+
   const theURL = new URL(details.url);
   if (theURL.pathname === '/feed/channels') {
     void injectManagedContentScript(details);
@@ -108,8 +115,16 @@ const managedSubPageCompleted = function (details) {
 
 // On single page sites, such as YouTube, that update the URL using the History API pushState(),
 // they don't actually load a new page, we need to get notified when this happens
-// and update the URLs in the Page and Frame objects
-const ytHistoryHandler = function (details) {
+// and trigger the injection of the manage subscription content script when the user
+// navigates to the page via YT
+const ytHistoryHandler = async (details) => {
+  await settings.onload();
+
+  if (!getSettings().youtube_channel_whitelist) {
+    browser.webNavigation.onHistoryStateUpdated.removeListener(ytHistoryHandler, webRequestFilter);
+    return;
+  }
+
   if (details
     && Object.prototype.hasOwnProperty.call(details, 'tabId')
     && Object.prototype.hasOwnProperty.call(details, 'url')
@@ -126,21 +141,13 @@ const ytHistoryHandler = function (details) {
 
 const addYTChannelListeners = function () {
   browser.webNavigation.onHistoryStateUpdated.addListener(ytHistoryHandler, webRequestFilter);
-  if (getSettings().youtube_manage_subscribed) {
-    browser.webNavigation.onCompleted.addListener(managedSubPageCompleted, webRequestFilter);
-  }
+  browser.webNavigation.onCompleted.addListener(managedSubPageCompleted, webRequestFilter);
 };
 
 const removeYTChannelListeners = function () {
   browser.webNavigation.onHistoryStateUpdated.removeListener(ytHistoryHandler, webRequestFilter);
   browser.webNavigation.onCompleted.removeListener(managedSubPageCompleted, webRequestFilter);
 };
-
-settings.onload().then(() => {
-  if (getSettings().youtube_channel_whitelist) {
-    addYTChannelListeners();
-  }
-});
 
 const openYTManagedSubPage = function () {
   browser.tabs.create({ url: 'https://www.youtube.com/feed/channels' });
@@ -158,8 +165,9 @@ const getAllAdsAllowedUserFilters = async function () {
   return adsAllowedUserFilters;
 };
 
-let previousYTchannelId = '';
-let previousYTuserId = '';
+const start = function () {
+  addYTChannelListeners();
+};
 
 // Listen for the message from the content scripts
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -167,71 +175,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     ytChannelNamePages.set(sender.tab.id, message.channelName);
     sendResponse({});
     return;
-  }
-  if (message.command === 'get_channel_name_by_channel_id' && message.channelId) {
-    if (previousYTchannelId !== message.channelId) {
-      previousYTchannelId = message.channelId;
-      const xhr = new XMLHttpRequest();
-      const { channelId } = message;
-      const key = atob('QUl6YVN5QzJKMG5lbkhJZ083amZaUUYwaVdaN3BKd3dsMFczdUlz');
-      const url = 'https://www.googleapis.com/youtube/v3/channels';
-      xhr.open('GET', `${url}?part=snippet&id=${channelId}&key=${key}`);
-      xhr.onload = function xhrOnload() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const json = JSON.parse(xhr.response);
-          // Got name of the channel
-          if (json && json.items && json.items[0]) {
-            const channelName = json.items[0].snippet.title;
-            ytChannelNamePages.set(sender.tab.id, channelName);
-            void browser.tabs.sendMessage(sender.tab.id, {
-              command: 'updateURLWithYouTubeChannelName',
-              channelName,
-            });
-          }
-        }
-      };
-      xhr.send();
-      sendResponse({});
-      return;
-    }
-    void browser.tabs.sendMessage(sender.tab.id, {
-      command: 'updateURLWithYouTubeChannelName',
-      channelName: ytChannelNamePages.get(sender.tab.id),
-    });
-    sendResponse({});
-    return;
-  }
-  if (message.command === 'get_channel_name_by_user_id' && message.userId) {
-    if (previousYTuserId !== message.userId) {
-      previousYTuserId = message.userId;
-      const xhr = new XMLHttpRequest();
-      const { userId } = message;
-      const key = atob('QUl6YVN5QzJKMG5lbkhJZ083amZaUUYwaVdaN3BKd3dsMFczdUlz');
-      const url = 'https://www.googleapis.com/youtube/v3/channels';
-      xhr.open('GET', `${url}?part=snippet&forUsername=${userId}&key=${key}`);
-      xhr.onload = function xhrOnload() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const json = JSON.parse(xhr.response);
-          // Got name of the channel
-          if (json && json.items && json.items[0]) {
-            const channelName = json.items[0].snippet.title;
-            ytChannelNamePages.set(sender.tab.id, channelName);
-            void browser.tabs.sendMessage(sender.tab.id, {
-              command: 'updateURLWithYouTubeChannelName',
-              channelName,
-            });
-          }
-        }
-      };
-      xhr.send();
-      sendResponse({});
-    } else {
-      void browser.tabs.sendMessage(sender.tab.id, {
-        command: 'updateURLWithYouTubeChannelName',
-        channelName: ytChannelNamePages.get(sender.tab.id),
-      });
-      sendResponse({});
-    }
   }
   if (message.command === 'getAllAdsAllowedUserFilters') {
     /* eslint-disable consistent-return */
@@ -282,3 +225,5 @@ Object.assign(self, {
   ytChannelNamePages,
   openYTManagedSubPage,
 });
+
+start();
