@@ -1036,26 +1036,28 @@ const SyncService = (function getSyncService() {
     });
   }
 
+  const addSyncEventListeners = function () {
+    syncNotifier.on('sync.data.getting.error', onSyncDataGettingErrorAddLogEntry);
+    syncNotifier.on('sync.data.getting.error.initial.fail', onSyncDataGettingErrorInitialFailAddLogEntry);
+    syncNotifier.on('extension.names.downloading', onExtensionNamesDownloadingAddLogEntry);
+    syncNotifier.on('sync.data.receieved', onSyncDataReceievedAddLogEntry);
+    syncNotifier.on('sync.data.getting', onSyncDataGettingAddLogEntry);
+    syncNotifier.on('post.data.sent.error', onPostDataSentErrorAddLogEntry);
+    syncNotifier.on('post.data.sending', onPostDataSendingAddLogEntry);
+    syncNotifier.on('post.data.sent', onPostDataSentAddLogEntry);
+    syncNotifier.on('extension.name.remove.error', onExtensionNamesRemoveErrorAddLogEntry);
+    syncNotifier.on('extension.name.removed', onExtensionNameRemovedAddLogEntry);
+    syncNotifier.on('extension.name.remove', onExtensionNameRemoveAddLogEntry);
+    syncNotifier.on('extension.name.updated.error', onExtensionNameUpdatedErrorAddLogEntry);
+    syncNotifier.on('extension.name.updated', onExtensionNameUpdatedAddLogEntry);
+    syncNotifier.on('extension.name.updating', onExtensionNameUpdatingAddLogEntry);
+    syncNotifier.on('extension.names.downloaded', onExtensionNamesDownloadedAddLogEntry);
+    syncNotifier.on('extension.names.downloading.error', onExtensionNamesDownloadingErrorAddLogEntry);
+  };
+
   const enableSync = function (initialGet) {
     setSetting('sync_settings', true);
     const addListeners = function () {
-      syncNotifier.on('sync.data.getting.error', onSyncDataGettingErrorAddLogEntry);
-      syncNotifier.on('sync.data.getting.error.initial.fail', onSyncDataGettingErrorInitialFailAddLogEntry);
-      syncNotifier.on('extension.names.downloading', onExtensionNamesDownloadingAddLogEntry);
-      syncNotifier.on('sync.data.receieved', onSyncDataReceievedAddLogEntry);
-      syncNotifier.on('sync.data.getting', onSyncDataGettingAddLogEntry);
-      syncNotifier.on('post.data.sent.error', onPostDataSentErrorAddLogEntry);
-      syncNotifier.on('post.data.sending', onPostDataSendingAddLogEntry);
-      syncNotifier.on('post.data.sent', onPostDataSentAddLogEntry);
-      syncNotifier.on('extension.name.remove.error', onExtensionNamesRemoveErrorAddLogEntry);
-      syncNotifier.on('extension.name.removed', onExtensionNameRemovedAddLogEntry);
-      syncNotifier.on('extension.name.remove', onExtensionNameRemoveAddLogEntry);
-      syncNotifier.on('extension.name.updated.error', onExtensionNameUpdatedErrorAddLogEntry);
-      syncNotifier.on('extension.name.updated', onExtensionNameUpdatedAddLogEntry);
-      syncNotifier.on('extension.name.updating', onExtensionNameUpdatingAddLogEntry);
-      syncNotifier.on('extension.names.downloaded', onExtensionNamesDownloadedAddLogEntry);
-      syncNotifier.on('extension.names.downloading.error', onExtensionNamesDownloadingErrorAddLogEntry);
-
       // eslint-disable-next-line no-use-before-define
       License.licenseNotifier.on('license.expired', processDisableSync);
 
@@ -1135,23 +1137,6 @@ const SyncService = (function getSyncService() {
       chromeStorageSetHelper(syncExtensionNameKey, currentExtensionName);
     }
 
-    syncNotifier.off('sync.data.getting.error', onSyncDataGettingErrorAddLogEntry);
-    syncNotifier.off('sync.data.getting.error.initial.fail', onSyncDataGettingErrorInitialFailAddLogEntry);
-    syncNotifier.off('extension.names.downloading', onExtensionNamesDownloadingAddLogEntry);
-    syncNotifier.off('sync.data.receieved', onSyncDataReceievedAddLogEntry);
-    syncNotifier.off('sync.data.getting', onSyncDataGettingAddLogEntry);
-    syncNotifier.off('post.data.sent.error', onPostDataSentErrorAddLogEntry);
-    syncNotifier.off('post.data.sending', onPostDataSendingAddLogEntry);
-    syncNotifier.off('post.data.sent', onPostDataSentAddLogEntry);
-    syncNotifier.off('extension.name.remove.error', onExtensionNamesRemoveErrorAddLogEntry);
-    syncNotifier.off('extension.name.removed', onExtensionNameRemovedAddLogEntry);
-    syncNotifier.off('extension.name.remove', onExtensionNameRemoveAddLogEntry);
-    syncNotifier.off('extension.name.updated.error', onExtensionNameUpdatedErrorAddLogEntry);
-    syncNotifier.off('extension.name.updated', onExtensionNameUpdatedAddLogEntry);
-    syncNotifier.off('extension.name.updating', onExtensionNameUpdatingAddLogEntry);
-    syncNotifier.off('extension.names.downloaded', onExtensionNamesDownloadedAddLogEntry);
-    syncNotifier.off('extension.names.downloading.error', onExtensionNamesDownloadingErrorAddLogEntry);
-
     // eslint-disable-next-line no-use-before-define
     License.licenseNotifier.off('license.expired', processDisableSync);
     self.removeEventListener('online', updateNetworkStatus);
@@ -1229,6 +1214,7 @@ const SyncService = (function getSyncService() {
 
   settings.onload().then(() => {
     License.ready().then(() => {
+      addSyncEventListeners();
       if (getSettings().sync_settings) {
         browser.storage.local.get(syncCommitVersionKey).then((response) => {
           syncCommitVersion = response[syncCommitVersionKey] || 0;

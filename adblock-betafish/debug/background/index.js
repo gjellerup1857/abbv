@@ -103,24 +103,24 @@ const getDebugAlarmInfo = async () => {
 
 const getDebugLicenseInfo = async () => {
   const response = {};
-  if (License.isActiveLicense()) {
-    response.licenseInfo = {};
-    response.licenseInfo.extensionGUID = await getUserId();
-    response.licenseInfo.licenseId = License.get().licenseId;
-    if (getSettings().sync_settings) {
-      const syncInfo = {};
-      syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
-      syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
-      syncInfo.SyncCommitLog = await SyncService.getSyncLog();
-      response.syncInfo = syncInfo;
-    }
-    response['License Installation Date'] = await License.getLicenseInstallationDate();
-    const customChannelId = channels.getIdByName('CustomChannel');
-    if (channels.getGuide()[customChannelId].enabled) {
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      const result = await customChannel.getTotalBytesInUse();
-      response['Custom Channel total bytes in use'] = result;
-    }
+  response.licenseInfo = {};
+  response.licenseInfo.extensionGUID = await getUserId();
+  response.licenseInfo.licenseId = License.get() && License.get().licenseId;
+  response.licenseInfo.licenseState = License.get() && License.get().status;
+  response.licenseInfo.licenseVersion = License.get() && License.get().lv;
+  const syncInfo = {};
+  syncInfo.SyncCommitVersion = SyncService.getCommitVersion();
+  syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
+  syncInfo.SyncCommitLog = await SyncService.getSyncLog();
+  response.syncInfo = syncInfo;
+  response['License Installation Date'] = await License.getLicenseInstallationDate();
+  const customChannelId = channels.getIdByName('CustomChannel');
+  if (customChannelId
+    && channels.getGuide()[customChannelId]
+    && channels.getGuide()[customChannelId].enabled) {
+    const customChannel = channels.channelGuide[customChannelId].channel;
+    const result = await customChannel.getTotalBytesInUse();
+    response['Custom Channel total bytes in use'] = result;
   }
   return response;
 };
@@ -258,8 +258,6 @@ const getDebugInfo = function () {
 
     otherInfo.localStorageInfo = getLocalStorageInfo();
     otherInfo.isAdblockPaused = adblockIsPaused();
-    otherInfo.licenseState = License.get().status;
-    otherInfo.licenseVersion = License.get().lv;
 
     // Get 'Stats' size
     otherInfo.rawStatsSize = await LocalDataCollection.getRawStatsSize();
