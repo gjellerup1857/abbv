@@ -128,6 +128,7 @@ settings.onload().then(() => {
     if (!isTrustedSender(sender)) {
       return;
     }
+
     const { command } = message;
     switch (command) {
       case 'setSetting':
@@ -229,6 +230,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       updateButtonUIAndContextMenus();
       sendResponse({});
       break;
+    case 'dataCollectionOptOut':
+      sendResponse({});
+      return ServerMessages.recordOptOutMessage();
     default:
   }
 });

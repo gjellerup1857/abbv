@@ -55,6 +55,17 @@ async function unsubscribeAcceptableAds(event) {
   await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html?aadisabled=true#general') });
 }
 
+function handleOpenSettingsPageClick(event) {
+  if (event.isTrusted === false) {
+    return;
+  }
+  event.preventDefault();
+  void browser.runtime.sendMessage({
+    command: 'openTab',
+    urlToOpen: browser.runtime.getURL('options.html#general'),
+  });
+}
+
 async function getStartedWithMyAdBlock(event) {
   if (event.isTrusted === false) {
     return;
@@ -86,6 +97,11 @@ onReady(async () => {
 
     document.querySelectorAll('#disableacceptableads').forEach((node) => {
       node.addEventListener('click', unsubscribeAcceptableAds);
+    });
+
+    // Listen to clicks on links to open the settings page
+    document.querySelectorAll('.open-settings-page').forEach((node) => {
+      node.addEventListener('click', handleOpenSettingsPageClick);
     });
 
     // Listen to clicks on 'Get Started With MyAdBlock' on v4 payment page

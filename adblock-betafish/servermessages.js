@@ -29,8 +29,13 @@ const ServerMessages = (function serverMessages() {
   // Log a message on GAB log server. The user's userid will be prepended to the
   // message.
   // If callback() is specified, call callback() after logging has completed
-  const sendMessageToLogServer = function (payload, callback) {
-    fetch('https://log.getadblock.com/v2/record_log.php', {
+  const sendMessageToLogServer = async function (payload, callback) {
+    if (Prefs.get('data_collection_opt_out')) {
+      return;
+    }
+
+    // eslint-disable-next-line consistent-return
+    return fetch('https://log.getadblock.com/v2/record_log.php', {
       method: 'POST',
       cache: 'no-cache',
       headers: { 'Content-Type': 'application/json' },
@@ -67,7 +72,8 @@ const ServerMessages = (function serverMessages() {
       }
     }
     const eventWithPayload = { event: msg, payload };
-    sendMessageToLogServer(eventWithPayload, callback);
+    // eslint-disable-next-line consistent-return
+    return sendMessageToLogServer(eventWithPayload, callback);
   };
 
   // Log a message on GAB log server.
@@ -138,10 +144,19 @@ const ServerMessages = (function serverMessages() {
     void recordMessageWithUserID(msg, 'adreport', callback, additionalParams);
   };
 
+  // Log a data-collection opt-out message on GAB log server.
+  const recordOptOutMessage = async function () {
+    return recordMessageWithUserID('data_collection_opt_out', 'general');
+  };
+
   // Send an error message to the backup log server. This is to be used when
   // there's fetch failure.  It may fail as well depending on the failure,
   // and state of the local computer & network
   const sendMessageToBackupLogServer = async function (msg, errorMsg, queryType = 'error') {
+    if (Prefs.get('data_collection_opt_out')) {
+      return;
+    }
+
     const payload = {
       u: await getUserId(),
       f: flavor,
@@ -169,6 +184,7 @@ const ServerMessages = (function serverMessages() {
     recordGeneralMessage,
     recordStatusMessage,
     sendMessageToBackupLogServer,
+    recordOptOutMessage,
   };
 }());
 

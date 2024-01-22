@@ -58,6 +58,10 @@ class Telemetry extends TelemetryBase {
 
   sendPingData(pingData) {
     return new Promise(async (resolve) => {
+      if (Prefs.get('data_collection_opt_out')) {
+        return;
+      }
+
       const response = await postData(Prefs.get(this.hostURLPref), pingData)
         // Send any network errors during the ping fetch to a dedicated log server
         // to help us determine why there's been a drop in ping requests

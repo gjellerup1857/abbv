@@ -87,6 +87,10 @@ class IPMTelemetry extends TelemetryBase {
   }
 
   async sendPingData(pingData) {
+    if (Prefs.get('data_collection_opt_out')) {
+      return;
+    }
+
     // as we about to send all user events, we can delete them
     void clearEvents();
     const response = await postData(Prefs.get(this.hostURLPref), pingData).catch((error) => {

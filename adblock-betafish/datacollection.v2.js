@@ -25,6 +25,7 @@ import SubscriptionAdapter from './subscriptionadapter';
 import postData from './fetch-util';
 import { getSettings, settings, setSetting } from './prefs/background';
 import { parseUri, log, chromeStorageSetHelper } from './utilities/background/bg-functions';
+import { Prefs } from './alias/prefs';
 
 const DataCollectionV2 = (function getDataCollectionV2() {
   const HOUR_IN_MIN = 60;
@@ -107,6 +108,10 @@ const DataCollectionV2 = (function getDataCollectionV2() {
   };
 
   const sendToServer = async function () {
+    if (Prefs.get('data_collection_opt_out')) {
+      return;
+    }
+
     const dataCollectionSetting = getSettings().data_collection_v2;
     if (!dataCollectionSetting) {
       browser.alarms.clear(DATA_COLLECTION_ALARM_NAME);

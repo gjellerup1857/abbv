@@ -242,7 +242,26 @@
         <label for="prefs__show_devtools_panel" i18n="show_devtools_panel"></label>
       </li>
 
-      <li class="add-space-between checkbox-indentation section-padding">
+      <li
+        id="main_opt_out"
+        class="section-padding checkbox-indentation application-specific-firefox"
+      >
+        <span class="checkbox md-stack">
+          <input type="checkbox" class="feature" id="prefs__data_collection_opt_out" />
+          <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
+          <i
+            class="checked material-icons circle-icon-bg-24 checkbox-icon"
+            role="img"
+            aria-hidden="true"
+            >check_circle</i
+          >
+        </span>
+        <label for="prefs__data_collection_opt_out" i18n="data_collection_opt_out"></label>
+      </li>
+
+      <li
+        class="add-space-between checkbox-indentation section-padding data-collection-option-container"
+      >
         <div>
           <span class="checkbox md-stack">
             <input type="checkbox" class="feature" id="enable_data_collection_v2" />
@@ -267,7 +286,9 @@
         </a>
       </li>
 
-      <li class="add-space-between checkbox-indentation section-padding">
+      <li
+        class="add-space-between checkbox-indentation section-padding data-collection-option-container"
+      >
         <div>
           <span class="checkbox md-stack">
             <input type="checkbox" class="feature" id="prefs__send_ad_wall_messages" />
@@ -292,7 +313,7 @@
         </a>
       </li>
 
-      <li class="section-padding checkbox-indentation">
+      <li class="section-padding checkbox-indentation data-collection-option-container">
         <span class="checkbox md-stack">
           <input type="checkbox" class="feature" id="enable_onpageMessages" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>

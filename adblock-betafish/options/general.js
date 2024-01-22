@@ -17,7 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global parseUri, settings:true, abpPrefPropertyNames, settingsNotifier, SubscriptionAdapter,
-   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License,
+   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License, info,
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
    SubscriptionsProxy, DataCollectionV2, send */
 
@@ -37,10 +37,20 @@ try {
   // do nothing
 }
 
+function setDataCollectionOptionsVisibility(visibility) {
+  if (visibility) {
+    $('.data-collection-option-container').show(200);
+  } else {
+    $('.data-collection-option-container').hide(200);
+  }
+}
+
 // Check or uncheck each loaded DOM option checkbox according to the
 // user's saved settings.
 const initialize = async function init() {
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
+
+  setDataCollectionOptionsVisibility(!Prefs.data_collection_opt_out);
 
   // if the user is currently subscribed to AA
   // then 'check' the acceptable ads button.
@@ -126,6 +136,16 @@ const initialize = async function init() {
     if (name === 'shouldShowBlockElementMenu') {
       send('updateButtonUIAndContextMenus');
     }
+
+    // need to check for opt-out here before we set the pref
+    // in order to send goodbye message before we shutdown channels
+    if (name === 'data_collection_opt_out') {
+      toggleDataCollectionOptPref(isEnabled);
+      if (isEnabled) {
+        await send('dataCollectionOptOut');
+      }
+    }
+
     if (abpPrefPropertyNames.indexOf(name) >= 0) {
       Prefs[name] = isEnabled;
       return;
@@ -141,6 +161,7 @@ const initialize = async function init() {
         DataCollectionV2.end();
       }
     }
+
     // if the user enables/disable YouTube Channel allowlisting
     // add or remove history state listners
     if (name === 'youtube_channel_whitelist') {
@@ -203,27 +224,39 @@ const showSeparators = function () {
   $lastVisibleOption.removeClass('bottom-line');
 };
 
-$('#enable_show_advanced_options').on('change', function onAdvancedOptionsChange() {
+function addUIChangeListeners() {
+  $('#enable_show_advanced_options').on('change', function onAdvancedOptionsChange() {
   // Reload the page to show or hide the advanced options on the
   // options page -- after a moment so we have time to save the option.
   // Also, disable all advanced options, so that non-advanced users will
   // not end up with debug/beta/test options enabled.
-  if (!this.checked) {
-    $('.advanced input[type=\'checkbox\']:checked').each(function forEachAdvancedOption() {
-      settings[this.id.substr(7)] = false;
-    });
-  }
+    if (!this.checked) {
+      $('.advanced input[type=\'checkbox\']:checked').each(function forEachAdvancedOption() {
+        settings[this.id.substr(7)] = false;
+      });
+    }
 
-  window.setTimeout(() => {
-    autoReloadingPage = true;
-    window.location.reload();
-  }, 50);
-});
+    window.setTimeout(() => {
+      autoReloadingPage = true;
+      window.location.reload();
+    }, 50);
+  });
+
+  $('#prefs__data_collection_opt_out').on('change', function onDataCollectionOptionChange() {
+    setDataCollectionOptionsVisibility(!this.checked);
+  });
+}
+
+const addBrowserClass = function () {
+  document.documentElement.classList.add(`application-${info.application}`);
+};
 
 $(async () => {
   await initializeProxies();
   initialize();
   showSeparators();
+  addBrowserClass();
+  addUIChangeListeners();
 
   if (!License || $.isEmptyObject(License) || !MABPayment) {
     return;
@@ -255,11 +288,35 @@ const onSettingsChanged = function (name, currentValue, previousValue) {
 
 settingsNotifier.on('settings.changed', onSettingsChanged);
 
-const onPrefsChannged = function (name, currentValue) {
-  $(`#prefs__${name}`).prop('checked', currentValue);
+const toggleDataCollectionOptPref = function (value) {
+  if (value) {
+    // eslint-disable-next-line camelcase
+    settings.data_collection_v2 = false;
+    DataCollectionV2.end();
+    // eslint-disable-next-line camelcase
+    Prefs.send_ad_wall_messages = false;
+    settings.onpageMessages = false;
+  } else {
+    // eslint-disable-next-line camelcase
+    settings.data_collection_v2 = false;
+    DataCollectionV2.end();
+    // eslint-disable-next-line camelcase
+    Prefs.send_ad_wall_messages = true;
+    settings.onpageMessages = true;
+  }
+
+  setDataCollectionOptionsVisibility(!value);
 };
 
-prefsNotifier.on('prefs.changed', onPrefsChannged);
+const onPrefsChanged = function (name, currentValue) {
+  $(`#prefs__${name}`).prop('checked', currentValue);
+
+  if (name === 'data_collection_opt_out') {
+    setDataCollectionOptionsVisibility(!currentValue);
+  }
+};
+
+prefsNotifier.on('prefs.changed', onPrefsChanged);
 
 const onSubAdded = function (items) {
   let item = items;

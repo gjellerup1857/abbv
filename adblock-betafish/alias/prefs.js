@@ -115,6 +115,13 @@ defaults.ui_warn_tracking = true;
 defaults.show_devtools_panel = true;
 
 /**
+ * Whether the global data collection opt out is enabled or not.
+ *
+ * @type {boolean}
+ */
+defaults.data_collection_opt_out = false;
+
+/**
  * Prevents unsolicited UI elements from showing up after installation. This
  * preference isn't set by the extension but can be pre-configured externally.
  *
