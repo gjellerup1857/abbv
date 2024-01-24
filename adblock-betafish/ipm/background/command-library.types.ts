@@ -74,7 +74,7 @@ export enum CommandEventType {
  */
 export const CommandVersion: Record<CommandName, number> = {
   [CommandName.createOnPageDialog]: 3,
-  [CommandName.createTab]: 2,
+  [CommandName.createTab]: 3,
 };
 
 /**

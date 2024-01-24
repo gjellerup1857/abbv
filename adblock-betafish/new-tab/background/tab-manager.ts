@@ -29,12 +29,11 @@ import {
 import * as logger from '../../utilities/background';
 import { getSettings, settings } from '../../prefs/background/settings';
 import {
-  NewTabEventType,
-  NewTabExitEventType,
-  NewTabErrorEventType,
+  CreationMethod,
   isNewTabBehavior,
   setNewTabCommandHandler,
 } from './middleware';
+import { NewTabEventType, NewTabErrorEventType, NewTabExitEventType } from './tab-manager.types';
 
 const tabIds = new Set<number | undefined>();
 
@@ -132,10 +131,14 @@ const openNotificationTab = (ipmId: string) => {
   const onUpdatedHandler = onUpdatedHandlerByIPMids.get(ipmId);
   onUpdatedHandlerByIPMids.delete(ipmId);
 
-  browser.tabs.onCreated.removeListener(onCreatedHandler);
-  browser.tabs.onUpdated.removeListener(onUpdatedHandler);
+  // If we're here via the `force` method, we don't have handlers
+  if (typeof onCreatedHandler !== 'undefined') {
+    browser.tabs.onCreated.removeListener(onCreatedHandler);
+    browser.tabs.onUpdated.removeListener(onUpdatedHandler);
+  }
   // eslint-disable-next-line no-use-before-define
   browser.tabs.onRemoved.removeListener(onRemoved);
+
   tabIds.clear();
   openNewtab(ipmId);
 };
@@ -221,6 +224,27 @@ async function handleCommand(ipmId: string): Promise<void> {
     dismissCommand(ipmId);
     return;
   }
+
+  // Ignore and dismiss command if behavior is invalid.
+  logger.debug('[new-tab]:openNewtab');
+  const behavior = getBehavior(ipmId);
+  if (!isNewTabBehavior(behavior)) {
+    logger.debug('[new-tab]: Invalid command behavior');
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
+    dismissCommand(ipmId);
+    return;
+  }
+
+  // Let the IPM know we received the command.
+  recordEvent(ipmId, CommandName.createTab, NewTabEventType.received);
+
+  // If the method is `force`, we need to create the tab right away.
+  if (behavior.method === CreationMethod.force) {
+    openNotificationTab(ipmId);
+    return;
+  }
+
+  // Add listeners
   const onCreatedHandler = onCreated.bind(null, ipmId);
   onCreatedHandlerByIPMids.set(ipmId, onCreatedHandler);
 
@@ -230,7 +254,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   browser.tabs.onCreated.addListener(onCreatedHandler);
   browser.tabs.onRemoved.addListener(onRemoved);
   browser.tabs.onUpdated.addListener(onUpdatedHandler);
-  recordEvent(ipmId, CommandName.createTab, NewTabEventType.received);
+
   newTabCounter = 0;
 }
 
