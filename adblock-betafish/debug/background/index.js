@@ -180,25 +180,12 @@ const getLocalStorageInfo = function () {
 };
 
 const getMigrationMessages = async function () {
-  const migrateLogMessageKey = 'migrateLogMessageKey';
-  const migrateLogMessageResponse = await browser.storage.local.get(migrateLogMessageKey);
-
-  if (migrateLogMessageResponse && migrateLogMessageResponse[migrateLogMessageKey]) {
-    const messages = migrateLogMessageResponse[migrateLogMessageKey].split('\n');
-    const migrationCollection = {};
-    for (let i = 0; i < messages.length; i++) {
-      const key = `migration_message_${i}`;
-      migrationCollection[key] = messages[i];
-    }
-
-    return migrationCollection;
-  }
-
-  /*
-  * Return empty object instead of NO_DATA here because this is used with Object.assign
-  * and therefore needs to return an object.
-  */
-  return {};
+  const response = {};
+  response.migrationErrors = {};
+  const { migrationErrors } = response;
+  migrationErrors.filters = await ewe.filters.getMigrationErrors();
+  migrationErrors.subscriptions = await ewe.subscriptions.getMigrationErrors();
+  return response;
 };
 
 const getSubscriptionInfo = async function () {
@@ -229,6 +216,8 @@ const getDebugInfo = function () {
 
     // Get subscribed filter lists
     response.subscriptions = await getSubscriptionInfo();
+
+    // Get custom/user filter rules
     response.customFilters = await getCustomFilters(userFilters);
 
     // Get settings

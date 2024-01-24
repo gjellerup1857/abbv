@@ -198,6 +198,8 @@ const initialize = ewe.start({
     eweFirstRun.foundSubscriptions,
     eweFirstRun.foundStorage
   );
+  (await ewe.filters.getMigrationErrors()).forEach(console.error);
+  (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
   eweFirstRun.warnings.forEach(console.warn);
   await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
   await testStorage().catch(() => { setDataCorrupted(true); })
