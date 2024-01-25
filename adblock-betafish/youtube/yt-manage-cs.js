@@ -626,63 +626,84 @@ const navigateFinished = function () {
   addOnPageIcon();
 };
 
-browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'addYouTubeOnPageIcons') {
-    removeInPageIcons();
-    removeOnPageIcon();
-    // if the user navigated to '/feed/channels' organically on the YT site,
-    // then we need to wait until the data has finished loading.
-    if (request.historyUpdated) {
-      window.addEventListener('yt-navigate-finish', navigateFinished);
-    } else {
-      setTimeout(() => {
-        addOnPageIcon();
-        addInPageIcons(true);
-      }, 500);
-    }
-    sendResponse({});
-  }
-  if (request.command === 'ping_yt_manage_cs') {
-    sendResponse({ status: 'yes' });
-  }
-});
+const addBackgroundEventListeners = function () {
+  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    const { command } = request;
 
-document.addEventListener('yt-page-data-updated', () => {
-  if (window.location.pathname !== '/feed/channels') {
-    removeInPageIcons();
-    removeOnPageIcon();
-  }
-});
-
-const toContentScriptRandomEventName = `ab-yt-event-${Math.random().toString(36).substr(2)}`;
-document.addEventListener(toContentScriptRandomEventName, (event) => {
-  if (event && event.detail && event.detail.actionName === 'yt-append-continuation-items-action') {
-    removeInPageIcons();
-    addInPageIcons(true);
-  }
-});
-
-const captureYTEvents = function (toContentScriptEventName) {
-  document.addEventListener('yt-action', (event) => {
-    if (event.detail && event.detail.actionName === 'yt-append-continuation-items-action') {
-      document.dispatchEvent(new CustomEvent(toContentScriptEventName,
-        { detail: { actionName: 'yt-append-continuation-items-action' } }));
+    switch (command) {
+      case 'addYouTubeOnPageIcons':
+        removeInPageIcons();
+        removeOnPageIcon();
+        // if the user navigated to '/feed/channels' organically on the YT site,
+        // then we need to wait until the data has finished loading.
+        if (request.historyUpdated) {
+          window.addEventListener('yt-navigate-finish', navigateFinished);
+        } else {
+          setTimeout(() => {
+            addOnPageIcon();
+            addInPageIcons(true);
+          }, 500);
+        }
+        sendResponse({});
+        break;
+      case 'ping_yt_manage_cs':
+        sendResponse({ status: 'yes' });
+        break;
+      default:
     }
   });
 };
 
-const injectWrappers = function () {
-  const elemDOMPurify = document.createElement('script');
-  elemDOMPurify.src = browser.runtime.getURL('purify.min.js');
-  const scriptToInject = `(${captureYTEvents.toString()})('${toContentScriptRandomEventName}');`;
-  const elem = document.createElement('script');
-  elem.appendChild(document.createTextNode(scriptToInject));
+const addUIEventListers = function (toContentScriptEventName) {
+  // Listen for event from yt-capture-events.js
+  document.addEventListener(toContentScriptEventName, (event) => {
+    if (event && event.detail && event.detail.actionName === 'yt-append-continuation-items-action') {
+      removeInPageIcons();
+      addInPageIcons(true);
+    }
+  });
+
+  document.addEventListener('yt-page-data-updated', () => {
+    if (window.location.pathname !== '/feed/channels') {
+      removeInPageIcons();
+      removeOnPageIcon();
+    }
+  });
+};
+
+const injectScript = function ({ src, name = '', params = {} }) {
+  const scriptElem = document.createElement('script');
+  scriptElem.type = 'module';
+  scriptElem.src = browser.runtime.getURL(src);
+  scriptElem.dataset.params = JSON.stringify(params);
+  scriptElem.dataset.name = name;
+
   try {
-    (document.head || document.documentElement).appendChild(elemDOMPurify);
-    (document.head || document.documentElement).appendChild(elem);
-  } catch (ex) {
+    (document.head || document.documentElement).appendChild(scriptElem);
+  } catch (err) {
     // eslint-disable-next-line no-console
-    console.log(ex);
+    console.warn(err);
   }
 };
-injectWrappers();
+
+const addCaptureEventScripts = function (toContentScriptEventName) {
+  // Inject main script and script on which it depends
+  injectScript({ src: 'purify.min.js' });
+  injectScript({
+    src: 'adblock-yt-capture-events.js',
+    name: 'capture-events',
+    params: {
+      toContentScriptEventName,
+    },
+  });
+};
+
+const startScript = function () {
+  const toContentScriptRandomEventName = `ab-yt-event-${Math.random().toString(36).substring(2)}`;
+
+  addBackgroundEventListeners();
+  addUIEventListers(toContentScriptRandomEventName);
+  addCaptureEventScripts(toContentScriptRandomEventName);
+};
+
+startScript();

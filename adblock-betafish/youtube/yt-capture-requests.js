@@ -152,7 +152,7 @@ const captureRequests = function ({ toContentScriptEventName, fromContentScriptE
 
 const initWithParams = function () {
   try {
-    const { params } = document.currentScript.dataset;
+    const { params } = document.querySelector('script[data-name="capture-requests"]').dataset;
     captureRequests(JSON.parse(params));
   } catch (err) {
     /* eslint-disable-next-line no-console */

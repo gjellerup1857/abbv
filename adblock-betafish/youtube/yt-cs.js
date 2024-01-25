@@ -80,10 +80,12 @@ const onMessage = function (request, sender, sendResponse) {
   }
 };
 
-const injectScriptIntoTabJS = ({ src, params = {} }) => {
+const injectScriptIntoTabJS = ({ src, name = '', params = {} }) => {
   const scriptElem = document.createElement('script');
-  scriptElem.dataset.params = JSON.stringify(params);
+  scriptElem.type = 'module';
   scriptElem.src = browser.runtime.getURL(src);
+  scriptElem.dataset.params = JSON.stringify(params);
+  scriptElem.dataset.name = name;
 
   try {
     (document.head || document.documentElement).appendChild(scriptElem);
@@ -98,6 +100,7 @@ const runOnYT = function () {
   injectScriptIntoTabJS({ src: 'purify.min.js' });
   injectScriptIntoTabJS({
     src: 'adblock-yt-capture-requests.js',
+    name: 'capture-requests',
     params: {
       toContentScriptEventName,
       fromContentScriptEventName,

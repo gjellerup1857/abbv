@@ -186,6 +186,10 @@ export default {
         src: 'adblock-betafish/youtube/yt-capture-requests.js',
       },
       {
+        dest: 'adblock-yt-capture-events.js',
+        src: 'adblock-betafish/youtube/yt-capture-events.js',
+      },
+      {
         dest: 'adblock-yt-manage-cs.js',
         src: 'adblock-betafish/youtube/yt-manage-cs.js',
       },

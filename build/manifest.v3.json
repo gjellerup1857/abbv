@@ -67,6 +67,10 @@
     {
       "resources": ["adblock-yt-capture-requests.js"],
       "matches": ["*://*.youtube.com/*"]
+    },
+    {
+      "resources": ["adblock-yt-capture-events.js"],
+      "matches": ["*://*.youtube.com/*"]
     }
   ]
 }
