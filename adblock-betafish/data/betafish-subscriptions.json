@@ -354,5 +354,25 @@
     "id": "361001BD-8F57-4736-97B1-F332C3D79E5D",
     "adblockId": "japanese",
     "index": 58
+  },
+  "https://easylist-downloads.adblockplus.org/v3/full/hufilter+easylist.txt": {
+    "id": "88D3F7EA-D99E-43C6-92E0-D89C8A0E7EA9",
+    "adblockId": "easylist_plus_hungarian",
+    "index": 59
+  },
+  "https://easylist-downloads.adblockplus.org/hufilter+easylist.txt": {
+    "id": "88D3F7EA-D99E-43C6-92E0-D89C8A0E7EA9",
+    "adblockId": "easylist_plus_hungarian",
+    "index": 59
+  },
+  "https://easylist-downloads.adblockplus.org/v3/full/global-filters+easylist.txt": {
+    "id": "EF6F4884-47DB-46A5-AAF8-8EB819D8D4D8",
+    "adblockId": "easylist_plus_global",
+    "index": 60
+  },
+  "https://easylist-downloads.adblockplus.org/global-filters+easylist.txt": {
+    "id": "EF6F4884-47DB-46A5-AAF8-8EB819D8D4D8",
+    "adblockId": "easylist_plus_global",
+    "index": 60
   }
 }

@@ -571,6 +571,14 @@
     "message": "Nordic Filters + EasyList",
     "description": "A filter list combined with EasyList"
   },
+  "filtereasylist_plus_global": {
+    "message": "Global + EasyList",
+    "description": "A filter list combined with EasyList"
+  },
+  "filtereasylist_plus_hungarian": {
+    "message": "Hungarian + EasyList",
+    "description": "A filter list combined with EasyList"
+  },
   "blacklistclickmessage": {
     "message": "Right click an ad on a page to block it -- or block it here manually.",
     "description": "'Hide a section of a webpage' part on the Customize tab of the Options page."
