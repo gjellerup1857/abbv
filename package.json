@@ -78,7 +78,7 @@
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5bd69a3785054db3c2a444fe4f7f555f35b5c162",
     "@eyeo/mlaf": "0.3.3",
     "@eyeo/snippets": "0.10.0",
-    "@eyeo/webext-ad-filtering-solution": "1.2.2",
+    "@eyeo/webext-ad-filtering-solution": "1.2.3",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
