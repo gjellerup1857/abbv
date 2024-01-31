@@ -17,7 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global parseUri, settings:true, abpPrefPropertyNames, settingsNotifier, SubscriptionAdapter,
-   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License, info,
+   Prefs, updateAcceptableAdsUI, activateTab, MABPayment, License,
    updateAcceptableAdsUIFN, initializeProxies, prefsNotifier,
    SubscriptionsProxy, DataCollectionV2, send */
 
@@ -247,15 +247,10 @@ function addUIChangeListeners() {
   });
 }
 
-const addBrowserClass = function () {
-  document.documentElement.classList.add(`application-${info.application}`);
-};
-
 $(async () => {
   await initializeProxies();
   initialize();
   showSeparators();
-  addBrowserClass();
   addUIChangeListeners();
 
   if (!License || $.isEmptyObject(License) || !MABPayment) {

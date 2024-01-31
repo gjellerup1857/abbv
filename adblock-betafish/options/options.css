@@ -226,21 +226,6 @@ a .link-text-color:hover {
   display: flex;
 }
 
-.application-chrome .application-specific-firefox,
-.application-edg .application-specific-firefox,
-.application-opera .application-specific-firefox,
-.application-firefox .application-specific-chrome,
-.application-edg .application-specific-chrome,
-.application-opera .application-specific-chrome,
-.application-firefox .application-specific-edg,
-.application-chrome .application-specific-edg,
-.application-opera .application-specific-edg,
-.application-firefox .application-specific-opera,
-.application-chrome .application-specific-opera,
-.application-chrome .application-specific-opera {
-  display: none;
-}
-
 /* BUTTONS */
 
 button {
