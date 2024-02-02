@@ -169,6 +169,7 @@ const initialize = async function init() {
         send('addYTChannelListeners');
       } else {
         window.setTimeout(() => {
+          // toggle sub-setting as well
           settings.youtube_manage_subscribed = isEnabled;
           $('#youtube_manage_subscribed_link').removeClass('link-text-color');
           $('#youtube_manage_subscribed_link').removeClass('pointer');
@@ -182,9 +183,10 @@ const initialize = async function init() {
     // also, wait a moment to allow the current 'set' to save,
     // then enable YouTube Channel allowlisting
     if (name === 'youtube_manage_subscribed') {
-      if (isEnabled && !settings.youtube_channel_whitelist) {
+      if (isEnabled) {
         window.setTimeout(() => {
-          settings.youtube_manage_subscribed = isEnabled;
+          // toggle parent setting as well
+          settings.youtube_channel_whitelist = isEnabled;
           send('addYTChannelListeners');
         }, 250);
       }
