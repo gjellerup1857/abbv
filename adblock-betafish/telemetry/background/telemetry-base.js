@@ -162,6 +162,8 @@ class TelemetryBase {
       popfc: await getPopupAllowlistingFilterCount(),
       wafc: await getWebAllowlistingFilterCount(),
       wizardfc: await getWizardFilterCount(),
+      filterMigrationErrorCount: (await ewe.filters.getMigrationErrors()).length,
+      subscriptionMigrationErrorCount: (await ewe.subscriptions.getMigrationErrors()).length,
     };
 
     // only on Chrome, Edge, or Firefox
