@@ -20,6 +20,7 @@
 
 
 import { Prefs } from 'prefs';
+import * as info from 'info';
 import { TELEMETRY } from '../../telemetry/background';
 
 /**
@@ -51,12 +52,17 @@ function openPage(path, queryParams) {
 /**
  * Opens the '/installed' page in a new tab.
  */
-function openInstalledPage() {
-  TELEMETRY.untilLoaded((userID) => {
-    openPage(pagePath.installed, {
-      u: userID,
-      lg: browser.i18n.getUILanguage(),
-    });
+async function openInstalledPage() {
+  const userID = await TELEMETRY.untilLoaded();
+  openPage(pagePath.installed, {
+    u: userID,
+    lg: browser.i18n.getUILanguage(),
+    an: info.addonName,
+    av: info.addonVersion,
+    ap: info.application,
+    apv: info.applicationVersion,
+    p: info.platform,
+    pv: info.platformVersion,
   });
 }
 

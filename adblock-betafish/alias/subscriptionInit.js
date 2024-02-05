@@ -26,7 +26,6 @@ import * as info from 'info';
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
-import { getUserId } from '../id/background/index';
 import { setReadyState, ReadyState } from "../../adblock-betafish/testing/ready-state/background/index.ts";
 
 let firstRun;
@@ -106,25 +105,6 @@ function removeSubscriptions() {
 }
 
 
-async function openInstalled() {
-  const userID = await getUserId();
-
-  const installPageUrl = new URL("https://getadblock.com/installed");
-  installPageUrl.searchParams.set("u", userID);
-  installPageUrl.searchParams.set("lg", browser.i18n.getUILanguage());
-  installPageUrl.searchParams.set("dc", dataCorrupted);
-  installPageUrl.searchParams.set("an", info.addonName);
-  installPageUrl.searchParams.set("av", info.addonVersion);
-  installPageUrl.searchParams.set("ap", info.application);
-  installPageUrl.searchParams.set("apv", info.applicationVersion);
-  installPageUrl.searchParams.set("p", info.platform);
-  installPageUrl.searchParams.set("pv", info.platformVersion);
-  browser.tabs.create({
-    url: installPageUrl.href
-  });
-}
-
-
 async function addSubscriptions() {
   if (firstRun || reinitialized) {
     try {
@@ -162,11 +142,6 @@ async function addSubscriptions() {
         console.error(`Failed to remove AA subscription`);
       }
     }
-  }
-
-  // Show first run page.
-  if (firstRun && !Prefs.suppress_first_run_page) {
-    openInstalled();
   }
 }
 
