@@ -3577,10 +3577,6 @@
     "message": "Dölj de flesta notifikationer om cookies på populära webbplatser. ",
     "description": "Line / row 2 on the Premium CTA on the Filters list tab"
   },
-  "take_control": {
-    "message": "Ta kontroll över din webbläsare och surfa precis som du vill!",
-    "description": "Description of the distraction control option"
-  },
   "premium_filters_maintained": {
     "message": "Listor över premiumfilter underhålls av vårt team och erbjuder exklusiva förmåner utöver våra standardfilter.",
     "description": "Description of the Premium filter lists"
