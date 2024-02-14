@@ -43,15 +43,10 @@ import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
 import { createFilterMetaData } from '../utilities/background/bg-functions';
 import { getReadyState } from '../testing/ready-state/background/index.ts';
 
-const processMessageResponse = (sendResponse, responseData) => {
+export const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
   return Promise.resolve(responseData);
 };
-
-// eslint-disable-next-line no-restricted-globals
-Object.assign(self, {
-  processMessageResponse,
-});
 
 const uiPorts = new Map();
 const messageTypes = new Map([

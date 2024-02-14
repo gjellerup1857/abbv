@@ -17,13 +17,14 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, isTrustedSender, isTrustedSenderDomain, openTab,
-   processMessageResponse */
+ */
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
 import { License, replacedCounts, channels } from '../picreplacement/check';
 import { channelsNotifier } from '../picreplacement/channels';
 import SyncService from '../picreplacement/sync-service';
+import { processMessageResponse } from './message-responder';
 
 /**
  * Process events related to the Premium object - License, Channels, and Sync-Service
@@ -117,6 +118,12 @@ const injectScript = async function (scriptFileName, tabId, frameId) {
   }
 };
 
+/**
+ * Return an a clone of some the methods of the License object
+ * to be used as a proxy on the Options page
+ *
+ * @returns a clone of the License object
+ */
 function getPremiumAssociatedObject() {
   return {
     getFormattedActiveSinceDate: License.getFormattedActiveSinceDate(),
@@ -133,261 +140,375 @@ function getPremiumAssociatedObject() {
 }
 
 /**
- * Process complex messages related to the 'License' object
+ * Return a boolean to indicate the License state
  *
+ * @returns a Promise containing a boolean to indicate License state
  */
-License.ready().then(() => {
-  browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === 'load_my_adblock') {
+const processIsActiveLicense = function (sendResponse) {
+  sendResponse({});
+  return new Promise(async (resolve) => {
+    await License.ready();
+    resolve(License.isActiveLicense());
+  });
+};
+
+/**
+ * Return a Promise containing a clone of some the methods and data of the License object
+ *
+ * @returns a Promise containing a clone of some the methods and data of the License object
+ */
+const processLicenseConfig = function (sendResponse) {
+  sendResponse({});
+  return new Promise(async (resolve) => {
+    try {
+      await License.ready();
+      const response = getPremiumAssociatedObject();
+      Object.assign(response, License.get());
+      resolve(response);
+    } catch (e) {
+      /* eslint-disable-next-line no-console */
+      console.error('error occurred during getLicenseConfig message handling');
+      /* eslint-disable-next-line no-console */
+      console.error(e);
+    }
+  });
+};
+
+/**
+ * Process the 'load_my_adblock' messages when the user is subscribed to
+ * the Distraction Control filter list
+ */
+function processLoadMyAdblockMessages(request, sender, sendResponse) {
+  if (request.message === 'load_my_adblock') {
+    License.ready().then(async () => {
       if (
         License.isActiveLicense()
         && sender.url
         && sender.url.startsWith('http')
-        && ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
-        && ewe.filters.getAllowingFilters(sender.tab.id).length === 0
+        && (await ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
+          || await ewe.subscriptions.has('https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt'))
+        && !(await ewe.filters.getAllowingFilters(sender.tab.id)).length
       ) {
         void injectScript('adblock-picreplacement-push-notification-wrapper-cs.js', sender.tab.id, sender.frameId);
       }
       sendResponse({});
-    }
-  });
+    });
+  }
+}
 
-  /**
-   * Process general messages related to the 'License' object,
-   * which require sender validation. (These may come from extension pages,
-   * where the sender URL starts with the extension URL)
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!isTrustedSender(sender)) {
-      return;
-    }
-    const { command } = message;
-    switch (command) {
-      case 'getLicenseConfig': {
-        const response = getPremiumAssociatedObject();
-        Object.assign(response, License.get());
-        sendResponse(response);
+/**
+ * Process general messages related to the 'License' object,
+ * which require sender validation. (These may come from extension pages,
+ * where the sender URL starts with the extension URL)
+ *
+ */
+/* eslint-disable consistent-return */
+function processTrustedMessages(message, sender, sendResponse) {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'getLicenseConfig':
+      return processLicenseConfig(sendResponse);
+    case 'cleanUpSevenDayAlarm':
+      License.ready().then(() => {
+        License.cleanUpSevenDayAlarm();
+      });
+      sendResponse({});
+      break;
+    case 'updatePeriodically':
+      License.ready().then(() => {
+        License.updatePeriodically();
+      });
+      sendResponse({});
+      break;
+    default:
+  }
+}
+
+/**
+ * Process messages related to the 'License' object
+ * which require domain validation
+ * the messages come from content scripts on the getadblock.com domain
+ *
+ */
+/* eslint-disable consistent-return */
+function processGeneralMessages(message, sender, sendResponse) {
+  if (!isTrustedSenderDomain(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'payment_success':
+      License.ready().then(() => {
+        try {
+          License.activate();
+          sendResponse({ ack: true });
+        } catch (e) {
+          /* eslint-disable-next-line no-console */
+          console.error('error occurred during payment_success message handling');
+          /* eslint-disable-next-line no-console */
+          console.error(e);
+          sendResponse({ ack: false });
+        }
+      });
+      return true;
+    case 'isActiveLicense':
+      return processIsActiveLicense(sendResponse);
+    default:
+  }
+}
+
+/**
+ * Process the 'safe' messages related to the 'License' object
+ * which do not require sender validation (they typically come from content scripts)
+ *
+ */
+/* eslint-disable consistent-return */
+function processCSMessages(message, sender, sendResponse) {
+  const { command } = message;
+  switch (command) {
+    case 'openPremiumPayURL':
+      License.ready().then(() => {
+        openTab(License.MAB_CONFIG.payURL);
+      });
+      sendResponse({});
+      break;
+    case 'setBlacklistCTAStatus':
+      License.ready().then(() => {
+        License.shouldShowBlacklistCTA(message.isEnabled);
+      });
+      sendResponse({});
+      break;
+    case 'setWhitelistCTAStatus':
+      License.ready().then(() => {
+        License.shouldShowWhitelistCTA(message.isEnabled);
+      });
+      sendResponse({});
+      break;
+    default:
+  }
+}
+
+/**
+ * Process the messages related to Channels object
+ *
+ */
+/* eslint-disable consistent-return */
+function processChannelsMessages(message, sender, sendResponse) {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'channels.getGuide':
+      return processMessageResponse(sendResponse, channels.getGuide());
+    case 'channels.isAnyEnabled':
+      return processMessageResponse(sendResponse, channels.isAnyEnabled());
+    case 'channels.isCustomChannelEnabled':
+      return processMessageResponse(sendResponse, channels.isCustomChannelEnabled());
+    case 'channels.initializeListeners':
+      return processMessageResponse(sendResponse, channels.initializeListeners());
+    case 'channels.setEnabled':
+      return processMessageResponse(sendResponse,
+        channels.setEnabled(message.channelId, message.enabled));
+    case 'channels.getIdByName':
+      return processMessageResponse(sendResponse, channels.getIdByName(message.name));
+    case 'channels.disableAllChannels':
+      return processMessageResponse(sendResponse, channels.disableAllChannels());
+    default:
+  }
+}
+
+/**
+ * Return a Promise containing an object
+ * - to indicate that Image Swap is disable on the page
+ * - the Image Swap meta data
+ *
+ * @returns a Promise containing a boolean to indicate License state
+ */
+const processGetRandomlisting = function (message, sender) {
+  return new Promise(async (resolve) => {
+    try {
+      if ((await ewe.filters.getAllowingFilters(sender.tab.id)).length) {
+        resolve({ disabledOnPage: true });
         return;
       }
-      case 'cleanUpSevenDayAlarm':
-        License.cleanUpSevenDayAlarm();
-        sendResponse({});
-        break;
-      case 'updatePeriodically':
-        License.updatePeriodically();
-        sendResponse({});
-        break;
-      case 'shouldShowMyAdBlockEnrollment':
-        return processMessageResponse(sendResponse, License.shouldShowMyAdBlockEnrollment());
-      default:
-    }
-  });
-
-  /**
-   * Process general messages related to the 'License' object
-   * which require domain validation (the messages come from injected content scripts / files)
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!isTrustedSenderDomain(sender)) {
-      return;
-    }
-    const { command } = message;
-    switch (command) {
-      case 'openPremiumPayURL':
-        openTab(License.MAB_CONFIG.payURL);
-        sendResponse({});
-        break;
-      case 'payment_success':
-        License.activate();
-        sendResponse({ ack: true });
-        break;
-      case 'isActiveLicense':
-        return processMessageResponse(sendResponse, License.isActiveLicense());
-      default:
-    }
-  });
-
-  /**
-   * Process the message related to getting the 'License' object
-   * which do not require sender validation (or come from injected files)
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    const { command } = message;
-    switch (command) {
-      case 'setBlacklistCTAStatus':
-        License.shouldShowBlacklistCTA(message.isEnabled);
-        sendResponse({});
-        break;
-      case 'setWhitelistCTAStatus':
-        License.shouldShowWhitelistCTA(message.isEnabled);
-        sendResponse({});
-        break;
-      default:
-    }
-  });
-
-  /**
-   * Process the messages related to Channels object
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!isTrustedSender(sender)) {
-      return;
-    }
-    const { command } = message;
-    switch (command) {
-      case 'channels.getGuide':
-        return processMessageResponse(sendResponse, channels.getGuide());
-      case 'channels.isAnyEnabled':
-        return processMessageResponse(sendResponse, channels.isAnyEnabled());
-      case 'channels.isCustomChannelEnabled':
-        return processMessageResponse(sendResponse, channels.isCustomChannelEnabled());
-      case 'channels.initializeListeners':
-        return processMessageResponse(sendResponse, channels.initializeListeners());
-      case 'channels.setEnabled':
-        return processMessageResponse(sendResponse,
-          channels.setEnabled(message.channelId, message.enabled));
-      case 'channels.getIdByName':
-        return processMessageResponse(sendResponse, channels.getIdByName(message.name));
-      case 'channels.disableAllChannels':
-        return processMessageResponse(sendResponse, channels.disableAllChannels());
-      default:
-    }
-  });
-
-  /**
-   * Process the `getrandomlisting` &
-   * 'channels.recordOneAdReplaced' message from the Image Swap content script
-   *
-   */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.command === 'channels.getrandomlisting') {
-      if (!!ewe.filters.getAllowingFilters(sender.tab.id).length || !License.isActiveLicense()) {
-        sendResponse({ disabledOnPage: true });
+      await License.ready();
+      if (!License.isActiveLicense()) {
+        resolve({ disabledOnPage: true });
         return;
       }
       const result = channels.randomListing(message.opts);
       if (result) {
-        sendResponse(result);
+        resolve(result);
         return;
       }
-      sendResponse({ disabledOnPage: true });
-    } else if (message.command === 'channels.recordOneAdReplaced') {
-      sendResponse({});
+      resolve({ disabledOnPage: true });
+    } catch (e) {
+      /* eslint-disable-next-line no-console */
+      console.error('error occurred during getrandomlisting message handling');
+      /* eslint-disable-next-line no-console */
+      console.error(e);
+      resolve({ disabledOnPage: true });
+    }
+  });
+};
+
+
+/**
+ * Process the `getrandomlisting` &
+ * 'channels.recordOneAdReplaced' message from the Image Swap content script
+ *
+ */
+function processImageMessages(message, sender, sendResponse) {
+  if (message.command === 'channels.getrandomlisting') {
+    return processGetRandomlisting(message, sender);
+  }
+  if (message.command === 'channels.recordOneAdReplaced') {
+    License.ready().then(() => {
       if (License.isActiveLicense()) {
         replacedCounts.recordOneAdReplaced(sender.tab.id);
       }
+    });
+    sendResponse({});
+  }
+}
+
+/**
+ * Process the messages related to Custom channel object
+ *
+ */
+/* eslint-disable consistent-return */
+function processCustomChannelMessages(message, sender, sendResponse) {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'customchannel.isMaximumAllowedImages': {
+      const customChannelId = channels.getIdByName('CustomChannel');
+      const customChannel = channels.channelGuide[customChannelId].channel;
+      return processMessageResponse(sendResponse, customChannel.isMaximumAllowedImages());
     }
+    case 'customchannel.getListings': {
+      const customChannelId = channels.getIdByName('CustomChannel');
+      const customChannel = channels.channelGuide[customChannelId].channel;
+      return processMessageResponse(sendResponse, customChannel.getListings());
+    }
+    case 'customchannel.addCustomImage': {
+      const customChannelId = channels.getIdByName('CustomChannel');
+      const customChannel = channels.channelGuide[customChannelId].channel;
+      return processMessageResponse(sendResponse,
+        customChannel.addCustomImage(message.imageInfo));
+    }
+    case 'customchannel.removeListingByURL': {
+      const customChannelId = channels.getIdByName('CustomChannel');
+      const customChannel = channels.channelGuide[customChannelId].channel;
+      return processMessageResponse(sendResponse,
+        customChannel.removeListingByURL(message.url));
+    }
+    default:
+  }
+}
+
+/**
+ * Process the messages related to Sync Service object
+ *
+ */
+/* eslint-disable consistent-return */
+function processSyncServiceMessages(message, sender, sendResponse) {
+  if (!isTrustedSender(sender)) {
+    return;
+  }
+  const { command } = message;
+  switch (command) {
+    case 'resetLastGetStatusCode':
+      SyncService.resetLastGetStatusCode();
+      sendResponse({});
+      break;
+    case 'resetLastGetErrorResponse':
+      SyncService.resetLastGetErrorResponse();
+      sendResponse({});
+      break;
+    case 'resetLastPostStatusCode':
+      SyncService.resetLastPostStatusCode();
+      sendResponse({});
+      break;
+    case 'resetAllSyncErrors':
+      SyncService.resetAllSyncErrors();
+      sendResponse({});
+      break;
+    case 'SyncService.enableSync':
+      SyncService.enableSync(message.initialGet);
+      sendResponse({});
+      break;
+    case 'SyncService.disableSync':
+      SyncService.disableSync(message.removeName);
+      sendResponse({});
+      break;
+    case 'SyncService.getLastPostStatusCode':
+      return processMessageResponse(sendResponse, SyncService.getLastPostStatusCode());
+    case 'SyncService.getLastGetStatusCode':
+      return processMessageResponse(sendResponse, SyncService.getLastGetStatusCode());
+    case 'SyncService.getAllExtensionNames':
+      return processMessageResponse(sendResponse, SyncService.getAllExtensionNames());
+    case 'SyncService.getCurrentExtensionName':
+      return processMessageResponse(sendResponse, SyncService.getCurrentExtensionName());
+    case 'SyncService.processUserSyncRequest':
+      SyncService.processUserSyncRequest();
+      sendResponse({});
+      break;
+    case 'SyncService.removeExtensionName':
+      SyncService.removeExtensionName(message.dataDeviceName, message.dataExtensionGUID);
+      sendResponse({});
+      break;
+    case 'SyncService.setCurrentExtensionName':
+      SyncService.setCurrentExtensionName(message.name);
+      sendResponse({});
+      break;
+    default:
+  }
+}
+
+/**
+ * Add all of the onMessage handlers
+ */
+function addOnMessageListeners() {
+  browser.runtime.onMessage.addListener(processLoadMyAdblockMessages);
+  browser.runtime.onMessage.addListener(processTrustedMessages);
+  browser.runtime.onMessage.addListener(processGeneralMessages);
+  browser.runtime.onMessage.addListener(processCSMessages);
+  browser.runtime.onMessage.addListener(processChannelsMessages);
+  browser.runtime.onMessage.addListener(processImageMessages);
+  browser.runtime.onMessage.addListener(processCustomChannelMessages);
+  browser.runtime.onMessage.addListener(processSyncServiceMessages);
+}
+
+/**
+ * Add the listener related to the Channels notifier
+ */
+function addChannelsNotifierListeners() {
+  channelsNotifier.on('channels.changed', getListener('channels', 'changed'));
+}
+
+/**
+ * Add the listener related to the License notifier
+ */
+function addLicenseNotifierListeners() {
+  License.ready().then(() => {
+    License.licenseNotifier.on('license.updating', getListener('license', 'updating'));
+    License.licenseNotifier.on('license.updated', getListener('license', 'updated'));
+    License.licenseNotifier.on('license.updated.error', getListener('license', 'updated.error'));
+    License.licenseNotifier.on('license.expired', getListener('license', 'expired'));
   });
+}
 
-  /**
-   * Process the messages related to Custom channel object
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!isTrustedSender(sender)) {
-      return;
-    }
-    const { command } = message;
-    switch (command) {
-      case 'customchannel.isMaximumAllowedImages': {
-        const customChannelId = channels.getIdByName('CustomChannel');
-        const customChannel = channels.channelGuide[customChannelId].channel;
-        return processMessageResponse(sendResponse, customChannel.isMaximumAllowedImages());
-      }
-      case 'customchannel.getListings': {
-        const customChannelId = channels.getIdByName('CustomChannel');
-        const customChannel = channels.channelGuide[customChannelId].channel;
-        return processMessageResponse(sendResponse, customChannel.getListings());
-      }
-      case 'customchannel.addCustomImage': {
-        const customChannelId = channels.getIdByName('CustomChannel');
-        const customChannel = channels.channelGuide[customChannelId].channel;
-        return processMessageResponse(sendResponse,
-          customChannel.addCustomImage(message.imageInfo));
-      }
-      case 'customchannel.removeListingByURL': {
-        const customChannelId = channels.getIdByName('CustomChannel');
-        const customChannel = channels.channelGuide[customChannelId].channel;
-        return processMessageResponse(sendResponse,
-          customChannel.removeListingByURL(message.url));
-      }
-      default:
-    }
-  });
-
-  /**
-   * Process the messages related to Sync Service object
-   *
-   */
-  /* eslint-disable consistent-return */
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!isTrustedSender(sender)) {
-      return;
-    }
-    const { command } = message;
-    switch (command) {
-      case 'resetLastGetStatusCode':
-        SyncService.resetLastGetStatusCode();
-        sendResponse({});
-        break;
-      case 'resetLastGetErrorResponse':
-        SyncService.resetLastGetErrorResponse();
-        sendResponse({});
-        break;
-      case 'resetLastPostStatusCode':
-        SyncService.resetLastPostStatusCode();
-        sendResponse({});
-        break;
-      case 'resetAllSyncErrors':
-        SyncService.resetAllSyncErrors();
-        sendResponse({});
-        break;
-      case 'SyncService.enableSync':
-        SyncService.enableSync(message.initialGet);
-        sendResponse({});
-        break;
-      case 'SyncService.disableSync':
-        SyncService.disableSync(message.removeName);
-        sendResponse({});
-        break;
-      case 'SyncService.getLastPostStatusCode':
-        return processMessageResponse(sendResponse, SyncService.getLastPostStatusCode());
-      case 'SyncService.getLastGetStatusCode':
-        return processMessageResponse(sendResponse, SyncService.getLastGetStatusCode());
-      case 'SyncService.getAllExtensionNames':
-        return processMessageResponse(sendResponse, SyncService.getAllExtensionNames());
-      case 'SyncService.getCurrentExtensionName':
-        return processMessageResponse(sendResponse, SyncService.getCurrentExtensionName());
-      case 'SyncService.processUserSyncRequest':
-        SyncService.processUserSyncRequest();
-        sendResponse({});
-        break;
-      case 'SyncService.removeExtensionName':
-        SyncService.removeExtensionName(message.dataDeviceName, message.dataExtensionGUID);
-        sendResponse({});
-        break;
-      case 'SyncService.setCurrentExtensionName':
-        SyncService.setCurrentExtensionName(message.name);
-        sendResponse({});
-        break;
-      default:
-    }
-  });
-
-  License.licenseNotifier.on('license.updating', getListener('license', 'updating'));
-  License.licenseNotifier.on('license.updated', getListener('license', 'updated'));
-  License.licenseNotifier.on('license.updated.error', getListener('license', 'updated.error'));
-  License.licenseNotifier.on('license.expired', getListener('license', 'expired'));
-
+/**
+ * Add the listener related to the Sync Service notifier
+ */
+function addSyncNotifierListeners() {
   SyncService.syncNotifier.on('sync.data.receieved', getListener('sync', 'sync.data.receieved'));
   SyncService.syncNotifier.on('sync.data.getting', getListener('sync', 'sync.data.getting'));
   SyncService.syncNotifier.on('sync.data.error.initial.fail', getListener('sync', 'sync.data.error.initial.fail'));
@@ -404,6 +525,14 @@ License.ready().then(() => {
   SyncService.syncNotifier.on('post.data.sending', getListener('sync', 'post.data.sending'));
   SyncService.syncNotifier.on('post.data.sent', getListener('sync', 'post.data.sent'));
   SyncService.syncNotifier.on('post.data.sent.error', getListener('sync', 'post.data.sent.error'));
+}
 
-  channelsNotifier.on('channels.changed', getListener('channels', 'changed'));
-});
+
+function start() {
+  addOnMessageListeners();
+  addChannelsNotifierListeners();
+  addLicenseNotifierListeners();
+  addSyncNotifierListeners();
+}
+
+start();
