@@ -273,19 +273,15 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({});
         break;
       case 'getIdFromURL':
-        sendResponse({});
         return processMessageResponse(sendResponse,
           SubscriptionAdapter.getIdFromURL(message.url));
       case 'isLanguageSpecific':
-        sendResponse({});
         return processMessageResponse(sendResponse,
           SubscriptionAdapter.isLanguageSpecific(message.adblockId));
       case 'getSubscriptionsMinusText':
-        sendResponse({});
         return processMessageResponse(sendResponse,
           SubscriptionAdapter.getSubscriptionsMinusText());
       case 'getAllSubscriptionsMinusText':
-        sendResponse({});
         return processMessageResponse(sendResponse,
           SubscriptionAdapter.getAllSubscriptionsMinusText());
       case 'recordGeneralMessage':
