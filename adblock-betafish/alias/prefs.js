@@ -184,11 +184,24 @@ defaults.ipm_commands = {};
 defaults[commandStats] = {};
 
 /**
- * Trusted origin for URLs used in IPMs
+ * Default trusted origin for URLs used in IPMs. This is the base URL used when
+ * a relative URL is passed.
  *
  * @type {string}
  */
-defaults.ipm_safe_origin = "https://getadblock.com";
+defaults.ipm_default_origin = "https://getadblock.com";
+
+/**
+ * Trusted origins for URLs used in IPMs
+ *
+ * @type {string}
+ */
+defaults.ipm_safe_origins = [
+  defaults.ipm_default_origin,
+  "https://blog.getadblock.com",
+  "https://helpcenter.getadblock.com",
+  "https://vpn.getadblock.com"
+];
 
 /**
  * Minimum log level
