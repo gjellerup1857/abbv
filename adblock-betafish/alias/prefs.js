@@ -279,6 +279,15 @@ export let Prefs = {
    * @return {any}
    */
   get(preference) {
+
+    // We need to temporarily force-disable data collection in Firefox, while
+    // we're working on improving our data collection opt-out mechanism based
+    // on Mozilla's requirements
+    // https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/574
+    if (preference === "data_collection_opt_out" &&
+      info.application === "firefox")
+      return true;
+
     let result = (preference in overrides ? overrides : defaults)[preference];
 
     // Object preferences are mutable, so we need to clone them to avoid
