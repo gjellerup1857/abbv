@@ -29,7 +29,7 @@ async function cleanCustomFilter(filtersArg) {
   if (isPaused) {
     const pausedFilterText = await send('getPausedFilterText');
     filters = filters.filter(element => !(element.text === pausedFilterText.pausedFilterText1
-               || element.text === pausedFilterText.pausedFilterText2));
+      || element.text === pausedFilterText.pausedFilterText2));
   }
   // Remove the domain pause white-list items
   const domainPauses = await send('adblockIsDomainPaused');
@@ -140,7 +140,7 @@ $(async () => {
     // Taken from ABP's Filter.contentRegExp property.
     // Match groups are domains, separator, body
     const contentRegExp = /^([^/|@"!]*?)#([@?$])?#(.+)$/;
-    const [,,, query] = contentRegExp.exec(selectorFilter);
+    const [, , , query] = contentRegExp.exec(selectorFilter);
 
     // Validate query. QS will throw if query is invalid.
     try {
@@ -172,11 +172,6 @@ $(async () => {
     FiltersProxy.onAdded.removeListener(onFilterChange);
     FiltersProxy.onChanged.removeListener(onFilterChange);
     FiltersProxy.onRemoved.removeListener(onFilterChange);
-    const isPaused = await send('adblockIsPaused');
-    if (isPaused) {
-      customFiltersArray.push('@@');
-      customFiltersArray.push('@@^$document');
-    }
     // remove duplicates
     /* eslint-disable-next-line max-len  */
     const uniqCustomFilters = customFiltersArray.filter((item, inx) => customFiltersArray.indexOf(item) === inx);
