@@ -15,6 +15,12 @@
 
 default:
   image: node:18.17.1
+  cache:  # Cache modules using lock file
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
 
 stages:
   - lint
@@ -29,7 +35,7 @@ stages:
 lint:
   stage: lint
   before_script:
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
   script:
     - npm run lint
     - npm run prettier
@@ -43,7 +49,7 @@ build:
   stage: build
   before_script:
     - apt-get install git
-    - npm ci
+    - npm ci --cache .npm --prefer-offline
   script:
     # Create extension builds
     - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
