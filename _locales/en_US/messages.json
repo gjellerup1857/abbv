@@ -1585,6 +1585,22 @@
     "message": "Custom Filter Lists",
     "description": "Subtitle on the Filter lists tab: Section for adding your own filter lists."
   },
+  "mv3_custom_filters_note": {
+    "message": "**Note:**",
+    "description": "Note text on the Filter lists tab. For MV3 extensions only"
+  },
+  "mv3_custom_filters_temporarily": {
+    "message": "Custom filter list subscriptions are temporarily unavailable due to the migration to Manifest V3.",
+    "description": "First sentence of the the informational text on the Filter lists tab. For MV3 extensions only"
+  },
+  "mv3_custom_filters_reinstating": {
+    "message": "We’re working on bringing this feature back and reinstating your previous custom filter list data.",
+    "description": "Second sentence of the the informational text on the Filter lists tab. For MV3 extensions only"
+  },
+  "mv3_custom_filters_learn_more": {
+    "message": "Learn more (English only)",
+    "description": "Learn Mode link text on the Filter lists tab. For MV3 extensions only"
+  },
   "customfilterserrormessage": {
     "message": "The following filter:\n $filter$ \n has an error: \n $message$",
     "description": "Error message when there is an issue with a custom filter on the 'Customize' tab of the Options page",
