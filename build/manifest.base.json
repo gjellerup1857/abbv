@@ -77,6 +77,20 @@
         "*://*.youtube.com/*"
       ],
       "run_at": "document_start"
+    },
+    {
+      "js": [
+        "info-injector.preload.js"
+      ],
+      "matches": [
+        "https://adblockplus.org/*",
+        "https://accounts.adblockplus.org/*",
+        "https://new.adblockplus.org/*",
+        "https://welcome.adblockplus.org/*",
+        "https://getadblock.com/*",
+        "https://vpn.getadblock.com/*"
+      ],
+      "run_at": "document_start"
     }
   ],
   "content_security_policy": "default-src 'self'; img-src 'self' data: blob: https://cdn.adblockcdn.com; style-src 'self' 'unsafe-inline'; connect-src *; frame-src 'self' https://getadblock.com",

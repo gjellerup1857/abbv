@@ -67,6 +67,10 @@ export default {
         dest: 'yt-wall-detection.preload.js',
         src: ['src/yt-wall-detection/content/index.ts'],
       },
+      {
+        dest: 'info-injector.preload.js',
+        src: ['adblock-betafish/info-injector/content/index.ts'],
+      },
     ],
   },
   mapping: {
