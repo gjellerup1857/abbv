@@ -18,4 +18,4 @@
 /**
  * The id of the DOM node that we inject.
  */
-export const nodeId = '__adblock-extension-info';
+export const nodeId = "__adblock-extension-info";

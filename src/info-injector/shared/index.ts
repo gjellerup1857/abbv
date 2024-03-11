@@ -15,4 +15,4 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './info-injector';
+export * from "./info-injector.types";

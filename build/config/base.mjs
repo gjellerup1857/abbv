@@ -69,7 +69,7 @@ export default {
       },
       {
         dest: 'info-injector.preload.js',
-        src: ['adblock-betafish/info-injector/content/index.ts'],
+        src: ['src/info-injector/content/index.ts'],
       },
     ],
   },

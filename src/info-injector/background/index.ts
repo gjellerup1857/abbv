@@ -15,20 +15,4 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as info from 'info';
-import { InjectionInfo } from '../shared';
-import { getUserId } from '../../id/background/index';
-import { License } from '../../picreplacement/check';
-
-/**
- * Collects the info to inject.
- *
- * @returns The info to inject
- */
-export async function getInjectionInfo(): Promise<InjectionInfo> {
-  const isPremium = License.isActiveLicense();
-  const version = info.addonVersion;
-  const id = await getUserId();
-
-  return { isPremium, version, id };
-}
+export * from "./info-injector";

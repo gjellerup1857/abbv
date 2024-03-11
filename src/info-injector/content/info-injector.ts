@@ -15,9 +15,9 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as browser from 'webextension-polyfill';
-import { injectionOrigins, type InjectionInfo, getInfoCommand } from '../shared';
-import { nodeId } from './info-injector.types';
+import * as browser from "webextension-polyfill";
+import { injectionOrigins, type InjectionInfo, getInfoCommand } from "../shared";
+import { nodeId } from "./info-injector.types";
 
 /**
  * Gets a reference to the document of the page to inject the element into.
@@ -44,13 +44,10 @@ async function getInfo(): Promise<InjectionInfo> {
  * @param info The info to add to the element
  * @returns The element containing the info
  */
-function createInfoElement(
-  document: Document,
-  info: InjectionInfo,
-): HTMLDivElement {
-  const element = document.createElement('div');
+function createInfoElement(document: Document, info: InjectionInfo): HTMLDivElement {
+  const element = document.createElement("div");
   element.id = nodeId;
-  element.style.display = 'none';
+  element.style.display = "none";
   element.textContent = JSON.stringify(info);
   return element;
 }
@@ -79,7 +76,7 @@ async function injectInfoElement(): Promise<void> {
   const info = await getInfo();
   const element = createInfoElement(document, info);
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(element);
   });
 }

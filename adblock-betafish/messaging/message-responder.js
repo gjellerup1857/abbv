@@ -42,8 +42,8 @@ import messageValidator from './messagevalidator';
 import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
 import { createFilterMetaData } from '../utilities/background/bg-functions';
 import { getReadyState } from '../testing/ready-state/background/index.ts';
-import { getInfoCommand, injectionOrigins } from '../info-injector/shared';
-import { getInjectionInfo } from '../info-injector/background';
+import { getInfoCommand, injectionOrigins } from '../../src/info-injector/shared';
+import { getInjectionInfo } from '../../src/info-injector/background';
 
 
 export const processMessageResponse = (sendResponse, responseData) => {
