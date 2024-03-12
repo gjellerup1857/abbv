@@ -1,3 +1,10 @@
+Version: 5.20.0, Date: 2024-03-12
+- Disable all telemetry by default for all Firefox users
+- Fixed an issue with the editing of custom rules while AdBlock is paused
+- For MV3 users with custom subscriptions, we added a message on the Filter Lists tab that they are temporarily unavailable
+- Removed duplicated calls to sendResponse
+- Added additional subdomain command parameter for the create OPD command
+
 Version: 5.19.3, Date: 2024-03-06
 - Updated the rules dependency
 
