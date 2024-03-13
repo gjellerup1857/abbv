@@ -33,7 +33,13 @@ import {
   isNewTabBehavior,
   setNewTabCommandHandler,
 } from './middleware';
-import { NewTabEventType, NewTabErrorEventType, NewTabExitEventType } from './tab-manager.types';
+import {
+  NewTabEventType,
+  NewTabErrorEventType,
+  NewTabExitEventType,
+  blockCountQueryParameter,
+} from './tab-manager.types';
+import { Prefs } from '../../alias/prefs';
 
 const tabIds = new Set<number | undefined>();
 
@@ -73,6 +79,29 @@ const openNewtabOnUpdated = (
 };
 
 /**
+ * Adds a query parameter to the given URL that contains the number of
+ * blocked requests, and returns the new URL.
+ *
+ * Will yield `null` if the URL is not well-formed.
+ *
+ * @param urlString A well-formed URL
+ * @returns The URL with an added block count parameter
+ */
+async function addBlockCountToURL(urlString: string): Promise<string | null> {
+  let url;
+  try {
+    url = new URL(urlString);
+  } catch (_) {
+    return null;
+  }
+
+  await Prefs.untilLoaded;
+  const blockCount = Prefs.get('blocked_total');
+  url.searchParams.append(blockCountQueryParameter, blockCount);
+  return url.toString();
+}
+
+/**
  * Opens the new tab to the URL specified on the IPM command
  *
  * @param ipmId - IPM ID
@@ -103,12 +132,21 @@ async function openNewtab(
     dismissCommand(ipmId);
     return;
   }
+
+  const url = await addBlockCountToURL(targetUrl);
+  if (url === null) {
+    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
+    dismissCommand(ipmId);
+    logger.debug('[new-tab]: Invalid URL.');
+    return;
+  }
+
   let tab: browser.Tabs.Tab | null = null;
   const onUpdatedHandler = openNewtabOnUpdated.bind(null, ipmId);
   openNewtabOnUpdatedHandlerByIPMids.set(ipmId, onUpdatedHandler);
   browser.tabs.onUpdated.addListener(onUpdatedHandler);
 
-  tab = await browser.tabs.create({ url: targetUrl }).catch((error) => {
+  tab = await browser.tabs.create({ url }).catch((error) => {
     logger.error('[new-tab]: create tab error', error);
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.tabCreationError);
     return null;

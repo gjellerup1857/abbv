@@ -16,6 +16,12 @@
  */
 
 /**
+ * The query parameter that holds the humber of blocked
+ * requests (the "block count", or short "bc").
+ */
+export const blockCountQueryParameter = 'bc';
+
+/**
  * New tab event names
  */
 export enum NewTabEventType {
