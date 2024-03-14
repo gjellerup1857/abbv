@@ -154,6 +154,7 @@ const loadIconResources = function (base, callback) {
 };
 
 // Query the DOM to retrieve all of the YT channel names
+// @param {Boolean} should the response include the references to the HTML node
 // Returns an object with the following structure:
 //  key:
 //    unparsed channel name
@@ -161,7 +162,7 @@ const loadIconResources = function (base, callback) {
 //    node: the DOM element which contains the channel name
 //    parsedChannelName: a string - the parsed channel name (special characters have been escaped)
 //
-const getAllSubscribedChannelNames = function () {
+const getAllSubscribedChannelNames = function (includeNodes = true) {
   const channelNodes = document.querySelectorAll('#info-section');
   const channelNameObs = Object.create(null);
   for (let inx = 0; inx < channelNodes.length; inx++) {
@@ -171,7 +172,9 @@ const getAllSubscribedChannelNames = function () {
       const channelName = channelNameNode[0].innerText.trim();
       if (!channelNameObs[channelName]) {
         channelNameObs[channelName] = {};
-        channelNameObs[channelName].node = channelNode;
+        if (includeNodes) {
+          channelNameObs[channelName].node = channelNode;
+        }
         const parsedChannelName = parseChannelName(channelName);
         channelNameObs[channelName].parsedChannelName = parsedChannelName;
       }
@@ -379,7 +382,7 @@ const addOnPageIcon = function () {
         event.stopPropagation();
         normalContent.style.display = 'none';
         processingContent.style.display = 'flex';
-        const channelNameObs = getAllSubscribedChannelNames();
+        const channelNameObs = getAllSubscribedChannelNames(false);
         browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'whitelist_all_youtube_clicked' });
         browser.runtime.sendMessage({ command: 'allowAllSubscribedChannel', channelNames: channelNameObs }).then(() => {
           // eslint-disable-next-line no-use-before-define
@@ -397,7 +400,7 @@ const addOnPageIcon = function () {
         event.stopPropagation();
         normalContent.style.display = 'none';
         processingContent.style.display = 'flex';
-        const channelNameObs = getAllSubscribedChannelNames();
+        const channelNameObs = getAllSubscribedChannelNames(false);
         browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'remove_all_youtube_clicked' });
         browser.runtime.sendMessage({ command: 'blockAllSubscribedChannel', channelNames: channelNameObs }).then(() => {
           // eslint-disable-next-line no-use-before-define
