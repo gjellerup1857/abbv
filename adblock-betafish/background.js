@@ -496,7 +496,7 @@ const showUpdatePage = async function (details) {
   let updateTabRetryCount = 0;
 
   const getUpdatedURL = async function () {
-    const encodedVersion = encodeURIComponent('5.17.2');
+    const encodedVersion = encodeURIComponent('5.21.0');
     const userID = await getUserId();
     let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${userID}&bc=${Prefs.blocked_total}`;
     updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
@@ -534,14 +534,20 @@ const showUpdatePage = async function (details) {
       }
     };
 
-    const extensionInfo = await browser.management.getSelf();
-    if (extensionInfo.installType !== 'admin') {
-      await License.ready();
-      checkLicense();
+    const checkExtensionType = async function () {
+      const extensionInfo = await browser.management.getSelf();
+      if (extensionInfo.installType !== 'admin') {
+        await License.ready();
+        checkLicense();
+      }
+    };
+
+    if (info.platform === 'gecko') {
+      void checkExtensionType();
     }
   };
 
-  const slashUpdateReleases = ['5.17.2'];
+  const slashUpdateReleases = ['5.21.0'];
   const {
     last_known_version: lastKnownVersion,
   } = await browser.storage.local.get(updateStorageKey);
@@ -550,11 +556,10 @@ const showUpdatePage = async function (details) {
 
   // only open the /update page for English, French, German, Spanish and Brazilian/Portugese users.
   const shouldShowUpdateForLocale = function () {
-    const slashUpdateLocales = ['pt-BR'];
-    const slashUpdateLanguages = ['en', 'fr', 'de', 'es'];
+    const slashUpdateLanguages = ['en', 'fr', 'de', 'es', 'nl'];
     const locale = determineUserLanguage();
     const language = locale.substring(0, 2);
-    return slashUpdateLocales.includes(locale) || slashUpdateLanguages.includes(language);
+    return slashUpdateLanguages.includes(language);
   };
 
   if (
