@@ -75,7 +75,7 @@
     "npm": "9"
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#fb2f975aaf4ab19768089460d1ec2e501189cf0d",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#5d381cf58885f43394cf0823bd5842763017762c",
     "@eyeo/mlaf": "0.3.3",
     "@eyeo/snippets": "1.0.0",
     "@eyeo/webext-ad-filtering-solution": "1.2.4",
