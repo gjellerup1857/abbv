@@ -1,3 +1,13 @@
+Version: 5.21.0, Date: 2024-03-19
+- Open a new tab to inform Firefox users about AdBlock Premium
+- Updated the URL opened when the 'create_tab' command is executed.  It now includes the block count.
+- Updated the domains that the AdBlock information is injected into the DOM.
+- Updated the AdBlock information that is injected to now include the:
+  - block count
+  - isPremium user indicator
+  - extension version
+  - the AdBlock device GUID
+
 Version: 5.20.0, Date: 2024-03-12
 - Disable all telemetry by default for all Firefox users
 - Fixed an issue with the editing of custom rules while AdBlock is paused
