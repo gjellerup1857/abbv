@@ -399,6 +399,14 @@
     "message": "ダウンロードに失敗しました",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "内部エラーのためフィルターリストの更新が適用できません。",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "ブラウザーの制限のためフィルターリストの更新が適用できません。新しい拡張機能バージョンに更新すると、問題が解決する場合があります。",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "失敗しました。無効なフィルタリストです",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

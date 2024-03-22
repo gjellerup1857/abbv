@@ -387,6 +387,14 @@
     "message": "فشل الأمر، بسبب فشل التحميل",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "تعذر تطبيق تحديث قائمة عوامل التصفية نظرًا لحدوث خطأ داخلي.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "تعذر تطبيق تحديث قائمة عوامل التصفية بسبب قيود المتصفح. وقد تُحل هذه المشكلة عن طريق التحديث إلى إصدار أحدث للملحق.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "فشل، ليست قائمة مرشّحات صالحة",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

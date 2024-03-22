@@ -337,6 +337,14 @@
     "message": "Sikertelen, letöltési hiba",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "A szűrőlista frissítés egy belső hiba miatt nem alkalmazható.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "A szűrőlista a böngésző korlátozásai miatt nem alkalmazható. Az újabb bővítményverzióra való frissítés megoldhatja ezt a problémát.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Sikertelen, a szűrőlista érvénytelen",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

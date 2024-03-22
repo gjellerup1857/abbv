@@ -399,6 +399,14 @@
     "message": "Error: descarga fallida",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "No se ha podido aplicar la lista de filtros debido a un error interno.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "No se ha podido aplicar la actualización de la lista de filtros debido a las limitaciones del navegador. Este problema puede solucionarse actualizando la extensión a una versión más reciente.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Error: lista de filtros no válida",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

@@ -399,6 +399,14 @@
     "message": "失败了，下载失败",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "由于内部错误，无法应用筛选清单更新。",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "由于浏览器限制，无法应用筛选清单更新。更新到较新版本的扩展程序可能会解决此问题。",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "失败了，不是有效的拦截规则列表",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

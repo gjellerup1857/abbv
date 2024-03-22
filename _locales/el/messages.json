@@ -395,6 +395,14 @@
     "message": "Απέτυχε, σφάλμα κατά τη λήψη",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Η ενημέρωση της λίστας φίλτρων δεν μπόρεσε να εφαρμοστεί λόγω εσωτερικού σφάλματος.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Η ενημέρωση της λίστας φίλτρων δεν μπόρεσε να εφαρμοστεί λόγω περιορισμών του προγράμματος περιήγησης. Η ενημέρωση σε νεότερη έκδοση της επέκτασης μπορεί να επιλύσει αυτό το πρόβλημα.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Μη έγκυρη λίστα φίλτρων",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

@@ -399,6 +399,14 @@
     "message": "Fehlgeschlagen, Download-Fehler",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Die Filterliste konnte aufgrund eines internen Fehlers nicht aktualisiert werden.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Die Filterliste konnte aufgrund von Browser-Einschränkungen nicht aktualisiert werden. Durch Aktualisierung der Erweiterung auf eine neuere Version lässt sich dieses Problem möglicherweise beheben.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Fehlgeschlagen, keine gültige Filterliste",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

@@ -399,6 +399,14 @@
     "message": "실패, 다운로드를 실패했습니다",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "내부 오류로 인해 필터 목록 업데이트를 적용할 수 없습니다.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "브라우저 제한으로 인해 필터 목록 업데이트를 적용할 수 없습니다. 새로운 확장 프로그램 버전으로 업데이트하는 것이 이 문제를 해결할 수도 있습니다.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "실패, 유효한 필터 목록이 아닙니다.",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

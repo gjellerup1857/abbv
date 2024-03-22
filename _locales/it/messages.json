@@ -399,6 +399,14 @@
     "message": "Iscrizione non riuscita: errore di download",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Non è stato possibile applicare l'aggiornamento dell'elenco filtri a causa di un errore interno.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Non è stato possibile applicare l'aggiornamento dell'elenco filtri a causa delle limitazioni del browser. L'aggiornamento a una versione più recente dell'estensione può risolvere il problema.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Non riuscito, lista di filtri non valida",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

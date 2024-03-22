@@ -399,6 +399,14 @@
     "message": "Mislukt, downloaden mislukt",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Update van filterlijst kon niet worden toegepast vanwege een interne fout.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "De update van de filterlijst kon niet worden toegepast vanwege browserbeperkingen. Updaten naar een nieuwere extensieversie kan dit probleem verhelpen.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Mislukt, geen geldige filterlijst",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

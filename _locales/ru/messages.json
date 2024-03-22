@@ -399,6 +399,14 @@
     "message": "Ошибка, загрузка не завершена",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Обновление списка фильтров не удалось применить из-за внутренней ошибки.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Обновление списка фильтров не удалось применить из-за ограничений браузера. Обновление до более новой версии расширения может решить эту проблему.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Ошибка, некорректный список фильтров",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

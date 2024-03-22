@@ -399,6 +399,14 @@
     "message": "Échec, téléchargement impossible",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "La mise à jour de la liste de filtrage n’a pas pu être effectuée en raison d’une erreur interne.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "La mise à jour de la liste de filtrage n’a pas pu être effectuée en raison des limitations du navigateur. Vous pouvez résoudre ce problème en mettant à jour l’extension.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Échec, liste de filtres non valide",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

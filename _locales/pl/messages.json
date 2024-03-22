@@ -399,6 +399,14 @@
     "message": "Błąd, pobieranie nie powiodło się",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Nie można zastosować aktualizacji listy filtrów ze względu na błąd wewnętrzny.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Nie można zastosować aktualizacji listy filtrów ze względu na ograniczenia przeglądarki. Aktualizacja do nowszej wersji rozszerzenia może rozwiązać ten problem.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Niepowodzenie, nieprawidłowa lista filtrów",
     "description": "Filter lists tab of the Options page: Invalid filter list file."

@@ -399,6 +399,14 @@
     "message": "Başarısız, karşıdan yükleme hatası",
     "description": "Filter lists tab of the Options page: Generic filter list download error message."
   },
+  "ab_filters_subscription_lastDownload_diffError": {
+    "message": "Filtre listesi güncellemesi dâhili bir hata nedeniyle uygulanamadı.",
+    "description": "Filter lists tab of the Options page: Generic filter list diff update error message."
+  },
+  "ab_filters_subscription_lastDownload_diffTooManyFilters": {
+    "message": "Filtre listesi güncellemesi tarayıcı sınırlamaları nedeniyle uygulanamadı. Uzantının daha yeni bir sürüme güncellenmesi bu sorunu çözümleyebilir.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too large."
+  },
   "ab_filters_subscription_lastDownload_invalidData": {
     "message": "Başarısız, filtre listesi geçersiz",
     "description": "Filter lists tab of the Options page: Invalid filter list file."
