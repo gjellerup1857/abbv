@@ -209,6 +209,11 @@ function processTrustedMessages(message, sender, sendResponse) {
   }
   const { command } = message;
   switch (command) {
+    case 'activate':
+      License.ready().then(() => {
+        License.activate();
+      });
+      break;
     case 'getLicenseConfig':
       return processLicenseConfig(sendResponse);
     case 'cleanUpSevenDayAlarm':
