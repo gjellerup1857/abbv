@@ -16,12 +16,13 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, chromeStorageSetHelper */
+/* global browser */
 
 // Module for removing individual filters from filter lists
 // An 'advance' feature, used on the Customize tab, titled "disabled filters"
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import { chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 const ExcludeFilter = (function excludeFilter() {
   const excludeFiltersKey = 'exclude_filters';
