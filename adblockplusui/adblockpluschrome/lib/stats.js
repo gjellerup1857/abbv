@@ -115,8 +115,11 @@ async function onBlockableItem({filter, request})
   });
 
   // Don't update the total for incognito tabs.
-  let tab = await browser.tabs.get(tabId);
-  if (tab.incognito)
+  let tab = await browser.tabs.get(tabId).catch(() => {
+    return null;
+  });
+
+  if (!tab || tab.incognito)
     return;
 
   // Make sure blocked_total is only read after the storage was loaded.
