@@ -496,11 +496,14 @@ const showUpdatePage = async function (details) {
   let updateTabRetryCount = 0;
 
   const getUpdatedURL = async function () {
-    const encodedVersion = encodeURIComponent('5.21.0');
     const userID = await getUserId();
-    let updatedURL = `https://getadblock.com/update/${TELEMETRY.flavor.toLowerCase()}/${encodedVersion}/?u=${userID}&bc=${Prefs.blocked_total}`;
-    updatedURL = `${updatedURL}&rt=${updateTabRetryCount}`;
-    return updatedURL;
+    const updatedURL = new URL('https://getadblock.com/update/');
+    updatedURL.searchParams.append('f', TELEMETRY.flavor.toLowerCase());
+    updatedURL.searchParams.append('version', browser.runtime.getManifest().version);
+    updatedURL.searchParams.append('u', userID);
+    updatedURL.searchParams.append('bc', Prefs.blocked_total);
+    updatedURL.searchParams.append('rt', updateTabRetryCount);
+    return updatedURL.href;
   };
 
   const waitForUserAction = function () {
@@ -534,25 +537,12 @@ const showUpdatePage = async function (details) {
       }
     };
 
-    const checkExtensionType = async function () {
-      const extensionInfo = await browser.management.getSelf();
-      if (extensionInfo.installType !== 'admin') {
-        await License.ready();
-        checkLicense();
-      }
-    };
-
-    if (info.platform === 'gecko') {
-      void checkExtensionType();
+    const extensionInfo = await browser.management.getSelf();
+    if (extensionInfo.installType !== 'admin') {
+      await License.ready();
+      checkLicense();
     }
   };
-
-  const slashUpdateReleases = ['5.21.0'];
-  const {
-    last_known_version: lastKnownVersion,
-  } = await browser.storage.local.get(updateStorageKey);
-
-  const currentVersion = browser.runtime.getManifest().version;
 
   // only open the /update page for English, French, German, Spanish and Brazilian/Portugese users.
   const shouldShowUpdateForLocale = function () {
@@ -564,9 +554,8 @@ const showUpdatePage = async function (details) {
 
   if (
     details.reason === 'update'
+    && info.platform === 'gecko'
     && shouldShowUpdateForLocale()
-    && slashUpdateReleases.includes(currentVersion)
-    && !slashUpdateReleases.includes(lastKnownVersion)
     && browser.runtime.id !== adblocBetaID
   ) {
     await settings.onload();
