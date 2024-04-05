@@ -28,6 +28,7 @@ import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { setReadyState, ReadyState } from "../../adblock-betafish/testing/ready-state/background/index.ts";
 
+
 let firstRun;
 let reinitialized = false;
 let dataCorrupted = false;
@@ -163,28 +164,39 @@ async function testStorage() {
   }
 }
 
-const initialize = ewe.start({
-  bundledSubscriptions: rulesIndex,
-  name: info.addonName,
-  version: info.addonVersion,
-  bundledSubscriptionsPath: "/data/rules/abp",
-}).then(async (eweFirstRun) => {
-  await detectFirstRun(
-    eweFirstRun.foundSubscriptions,
-    eweFirstRun.foundStorage
-  );
-  (await ewe.filters.getMigrationErrors()).forEach(console.error);
-  (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
-  eweFirstRun.warnings.forEach(console.warn);
-  await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
-  await testStorage().catch(() => { setDataCorrupted(true); })
-  // adding default filter lists
-  await addSubscriptions();
-  await removeSubscriptions();
+const start = async function () {
+  // We are separating the initialization of the content filtering module in order
+  // to contain any potential breakage and prevent it from affecting the
+  // extension initialization as a whole
+  try {
+    const { start } = await import("./contentFiltering.js");
+    await start();
+  } catch (ex) {
+    console.error("Failed to initialize content filtering", ex);
+  }
+  return ewe.start({
+    bundledSubscriptions: rulesIndex,
+    name: info.addonName,
+    version: info.addonVersion,
+    bundledSubscriptionsPath: "/data/rules/abp",
+  }).then(async (eweFirstRun) => {
+    await detectFirstRun(
+      eweFirstRun.foundSubscriptions,
+      eweFirstRun.foundStorage
+    );
+    (await ewe.filters.getMigrationErrors()).forEach(console.error);
+    (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
+    eweFirstRun.warnings.forEach(console.warn);
+    await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
+    await testStorage().catch(() => { setDataCorrupted(true); })
+    // adding default filter lists
+    await addSubscriptions();
+    await removeSubscriptions();
 
-  setReadyState(ReadyState.started);
-});
-
+    setReadyState(ReadyState.started);
+  });
+};
+const initialize = start();
 
 /**
  * Gets a value indicating whether a data corruption was detected.
