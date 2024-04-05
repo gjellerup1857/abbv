@@ -61,6 +61,7 @@
     "icons/adblock-icons.woff2",
     "purify.min.js",
     "adblock-yt-capture-requests.js",
-    "adblock-yt-capture-events.js"
+    "adblock-yt-capture-events.js",
+    "adblock-twitch-capture-requests.js"
   ]
 }

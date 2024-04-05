@@ -16,32 +16,33 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext,
-   addCustomFilter, */
+/* global browser, addCustomFilter */
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
-import { getSettings, settings } from './prefs/background';
+import { setBadge } from '~/../adblockplusui/adblockpluschrome/lib/browserAction';
+import { getSettings, settings } from '../prefs/background';
 
 const twitchChannelNamePages = new Map();
 
+const webRequestFilter = {
+  url:
+    [
+      { hostEquals: 'www.twitch.tv' },
+    ],
+};
+
 // On single page sites, such as Twitch, that update the URL using the History API pushState(),
-// they don't actually load a new page, we need to get notified when this happens
-// and update the URLs in the Page and Frame objects
-const twitchHistoryStateUpdateHandler = async function (details) {
+// update the badge (clear the block count) when allow listed
+const historyStateHandler = async function (details) {
   if (details
-    && Object.prototype.hasOwnProperty.call(details, 'frameId')
-    && Object.prototype.hasOwnProperty.call(details, 'tabId')
     && Object.prototype.hasOwnProperty.call(details, 'url')
+    && Object.prototype.hasOwnProperty.call(details, 'tabId')
     && details.transitionType === 'link') {
     const myURL = new URL(details.url);
     if (myURL.hostname === 'www.twitch.tv') {
-      const myFrame = ext.getFrame(details.tabId, details.frameId);
-      const myPage = ext.getPage(details.tabId);
-      myPage._url = myURL;
-      myFrame.url = myURL;
-      myFrame._url = myURL;
-      if (await ewe.filters.getAllowingFilters(myPage.id).length) {
+      const filters = await ewe.filters.getAllowingFilters(details.tabId);
+      const isAllowListed = !!filters.length;
+      if (isAllowListed) {
         setBadge(details.tabId, { number: '' });
       }
     }
@@ -51,7 +52,7 @@ const twitchHistoryStateUpdateHandler = async function (details) {
 // Creates a custom filter entry that whitelists a YouTube channel
 // Inputs: url:string url of the page
 // Returns: null if successful, otherwise an exception
-const createWhitelistFilterForTwitchChannel = function (url, origin) {
+const createAllowlistFilterForTwitchChannel = function (url, origin) {
   let twitchChannel;
   if (/ab_channel=/.test(url)) {
     [, twitchChannel] = url.match(/ab_channel=([^]*)/);
@@ -65,34 +66,33 @@ const createWhitelistFilterForTwitchChannel = function (url, origin) {
   return undefined;
 };
 
-const twitchMessageHandler = function (message, sender, sendResponse) {
-  if (message.command === 'createWhitelistFilterForTwitchChannel' && message.url) {
-    sendResponse(createWhitelistFilterForTwitchChannel(message.url, message.origin));
-    return;
+const twitchMessageHandler = function (message, sender) {
+  if (message.command === 'createAllowlistFilterForTwitchChannel' && message.url) {
+    createAllowlistFilterForTwitchChannel(message.url, message.origin);
   }
   if (message.command === 'updateTwitchChannelName' && message.channelName) {
     twitchChannelNamePages.set(sender.tab.id, message.channelName);
-    sendResponse({});
   }
 };
 
 const addTwitchAllowlistListeners = function () {
   twitchChannelNamePages.clear();
   browser.runtime.onMessage.addListener(twitchMessageHandler);
-  browser.webNavigation.onHistoryStateUpdated.addListener(twitchHistoryStateUpdateHandler);
+  browser.webNavigation.onHistoryStateUpdated.addListener(historyStateHandler, webRequestFilter);
 };
 
 const removeTwitchAllowlistListeners = function () {
   twitchChannelNamePages.clear();
   browser.runtime.onMessage.removeListener(twitchMessageHandler);
-  browser.webNavigation.onHistoryStateUpdated.removeListener(twitchHistoryStateUpdateHandler);
+  browser.webNavigation.onHistoryStateUpdated.removeListener(historyStateHandler, webRequestFilter);
 };
 
-settings.onload().then(() => {
+const start = async function () {
+  await settings.onload();
   if (getSettings().twitch_channel_allowlist) {
     addTwitchAllowlistListeners();
   }
-});
+};
 
 // eslint-disable-next-line no-restricted-globals
 Object.assign(self, {
@@ -100,3 +100,5 @@ Object.assign(self, {
   removeTwitchAllowlistListeners,
   twitchChannelNamePages,
 });
+
+void start();

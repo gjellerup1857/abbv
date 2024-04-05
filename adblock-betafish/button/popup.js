@@ -481,7 +481,7 @@ const start = async function () {
   selected('#btn_allowlist_twitch_channel', async () => {
     if (pageInfo.url && pageInfo.url.hostname === 'www.twitch.tv') {
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'whitelist_twitch_clicked' });
-      await browser.runtime.sendMessage({ command: 'createWhitelistFilterForTwitchChannel', url: pageInfo.url.href, origin: 'popup' });
+      await browser.runtime.sendMessage({ command: 'createAllowlistFilterForTwitchChannel', url: pageInfo.url.href, origin: 'popup' });
       browser.tabs.reload();
       closePopup();
     }

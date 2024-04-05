@@ -45,7 +45,7 @@ export default {
           'adblock-betafish/allowlisting.js',
           'adblock-betafish/contextmenus.js',
           'adblock-betafish/alias/icon.js',
-          'adblock-betafish/twitchSettings.js',
+          'adblock-betafish/twitch/twitch-bg.js',
           'adblock-betafish/youtube/yt-bg.js',
           'adblock-betafish/picreplacement/bypass-mode-bg.js',
           'adblock-betafish/picreplacement/distraction-control-bg.js',
@@ -210,8 +210,12 @@ export default {
         src: 'adblock-betafish/youtube/ads-blocked-icon.svg',
       },
       {
-        dest: 'adblock-twitch-contentscript.js',
-        src: 'adblock-betafish/twitch-contentscript.js',
+        dest: 'adblock-twitch-capture-requests.js',
+        src: 'adblock-betafish/twitch/twitch-capture-requests.js',
+      },
+      {
+        dest: 'adblock-twitch-cs.js',
+        src: 'adblock-betafish/twitch/twitch-cs.js',
       },
       {
         dest: 'adblock-options-events.js',
