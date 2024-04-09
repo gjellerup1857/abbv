@@ -1,3 +1,13 @@
+Version: 5.22.2, Date: 2024-04-09
+- Updated minimum Chrome version to 124 for MV3 extensions
+- AdBlock will no longer log an error when the tab ID isn’t found when closing a tab
+- Fixed an issue with the YT Allow listing feature on Firefox
+- Fixed an issue when saving excluded filters (an advanced user feature)
+- Fixed Twitch channel allow listing in MV3 extensions
+- Updated MV3 translations
+- QA testers can now invoke some utlitilty functions on the background & SW scripts from the AdBlock Options page
+- Updated the snippet dependency to 1.2.2
+
 Version: 5.21.1, Date: 2024-04-04
 - Show the /update page to let Firefox users know about AdBlock Premium
 
