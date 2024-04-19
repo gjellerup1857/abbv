@@ -131,7 +131,9 @@ const popupMenuHelpActionMap = {
       transitionTo('requestDCSubmission', false);
     } else {
       savedData = {};
-      savedData.subURL = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
+      savedData.subURL = (browser.runtime.getManifest().manifest_version === 2)
+        ? 'https://easylist-downloads.adblockplus.org/adblock_premium.txt'
+        : 'https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt';
       transitionTo('enableDCFeature', false);
     }
   },

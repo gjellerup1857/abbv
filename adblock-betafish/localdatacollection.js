@@ -23,7 +23,9 @@ import { getSettings, setSetting, settings } from './prefs/background';
 import { isEmptyObject, chromeStorageSetHelper } from './utilities/background/bg-functions';
 
 const LocalDataCollection = (function getLocalDataCollection() {
-  const easyPrivacyURL = 'https://easylist-downloads.adblockplus.org/easyprivacy.txt';
+  const easyPrivacyURL = (browser.runtime.getManifest().manifest_version === 2)
+    ? 'https://easylist-downloads.adblockplus.org/easyprivacy.txt'
+    : 'https://easylist-downloads.adblockplus.org/v3/full/easyprivacy.txt';
   const FIFTEEN_MINS = 15;
   const EXT_STATS_KEY = 'ext_stats_key';
   const STATS_ALARM_NAME = 'statsalarm';
@@ -108,7 +110,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
           doms: dataCollectionCache.domains,
         }));
         browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
-          const savedData = hourlyResponse[EXT_STATS_KEY] || { };
+          const savedData = hourlyResponse[EXT_STATS_KEY] || {};
           savedData[Date.now().toString()] = hourSnapShot;
           chromeStorageSetHelper(EXT_STATS_KEY, savedData, resolve);
           clearCache();
@@ -187,7 +189,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   returnObj.easyPrivacyURL = easyPrivacyURL;
   returnObj.exportRawStats = async function returnObjFilterStats() {
     const hourlyResponse = await browser.storage.local.get(EXT_STATS_KEY);
-    return Promise.resolve(hourlyResponse[EXT_STATS_KEY] || { });
+    return Promise.resolve(hourlyResponse[EXT_STATS_KEY] || {});
   };
   returnObj.getRawStatsSize = async function returnObjFilterStatsSize() {
     const rawStats = await LocalDataCollection.exportRawStats();
@@ -211,7 +213,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
         return;
       }
       browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
-        const savedData = hourlyResponse[EXT_STATS_KEY] || { };
+        const savedData = hourlyResponse[EXT_STATS_KEY] || {};
         for (let inx = 0; inx < parsedfilterStats.length; inx++) {
           const dupDataCache = parsedfilterStats[inx];
           // only process new data
@@ -236,8 +238,8 @@ const LocalDataCollection = (function getLocalDataCollection() {
                   initializeDomainDataObject(domain);
                 }
                 if (dupDataCache.filters[filter].subscriptions
-                    && dupDataCache.filters[filter].subscriptions.length
-                    && dupDataCache.filters[filter].subscriptions.includes(easyPrivacyURL)) {
+                  && dupDataCache.filters[filter].subscriptions.length
+                  && dupDataCache.filters[filter].subscriptions.includes(easyPrivacyURL)) {
                   hourSnapShot[domain].trackers
                     += dupDataCache.filters[filter][filterRequestType][domain].hits;
                 } else {
