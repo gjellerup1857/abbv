@@ -79,6 +79,29 @@ Two other build options are provided to aid in testing of the extension.
 
 `npx gulp devenv -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
 
+## Testing
+
+### Compliance tests
+
+Compliance tests run on a local version of [testpages](https://abptestpages.org)
+to assure compliance between AdBlock and other eyeo adblocking solutions. They
+run the tests from the [testpages project](https://gitlab.com/eyeo/developer-experience/testpages.adblockplus.org/)
+using a local build of the AdBlock extension.
+
+Prerequisites:
+
+- Docker
+
+To run the tests:
+
+```bash
+EXTENSION=<build file> ./test/compliance.sh
+```
+
+Optional environment variables:
+
+- BROWSER: Browser and version to run. The default is "chromium latest".
+- IMAGE_NAME: Name of the docker container. The default is "compliance".
 
 ## Code Style
 
