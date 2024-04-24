@@ -1,3 +1,6 @@
+Version: 6.0.1, Date: 2024-04-24
+- Modified the minimum chrome version to "124.0"
+
 Version: 6.0.0, Date: 2024-04-23
 - Fixed an issue in the beta_manifest.base.json file that caused the AdBlock extension to fail to load
 - Improved the log message for command version mismatch error
