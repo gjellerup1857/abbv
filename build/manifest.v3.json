@@ -15,7 +15,7 @@
     "default_popup": "adblock-button-popup.html",
     "default_title": "__MSG_name__"
   },
-  "minimum_chrome_version": "124.0.6367.18",
+  "minimum_chrome_version": "124.0",
   "declarative_net_request": {},
   "permissions": [
     "alarms",
@@ -30,7 +30,9 @@
     "webNavigation",
     "webRequest"
   ],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "web_accessible_resources": [
     {
       "resources": [
@@ -57,19 +59,34 @@
         "icons/adblock-icons.woff2",
         "purify.min.js"
       ],
-      "matches": ["http://*/*", "https://*/*"]
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
     },
     {
-      "resources": ["adblock-yt-capture-requests.js"],
-      "matches": ["*://*.youtube.com/*"]
+      "resources": [
+        "adblock-yt-capture-requests.js"
+      ],
+      "matches": [
+        "*://*.youtube.com/*"
+      ]
     },
     {
-      "resources": ["adblock-twitch-capture-requests.js"],
-      "matches": ["*://*.twitch.tv/*"]
+      "resources": [
+        "adblock-twitch-capture-requests.js"
+      ],
+      "matches": [
+        "*://*.twitch.tv/*"
+      ]
     },
     {
-      "resources": ["adblock-yt-capture-events.js"],
-      "matches": ["*://*.youtube.com/*"]
+      "resources": [
+        "adblock-yt-capture-events.js"
+      ],
+      "matches": [
+        "*://*.youtube.com/*"
+      ]
     }
   ]
 }
