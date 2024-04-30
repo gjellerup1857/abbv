@@ -1,3 +1,6 @@
+Version: 6.0.2, Date: 2024-04-30
+- Show the /update page to let Firefox users know about AdBlock Premium
+
 Version: 6.0.1, Date: 2024-04-24
 - Modified the minimum chrome version to "124.0"
 
