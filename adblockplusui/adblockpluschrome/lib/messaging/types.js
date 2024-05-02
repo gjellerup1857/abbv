@@ -34,7 +34,10 @@ export function toPlainBlockableItem({filter, matchInfo, request})
     type = matchInfo.allowingReason;
   // Show matching method when it had an effect on the request
   else if (filter)
-    type = matchInfo.method;
+    if (filter.remove === true)
+      type = "remove";
+    else
+      type = matchInfo.method;
   else
     type = ewe.reporting.contentTypesMap.get(request.type);
 

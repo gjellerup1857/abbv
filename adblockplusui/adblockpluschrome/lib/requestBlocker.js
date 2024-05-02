@@ -25,4 +25,5 @@ export let filterTypes = new Set(function*()
     yield type.toUpperCase();
 
   yield "SNIPPET";
+  yield "REMOVE";
 }());

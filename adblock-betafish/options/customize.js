@@ -137,11 +137,15 @@ $(async () => {
    * @returns {boolean} True if the given filters query is valid
    */
   function hasValidQueryString(selectorFilter) {
-    // Taken from ABP's Filter.contentRegExp property.
+    // Originally taken from ABP's Filter.contentRegExp property.
+    // Only works with:
+    // - hiding
+    // - hiding exception rules
+    // - Extended CSS selector rules
+    //   (ignores the action or CSS property component of the rule)
     // Match groups are domains, separator, body
-    const contentRegExp = /^([^/|@"!]*?)#([@?$])?#(.+)$/;
+    const contentRegExp = /^([^/|@"!]*?)#([@])?#([^{]+)/;
     const [, , , query] = contentRegExp.exec(selectorFilter);
-
     // Validate query. QS will throw if query is invalid.
     try {
       document.querySelector(query);
@@ -179,7 +183,8 @@ $(async () => {
     // only add 'new' filters
     for (let i = 0; (i < uniqCustomFilters.length && !filterErrorMessage); i++) {
       let filterToAdd = uniqCustomFilters[i];
-      filterToAdd = filterToAdd.trim();
+      // eslint-disable-next-line no-await-in-loop
+      filterToAdd = await FiltersProxy.normalize(filterToAdd);
       if (!originalCustomFilters.includes(filterToAdd) && filterToAdd) {
         if (filterToAdd
           && isSelectorFilter(filterToAdd)

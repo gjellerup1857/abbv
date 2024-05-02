@@ -29,6 +29,8 @@ class FiltersProxy {
 
   static validate = text => send('filters.validate', { text });
 
+  static normalize = text => send('filters.normalize', { text });
+
   static getUserFilters = () => sendTypeMessage('filters.get');
 
   static onAdded = new ListenerSupport();

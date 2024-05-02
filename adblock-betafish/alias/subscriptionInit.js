@@ -33,12 +33,6 @@ let firstRun;
 let reinitialized = false;
 let dataCorrupted = false;
 
-const defaultSubscriptionIds = [
-  "8C13E995-8F06-4927-BEA7-6C845FB7EEBF",
-  "0798B6A2-94A4-4ADF-89ED-BEC112FC4C7F",
-  "D4028CDD-3D39-4624-ACC7-8140F4EC3238"
-];
-
 /**
  * If there aren't any filters, the default subscriptions are added.
  * However, if patterns.ini already did exist and/or any preference
@@ -108,22 +102,7 @@ function removeSubscriptions() {
 
 async function addSubscriptions() {
   if (firstRun || reinitialized) {
-    try {
-      await ewe.subscriptions.addDefaults();
-    }
-    catch (ex) {
-      console.error("Failed to add default filter lists:", ex);
-
-      // We don't want to keep the extension in a broken state, so we
-      // try to individually add default subscriptions ourselves
-      const recommendations = ewe.subscriptions.getRecommendations();
-      for (const recommendation of recommendations) {
-        if (!defaultSubscriptionIds.includes(recommendation.id))
-          continue;
-
-        await ewe.subscriptions.add(recommendation.url);
-      }
-    }
+    await ewe.subscriptions.addDefaults();
   }
   // Remove "acceptable ads" if Gecko
   if (firstRun) {
@@ -176,9 +155,10 @@ const start = async function () {
   }
   return ewe.start({
     bundledSubscriptions: rulesIndex,
+    bundledSubscriptionsPath: "/data/rules/abp",
+    inlineCss: false,
     name: info.addonName,
     version: info.addonVersion,
-    bundledSubscriptionsPath: "/data/rules/abp",
   }).then(async (eweFirstRun) => {
     await detectFirstRun(
       eweFirstRun.foundSubscriptions,

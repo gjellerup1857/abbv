@@ -491,6 +491,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       const [, validationErrors] = filtersValidate(message.text);
       return processMessageResponse(sendResponse, validationErrors);
     }
+    case 'filters.normalize': {
+      return processMessageResponse(sendResponse, ewe.filters.normalize(message.text));
+    }
     case 'filters.add': {
       sendResponse({});
       return filtersAdd(message.text, message.origin);

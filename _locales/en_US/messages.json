@@ -427,6 +427,14 @@
     "message": "Filter list update could not be applied due to browser limitations. Updating to a newer extension version may fix this problem.",
     "description": "Filter lists tab of the Options page: Filter list diff update too large."
   },
+  "ab_filters_subscription_diff_too_old": {
+    "message": "Filter list update could not be applied due to an old version of the ruleset. Updating to a newer extension version may fix this problem.",
+    "description": "Filter lists tab of the Options page: Filter list diff update too old."
+  },
+  "ab_filters_subscription_dnr_error": {
+    "message": "Filter list update could not be applied due to an issue in filter list ruleset. Updating to a newer extension version may fix this problem.",
+    "description": "Filter lists tab of the Options page: Filter list DNR error."
+  },
   "invalidListUrl": {
     "message": "Invalid list URL. It'll be deleted.",
     "description": "Message when you subscribe to a non-list URL"
@@ -1592,22 +1600,6 @@
   "customfilters": {
     "message": "Custom Filter Lists",
     "description": "Subtitle on the Filter lists tab: Section for adding your own filter lists."
-  },
-  "mv3_custom_filters_note": {
-    "message": "**Note:**",
-    "description": "Note text on the Filter lists tab. For MV3 extensions only"
-  },
-  "mv3_custom_filters_temporarily": {
-    "message": "Custom filter list subscriptions are temporarily unavailable due to the migration to Manifest V3.",
-    "description": "First sentence of the the informational text on the Filter lists tab. For MV3 extensions only"
-  },
-  "mv3_custom_filters_reinstating": {
-    "message": "We’re working on bringing this feature back and reinstating your previous custom filter list data.",
-    "description": "Second sentence of the the informational text on the Filter lists tab. For MV3 extensions only"
-  },
-  "mv3_custom_filters_learn_more": {
-    "message": "Learn more (English only)",
-    "description": "Learn Mode link text on the Filter lists tab. For MV3 extensions only"
   },
   "customfilterserrormessage": {
     "message": "The following filter:\n $filter$ \n has an error: \n $message$",

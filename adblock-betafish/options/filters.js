@@ -300,7 +300,7 @@ FilterListUtil.updateSubscriptionInfoForId = (adblockId) => {
   const $timestampLabel = $('.timestamp_info', $div);
   let text = $infoLabel.text();
   let timestamp = '';
-  const lastUpdate = subscription.lastDownload || subscription._lastDownload;
+  const lastUpdate = subscription.lastDownload || subscription.lastModified;
   // If filter list is invalid, skip it.
   if ($infoLabel.text() === translate('invalidListUrl')) {
     return;
@@ -313,6 +313,9 @@ FilterListUtil.updateSubscriptionInfoForId = (adblockId) => {
       synchronize_checksum_mismatch: translate('ab_filters_subscription_lastDownload_checksumMismatch'),
       synchronize_diff_error: translate('ab_filters_subscription_lastDownload_diffError'),
       synchronize_diff_too_many_filters: translate('ab_filters_subscription_lastDownload_diffTooManyFilters'),
+      synchronize_diff_too_old: translate('ab_filters_subscription_diff_too_old'),
+      synchronize_dnr_error: translate('ab_filters_subscription_dnr_error'),
+
     };
     if (subscription.downloadStatus in map) {
       text = map[subscription.downloadStatus];

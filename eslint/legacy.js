@@ -49,6 +49,8 @@ module.exports = {
         'synchronize_checksum_mismatch',
         'synchronize_diff_error',
         'synchronize_diff_too_many_filters',
+        'synchronize_diff_too_old',
+        'synchronize_dnr_error',
         'error_msg_header',
         'error_msg_help_us',
         'error_msg_thank_you',
