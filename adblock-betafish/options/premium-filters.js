@@ -114,7 +114,7 @@ async function getDefaultPFFilterUI(entry, isActiveLicense) {
   if (isActiveLicense) {
     const $checkBox = $('<input>')
       .attr('type', 'checkbox')
-      .attr('adblockId', entry.id)
+      .attr('data-url', entry.url)
       .attr('id', entry.id)
       .prop('checked', entry.isSelected);
 
@@ -233,7 +233,7 @@ $(async () => {
 
 const updateCheckbox = function (item, isChecked) {
   if (isPremiumFilterListURL(item.url)) {
-    $('#distraction-control-filter-lists-switch').prop('checked', isChecked);
+    $(`input[data-url="${item.url}"]`).prop('checked', isChecked);
   }
 };
 
