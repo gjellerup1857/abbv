@@ -1,3 +1,7 @@
+Version: 6.1.0, Date: 2024-05-08
+- Updated the extension engine dependency to 1.6.0
+- Updated AdBlock's description in the English locale files
+
 Version: 6.0.2, Date: 2024-04-30
 - Show the /update page to let Firefox users know about AdBlock Premium
 
