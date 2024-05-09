@@ -33,7 +33,12 @@ import {
   saveDomainPauses,
 } from './pause/background';
 
-import { getNewBadgeTextReason } from './alias/icon';
+import {
+  NEW_BADGE_REASONS,
+  getNewBadgeTextReason,
+  showIconBadgeCTA,
+} from './alias/icon';
+
 import { getUserId } from './id/background/index';
 import { initialize } from './alias/subscriptionInit';
 import { IPM as IPMTelemetry, TELEMETRY } from './telemetry/background';
@@ -301,6 +306,13 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
   sendResponse({});
 });
 
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.command !== 'removeCustomFilterForHost' || !message.host) {
+    return;
+  }
+  removeCustomFilterForHost(message.host);
+  sendResponse({});
+});
 
 // Reload already opened tab
 // Input:
@@ -489,7 +501,8 @@ const getCurrentTabInfo = function (secondTime, tabId) {
   });
 };
 
-const updateStorageKey = 'last_known_version';
+const premiumCtaViewed = 'premium_cta_viewed';
+const versionStorageKey = 'last_known_version';
 const isUpdatePageEngaged = true;
 
 const showUpdatePage = async function (details) {
@@ -567,6 +580,15 @@ const showUpdatePage = async function (details) {
   }
 };
 
+/*
+  If we call browser.storage.local.get with an undefined key, we get the whole list back.
+  This function passes false as the default result if the key does not exist,
+  so it works as we expect when checking for defined properties on an object.
+*/
+const getValueOrFalse = async (key) => {
+  const result = await browser.storage.local.get({ [key]: false });
+  return result[key];
+};
 
 browser.runtime.onInstalled.addListener(async (details) => {
   // Display beta page after each update for beta-users only
@@ -575,15 +597,23 @@ browser.runtime.onInstalled.addListener(async (details) => {
     browser.tabs.create({ url: 'https://getadblock.com/beta' });
   }
 
+  // Show the new callout to everyone for the new premium popup until they click
+  const alreadyViewedCta = await getValueOrFalse(premiumCtaViewed);
+  if (details.reason === 'update' && !alreadyViewedCta) {
+    await showIconBadgeCTA(NEW_BADGE_REASONS.UPDATE_FOR_EVERYONE);
+    void browser.storage.local.set({ [premiumCtaViewed]: true });
+  }
+
   // We want to move away from localStorage, so remove item if it exists.
   if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(updateStorageKey);
+    localStorage.removeItem(versionStorageKey);
   }
+
   if (isUpdatePageEngaged) {
     await showUpdatePage(details);
   }
   // Update version in browser.storage.local.
-  void browser.storage.local.set({ [updateStorageKey]: browser.runtime.getManifest().version });
+  void browser.storage.local.set({ [versionStorageKey]: browser.runtime.getManifest().version });
 });
 
 const openTab = function (url) {
@@ -668,6 +698,6 @@ Object.assign(self, {
   isSelectorExcludeFilter,
   pausedFilterText1,
   pausedFilterText2,
-  updateStorageKey,
+  versionStorageKey,
   getCustomFilterMetaData,
 });

@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 /* For ESLint: List any global identifiers used in this file below */
-/* global  */
+/* global browser */
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
 import abRecommendationData from './data/betafish-subscriptions.json';
@@ -26,6 +26,9 @@ const legacyDistractionControlIDs = {
   'distraction-control-newsletter': 'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
   'distraction-control-push': 'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
 };
+
+const v3URLCheck = (browser.runtime.getManifest().manifest_version === 2)
+  ? url => !url.includes('/v3/') : url => url.includes('/v3/');
 
 // Adapters & helpers to add the legacy AB 'id' to the ABP subscriptions
 // Also adds the 'language' and 'hidden' properties
@@ -51,7 +54,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     for (const url in abRecommendationData) {
       const subscription = abRecommendationData[url];
       const { adblockId } = subscription;
-      if (searchID === adblockId) {
+      if (searchID === adblockId && v3URLCheck(url)) {
         return url;
       }
     }

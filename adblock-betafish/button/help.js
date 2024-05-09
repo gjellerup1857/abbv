@@ -167,16 +167,6 @@ const transitionTo = function (segueToId, backIconClicked) {
       }
     }
   }
-  // disabled checkboxes (no click handler)
-  if (nextHelpPage.disabledCheckbox) {
-    const $checkboxContainer = $('<div class="disabledCheckbox-container">');
-    const $checkbox = $('<i class="material-icons md-18 disabledCheckbox">check_box</i>');
-    const $labelElem = $('<span></span>');
-    $labelElem.text(savedData.subTitleText);
-    $checkboxContainer.append($checkbox);
-    $checkboxContainer.append($labelElem);
-    $content.append($checkboxContainer);
-  }
   // buttons
   let multipleButton = false;
   if (Array.isArray(nextHelpPage.buttons)) {
@@ -286,10 +276,10 @@ const backClickHandler = function () {
 };
 
 const loadHTMLSegments = function () {
-  const helpSegueRequest = fetch('adblock-button-help-segue.html').then(response => response.text());
-  const helpOkayRequest = fetch('adblock-button-help-button.html').then(response => response.text());
-  const helpSectionRequest = fetch('adblock-button-help-section.html').then(response => response.text());
-  const helpMapRequest = fetch('adblock-button-help-map.json').then(response => response.json());
+  const helpSegueRequest = fetch('./button/help-segue.html').then(response => response.text());
+  const helpOkayRequest = fetch('./button/help-button.html').then(response => response.text());
+  const helpSectionRequest = fetch('./button/help-section.html').then(response => response.text());
+  const helpMapRequest = fetch('./button/help-map.json').then(response => response.json());
   return Promise.all([
     helpSegueRequest,
     helpOkayRequest,

@@ -56,14 +56,16 @@ function applyChanges(tabId, changes)
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1331746
     if (change == "iconPath" && "setIcon" in browser.action)
     {
-      return browser.action.setIcon({
-        tabId,
-        path: {
+      const path = {
           16: changes.iconPath.replace("$size", "16"),
           20: changes.iconPath.replace("$size", "20"),
           32: changes.iconPath.replace("$size", "32"),
           40: changes.iconPath.replace("$size", "40")
-        }
+      };
+
+      return browser.action.setIcon({
+        tabId,
+        path,
       });
     }
 

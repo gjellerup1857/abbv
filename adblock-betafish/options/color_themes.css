@@ -18,6 +18,7 @@
 #dark_theme {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
+  --popup-secondary-text-color: var(--gray4);
   --popup-accent-color: var(--gray2);
   --popup-separator-color: var(--gray3);
   --popup-accent-hovered-color: var(--gray3);
@@ -66,6 +67,9 @@
   --popup-dc-cta-close-background-color-on-hover: #a60000;
   --new-item-icon-text-color: #ffffff;
   --new-item-icon-bg-color: #e40d0d;
+  --toggle-foreground: var(--gray2);
+  --toggle-inactive-bg: var(--gray3);
+  --toggle-active-bg: #03bcfc;
 
   /* Additional for Options Page */
   --main-text-color: #f4f4f4;
@@ -142,6 +146,7 @@
 #default_theme {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: var(--gray1);
+  --popup-secondary-text-color: var(--gray3);
   --popup-accent-color: var(--gray3);
   --popup-separator-color: var(--gray5);
   --popup-accent-hovered-color: var(--gray2);
@@ -182,6 +187,9 @@
   --popup-dc-cta-close-background-color-on-hover: #ffd949;
   --new-item-icon-text-color: #000000;
   --new-item-icon-bg-color: #ffca00;
+  --toggle-foreground: white;
+  --toggle-inactive-bg: #dadada;
+  --toggle-active-bg: #2284f7;
 
   /* Additional for Options Page */
   --main-text-color: #666666;
@@ -259,6 +267,7 @@
 [data-theme-cta="solarized_theme"] {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: #90a2a2;
+  --popup-secondary-text-color: #90a2a2;
   --popup-accent-color: #90a2a2;
   --popup-separator-color: #2f5b61;
   --popup-accent-hovered-color: #b1c7c7;
@@ -300,6 +309,9 @@
   --popup-dc-cta-close-background-color-on-hover: #a60000;
   --new-item-icon-text-color: #ffffff;
   --new-item-icon-bg-color: #e40d0d;
+  --toggle-foreground: var(--popup-background-color);
+  --toggle-inactive-bg: var(--popup-main-text-color);
+  --toggle-active-bg: var(--red3);
 
   /* Additional for Options Page */
   --main-text-color: #90a2a2;
@@ -381,6 +393,7 @@
 [data-theme-cta="solarized_light_theme"] {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: #76898d;
+  --popup-secondary-text-color: #76898d;
   --popup-accent-color: #607c84;
   --popup-separator-color: #eee8d5;
   --popup-accent-hovered-color: #4c6369;
@@ -422,6 +435,9 @@
   --popup-dc-cta-close-background-color-on-hover: #a60000;
   --new-item-icon-text-color: #ffffff;
   --new-item-icon-bg-color: #e40d0d;
+  --toggle-foreground: var(--popup-card-background-color);
+  --toggle-inactive-bg: var(--popup-button-outline-color);
+  --toggle-active-bg: var(--red2);
 
   /* Additional for Options Page */
   --main-text-color: #607c84;
@@ -503,6 +519,7 @@
 #rebecca_purple_theme {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
+  --popup-secondary-text-color: white;
   --popup-accent-color: #b399cc;
   --popup-separator-color: #a98cc5;
   --popup-accent-hovered-color: white;
@@ -541,6 +558,9 @@
   --popup-dc-cta-background-color: #4ecdf9;
   --popup-dc-cta-color: #48226e;
   --popup-dc-cta-close-background-color-on-hover: #86e0ff;
+  --toggle-foreground: var(--purple);
+  --toggle-inactive-bg: var(--popup-accent-color);
+  --toggle-active-bg: var(--blue3);
 
   /* Aliases of other properties:
      These are currently all defined by other
@@ -554,6 +574,7 @@
 [data-theme-cta="watermelon_theme"] {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
+  --popup-secondary-text-color: white;
   --popup-accent-color: #f18686;
   --popup-separator-color: #f18686;
   --popup-accent-hovered-color: white;
@@ -593,6 +614,9 @@
   --popup-dc-cta-background-color: white;
   --popup-dc-cta-color: var(--gray1);
   --popup-dc-cta-close-background-color-on-hover: #f18686;
+  --toggle-foreground: var(--popup-background-color);
+  --toggle-inactive-bg: var(--popup-separator-color);
+  --toggle-active-bg: white;
 
   /* Aliases of other properties:
      These are currently all defined by other
@@ -611,6 +635,7 @@
 [data-theme-cta="ocean_theme"] {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
+  --popup-secondary-text-color: white;
   --popup-accent-color: #81defe;
   --popup-separator-color: #81defe;
   --popup-accent-hovered-color: white;
@@ -650,6 +675,9 @@
   --popup-dc-cta-background-color: white;
   --popup-dc-cta-color: var(--gray1);
   --popup-dc-cta-close-background-color-on-hover: #86e0ff;
+  --toggle-foreground: var(--blue2);
+  --toggle-inactive-bg: var(--popup-accent-color);
+  --toggle-active-bg: white;
 
   /* Aliases of other properties:
      These are currently all defined by other
@@ -668,6 +696,7 @@
 [data-theme-cta="sunshine_theme"] {
   /* Needed for Pop-up Menu */
   --popup-main-text-color: white;
+  --popup-secondary-text-color: white;
   --popup-accent-color: #ffd780;
   --popup-separator-color: #ffd780;
   --popup-accent-hovered-color: white;
@@ -707,6 +736,9 @@
   --popup-dc-cta-background-color: white;
   --popup-dc-cta-color: var(--gray1);
   --popup-dc-cta-close-background-color-on-hover: #ffd780;
+  --toggle-foreground: var(--popup-background-color);
+  --toggle-inactive-bg: var(--popup-separator-color);
+  --toggle-active-bg: white;
 
   /* Aliases of other properties:
      These are currently all defined by other

@@ -39,7 +39,7 @@ import ServerMessages from '../servermessages';
 import LocalDataCollection from '../localdatacollection';
 import ExcludeFilter from '../excludefilter';
 import messageValidator from './messagevalidator';
-import { getNewBadgeTextReason, showIconBadgeCTA } from '../alias/icon';
+import { getNewBadgeTextReason, resetBadgeText } from '../alias/icon';
 import { createFilterMetaData } from '../utilities/background/bg-functions';
 import { getReadyState } from '../testing/ready-state/background/index.ts';
 import { getInfoCommand, injectionOrigins } from '../../src/info-injector/shared';
@@ -217,9 +217,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'getDebugInfo':
       sendResponse({});
       return getDebugInfo();
-    case 'showIconBadgeCTA':
+    case 'resetBadgeText':
       sendResponse({});
-      showIconBadgeCTA(message.value);
+      resetBadgeText();
       return;
     case 'getNewBadgeTextReason':
       sendResponse({ reason: getNewBadgeTextReason() });
@@ -268,7 +268,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const { command } = message;
     switch (command) {
       case 'subscribe':
-        SubscriptionAdapter.subscribe({ id: message.id });
+        SubscriptionAdapter.subscribe({ adblockId: message.id });
         sendResponse({});
         break;
       case 'unsubscribe':

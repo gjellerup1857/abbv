@@ -138,11 +138,13 @@ export const License = (function getLicense() {
       ],
     },
   };
+
   (async () => {
     const userID = await getUserId();
     mabConfig.prod.payURL = `${mabConfig.prod.payURL}?u=${userID}`;
     mabConfig.dev.payURL = `${mabConfig.dev.payURL}&u=${userID}`;
   })();
+
   const MAB_CONFIG = isProd ? mabConfig.prod : mabConfig.dev;
 
   const sevenDayAlarmIdleListener = function (newState) {
@@ -168,7 +170,7 @@ export const License = (function getLicense() {
 
   const processSevenDayAlarm = function () {
     cleanUpSevenDayAlarm();
-    showIconBadgeCTA(true, NEW_BADGE_REASONS.SEVEN_DAY);
+    showIconBadgeCTA(NEW_BADGE_REASONS.SEVEN_DAY);
   };
 
   browser.alarms.onAlarm.addListener((alarm) => {
@@ -218,7 +220,7 @@ export const License = (function getLicense() {
     browser.alarms.get(License.sevenDayAlarmName).then((alarm) => {
       if (alarm && Date.now() > alarm.scheduledTime) {
         browser.alarms.clear(License.sevenDayAlarmName).then(() => {
-          showIconBadgeCTA(true, NEW_BADGE_REASONS.SEVEN_DAY);
+          showIconBadgeCTA(NEW_BADGE_REASONS.SEVEN_DAY);
           removeSevenDayAlarmStateListener();
           browser.storage.local.remove(License.sevenDayAlarmName);
         });
@@ -247,7 +249,7 @@ export const License = (function getLicense() {
                 const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
                 const diffDays = Math.round((now - installDate) / oneDay);
                 if (diffDays >= 7) {
-                  showIconBadgeCTA(true, NEW_BADGE_REASONS.SEVEN_DAY);
+                  showIconBadgeCTA(NEW_BADGE_REASONS.SEVEN_DAY);
                   removeSevenDayAlarmStateListener();
                   browser.storage.local.remove(License.sevenDayAlarmName);
                 }

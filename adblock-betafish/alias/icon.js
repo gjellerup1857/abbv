@@ -38,6 +38,9 @@ import {
   chromeStorageDeleteHelper
 } from '../utilities/background/bg-functions.js'
 
+import { FlavorType } from '~/utilities/background/user-agent-info.types';
+import { getUserAgentInfo } from '~/utilities/background/index';
+
 const ANIMATION_LOOPS = 3;
 const FRAME_IN_MS = 100;
 
@@ -292,10 +295,11 @@ renderIcons();
  *
  */
 export const NEW_BADGE_REASONS = {
+  FREE_DC_UPDATE: 'free dc update',
   SEVEN_DAY: 'seven day',
   UPDATE: 'update',
+  UPDATE_FOR_EVERYONE: 'update including premium',
   VPN_CTA: 'vpn cta',
-  FREE_DC_UPDATE: 'free dc update',
 };
 
 /**
@@ -305,48 +309,71 @@ export const NEW_BADGE_REASONS = {
 
 let newBadgeTextReason = "";
 
-export async function showIconBadgeCTA(showBadge, reason) {
-  if (!License.shouldShowPremiumCTA()) {
+function setNewText(badgeTextDetails, reason = '') {
+  // process all currently opened tabs
+  browser.tabs.query({}).then((tabs) => {
+    for (const tab of tabs) {
+      if (tab.url && tab.url.startsWith('http')) {
+        setBadge(tab.id, badgeTextDetails);
+        newBadgeTextReason = reason;
+      }
+    }
+  });
+}
+
+export async function resetBadgeText() {
+  // Restore show_statsinicon if we previously stored its value
+  const storedValue = await chromeStorageGetHelper(statsInIconKey);
+
+  if (typeof storedValue === 'boolean') {
+    Prefs.show_statsinicon = storedValue;
+    chromeStorageDeleteHelper(statsInIconKey); // remove the data, since we no longer need it
+    setNewText({ number: '' });
+  }
+}
+
+function getBadgeText (userAgent) {
+  // Firefox badge cutting off at 2.5 chars, so let's use an emoji
+  if (userAgent === FlavorType.firefox) {
+    return "💥";
+  }
+
+  const text = browser.i18n.getMessage('new_badge');
+
+  if (text.length < 5) {
+    return text.toUpperCase();
+  }
+
+  return 'New'.toUpperCase();
+}
+
+async function checkLicenseCTA() {
+  await License.ready();
+  return License.shouldShowPremiumCTA();
+}
+
+export async function showIconBadgeCTA(reason) {
+  const showCTA = reason === NEW_BADGE_REASONS.UPDATE_FOR_EVERYONE || await checkLicenseCTA();
+
+  if (!showCTA) {
     return;
   }
-  if (showBadge) {
-    let newBadgeText = browser.i18n.getMessage('new_badge');
-    // Text that exceeds 4 characters is truncated on the toolbar badge,
-    // so we default to English
-    if (!newBadgeText || newBadgeText.length >= 5) {
-      newBadgeText = 'New';
-    }
-    const storedValue = await chromeStorageGetHelper(statsInIconKey);
-    if (!storedValue) {  // don't overwrite the original, saved value
-      chromeStorageSetHelper(statsInIconKey, Prefs.show_statsinicon);
-    }
-    Prefs.show_statsinicon = false;
-    // wait 10 seconds to allow any other tasks to finish
-    setTimeout(() => {
-      // process all currently opened tabs
-      browser.tabs.query({}).then((tabs) => {
-        for (const tab of tabs) {
-          if (tab.url && tab.url.startsWith('http')) {
-            setBadge(tab.id, { color: '#03bcfc', number: newBadgeText });
-            newBadgeTextReason = reason || '';
-          }
-        }
-      });
-    }, 10000); // 10 seconds
-  } else {
-    // Restore show_statsinicon if we previously stored its value
-    const storedValue = await chromeStorageGetHelper(statsInIconKey);
-    if (typeof storedValue === 'boolean') {
-      Prefs.show_statsinicon = storedValue;
-      chromeStorageDeleteHelper(statsInIconKey); // remove the data, since we no longer need it
-      browser.tabs.query({}).then((tabs) => {
-        for (const tab of tabs) {
-          setBadge(tab.id, { number: '' });
-        }
-      });
-      browser.action.setBadgeText({ text: '' });
-    }
+
+  const storedValue = await chromeStorageGetHelper(statsInIconKey);
+  if (!storedValue) {  // don't overwrite the original, saved value
+    chromeStorageSetHelper(statsInIconKey, Prefs.show_statsinicon);
   }
+
+  Prefs.show_statsinicon = false;
+
+  const { flavor } = getUserAgentInfo();
+  const badgeTextDetails = {
+    color: '#093aec',
+    number: getBadgeText(flavor),
+  };
+
+  // wait 10 seconds to allow any other tasks to finish
+  setTimeout(setNewText.bind(this, badgeTextDetails), 10_000);
 };
 
 /**

@@ -17,11 +17,20 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, translate, storageGet, localizePage, storageSet,
-  selected, selectedOnce, showHelpSetupPage, i18nJoin, setLangAndDirAttributes */
+  selected, selectedOnce, showHelpSetupPage, setLangAndDirAttributes */
 
 let errorOccurred = false;
 
-const useFlexDisplayElements = ['hostname', 'domain_paused_subsection', 'allowlisted_subsection', 'channelname', 'disabled_site_title', 'div_sync_removed_error_msg'];
+const useFlexDisplayElements = [
+  'allowlist_yt_channel_section',
+  'allowlisted_subsection',
+  'channelname',
+  'disabled_site_title',
+  'div_sync_removed_error_msg',
+  'domain_paused_subsection',
+  'hostname',
+  'pause_subsection',
+];
 
 const betaExtId = 'pljaalgmajnlogcgiohkhdmgpomjcihk';
 
@@ -185,6 +194,27 @@ const closePopup = function () {
   window.close();
 };
 
+const shouldShowCTAOnSite = function () {
+  if (!pageInfo || !pageInfo.url || !pageInfo.url.hostname) {
+    return true;
+  }
+  if (pageInfo.url.hostname === 'www.youtube.com'
+    || pageInfo.url.hostname === 'www.twitch.tv') {
+    return false;
+  }
+  return true;
+};
+
+// This handles clicks on help icon from More Options and related sub-pages (aka
+// those with a modular header). It can be removed when we refactor
+// the help page to use subpages and links instead of mini-SPA. See button/header.js
+// for call
+const checkAndEnableHelp = function () {
+  if (document.location.search && document.location.search.includes('showHelp')) {
+    showHelpSetupPage();
+  }
+};
+
 const start = async function () {
   const userClosedCta = storageGet(popupMenuCtaClosedKey);
   const userClosedFreeDCCta = storageGet(popupMenuFreeDCCtaClosedKey);
@@ -197,12 +227,6 @@ const start = async function () {
       setLangAndDirAttributes();
     }
   });
-  // For better accessibility on pause/resume actions
-  let ariaLabel = i18nJoin('pause_on_this_site', 'adblock_will_pause_on_this_site');
-  $('#btn_pause_once').attr('aria-label', ariaLabel);
-  ariaLabel = i18nJoin('resume_blocking_ads_period', 'adblock_will_block_ads_again');
-  $('#btn_unpause_once').attr('aria-label', ariaLabel);
-  $('#btn_unpause_all').attr('aria-label', ariaLabel);
 
   localizePage();
 
@@ -234,7 +258,7 @@ const start = async function () {
     }
     const genMsgData = { command: 'recordGeneralMessage', msg: 'popup_opened', additionalParams: { isBadgeTextNew, reason: newBadgeTextReason } };
     sendMessageWithNoResponse(genMsgData);
-    sendMessageWithNoResponse({ command: 'showIconBadgeCTA', value: false });
+    sendMessageWithNoResponse({ command: 'resetBadgeText' });
     sendMessageWithNoResponse({ command: 'cleanUpSevenDayAlarm' });
 
     if (info.settings) {
@@ -242,12 +266,13 @@ const start = async function () {
     }
     $('body').attr('id', popupMenuTheme).data('theme', popupMenuTheme);
     $('.header-logo').attr('src', `icons/${popupMenuTheme}/logo.svg`);
+    $('#filtering_options_wrapper').attr('href', `adblock-button-filtering-options.html?tabId=${info.id}`);
 
     if (info && info.errorStr) {
       processError(info.errorStr, info.stack, info.message);
       return;
     }
-    $(window).on('unload', () => {
+    $(window).on('beforeunload', () => {
       if (!itemClicked) {
         sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'popup_closed' });
       }
@@ -266,22 +291,21 @@ const start = async function () {
     show(['svg_options']);
     if (info.paused) {
       parsedHostname = translate('disabled');
-      show(['hostname', 'primary_section', 'separatorA', 'div_all_paused_msg', 'all_paused_subsection', 'svg_options', 'help_link']);
+      show(['hostname', 'primary_section', 'div_all_paused_msg', 'all_paused_subsection', 'svg_options', 'help_link']);
     } else if (info.domainPaused) {
-      show(['hostname', 'primary_section', 'separatorA', 'div_domain_paused_msg', 'domain_paused_subsection', 'svg_options', 'help_link']);
+      show(['hostname', 'primary_section', 'div_domain_paused_msg', 'domain_paused_subsection', 'svg_options', 'help_link']);
     } else if (info.disabledSite) {
       show(['disabled_site_title', 'disabled_site_separator', 'disabled_site_section', 'svg_options', 'help_link']);
     } else if (info.whitelisted) {
-      show(['hostname', 'primary_section', 'separatorA', 'div_domain_allowlisted_msg', 'allowlisted_subsection', 'svg_options', 'help_link']);
+      show(['hostname', 'primary_section', 'div_domain_allowlisted_msg', 'allowlisted_subsection', 'svg_options', 'help_link']);
     } else {
-      show(['hostname', 'primary_section', 'separatorA', 'separatorB', 'block_counts', 'div_allowlist', 'div_blacklist', 'pause_subsection']);
-
-      $('#page_blocked_count').text(info.blockCountPage.toLocaleString());
-      $('#total_blocked_count').text(info.blockCountTotal.toLocaleString());
+      show(['hostname', 'primary_section', 'popup_sections', 'pause_subsection']);
     }
     if (parsedHostname) {
       $('#hostname').text(parsedHostname);
     }
+
+    checkAndEnableHelp();
 
     const disabledOrallowlisted = info.disabledSite || !info.whitelisted;
     const eligibleForUndo = !info.paused && !info.domainPaused && disabledOrallowlisted;
@@ -344,6 +368,7 @@ const start = async function () {
 
     // CTAs
     if (!userClosedVPNCta // VPN CTA
+      && shouldShowCTAOnSite()
       && !info.disabledSite
       && !info.whitelisted
     ) {
@@ -351,6 +376,7 @@ const start = async function () {
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'vpn_cta_seen' });
     } else if ( // Premium CTAs
       info.showMABEnrollment
+      && shouldShowCTAOnSite()
       && userClosedCta
       && showThemesCTA
       && userClosedFreeDCCta
@@ -358,12 +384,20 @@ const start = async function () {
       show(['div_premium_themes_cta']);
       $('#div_premium_themes_cta').attr('data-theme-cta', info.popupMenuThemeCTA);
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'premium_themes_cta_seen', additionalParams: { theme: info.popupMenuThemeCTA.replace('_theme', '') } });
-    } else if (info.showMABEnrollment && !userClosedCta && userClosedFreeDCCta) {
+    } else if (info.showMABEnrollment
+      && shouldShowCTAOnSite()
+      && !userClosedCta
+      && userClosedFreeDCCta) {
       show(['div_myadblock_enrollment_v2']);
-    } else if (info.showMABEnrollment && !userClosedFreeDCCta) {
+    } else if (info.showMABEnrollment
+      && shouldShowCTAOnSite()
+      && !userClosedFreeDCCta) {
       show(['div_free_dc_cta']);
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'free_dc_cta_seen' });
-    } else if (info.showDcCTA && !userClosedDCCta && !info.disabledSite) {
+    } else if (info.showDcCTA
+      && shouldShowCTAOnSite()
+      && !userClosedDCCta
+      && !info.disabledSite) {
       show(['div_premium_dc_cta']);
       sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'premium_dc_cta_seen' });
     }
@@ -417,33 +451,11 @@ const start = async function () {
       || info.disabledSite
       || info.whitelisted
     ) {
-      $('#block_counts').hide();
+      $('#popup_sections').hide();
     }
   }
 
   // Click handlers
-
-  selected('.header-logo', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'titletext_clicked' });
-    const homepageURL = 'https://getadblock.com/';
-    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: homepageURL });
-    closePopup();
-  });
-
-  selected('#btn_enable_adblock_on_this_page', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'enable_adblock_clicked' });
-    if (pageInfo.url) {
-      const response = await browser.runtime.sendMessage({ command: 'tryToUnwhitelist', url: pageInfo.url.href, id: pageInfo.id });
-      if (response) {
-        await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
-        browser.tabs.reload();
-        closePopup();
-      } else {
-        $('#div_status_allowlisted').replaceWith(translate('disabled_by_filter_lists'));
-      }
-    }
-  });
-
   selected('#btn_unpause_all', async () => {
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'unpause_clicked' });
     await browser.runtime.sendMessage({ command: 'adblockIsPaused', newValue: false });
@@ -456,15 +468,6 @@ const start = async function () {
     if (pageInfo.url) {
       await browser.runtime.sendMessage({ command: 'adblockIsDomainPaused', activeTab: { url: pageInfo.url.href, id: pageInfo.id }, newValue: false });
       await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
-      closePopup();
-    }
-  });
-
-  selected('#div_undo', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'undo_clicked' });
-    if (pageInfo.url) {
-      const host = pageInfo.url.hostname;
-      await browser.runtime.sendMessage({ command: 'confirmRemovalOfCustomFiltersOnHost', host, activeTabId: pageInfo.id });
       closePopup();
     }
   });
@@ -490,51 +493,6 @@ const start = async function () {
   selected('#div_manage_subscribed_channel', async () => {
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'manage_subscribed_clicked' });
     await browser.runtime.sendMessage({ command: 'openYTManagedSubPage' });
-    closePopup();
-  });
-
-  selected('#btn_pause_once', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'domain_pause_clicked' });
-    if (pageInfo.url) {
-      await browser.runtime.sendMessage({ command: 'adblockIsDomainPaused', activeTab: { url: pageInfo.url.href, id: pageInfo.id }, newValue: true });
-      await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
-      closePopup();
-    }
-  });
-
-  selected('#div_blacklist', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'blacklist_clicked' });
-    await browser.runtime.sendMessage({ command: 'showBlacklist', nothingClicked: true, tabId: pageInfo.id });
-    closePopup();
-  });
-
-  selected('#div_allowlist', async () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'whitelist_domain_clicked' });
-    await browser.runtime.sendMessage({ command: 'showWhitelist', tabId: pageInfo.id });
-    closePopup();
-  });
-
-  selected('#btn_pause_always', async () => {
-    browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'allowlist_domain_clicked' });
-    if (pageInfo.url) {
-      await browser.runtime.sendMessage({ command: 'createDomainAllowlistFilter', url: pageInfo.url.href, origin: 'popup' });
-      await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
-      browser.tabs.reload();
-      closePopup();
-    }
-  });
-
-  selected('#svg_options', async () => {
-    storageSet(popupMenuDCCtaClosedKey, true);
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'options_clicked' });
-    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html#general') });
-    closePopup();
-  });
-
-  selected('#premium_status_msg', async () => {
-    storageSet(popupMenuDCCtaClosedKey, true);
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'premium_options_clicked' });
-    await browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html#mab') });
     closePopup();
   });
 
@@ -610,15 +568,6 @@ const start = async function () {
     storageSet(popupMenuDCCtaClosedKey, true);
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'premium_dc_cta_closed' });
     $('#div_premium_dc_cta').slideUp();
-  });
-
-  selected('#help_link', () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'feedback_clicked' });
-    if (!pageInfo.disabledSite) {
-      showHelpSetupPage();
-    } else {
-      sendMessageWithNoResponse({ command: 'openTab', urlToOpen: 'https://help.getadblock.com/' });
-    }
   });
 
   selected('#sync_removed_error_msg_part_1, #sync_removed_error_msg_part_2, #sync_removed_error_icon ', async () => {

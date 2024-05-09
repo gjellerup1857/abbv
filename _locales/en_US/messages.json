@@ -1185,7 +1185,35 @@
   },
   "popup_menu_title": {
     "message": "AdBlock Popup Menu",
-    "description": "Title for the popup menu."
+    "description": "Title for the popup menu first page."
+  },
+  "onpage_options_menu_title": {
+    "message": "AdBlock Popup Menu: More Options",
+    "description": "Title for the popup menu more options page."
+  },
+  "onpage_options_cookie_confirm_page_title": {
+    "message": "AdBlock Popup Menu: Cookie Consent Cutter Confirmation",
+    "description": "Title for the popup menu, cookie cutter confirmation page."
+  },
+  "onpage_options_distractions_confirm_page_title": {
+    "message": "AdBlock Popup Menu: Distraction Control Confirmation",
+    "description": "Title for the popup menu, distraction control confirmation page."
+  },
+  "cookie_confirm_text": {
+    "message": "By turning this feature on you acknowledge that it hides tracking consent requests. By default, we block third-party trackers, though not first party trackers, which are exclusive to the website you may visit and important for your user experience.",
+    "description": "Onscreen text for the popup menu, cookie cutter confirmation page."
+  },
+  "confirm_cookie_enable": {
+    "message": "Confirm Cookie Consent Cutter enablement",
+    "description": "Aria label to confirm letting the user cancel the result of running the blocklist wizard."
+  },
+  "confirm_distractions_enable": {
+    "message": "Confirm Distraction Control enablement",
+    "description": "Aria label to confirm letting the user cancel the result of running the blocklist wizard."
+  },
+  "onpage_options_confirm_undo_title": {
+    "message": "AdBlock Popup Menu: Confirm Hide Undo",
+    "description": "Title for the popup menu, hide undo confirmation page."
   },
   "block_an_ad_on_this_page": {
     "message": "Hide something on this page",
@@ -1275,10 +1303,6 @@
     "message": "Clean up this list",
     "description": "Label at the bottom of the 'Customize' tab of the Options page"
   },
-  "disabled_by_filter_lists": {
-    "message": "Sorry, AdBlock is disabled on this page by one of your filter lists.",
-    "description": "Message shown when a user tries to un-allowlist a web page that has been allowlisted by a rule in a subscribed filter list."
-  },
   "disabled_by_filter_lists_yt": {
     "message": "Sorry, AdBlock on YouTube is disabled on this page by one of your options.",
     "description": "Message shown when a user tries to un-allowlist a web page that has been allowlisted by a rule in a subscribed filter list. Specific to the 'AdBlock on YouTube' extension."
@@ -1290,6 +1314,14 @@
   "open_allowlist_wizard": {
     "message": "More pause options",
     "description": "Menu entry to open the allowlist wizard"
+  },
+  "more_options_hover": {
+    "message": "More",
+    "description": "Title for on-page options hover label"
+  },
+  "more_options_title": {
+    "message": "More Options",
+    "description": "Title for on-page options page"
   },
   "disabled_site_title": {
     "message": "Nothing to block here!",
@@ -1358,7 +1390,7 @@
     "description": "Message shown on the premium tab of the option page when user is a licensed premium user"
   },
   "unpause_adblock": {
-    "message": "Unpause AdBlock",
+    "message": "Resume Ad Blocking",
     "description": "Link text to start blocking ads again, displayed immediately after 'AdBlock is paused'"
   },
   "domain_unpause_adblock": {
@@ -1412,6 +1444,10 @@
   "undo_last_block_site": {
     "message": "Undo my hidden items",
     "description": "Menu entry to let the user cancel the result of running the blocklist wizard."
+  },
+  "confirm_undo_last_block_site": {
+    "message": "Confirm undo my hidden items",
+    "description": "Aria label to confirm letting the user cancel the result of running the blocklist wizard."
   },
   "dont_run_on_this_page": {
     "message": "Don't run on this page",
@@ -1533,16 +1569,24 @@
     "message": "Try the AdBlock Mac app",
     "description": "part two of the message to safari users on the popup menu"
   },
-  "blocked_ads": {
-    "message": "Blocked ads:",
-    "description": "Title for toolbar icon menu section showing number of ads blocked"
+  "block_ads": {
+    "message": "Block Ads",
+    "description": "Title for popup block showing blocked ads stats."
+  },
+  "skip_walls": {
+    "message": "Skip Cookie Walls",
+    "description": "Title for popup block showing skip cookies callout or toggle."
+  },
+  "block_distractions": {
+    "message": "Block Distractions",
+    "description": "Title for popup block showing distractions callout or toggle."
   },
   "blocked_n_on_this_page": {
     "message": "$count$ on this page",
     "description": "Shown below the 'Blocked ads:' message. Shows the number of ads blocked on this page. $count$ will be a number between 1 and 999.",
     "placeholders": {
       "count": {
-        "content": "[[123]]",
+        "content": "[[$1]]",
         "example": "123"
       }
     }
@@ -1552,7 +1596,7 @@
     "description": "Shown below the 'Blocked ads:' message. Shows the number of ads blocked since AdBlock was installed. $count$ will be a number between 1 and 999,999,999.",
     "placeholders": {
       "count": {
-        "content": "[[123,456]]",
+        "content": "[[$1]]",
         "example": "123,456"
       }
     }
@@ -2925,10 +2969,6 @@
     "message": "Our team has been alerted and will investigate further.",
     "description": "Text for help flow in popup menu."
   },
-  "adblock_logo": {
-    "message": "AdBlock logo",
-    "description": "Text in the alt attribute of an AdBlock logo image."
-  },
   "example_themes": {
     "message": "Example themes",
     "description": "Text in the alt attribute of an image in the Options page mab that visualizes the themes feature."
@@ -3037,14 +3077,6 @@
     "message": "options page",
     "description": "General text used to define the extension options page."
   },
-  "pause_on_this_site": {
-    "message": "Pause on this site:",
-    "description": "First sentence in the aria-label of the pop-up menu action to pause blocking ads on this site. This will be followed by the options 'Once' and 'Always'"
-  },
-  "adblock_will_pause_on_this_site": {
-    "message": "If clicked, AdBlock will stop blocking ads on this site.",
-    "description": "Second sentence in the aria-label of the pop-up menu action to pause blocking ads on this site."
-  },
   "pause_on_all_sites": {
     "message": "Pause on all sites.",
     "description": "First sentence in the aria-label of the pop-up menu action to pause blocking ads on all sites."
@@ -3052,14 +3084,6 @@
   "adblock_will_pause_on_all_sites": {
     "message": "If clicked, AdBlock will stop blocking ads on all sites.",
     "description": "Second sentence in the aria-label of the pop-up menu action to pause blocking ads on all sites."
-  },
-  "adblock_will_block_ads_again": {
-    "message": "If clicked, AdBlock will block ads again.",
-    "description": "Second sentence in the aria-label of the pop-up menu action to resume blocking ads."
-  },
-  "resume_blocking_ads_period": {
-    "message": "Resume blocking ads.",
-    "description": "First sentence in the aria-label of the pop-up menu action to resume blocking ads."
   },
   "do_not_swap_ads": {
     "message": "Don't swap ads",
@@ -3164,6 +3188,10 @@
   "get_distractioncontrol": {
     "message": "Get Distraction Control",
     "description": "Part 2 of a call-to-action on the Popup menu"
+  },
+  "block_common_distractions_popup_text": {
+    "message": "Block common distractions like auto-play videos",
+    "description": "Updated popup menu call to action"
   },
   "notification_antiadblock_message": {
     "message": "This site has been known to show targeted messages to AdBlock users. Do you want AdBlock to hide targeted messages?"
@@ -3308,6 +3336,10 @@
   "back_help_flow": {
     "message": "Go back one step in the help flow.",
     "description": "Aria label for back button in help flow (in popup menu)"
+  },
+  "back_flow_general": {
+    "message": "Go back one step.",
+    "description": "Aria label for back button in in popup menu subpages"
   },
   "close_help_flow": {
     "message": "Close help flow and go back to the pop-up menu.",
@@ -3605,14 +3637,6 @@
     "message": "Subscribe to at least one YouTube channel to manage ads on your subscribed channels.",
     "description": "The message text on the YouTube on page panel; shown on https://www.youtube.com/feed/channels"
   },
-  "once": {
-    "message": "Once",
-    "description": "The button text on the popup menu"
-  },
-  "always": {
-    "message": "Always",
-    "description": "The button text on the popup menu"
-  },
   "enable_on_this_site": {
     "message": "Enable AdBlock On This Site",
     "description": "GFC messaging on the popup menu"
@@ -3673,6 +3697,10 @@
     "message": "Hide most cookie warnings on popular sites.",
     "description": "Description of the Premium filter lists"
   },
+  "cookie_consent_cutter_popup_text": {
+    "message": "Hide most cookie banners on popular sites",
+    "description": "Updated popup menu call to action"
+  },
   "cookie_consent_cutter_desclaimer_I": {
     "message": "By turning this feature on you acknowledge that it hides tracking consent requests.",
     "description": "Legal desclaimer of the Cookie Consent Cutter Premium filter lists"
@@ -3707,6 +3735,10 @@
   },
   "hide_most_cookie": {
     "message": "Hide most cookie warnings on popular sites.",
+    "description": "Description of the Cookie Consent Cutter option"
+  },
+  "hide_most_cookie_no_period": {
+    "message": "Hide most cookie warnings on popular sites",
     "description": "Description of the Cookie Consent Cutter option"
   },
   "cookie_consent_cutter_preview_example": {
@@ -3766,8 +3798,12 @@
     "description": "text on panel in the help flow"
   },
   "no_thanks": {
-    "message": "No thanks",
-    "description": "button text in the help flow"
+    "message": "No Thanks",
+    "description": "button text on popup flows"
+  },
+    "no_thanks_label": {
+    "message": "Cancel this action and go back",
+    "description": "label text in the help flow"
   },
   "where_to_enable_pf": {
     "message": "If you change your mind you can enable additional Distraction Control features [[here]].",
@@ -3850,5 +3886,9 @@
   "sync_confirmation_message_IV": {
     "message": "\nIf you don’t agree with the data collection, you can select the 'Cancel' option.",
     "description": "Consent text to be shown to Premium Firefox users when enabling the Premium Sync feature"
+  },
+  "adblock_logo": {
+    "message": "AdBlock logo",
+    "description": "Text in the alt attribute of an AdBlock logo image."
   }
 }

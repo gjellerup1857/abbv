@@ -82,6 +82,21 @@ export default {
         ],
       },
       {
+        dest: 'button',
+        src: [
+          'adblock-betafish/button/**/*.html',
+          'adblock-betafish/button/**/*.js',
+          'adblock-betafish/button/**/*.css',
+          'adblock-betafish/button/**/*.json',
+        ],
+        ignore: [
+          'adblock-betafish/button/filtering-options.html',
+          'adblock-betafish/button/cookie-confirm.html',
+          'adblock-betafish/button/distractions-confirm.html',
+          'adblock-betafish/button/undo-allow-confirm.html',
+        ],
+      },
+      {
         dest: 'icons',
         src: [
           'icons/*.png',
@@ -354,40 +369,20 @@ export default {
         src: 'adblock-betafish/button/popup.html',
       },
       {
-        dest: 'adblock-button-popup.js',
-        src: 'adblock-betafish/button/popup.js',
+        dest: 'adblock-button-filtering-options.html',
+        src: 'adblock-betafish/button/filtering-options.html',
       },
       {
-        dest: 'adblock-button-popup.css',
-        src: 'adblock-betafish/button/popup.css',
+        dest: 'adblock-button-cookie-confirm.html',
+        src: 'adblock-betafish/button/cookie-confirm.html',
       },
       {
-        dest: 'adblock-button-help-segue.html',
-        src: 'adblock-betafish/button/help-segue.html',
+        dest: 'adblock-button-distractions-confirm.html',
+        src: 'adblock-betafish/button/distractions-confirm.html',
       },
       {
-        dest: 'adblock-button-help-section.html',
-        src: 'adblock-betafish/button/help-section.html',
-      },
-      {
-        dest: 'adblock-button-help-button.html',
-        src: 'adblock-betafish/button/help-button.html',
-      },
-      {
-        dest: 'adblock-button-help.js',
-        src: 'adblock-betafish/button/help.js',
-      },
-      {
-        dest: 'adblock-button-help.css',
-        src: 'adblock-betafish/button/help.css',
-      },
-      {
-        dest: 'adblock-button-help-map.json',
-        src: 'adblock-betafish/button/help-map.json',
-      },
-      {
-        dest: 'adblock-button-help-action.js',
-        src: 'adblock-betafish/button/help-action.js',
+        dest: 'adblock-button-undo-allow-confirm.html',
+        src: 'adblock-betafish/button/undo-allow-confirm.html',
       },
       {
         dest: 'adblock-uiscripts-adblock-wizard.css',

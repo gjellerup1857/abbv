@@ -15,8 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "adblock.css";
-@import "adblock-color-themes.css";
+@import "../adblock.css";
+@import "../adblock-color-themes.css";
 
 /* GENERAL */
 
@@ -24,25 +24,34 @@ body {
   color: var(--popup-main-text-color);
   background-color: var(--popup-background-color);
 }
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
 #wrapper {
   font-size: 15px;
   margin: 0px 0px 20px 0px;
   width: 320px;
   max-height: 606px;
 }
+
 .separator {
   height: 1px;
   background-color: var(--popup-separator-color);
   opacity: 0.5;
   margin: 0px;
 }
+
 .menu-entry {
   cursor: pointer;
   color: var(--popup-link-text);
 }
+
 .right {
   float: right;
 }
+
 .left {
   float: left;
 }
@@ -54,6 +63,7 @@ body {
   height: 32px;
   width: auto;
 }
+
 #premium_status_msg {
   display: none;
   font-weight: bold;
@@ -69,34 +79,42 @@ body {
   text-transform: uppercase;
   cursor: pointer;
 }
+
 #header-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 #header-icons {
-  width: 45px;
+  width: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: space-around;
   position: relative;
 }
+
 #header-icons .material-icons {
   color: var(--popup-accent-color);
 }
+
 #header-icons .material-icons:hover {
   color: var(--popup-accent-hovered-color);
 }
+
 #premium_status_msg:hover {
   border-color: var(--popup-accent-hovered-color);
   background-color: var(--popup-accent-hovered-color);
 }
+
 #header-icons .material-icons:focus {
   outline: var(--popup-url-text-color) auto 5px;
   opacity: 1;
 }
+
 #help-icon-tooltip,
-#options-icon-tooltip {
+#options-icon-tooltip,
+#more-icon-tooltip {
   padding: 8px;
   display: none;
   top: 32px;
@@ -113,15 +131,32 @@ body {
   background-color: rgba(51, 51, 51, 0.8);
   border-radius: 4px;
 }
+
 #help-icon-tooltip {
   transform: translateX(-20%);
 }
+
 #options-icon-tooltip {
   right: -12px;
 }
+
+#more-icon-tooltip {
+  transform: translateX(2rem);
+}
+
 #help_link:hover ~ #help-icon-tooltip,
-#svg_options:hover ~ #options-icon-tooltip {
+#svg_options:hover ~ #options-icon-tooltip,
+#filtering_options_wrapper:hover ~ #more-icon-tooltip {
   display: flex;
+}
+
+#filtering_options_wrapper.disabled {
+  opacity: 50%;
+  pointer-events: none;
+}
+
+#filtering_options_wrapper.disabled:hover {
+  cursor: not-allowed;
 }
 
 #titletext {
@@ -130,38 +165,24 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
 #help_link {
   margin-right: 2px;
 }
+
 #primary_section {
   display: none;
 }
+
 .primary_section {
   width: 288px;
   background-color: var(--popup-card-background-color);
   margin-left: 16px;
   margin-right: 16px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 0 1rem 0.25rem;
   border-radius: 4px;
 }
 
-/* BLOCKED COUNT */
-
-#block_counts {
-  display: none;
-  margin-top: 16px;
-}
-#block_counts.remove-bottom-margin {
-  margin-bottom: 0px;
-}
-.header {
-  font-weight: bold;
-}
-.block_count_number {
-  font-weight: bold;
-  color: var(--block-count-color);
-}
 a {
   color: var(--popup-link-text);
   text-decoration: var(--popup-link-text-decoration);
@@ -179,17 +200,21 @@ a {
   border-radius: 4px;
   min-height: 36px;
 }
+
 .premium-cta .cta-message {
   margin-left: 8px;
 }
+
 .premium-cta:hover .cta-message > span,
 .premium-cta:hover .dc-cta-message > span {
   display: none;
 }
+
 .premium-cta:hover .cta-message::after,
 .premium-cta:hover .dc-cta-message::after {
   font-weight: bold;
 }
+
 .cta-description {
   flex-grow: 1;
   display: flex;
@@ -197,28 +222,38 @@ a {
   padding: 0px 16px;
   cursor: pointer;
 }
+
 .dc-cta-description {
   padding-left: 16px;
   padding-right: 10px;
 }
+
 button.premium-cta-close {
   display: none;
   width: 28px;
   height: auto;
   border-radius: 0 4px 4px 0;
+  border-width: 0;
+  background-color: var(--popup-help-button-bg-color);
+  color: var(--popup-button-reenable-text-color);
+  font-size: 15px;
 }
+
 button.premium-dc-cta-close {
   width: 40px;
 }
+
 button.premium-cta-close:hover {
   box-shadow: none;
 }
+
 .premium-cta:hover .premium-cta-close,
 #vpn_cta_close {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .newText_v2 {
   color: white;
   background-color: #03bcfc;
@@ -228,33 +263,41 @@ button.premium-cta-close:hover {
   padding: 1px 5px;
   line-height: normal;
 }
+
 #mab_new_cta_close,
 #div_free_dc_cta_close {
   background-color: #03bcfc;
 }
+
 .div_vpn_cta_bold {
   font-weight: bold;
 }
+
 #mab_new_cta_close > i,
 #div_free_dc_cta_close > i {
   color: white;
 }
+
 #vpn_cta_close {
   background-color: var(--popup-card-background-color);
 }
+
 #vpn_cta_close_icon {
   color: var(--popup-vpn-cta-close-icon-color);
   background-color: var(--popup-card-background-color);
 }
+
 .vpn-top-row {
   line-height: 140%;
 }
+
 .vpn-button-row {
   margin-top: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .vpn-cta-button {
   border-radius: 3px;
   border-width: 0;
@@ -271,49 +314,62 @@ button.premium-cta-close:hover {
   color: white;
   background-color: #2284f7;
 }
+
 #div_vpn_cta:hover {
   background-color: var(--popup-vpn-cta-hover-bg-color);
   color: var(--popup-vpn-cta-hover-color);
 }
+
 #div_vpn_cta:hover button,
 #div_vpn_cta:hover #vpn_cta_close_icon {
   background-color: var(--popup-vpn-cta-hover-close-bg-color);
   color: var(--popup-vpn-cta-hover-close-color);
 }
+
 #div_premium_themes_cta {
   color: var(--popup-themes-cta-text);
   background: var(--popup-themes-cta-background);
 }
+
 #div_premium_themes_cta .cta-description {
   padding: 8px 10px;
 }
+
 #div_premium_themes_cta:not(:hover) .cta-description > i {
   color: var(--popup-themes-cta-icon);
 }
+
 #div_premium_themes_cta:hover {
   color: var(--popup-themes-cta-color-on-hover);
   background-color: var(--popup-themes-cta-background-on-hover);
 }
+
 #close-themes-cta {
   background-color: rgba(255, 255, 255, 0.25);
 }
+
 #close-themes-cta > i {
   color: var(--popup-themes-cta-color-on-hover);
 }
+
 .separator.hide-on-new-cta-hover {
   background-color: var(--popup-background-color);
 }
+
 .premium-dc-cta {
   font-size: 13px;
   background-color: var(--popup-dc-cta-background-color);
   color: var(--popup-dc-cta-color);
 }
+
 .premium-dc-cta-close i {
   color: var(--popup-dc-cta-color);
 }
+
 .premium-dc-cta:hover .dc-cta-message {
   font-weight: bold;
 }
+
 .premium-dc-cta:hover .premium-dc-cta-close {
   background-color: var(--popup-dc-cta-close-background-color-on-hover);
 }
@@ -326,6 +382,7 @@ button.premium-cta-close:hover {
   padding: 16px;
   border-radius: 4px;
 }
+
 #div_sync_removed_error_msg {
   margin: 0 16px 16px 16px;
   padding-left: 8px;
@@ -334,6 +391,7 @@ button.premium-cta-close:hover {
   align-items: center;
   cursor: pointer;
 }
+
 #div_sync_outofdate_error_msg,
 #div_sync_error_msg,
 #div_sync_outofdate_error_msg a,
@@ -345,39 +403,48 @@ button.premium-cta-close:hover {
   cursor: pointer;
   font-size: 14px;
 }
+
 #div_sync_outofdate_error_msg,
 #div_sync_error_msg,
 #div_sync_removed_error_msg {
   cursor: unset;
   display: none;
 }
+
 #div_sync_removed_error_msg.div_sync_removed_error_msg_hovered {
   background-color: white;
   color: #2284f7;
 }
+
 #sync_removed_error_msg_part_1,
 #sync_removed_error_msg_part_2 {
   display: none;
   cursor: pointer;
 }
+
 #div_sync_outofdate_error_msg a span {
   color: var(--sync-msg-color);
   text-decoration: underline;
   padding: 0px 0px 0px 0px;
 }
+
 #div_sync_outofdate_error_msg a:hover {
   font-weight: normal;
 }
+
 #div_sync_outofdate_error_msg a span:hover {
   font-weight: normal;
 }
+
 #sync_removed_error_icon {
   margin-right: 8px;
 }
+
 #sync_removed_error_icon.removed_error_icon_hovered {
   background-color: var(--sync-msg-color);
   color: var(--sync-error-msg-background-color);
 }
+
 #sync_removed_error_close {
   width: 36px;
   height: 36px;
@@ -386,6 +453,7 @@ button.premium-cta-close:hover {
   background-color: var(--sync-error-msg-background-color);
   color: var(--sync-msg-color);
 }
+
 #sync_removed_error_close.sync_removed_error_close_hovered {
   background-color: #999999;
   color: white;
@@ -398,16 +466,19 @@ button.premium-cta-close:hover {
 #btn_enable_adblock_on_this_page {
   width: 288px;
 }
+
 #btn_unpause_once:hover,
 #btn_unpause_all:hover,
 #btn_enable_adblock_on_this_page:hover {
   color: var(--popup-button-reenable-hovered-text-color);
   background-color: var(--popup-button-reenable-hovered-bg-color);
 }
+
 .popup-btn.withBorder {
   border: 0.5px solid;
   border-color: var(--popup-button-outline-color);
 }
+
 .popup-btn {
   height: 36px;
   width: 122px;
@@ -421,39 +492,33 @@ button.premium-cta-close:hover {
   padding: 0px;
   font-weight: normal;
 }
+
 .popup-btn:hover {
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.15);
 }
+
 .popup-btn.grey {
   color: var(--popup-button-text);
   background-color: var(--popup-button-background-color);
 }
+
 .popup-btn.white {
   color: var(--popup-button-reenable-text-color);
   background-color: var(--popup-button-reenable-bg-color);
-}
-#btn_pause_once {
-  margin-right: 8px;
 }
 
 /* pause */
 
 #pause_subsection {
   display: none;
-  margin-top: 16px;
+  margin: 0.75rem 0;
 }
 
 #btn_row {
   margin-top: 12px;
   margin-bottom: 24px;
-}
-
-#more_options {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  line-height: 145%;
 }
 
 #hostname,
@@ -476,9 +541,9 @@ button.premium-cta-close:hover {
   padding-top: 16px;
   padding-bottom: 48px;
 }
+
 #domain_paused_subsection,
-#all_paused_subsection,
-#allowlisted_subsection {
+#all_paused_subsection {
   display: none;
   width: 288px;
   margin-left: 16px;
@@ -496,20 +561,24 @@ button.premium-cta-close:hover {
   margin-bottom: 16px;
   padding-bottom: 16px;
 }
+
 .channel_name_row {
   display: flex;
   justify-content: center;
   align-content: center;
 }
+
 .channel_icon {
   display: flex;
   justify-content: center;
   flex-direction: column;
   margin-right: 8px;
 }
+
 #div_manage_subscribed_channel {
   padding-top: 12px;
 }
+
 #btn_allowlist_yt_channel,
 #btn_allowlist_twitch_channel {
   width: 256px;
@@ -518,12 +587,15 @@ button.premium-cta-close:hover {
   align-items: center;
   text-align: center;
 }
+
 #twitch_channel_icon {
   color: var(--popup-twitch-icon-color);
 }
+
 #yt_channel_icon {
   color: var(--popup-yt-icon-color);
 }
+
 #allowlist_yt_channel_section,
 #allowlisted_yt_channel_section,
 #allowlist_twitch_channel_section,
@@ -531,9 +603,15 @@ button.premium-cta-close:hover {
 #disabled_site_section {
   display: none;
 }
+
 #allowlisted_yt_channel_section,
 #allowlisted_twitch_channel_section {
   padding-bottom: 68px;
+}
+
+#allowlist_yt_channel_section {
+  flex-direction: column;
+  align-items: center;
 }
 
 /* other, misc */
@@ -543,7 +621,16 @@ button.premium-cta-close:hover {
   height: 233px;
 }
 
-/* RTL Language Specific rules */
-html[dir="rtl"] #blocked_n_in_total {
-  float: left;
+#primary_section.fade-in {
+  animation: fade-in 0.45s;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
