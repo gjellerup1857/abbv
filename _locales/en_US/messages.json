@@ -3801,7 +3801,7 @@
     "message": "No Thanks",
     "description": "button text on popup flows"
   },
-    "no_thanks_label": {
+  "no_thanks_label": {
     "message": "Cancel this action and go back",
     "description": "label text in the help flow"
   },
