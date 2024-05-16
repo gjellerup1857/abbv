@@ -30,12 +30,19 @@
     <script src="button/filtering-options.js" type="module"></script>
     <script src="button/header.js" type="module"></script>
   </head>
+
   <body style="overflow: hidden">
     <div id="wrapper" class="page-container">
       <main class="primary_section animate-in">
         <subsection-navigation data-title="more_options_title"></subsection-navigation>
         <div id="separator_help" class="separator" style=""></div>
         <div class="menu-list">
+          <menu-link-button
+            data-name="pauseAlways"
+            data-click-handler="pauseAlways"
+            data-i18n="pause_always"
+          >
+          </menu-link-button>
           <menu-link-button
             data-name="allowlistWizard"
             data-click-handler="openAllowListWizard"

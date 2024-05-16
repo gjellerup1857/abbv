@@ -28,8 +28,8 @@ import {
   sendMessageWithNoResponse,
 } from '../utils.js';
 
-async function pauseAll() {
-  sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'allowlist_domain_clicked' });
+async function pauseOnce() {
+  sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'domain_pause_clicked' });
 
   if (!this.pageInfo.url) {
     return;
@@ -37,7 +37,7 @@ async function pauseAll() {
 
   const pageUrl = new URL(this.pageInfo.url);
   const { href } = pageUrl;
-  await browser.runtime.sendMessage({ command: 'createDomainAllowlistFilter', url: href, origin: 'popup' });
+  await browser.runtime.sendMessage({ command: 'adblockIsDomainPaused', activeTab: { url: href, id: this.pageInfo.id }, newValue: true });
   await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
   browser.tabs.reload();
   closePopup();
@@ -81,7 +81,7 @@ async function addSubscription(id) {
 const actionHandlers = {
   confirmCookie: () => addSubscription(COOKIE_FILTER_KEY),
   confirmDistractions: () => addSubscription(DISTRACTIONS_KEY),
-  pauseAll,
+  pauseOnce,
   resumeThisPage,
   undoAllowlist,
 };
