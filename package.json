@@ -77,7 +77,7 @@
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#bc901cf04c920371b0763459241575ea70b0a76a",
     "@eyeo/snippets": "1.2.2",
-    "@eyeo/webext-ad-filtering-solution": "1.6.0",
+    "@eyeo/webext-ad-filtering-solution": "1.6.1",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
