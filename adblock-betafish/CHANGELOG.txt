@@ -1,3 +1,6 @@
+Version: 6.1.1, Date: 2024-05-17
+- Updated the extension engine dependency to 1.6.1
+
 Version: 6.1.0, Date: 2024-05-08
 - Updated the extension engine dependency to 1.6.0
 - Updated AdBlock's description in the English locale files
