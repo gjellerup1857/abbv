@@ -26,7 +26,7 @@ stages:
   - lint
   - build
   - check_filesizes
-  - testpages
+  - compliance
 
 ################################################################################
 # Test
@@ -115,8 +115,8 @@ check_filesizes:firefox_mv2:
 # Ad filtering tests
 ################################################################################
 
-.testpages:
-  stage: testpages
+.compliance:
+  stage: compliance
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
@@ -133,54 +133,51 @@ check_filesizes:firefox_mv2:
     when: always
     expire_in: 1 month
   rules:
-    # Do not trigger a merge request pipeline
+    # Do not trigger merge request event pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    # Run automatically on release and main branches
-    - if: $CI_COMMIT_BRANCH =~ /^release/ || $CI_COMMIT_BRANCH == "main"
-      allow_failure: true
-    # Run manually on all other branches
-    - when: manual
-      allow_failure: true
+    - when: always
 
-testpages:MV3:chrome:latest:
-  extends: .testpages
-  variables:
-    BROWSER: chromium latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+# https://eyeo.atlassian.net/browse/EE-545
+# comp:MV3:chromium:latest:
+#   extends: .compliance
+#   variables:
+#     BROWSER: chromium latest
+#     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
 
-testpages:MV3:edge:latest:
-  extends: .testpages
+comp:MV3:edge:latest:
+  extends: .compliance
   variables:
     BROWSER: edge latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
 
-testpages:MV2:chrome:latest:
-  extends: .testpages
+comp:MV2:chromium:latest:
+  extends: .compliance
   variables:
     BROWSER: chromium latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
-testpages:MV2:edge:latest:
-  extends: .testpages
+comp:MV2:edge:latest:
+  extends: .compliance
   variables:
     BROWSER: edge latest
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
-testpages:MV2:firefox:latest:
-  extends: .testpages
+comp:MV2:firefox:latest:
+  extends: .compliance
   variables:
     BROWSER: firefox latest
     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
-testpages:MV2:chrome:oldest:
-  extends: .testpages
+comp:MV2:chromium:oldest:
+  extends: .compliance
   variables:
     BROWSER: chromium 77.0.3865.0
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
 
-testpages:MV2:firefox:oldest:
-  extends: .testpages
-  variables:
-    BROWSER: firefox 75.0
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+# https://eyeo.atlassian.net/browse/EE-542
+# comp:MV2:firefox:oldest:
+#   extends: .compliance
+#   variables:
+#     BROWSER: firefox 75.0
+#     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
