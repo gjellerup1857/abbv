@@ -472,9 +472,13 @@ const SyncService = (function getSyncService() {
           let url = SubscriptionAdapter.getUrlFromId(adblockId);
           if (!url && adblockId.startsWith('url:')) {
             url = adblockId.slice(4);
+            const subId = SubscriptionAdapter.getIdFromURL(url);
+            if (subId) {
+              url = SubscriptionAdapter.getUrlFromId(subId);
+            }
           }
           if (SubscriptionAdapter.isLegacyDistractionControlById(adblockId)) {
-            url = 'https://easylist-downloads.adblockplus.org/adblock_premium.txt';
+            url = SubscriptionAdapter.getUrlFromId('distraction-control');
           }
           if (url) {
             log('sync - adding subscription ', url);
