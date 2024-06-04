@@ -1,3 +1,6 @@
+Version: 6.3.0, Date: 2024-06-04
+- Fixed an issue with the premium filter lists being turned off after migrating to MV3
+
 Version: 6.2.0, Date: 2024-05-21
 - Changed the default pause button functionality in the popup.
 - Fixed premium filters tab not showing the updated subscription status
