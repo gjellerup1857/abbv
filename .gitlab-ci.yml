@@ -134,12 +134,11 @@ check_filesizes:firefox_mv2:
       when: never
     - when: always
 
-# https://eyeo.atlassian.net/browse/EE-545
-# comp:MV3:chromium:latest:
-#   extends: .compliance
-#   variables:
-#     BROWSER: chromium latest
-#     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+comp:MV3:chromium:latest:
+  extends: .compliance
+  variables:
+    BROWSER: chromium latest
+    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
 
 comp:MV3:edge:latest:
   extends: .compliance
