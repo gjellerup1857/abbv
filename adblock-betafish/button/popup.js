@@ -444,9 +444,7 @@ const start = async function () {
       }
     }
 
-    if (
-      !info.settings.display_menu_stats
-      || info.paused
+    if (info.paused
       || info.domainPaused
       || info.disabledSite
       || info.whitelisted

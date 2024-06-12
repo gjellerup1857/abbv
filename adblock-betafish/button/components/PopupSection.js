@@ -148,9 +148,14 @@ export default class PopupSection extends HTMLElement {
   async connectedCallback() {
     this.pageInfo = sessionStorageGet(PAGE_INFO_KEY);
     const { name } = this.dataset;
+    const isBlockedStats = name === 'blockedStats';
+
+    if (!this.pageInfo.settings.display_menu_stats && isBlockedStats) {
+      this.outerHTML = '';
+      return;
+    }
 
     const isActive = this.pageInfo.activeLicense;
-    const isBlockedStats = name === 'blockedStats';
     const isActiveSection = isActive || isBlockedStats;
 
     const titleSection = generateTitle(isActiveSection, this.dataset);
