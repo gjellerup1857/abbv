@@ -29,6 +29,13 @@ const addLanguageAndDir = () => {
   }
 };
 
+const addUserIdToUrl = async function (url) {
+  const userID = await browser.runtime.sendMessage({ command: 'getUserId' });
+  const urlToOpen = new URL(url);
+  urlToOpen.searchParams.append('u', userID);
+  return urlToOpen.href;
+};
+
 const closePopup = function () {
   sessionStorageSet(CLOSED_KEY, true);
   window.close();
@@ -105,6 +112,7 @@ export {
   COOKIE_FILTER_KEY,
   DISTRACTIONS_KEY,
   PAGE_INFO_KEY,
+  addUserIdToUrl,
   closePopup,
   navigateTo,
   getTabId,

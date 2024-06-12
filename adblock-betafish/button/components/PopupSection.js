@@ -23,6 +23,7 @@ import {
   COOKIE_FILTER_KEY,
   DISTRACTIONS_KEY,
   PAGE_INFO_KEY,
+  addUserIdToUrl,
   closePopup,
   navigateTo,
   sendMessageWithNoResponse,
@@ -88,12 +89,14 @@ const generateToggle = function (key) {
   return toggle;
 };
 
-const generateLearnMore = function (name) {
+const generateLearnMore = async function (name) {
+  const urlToOpen = await addUserIdToUrl('https://getadblock.com/premium/enrollment/');
+
   const button = document.createElement('button');
   button.innerText = translate('learn_more_without_period');
   button.addEventListener('click', () => {
     sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: `${name}_learn_clicked` });
-    sendMessageWithNoResponse({ command: 'openTab', urlToOpen: 'https://getadblock.com/premium/enrollment/' });
+    sendMessageWithNoResponse({ command: 'openTab', urlToOpen });
     closePopup();
   });
 
@@ -161,7 +164,7 @@ export default class PopupSection extends HTMLElement {
     const titleSection = generateTitle(isActiveSection, this.dataset);
     const actionSection = isActiveSection
       ? actionSectionGenerators[name].call(this)
-      : generateLearnMore(name);
+      : await generateLearnMore(name);
 
     const separator = generateSeparator();
 

@@ -44,7 +44,7 @@ import { createFilterMetaData } from '../utilities/background/bg-functions';
 import { getReadyState } from '../testing/ready-state/background/index.ts';
 import { getInfoCommand, injectionOrigins } from '../../src/info-injector/shared';
 import { getInjectionInfo } from '../../src/info-injector/background';
-
+import { getUserId } from '~/id/background/index';
 
 export const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -189,6 +189,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'getCurrentTabInfo':
       sendResponse({});
       return getCurrentTabInfo(false, message.tabId).then(results => results);
+    case 'getUserId':
+      return getUserId();
     case 'updateCustomFilterCountMap':
       updateCustomFilterCountMap(message.countMap);
       sendResponse({});
