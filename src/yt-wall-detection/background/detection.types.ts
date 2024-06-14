@@ -15,6 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const youTubeAutoAllowlisted = "yt-auto.allowlisted";
-export const youTubeWallDetected = "yt-site.ad-wall-detected";
-export const youTubeNavigation = "yt-site.navigation";
+export const sevenDaysInMilliSeconds = 7 * 24 * 60 * 60 * 1000;
+
+export const ytAllowlistHardEndDate = "yt_allowlist_hard_end_date";
+export const ytAllowlistLanguageCodes = "yt_allowlist_language_codes";
+export const ytAllowlistStartDate = "yt_allowlist_start_date";

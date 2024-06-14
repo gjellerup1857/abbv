@@ -268,6 +268,27 @@ defaults.ping_server_url = 'https://ping.getadblock.com/stats/';
 defaults.send_ad_wall_messages = true;
 
 /**
+ * Language codes that should be auto allowing YT
+ *
+ * @type {Array of string}
+ */
+defaults.yt_allowlist_language_codes = ['fr', 'zh'];
+
+/**
+ * Start date (as a number) to start auto allowing YT
+ *
+ * @type {Number}
+ */
+defaults.yt_allowlist_start_date = 0;
+
+/**
+ * Hard end date (as a number) to stop auto allowing YT
+ *
+ * @type {Number}
+ */
+defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
+
+/**
   * @namespace
   * @static
   */

@@ -16,3 +16,4 @@
  */
 
 import "./detection";
+export * from "./detection.types";
