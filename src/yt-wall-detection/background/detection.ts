@@ -17,6 +17,7 @@
 
 import type Browser from "webextension-polyfill";
 import * as browser from "webextension-polyfill";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { adblockIsDomainPaused } from "~/pause/background";
 import { AdWallMessage } from "~/polyfills/shared";
@@ -112,8 +113,17 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
  * Process the YouTube Wall Detected message from the content script
  *
  */
-const processYouTubeWallDetectedMessage = (message: AdWallMessage, sender: MessageSender): void => {
-  ServerMessages.recordAdWallMessage(youTubeWallDetected, message.userLoggedIn ? "1" : "0");
+const processYouTubeWallDetectedMessage = async (
+  message: AdWallMessage,
+  sender: MessageSender
+): Promise<void> => {
+  const filters = await ewe.filters.getAllowingFilters(sender.page.id);
+  const isAllowListed = !!filters.length;
+  ServerMessages.recordAdWallMessage(
+    youTubeWallDetected,
+    message.userLoggedIn ? "1" : "0",
+    isAllowListed ? "1" : "0"
+  );
   if (sender && sender.page && shouldAllowList()) {
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true);
     browser.tabs.reload(sender.page.id);

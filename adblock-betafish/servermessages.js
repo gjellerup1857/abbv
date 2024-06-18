@@ -133,9 +133,9 @@ const ServerMessages = (function serverMessages() {
   };
 
   // Log a ad wall specific 'general' message on GAB log server.
-  const recordAdWallMessage = function (msg, userLoggedIn) {
+  const recordAdWallMessage = function (msg, userLoggedIn, isAllowListed) {
     if (Prefs.get('send_ad_wall_messages')) {
-      void recordMessageWithUserID(msg, 'general', null, { userLoggedIn });
+      void recordMessageWithUserID(msg, 'general', null, { userLoggedIn, isAllowListed });
     }
   };
 
