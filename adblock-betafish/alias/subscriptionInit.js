@@ -153,13 +153,27 @@ const start = async function () {
   } catch (ex) {
     console.error("Failed to initialize content filtering", ex);
   }
-  return ewe.start({
+
+  let addonInfo = {
     bundledSubscriptions: rulesIndex,
     bundledSubscriptionsPath: "/data/rules/abp",
     inlineCss: false,
     name: info.addonName,
     version: info.addonVersion,
-  }).then(async (eweFirstRun) => {
+  };
+
+  if (!Prefs.get("data_collection_opt_out")) {
+    let cdp = {
+      pingUrl: webpackDotenvPlugin.ADBLOCK_CDP_PING_URL,
+      aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
+      bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER
+    };
+    if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) {
+      addonInfo.cdp = cdp;
+    }
+  }
+
+  return ewe.start(addonInfo).then(async (eweFirstRun) => {
     await detectFirstRun(
       eweFirstRun.foundSubscriptions,
       eweFirstRun.foundStorage

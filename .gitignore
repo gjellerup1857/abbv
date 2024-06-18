@@ -11,6 +11,7 @@ tests/chromium-snapshots/
 tests/firefox-snapshots/
 /dist/
 /testpages.adblockplus.org/
+.env
 
 # Editor/IDE
 .vscode/

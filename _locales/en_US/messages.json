@@ -3209,6 +3209,12 @@
   "overlay_notification_button_yes": {
     "message": "Yes"
   },
+  "filter_elemhide_invalid_selector": {
+    "message": "Invalid CSS selector"
+  },
+  "filter_elemhide_invalid_inline_css": {
+    "message": "Invalid inline CSS property list"
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "No active domain specified for extended element hiding filter"
   },

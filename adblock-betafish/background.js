@@ -41,7 +41,11 @@ import {
 
 import { getUserId } from './id/background/index';
 import { initialize } from './alias/subscriptionInit';
-import { IPM as IPMTelemetry, TELEMETRY } from './telemetry/background';
+import {
+  IPM as IPMTelemetry,
+  TELEMETRY,
+  startCdpOptOutListener,
+} from './telemetry/background';
 import { getBlockedPerPage, Stats } from '../adblockplusui/adblockpluschrome/lib/stats';
 import { getSettings, settings } from './prefs/background';
 import { License, channels } from './picreplacement/check';
@@ -651,6 +655,7 @@ initialize.then(async () => {
   setUninstallURL();
   await IPMTelemetry.untilLoaded();
   IPMTelemetry.start();
+  await startCdpOptOutListener();
   revalidateAllowlistingStates();
   prefs.migrateUserData();
 });

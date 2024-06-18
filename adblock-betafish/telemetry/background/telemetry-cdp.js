@@ -15,6 +15,17 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { IPM, TELEMETRY } from './telemetry';
-export { telemetryNotifier } from './telemetry-ping';
-export { startCdpOptOutListener } from './telemetry-cdp';
+import * as ewe from '@eyeo/webext-ad-filtering-solution';
+
+import { Prefs } from '~/alias/prefs';
+
+async function updateCdpOptout() {
+  await ewe.cdp.setOptOut(Prefs.get('data_collection_opt_out'));
+}
+
+export async function startCdpOptOutListener() {
+  await Prefs.untilLoaded;
+
+  await updateCdpOptout();
+  Prefs.on('data_collection_opt_out', updateCdpOptout);
+}
