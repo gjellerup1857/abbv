@@ -168,8 +168,17 @@ const start = async function () {
       aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
       bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER
     };
+
     if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) {
       addonInfo.cdp = cdp;
+    }
+    let telemetry = {
+      url: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_URL,
+      bearer: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_BEARER
+    }
+
+    if (telemetry.url && telemetry.bearer) {
+      addonInfo.telemetry = telemetry;
     }
   }
 
