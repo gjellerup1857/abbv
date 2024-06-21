@@ -33,9 +33,7 @@ e.g. after checking out a new revison.
 
 ### Building the extension
 
-Copy the `.env.defaults` file in the root directory to a `.env` file and fill in
-the variables accordingly. This step can be skipped, and is only required if you
-wish to enable the sending of telemetry and CDP data.
+Copy the `.env.defaults` file in the root directory to a `.env` file and fill in the variables accordingly.  This step can be skipped, and is only required if you wish to enable the sending of telemetry.
 
 Run one of the following commands in the project directory:
 

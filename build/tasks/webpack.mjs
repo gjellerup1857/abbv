@@ -68,7 +68,7 @@ export default function webpack({
                 defaults: true,
                 silent: true,
                 systemvars: true,
-              })
+              }),
             ],
             externals: {
               perf_hooks: 'self',
