@@ -25,7 +25,7 @@
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class ServerMessages {
   static recordGeneralMessage = (msg, callback, additionalParams) => {
-    send('channels.getIdByName', { msg, additionalParams });
+    send('recordGeneralMessage', { msg, additionalParams });
     if (typeof callback === 'function') {
       callback();
     }
