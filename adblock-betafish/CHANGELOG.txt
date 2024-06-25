@@ -1,3 +1,11 @@
+Version: 6.4.0, Date: 2024-06-25
+- “Learn More” button in new pop up menu does not append user ID to Premium page redirect 
+- Show number of ads blocked on AdBlock menu also hides Premium Filterlists
+- YouTube Ad Wall vs. Allowlist Uninstall User Test
+- Updated the extension engine dependency to 1.8.0 
+- Support CDP functionality
+- Add special handling to allowlisting API for Softonic domains
+
 Version: 6.3.0, Date: 2024-06-04
 - Fixed an issue with the premium filter lists being turned off after migrating to MV3
 
