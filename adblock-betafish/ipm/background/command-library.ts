@@ -24,19 +24,17 @@ import {
   CommandEventType,
   CommandName,
   CommandVersion,
+  commandStorageKey,
   Content,
+  DeleteEventType,
 } from './command-library.types';
+import { isDeleteBehavior, setDeleteCommandHandler } from './delete-commands';
 import { recordEvent } from './data-collection';
 
 /**
  * A list of known commands.
  */
 const knownCommandsList = Object.values(CommandName);
-
-/**
- * The key for the command storage.
- */
-const commandStorageKey = 'ipm_commands';
 
 /**
  * Map of known command actors
@@ -265,10 +263,56 @@ export async function removeAllCommands(name: CommandName): Promise<void> {
 }
 
 /**
+ * Registers a delete-commands event with the data collection feature.
+ *
+ * @param ipmId The ipm id to register the event for
+ * @param name The event name to register
+ */
+function registerDeleteEvent(ipmId: string, name: DeleteEventType): void {
+  void recordEvent(ipmId, CommandName.deleteCommands, name);
+}
+
+/**
+ * Handles delete-commands IPM command
+ *
+ * @param ipmId
+ * @returns
+ */
+async function handleDeleteCommand(ipmId: string): Promise<void> {
+  const behavior = getBehavior(ipmId);
+
+  if (!isDeleteBehavior(behavior)) {
+    logger.error('[delete-commands]: Invalid command behavior.');
+    return;
+  }
+
+  const { commandIds } = behavior;
+  let success = true;
+
+  for (const commandId of commandIds) {
+    try {
+      dismissCommand(commandId);
+
+      if (getCommand(commandId) !== null) {
+        throw new Error('Command was not successfully deleted.');
+      }
+    } catch (error) {
+      success = false;
+      logger.error('[delete-commands]: Error trying to delete command with ID ', commandId);
+    }
+  }
+
+  registerDeleteEvent(ipmId, success ? DeleteEventType.sucess : DeleteEventType.error);
+  dismissCommand(ipmId);
+}
+
+/**
  * Initializes command library
  */
 async function start(): Promise<void> {
   await Prefs.untilLoaded;
+
+  setDeleteCommandHandler(handleDeleteCommand);
 
   // Reinitialize commands from storage
   const commandStorage = Prefs.get(commandStorageKey);
