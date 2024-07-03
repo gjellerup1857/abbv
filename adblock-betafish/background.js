@@ -32,7 +32,7 @@ import {
   pausedFilterText2,
   saveDomainPauses,
 } from './pause/background';
-
+import { start as startContentFiltering } from './alias/contentFiltering';
 import {
   NEW_BADGE_REASONS,
   getNewBadgeTextReason,
@@ -650,6 +650,7 @@ async function checkUpdateProgress() {
 }
 
 initialize.then(async () => {
+  await startContentFiltering();
   await getUserId();
   TELEMETRY.start();
   setUninstallURL();

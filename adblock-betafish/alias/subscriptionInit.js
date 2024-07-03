@@ -144,15 +144,6 @@ async function testStorage() {
 }
 
 const start = async function () {
-  // We are separating the initialization of the content filtering module in order
-  // to contain any potential breakage and prevent it from affecting the
-  // extension initialization as a whole
-  try {
-    const { start } = await import("./contentFiltering.js");
-    await start();
-  } catch (ex) {
-    console.error("Failed to initialize content filtering", ex);
-  }
 
   let addonInfo = {
     bundledSubscriptions: rulesIndex,
@@ -162,7 +153,9 @@ const start = async function () {
     version: info.addonVersion,
   };
 
-  if (!Prefs.get("data_collection_opt_out")) {
+  // The following code may need to be updated once the extension engine
+  // adds a opt out for eyeometry (https://eyeo.atlassian.net/browse/EE-579)
+  if (info.platform !== "gecko") {
     let cdp = {
       pingUrl: webpackDotenvPlugin.ADBLOCK_CDP_PING_URL,
       aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
