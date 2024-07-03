@@ -1,3 +1,62 @@
+node_modules/
+**/node_modules/**/*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Config files
+.webextrc
+.webextrc.*
+
+.nx/cache
+# dist directories for generated files
+/dist/
+
+# external dependencies
+/node_modules/
+
+/screenshots/
+/skin/icons/toolbar/*.png
+/allure-report/
+/test/end-to-end/allure-results/
+/test/end-to-end/lambda_api.log
+/testpages.adblockplus.org/
+
+# generated test coverage
+coverage/
+
+# OS generated files
+.DS_Store
+
+# version management
+.tool-versions
+
+# npm cache for CI
+.npm
+# env file for e2e tests
+.env.e2e
 /node_modules/
 /devenv*/
 *.zip
