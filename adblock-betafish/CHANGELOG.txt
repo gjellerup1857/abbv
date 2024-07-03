@@ -1,3 +1,10 @@
+Version: 6.5.0, Date: 2024-07-03
+- Added new IPM deletion command
+- Support user counting functionality
+- Update @eyeo/snippets dependency to 1.4.0
+- Fixed: Telemetry wasn't being sent due to Chrome bug
+- Fixed: Filter lists weren't being updated on Manifest v3
+
 Version: 6.4.0, Date: 2024-06-25
 - “Learn More” button in new pop up menu does not append user ID to Premium page redirect 
 - Show number of ads blocked on AdBlock menu also hides Premium Filterlists
