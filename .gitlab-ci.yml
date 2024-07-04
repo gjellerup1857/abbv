@@ -43,8 +43,8 @@ build:
     - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
     - npx gulp build -t chrome -m 3 --unhandled-rejections=strict
     - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
-    - npx gulp build -t chrome -m 2 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
-    - npx gulp build -t chrome -m 3 --manifest_path ./build/beta_manifest.json --basename adblockbeta --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
+    - npx gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
     - npx gulp source
     # Attach commit hash to build files
     - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
