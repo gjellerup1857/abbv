@@ -266,6 +266,11 @@ const getDebugInfo = function () {
 
     otherInfo.licenseInfo = await getDebugLicenseInfo();
     otherInfo.customRuleMetaData = await getCustomFilterMetaData(userFilters);
+
+    const blockageStats = (await browser.storage.local.get('blockage_stats')).blockage_stats;
+    if (blockageStats && blockageStats.start) {
+      otherInfo.extensionInstallTimestamp = (new Date(blockageStats.start)).toLocaleString();
+    }
     resolve(response);
   });
 };
