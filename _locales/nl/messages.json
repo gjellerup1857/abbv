@@ -1,6 +1,6 @@
 {
   "description": {
-    "message": "Blokkeer advertenties en pop-ups op YouTube, Facebook, Twitch en je favoriete websites.",
+    "message": "Blokkeer gratis reclame op YouTube en uw favoriete websites.",
     "description": "Extension description in manifest. Should not exceed 132 characters."
   },
   "description2": {
@@ -17,7 +17,7 @@
   },
   "name": {
     "description": "Extension name to be shown for release / published builds.  The extension name 'AdBlock' should NOT be translated, but the text after the dash should be translated",
-    "message": "AdBlock - de beste advertentieblokker"
+    "message": "AdBlock - blokkeer reclame op het internet"
   },
   "description_edge": {
     "message": "AdBlock. De beste advertentieblokker met meer dan 200 miljoen downloads. Blokkeert advertenties overal op internet.",
