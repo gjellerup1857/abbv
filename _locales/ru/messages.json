@@ -1,6 +1,6 @@
 {
   "description": {
-    "message": "Блокирует рекламу на YouTube, Facebook, Twitch и на всех ваших любимых сайтах.",
+    "message": "Блокируйте рекламу на YouTube и ваших любимых сайтах бесплатно.",
     "description": "Extension description in manifest. Should not exceed 132 characters."
   },
   "description2": {
@@ -17,7 +17,7 @@
   },
   "name": {
     "description": "Extension name to be shown for release / published builds.  The extension name 'AdBlock' should NOT be translated, but the text after the dash should be translated",
-    "message": "AdBlock — лучший блокировщик рекламы"
+    "message": "AdBlock – блокировка рекламы в Интернете."
   },
   "description_edge": {
     "message": "AdBlock. Лучший блокировщик рекламы, 200 миллионов загрузок. Больше никакой рекламы в Интернете.",

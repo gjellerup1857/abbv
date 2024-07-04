@@ -1,6 +1,6 @@
 {
   "description": {
-    "message": "Youtube、Facebook、Twitch、お気に入りのウェブサイト等の広告やポップアップ広告をブロックしましょう。",
+    "message": "YouTubeやお気に入りのサイトで広告を無料でブロックします。 ",
     "description": "Extension description in manifest. Should not exceed 132 characters."
   },
   "description2": {
@@ -17,7 +17,7 @@
   },
   "name": {
     "description": "Extension name to be shown for release / published builds.  The extension name 'AdBlock' should NOT be translated, but the text after the dash should be translated",
-    "message": "AdBlock — 最高峰の広告ブロッカー"
+    "message": "AdBlock - ウェブ上の広告をブロック"
   },
   "description_edge": {
     "message": "AdBlockは2億回ダウンロードを誇るNo.1の広告ブロッカーです。ウェブ上のあらゆる広告をブロックしましょう。",

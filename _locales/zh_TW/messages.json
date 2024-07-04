@@ -1,6 +1,6 @@
 {
   "description": {
-    "message": "在 YouTube、Facebook、Twitch 以及其他您喜愛的網站上阻擋廣告與彈出視窗。",
+    "message": "免費幫您攔截YouTube和指定網站上的廣告。",
     "description": "Extension description in manifest. Should not exceed 132 characters."
   },
   "description2": {
@@ -17,7 +17,7 @@
   },
   "name": {
     "description": "Extension name to be shown for release / published builds.  The extension name 'AdBlock' should NOT be translated, but the text after the dash should be translated",
-    "message": "AdBlock — 最佳廣告攔截程式"
+    "message": "AdBlock - 網路廣告攔截專家"
   },
   "description_edge": {
     "message": "AdBlock。排名第一的廣告攔截程式，下載量超過兩億。阻擋網路上的各種廣告。",

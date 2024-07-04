@@ -1,6 +1,6 @@
 {
   "description": {
-    "message": "Bloquea anuncios y ventanas emergentes en YouTube, Facebook, Twitch y todos tus sitios web favoritos.",
+    "message": "Bloquea anuncios en YouTube y en tus sitios favoritos de forma gratuita.",
     "description": "Extension description in manifest. Should not exceed 132 characters."
   },
   "description2": {
@@ -17,7 +17,7 @@
   },
   "name": {
     "description": "Extension name to be shown for release / published builds.  The extension name 'AdBlock' should NOT be translated, but the text after the dash should be translated",
-    "message": "AdBlock: el mejor bloqueador de anuncios"
+    "message": "AdBlock: bloquea anuncios en la web"
   },
   "description_edge": {
     "message": "AdBlock. El bloqueador de anuncios número 1 con más de 200 millones de descargas. Bloquea anuncios de toda la web.",
