@@ -68,7 +68,7 @@ export const License = (function getLicense() {
   let currentThemeIndex = 0;
   const mabConfig = {
     prod: {
-      licenseURL: 'https://myadblock-licensing.firebaseapp.com/license/',
+      licenseURL: 'https://myadblock.licensing.getadblock.com/license/',
       syncURL: 'https://myadblock.sync.getadblock.com/v1/sync',
       subscribeKey: 'sub-c-9eccffb2-8c6a-11e9-97ab-aa54ad4b08ec',
       payURL: 'https://getadblock.com/premium/enrollment/',
