@@ -23,7 +23,7 @@
    setStorageCookie, settings, startSubscriptionSelection, storageGet,
    storageSet, SubscriptionAdapter, SubscriptionsProxy,
    THIRTY_MINUTES_IN_MILLISECONDS,
-   translate, updateAcceptableAdsUI, updateSocialIconsVisibility, browser,
+   translate, updateAcceptableAdsUI, updateSocialIconsVisibility
    */
 
 const FANBOY_ANNOYANCE_URL = 'https://fanboy.co.nz/fanboy-annoyance.txt';
@@ -71,21 +71,12 @@ function replaceAnnoyances(subsList) {
   return subsList;
 }
 
-function updateForV3(list) {
-  if (browser.runtime.getManifest().manifest_version === 3) {
-    return list.filter(([adblockId]) => adblockId !== 'warning_removal');
-  }
-
-  return list;
-}
-
 function cleanUpSubs(subs) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const subsWithoutPremium = subs.filter(([_, entry]) => !isPremiumFilterListURL(entry.url));
   const subsWithoutAnnoyances = replaceAnnoyances(subsWithoutPremium);
-  const subsByVersion = updateForV3(subsWithoutAnnoyances);
 
-  return subsByVersion;
+  return subsWithoutAnnoyances;
 }
 
 function addLabelAndId(entry, adblockIdKey) {
