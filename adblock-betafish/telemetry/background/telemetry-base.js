@@ -20,7 +20,7 @@
 
 import * as ewe from '@eyeo/webext-ad-filtering-solution';
 
-
+import { chromeStorageSetHelper } from '~/utilities/background/bg-functions';
 import {
   getWebAllowlistingFilterCount,
   getPopupAllowlistingFilterCount,
@@ -28,17 +28,15 @@ import {
   getWizardFilterCount,
   getMissingFilterCount,
 } from './custom-rule';
-
-import { Prefs } from '../../alias/prefs';
-import ServerMessages from '../../servermessages';
-import SubscriptionAdapter from '../../subscriptionadapter';
-import { getUserId } from '../../id/background/index';
-
+import { Prefs } from '~/alias/prefs';
+import ServerMessages from '~/servermessages';
+import SubscriptionAdapter from '~/subscriptionadapter';
+import { getUserId } from '~/id/background/index';
 import {
   determineUserLanguage,
   storageSet,
   getUserAgentInfo,
-} from '../../utilities/background/index';
+} from '~/utilities/background/index';
 
 
 const FiftyFiveMinutes = 3300000;
@@ -66,33 +64,6 @@ class TelemetryBase {
     // added calls to these two methods because the need to be
     // called in the first turn of the event loop
     this.addAlarmListener();
-    this.checkIdleState();
-  }
-
-  // Check if the computer was woken up, and if there was a pending alarm
-  // that should fired during the sleep, then
-  // remove it, and fire the update ourselves.
-  // see - https://bugs.chromium.org/p/chromium/issues/detail?id=471524
-  checkIdleState() {
-    browser.idle.onStateChanged.addListener(async (newState) => {
-      if (newState === 'active') {
-        const alarm = await browser.alarms.get(this.alarmName);
-        if (alarm && Date.now() > alarm.scheduledTime) {
-          await browser.alarms.clear(this.alarmName);
-          await this.pingNow();
-          await this.scheduleNextPing();
-          await this.sleepThenPing();
-        } else if (alarm) {
-          // if the alarm should fire in the future,
-          // re-add the alarm so it fires at the correct time
-          const originalTime = alarm.scheduledTime;
-          const wasCleared = await browser.alarms.clear(this.alarmName);
-          if (wasCleared) {
-            browser.alarms.create(this.alarmName, { when: originalTime });
-          }
-        }
-      }
-    });
   }
 
   addAlarmListener = () => {
@@ -238,7 +209,8 @@ class TelemetryBase {
       nextPingTime = 0;
     }
     if (nextPingTime === 0 && this.firstRun) {
-      return (1000 * 60);
+      chromeStorageSetHelper(this.nextRequestTimeStorageKey, 100);
+      return 100;
     }
     // if we don't have a 'next ping time', or it's not a valid number,
     // default to 55 minute ping interval
