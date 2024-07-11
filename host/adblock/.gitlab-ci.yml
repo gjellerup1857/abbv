@@ -66,13 +66,13 @@ build:
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
-      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-      - adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
-      - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-      - adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-      - adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+      - $[[ inputs.hostpath ]]/adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
+      - $[[ inputs.hostpath ]]/adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+      - $[[ inputs.hostpath ]]/adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - $[[ inputs.hostpath ]]/adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+      - $[[ inputs.hostpath ]]/adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+      - $[[ inputs.hostpath ]]/adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+      - $[[ inputs.hostpath ]]/adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
 
 lint:
   extends: .build
@@ -88,6 +88,8 @@ lint:
 .check_filesizes:
   image: alpine:latest
   stage: check_filesizes
+  before_script:
+    - cd $[[ inputs.hostpath ]]
   script:
    - unzip -d unpacked-extension/ $EXTENSION
    - cd unpacked-extension/
