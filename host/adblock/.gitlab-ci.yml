@@ -43,7 +43,7 @@ stages:
 .build:
   stage: build
   before_script:
-    - cd $[[ input.hostpath ]]
+    - cd $[[ inputs.hostpath ]]
     - npm ci --cache .npm --prefer-offline
 
 build:
