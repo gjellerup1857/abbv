@@ -1,2 +1,4 @@
  include:
-  - local: 'host/adblock/.gitlab-ci.yml'
+  - local: 'host/adblock/.gitlab-ci.yml' 
+    inputs: 
+      hostpath: "host/adblock"
