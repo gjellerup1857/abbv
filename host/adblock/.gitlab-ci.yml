@@ -27,9 +27,9 @@ default:
   cache:  # Cache modules using lock file
     key:
       files:
-        - package-lock.json
+        - $[[ inputs.hostpath ]]/package-lock.json
     paths:
-      - .npm/
+      - $[[ inputs.hostpath ]]/.npm/
 
 stages:
   - build
