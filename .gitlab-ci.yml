@@ -1,0 +1,2 @@
+ include:
+  - local: 'host/adblock/.gitlab-ci.yml'
