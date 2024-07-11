@@ -131,13 +131,15 @@ check_filesizes:firefox_mv2:
   needs: ["build"]
   before_script:
     - apk add bash git
+    - cd $[[ inputs.hostpath ]]
   script:
     - TERMINAL=t ./test/compliance.sh
   after_script:
+    - cd $[[ inputs.hostpath ]]
     - docker cp $(docker ps -aqf ancestor=compliance):/testpages.adblockplus.org/test/screenshots . 2> /dev/null
   artifacts:
     paths:
-      - screenshots/
+      - $[[ inputs.hostpath ]]/screenshots/
     when: always
     expire_in: 1 month
   rules:
