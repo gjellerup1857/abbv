@@ -1659,15 +1659,12 @@ section .theme-section-row {
 }
 
 #rate-us-cta,
-#waitlist-cta,
 #mail-cta {
   margin: 15px 0;
 }
 
 #rate-us-tooltip,
-#waitlist-tooltip,
-section#rate-us-cta > section#rate-us-tooltip:hover,
-section#waitlist-cta > section#waitlist-tooltip:hover {
+section#rate-us-cta > section#rate-us-tooltip:hover {
   display: none;
   position: absolute;
   bottom: 187px;
@@ -1683,27 +1680,19 @@ section#waitlist-cta > section#waitlist-tooltip:hover {
   justify-content: space-around;
 }
 
-#waitlist-tooltip {
-  width: 168px;
-}
-
-#rate-us-tooltip > div:nth-child(1),
-#waitlist-tooltip > div:nth-child(1) {
+#rate-us-tooltip > div:nth-child(1) {
   font-weight: bold;
 }
 
-#rate-us-tooltip > div,
-#waitlist-tooltip > div {
+#rate-us-tooltip > div {
   padding: 8px;
 }
 
-#rate-us-cta:hover > #rate-us-tooltip,
-#waitlist-cta:hover > #waitlist-tooltip {
+#rate-us-cta:hover > #rate-us-tooltip {
   display: flex;
 }
 
-.btn#rate-us,
-.btn#vpn-waitlist-link {
+.btn#rate-us {
   margin: 0;
   padding: 5px 10px;
   border-radius: 3px;
@@ -1713,15 +1702,12 @@ section#waitlist-cta > section#waitlist-tooltip:hover {
   line-height: normal;
 }
 
-.btn#vpn-waitlist-link,
 #mail-cta .btn {
   width: 168px;
 }
 
 .btn#rate-us:hover,
-#mail-cta .btn:hover,
-.btn#vpn-waitlist-link:hover,
-.btn#vpn-waitlist-link:hover span {
+#mail-cta .btn:hover {
   color: white;
   font-weight: normal;
   border-radius: 0 0 3px 3px;
@@ -1978,8 +1964,7 @@ input:checked + .slider::before {
   }
 
   #sidebar-content-bottom .top-line,
-  #sidebar-content-bottom section#rate-us-cta,
-  #sidebar-content-bottom section#waitlist-cta {
+  #sidebar-content-bottom section#rate-us-cta {
     display: none;
   }
 
@@ -1992,7 +1977,6 @@ input:checked + .slider::before {
   }
 
   #rate-us-cta,
-  #waitlist-cta,
   #mail-cta {
     display: none;
   }

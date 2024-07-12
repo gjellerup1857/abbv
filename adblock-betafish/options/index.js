@@ -62,8 +62,6 @@ const isSelectorFilter = function (text) {
 /* eslint-disable-next-line no-unused-vars */
 const rateUsCtaKey = 'rate-us-cta-clicked';
 /* eslint-disable-next-line no-unused-vars */
-const vpnWaitlistCtaKey = 'vpn-waitlist-cta-clicked';
-/* eslint-disable-next-line no-unused-vars */
 const mailCtaKey = 'mail-cta-clicked';
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const premiumFiltersCtaKey = 'premium-filters-cta-clicked';
@@ -487,23 +485,6 @@ const shouldShowRateUsCTA = function () {
   }
 };
 
-const shouldShowVPNWaitlistCTA = function () {
-  const mql = window.matchMedia('(max-width: 890px)');
-  if (!mql.matches) {
-    chromeStorageGetHelper(vpnWaitlistCtaKey).then((alreadyClickedVPNWaitlist) => {
-      if (!alreadyClickedVPNWaitlist) {
-        $('#waitlist-cta').show();
-        $('#waitlist-cta a#vpn-waitlist-link').on('click', () => {
-          chromeStorageSetHelper(vpnWaitlistCtaKey, true);
-          $('#waitlist-cta').hide();
-        });
-      } else {
-        shouldShowRateUsCTA();
-      }
-    });
-  }
-};
-
 const shouldShowEmailCTA = function () {
   const mql = window.matchMedia('(max-width: 890px)');
   if (!mql.matches) {
@@ -586,7 +567,7 @@ const shouldShowEmailCTA = function () {
           }
         });
       } else {
-        shouldShowVPNWaitlistCTA();
+        shouldShowRateUsCTA();
       }
     });
   }
