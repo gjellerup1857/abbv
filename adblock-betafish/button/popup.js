@@ -266,7 +266,6 @@ const start = async function () {
     }
     $('body').attr('id', popupMenuTheme).data('theme', popupMenuTheme);
     $('.header-logo').attr('src', `icons/${popupMenuTheme}/logo.svg`);
-    $('#filtering_options_wrapper').attr('href', `adblock-button-filtering-options.html?tabId=${info.id}`);
 
     if (info && info.errorStr) {
       processError(info.errorStr, info.stack, info.message);

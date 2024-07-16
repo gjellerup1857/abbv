@@ -122,6 +122,9 @@ const initialize = async function () {
   // Append everything
   const $wrapper = $('#wrapper');
   $wrapper.prepend($template);
+  if (tabId) {
+    $('#filtering_options_wrapper').attr('href', `adblock-button-filtering-options.html?tabId=${tabId}`);
+  }
 };
 
 loadTemplate().then(async () => {
