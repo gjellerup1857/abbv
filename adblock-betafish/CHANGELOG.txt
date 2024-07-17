@@ -1,3 +1,14 @@
+Version: 6.6.0, Date: 2024-07-17
+- Updated AdBlock's name and description
+- Moved the update of the kebob URL
+- Updated isSelectorFilter function to ignore comment filers
+- Removed VPN waitlist CTA
+- Refactored initial telemetry logic
+- Removed a check for the warning_removal subscription on MV3
+- Updated the premium licensing server URL
+- Added extension install timestamp to debug data
+- Added new entries to locale files
+
 Version: 6.5.0, Date: 2024-07-03
 - Added new IPM deletion command
 - Support user counting functionality
