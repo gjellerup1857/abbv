@@ -57,7 +57,7 @@ const isSelectorFilter = function (text) {
   // This means that you'll first have to check if something is an excluded rule
   // before checking this, if the difference matters.
   // returns false for comment rules (rules that start with !)
-  return /^[^!].*#@?#./.test(text);
+  return /^[^!]*#@?#./.test(text);
 };
 
 /* eslint-disable-next-line no-unused-vars */
