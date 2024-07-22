@@ -80,7 +80,7 @@
     "npm": "9"
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#6dce342be70223d0da9551baab7b5724cb74fd95",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#7c3f08dcd779793fff271e6efeeaf921c5f7dd8f",
     "@eyeo/snippets": "1.4.0",
     "@eyeo/webext-ad-filtering-solution": "1.8.0",
     "@rollup/plugin-typescript": "8.3.2",
