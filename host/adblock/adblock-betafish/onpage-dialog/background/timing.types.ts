@@ -43,3 +43,13 @@ export interface TimingConfiguration {
      */
     minAllowlistingDelay?: number;
 }
+
+/**
+ * Timing name
+ */
+export enum Timing {
+  afterWebAllowlisting = 'after_web_allowlisting',
+  immediate = 'immediate',
+  revisitWebAllowlisted = 'revisit_web_allowlisted_site',
+  afterNavigation = 'after_navigation'
+}

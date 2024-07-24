@@ -15,9 +15,30 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const sevenDaysInMilliSeconds = 7 * 24 * 60 * 60 * 1000;
+/**
+ * On-page dialog event names
+ */
+export enum DialogEventType {
+  buttonClicked = 'dialog_button_clicked',
+  closed = 'dialog_closed',
+  ignored = 'dialog_ignored',
+  injected = 'dialog_injected'
+}
 
-export const ytAllowlistHardEndDate = "yt_allowlist_hard_end_date";
-export const ytAllowlistLanguageCodes = "yt_allowlist_language_codes";
-export const ytAllowlistOPDLanguageCodes = "yt_allowlist_plus_opd_language_codes";
-export const ytAllowlistStartDate = "yt_allowlist_start_date";
+/**
+ * Results when attempting to show on-page dialog
+ */
+export enum ShowOnpageDialogResult {
+  /**
+   * Dialog wasn't shown but can be retried
+   */
+  ignored,
+  /**
+   * Dialog wasn't shown and should not be retried
+   */
+  rejected,
+  /**
+   * Dialog was shown
+   */
+  shown
+}

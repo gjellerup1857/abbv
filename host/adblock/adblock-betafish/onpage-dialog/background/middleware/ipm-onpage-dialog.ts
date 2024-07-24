@@ -32,10 +32,11 @@ import * as logger from '../../../utilities/background';
 import {
   DialogBehavior,
   DialogCommand,
-  DialogContent,
   DialogParams,
   Timing,
 } from './ipm-onpage-dialog.types';
+import { DialogContent } from '../dialog.types';
+
 
 /**
  * List of on-page dialog parameter definitions

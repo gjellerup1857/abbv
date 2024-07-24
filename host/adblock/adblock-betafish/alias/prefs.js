@@ -272,7 +272,14 @@ defaults.send_ad_wall_messages = true;
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = ['fr', 'zh'];
+defaults.yt_allowlist_language_codes = ['de', 'fr', 'it', 'pt-BR', 'zh'];
+
+/**
+ * Language codes that should show an OPD after auto allowing
+ *
+ * @type {Array of string}
+ */
+defaults.yt_allowlist_plus_opd_language_codes = ['de', 'fr', 'it', 'pt-BR', 'zh'];
 
 /**
  * Start date (as a number) to start auto allowing YT
@@ -286,7 +293,7 @@ defaults.yt_allowlist_start_date = 0;
  *
  * @type {Number}
  */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
+defaults.yt_allowlist_hard_end_date = new Date(2024, 8, 1, 0, 0).getTime(); // September 1st, 2024
 
 /**
   * @namespace

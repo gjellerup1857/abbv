@@ -46,7 +46,6 @@ import {
   DialogBehavior,
   DialogEventType,
   DialogErrorEventType,
-  DialogExitEventType,
   isDialogBehavior,
   isDialogContent,
   setDialogCommandHandler,
@@ -54,7 +53,10 @@ import {
 import {
   clearStats, getStats, isStats, setStats,
 } from './stats';
-import { Stats } from './stats.types';
+import {
+  type DialogContent,
+} from './dialog.types';
+
 
 /**
  * Tab-specific session storage for IPM IDs
@@ -64,6 +66,10 @@ const assignedIpmIds = new TabSessionStorage('onpage-dialog:ipm');
  * Queue of IPM IDs that haven't been assigned to a tab yet
  */
 const unassignedIpmIds = new Set<string>();
+/**
+ * Tab-specific session storage for local dialogs
+ */
+const localDialogs = new TabSessionStorage('onpage-dialog:local');
 
 /**
  * Sends message to the given tab
@@ -96,7 +102,7 @@ function dismissDialogCommand(ipmId: string): void {
  */
 async function dismissDialog(
   tabId: number,
-  ipmId: string,
+  ipmId: string | null,
 ): Promise<void> {
   logger.debug('[onpage-dialog]: Dismiss dialog');
   try {
@@ -106,6 +112,9 @@ async function dismissDialog(
     });
   } catch (ex) {
     // Ignore if tab has already been removed
+  }
+  if (!ipmId) {
+    return;
   }
 
   // Dismiss command if on-page dialog should no longer be shown for any tab
@@ -158,12 +167,11 @@ async function handleCloseMessage(
   sender: MessageSender,
 ): Promise<void> {
   const ipmId = await assignedIpmIds.get(sender.page.id);
-  if (typeof ipmId !== 'string') {
-    return;
-  }
 
   void dismissDialog(sender.page.id, ipmId);
-  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.closed);
+  if (ipmId) {
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.closed);
+  }
 }
 
 /**
@@ -176,17 +184,25 @@ async function handleContinueMessage(
   message: Message,
   sender: MessageSender,
 ): Promise<void> {
+  let targetUrl: string | null = null;
   const ipmId = await assignedIpmIds.get(sender.page.id);
-  if (!ipmId) {
-    return;
+
+  if (ipmId) {
+    const behavior = getBehavior(ipmId) as DialogBehavior;
+    if (!behavior) {
+      return;
+    }
+
+    targetUrl = createSafeOriginUrl(behavior.target);
+  } else {
+    const localDialog = await localDialogs.get(sender.page.id);
+    if (!localDialog) {
+      return;
+    }
+
+    targetUrl = localDialog.target;
   }
 
-  const behavior = getBehavior(ipmId) as DialogBehavior;
-  if (!behavior) {
-    return;
-  }
-
-  const targetUrl = createSafeOriginUrl(behavior.target);
   if (!targetUrl) {
     return;
   }
@@ -194,7 +210,13 @@ async function handleContinueMessage(
   void browser.tabs.create({ url: targetUrl });
 
   void dismissDialog(sender.page.id, ipmId);
-  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.buttonClicked);
+  if (ipmId) {
+    void recordEvent(
+      ipmId,
+      CommandName.createOnPageDialog,
+      DialogEventType.buttonClicked,
+    );
+  }
 }
 
 /**
@@ -209,20 +231,25 @@ async function handleGetMessage(
   message: Message,
   sender: MessageSender,
 ): Promise<StartInfo | null> {
+  let content: DialogContent | null = null;
   const ipmId = await assignedIpmIds.get(sender.page.id);
-  if (!ipmId) {
-    logger.debug('[onpage-dialog]: get no IPM id');
-    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.get_no_ipm_found);
-    return null;
+  if (ipmId) {
+    content = getContent(ipmId) as DialogContent;
+  } else {
+    const localDialog = await localDialogs.get(sender.page.id);
+    if (!localDialog) {
+      logger.debug('[onpage-dialog]: get, no IPM id');
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.get_no_ipm_found);
+      return null;
+    }
+
+    ({ content } = localDialog);
   }
 
-  const content = getContent(ipmId);
   if (!isDialogContent(content)) {
-    logger.debug('[onpage-dialog]: get no dialog found');
-    recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.get_no_dialog_found);
+    logger.debug('[onpage-dialog]: get, no Dialog Content');
     return null;
   }
-  logger.debug('[onpage-dialog]: get');
   return {
     content,
     localeInfo: getLocaleInfo(),
@@ -301,6 +328,23 @@ function handleTabRemovedEvent(data: TabRemovedEventData): void {
 }
 
 /**
+ * Indicates whether the given tab already contains a dialog
+ *
+ * @param tabId - Tab ID
+ *
+ * @returns whether the given tab already contains a dialog
+ */
+async function hasDialog(tabId: number): Promise<boolean> {
+  const ipmId = await assignedIpmIds.get(tabId);
+  if (ipmId) {
+    return true;
+  }
+
+  const localDialog = await localDialogs.get(tabId);
+  return !!localDialog;
+}
+
+/**
  * Injects the necessary user style and content script into the tab
  * to display the on-page dialog
  *
@@ -311,7 +355,7 @@ function handleTabRemovedEvent(data: TabRemovedEventData): void {
  */
 async function injectScriptAndStyle(
   tabId: number,
-  ipmId: string,
+  ipmId: string | null,
 ): Promise<boolean> {
   // We only inject styles into the page when we actually need them. Otherwise
   // websites may use them to detect the presence of the extension. For content
@@ -344,8 +388,10 @@ async function injectScriptAndStyle(
   } catch (error: unknown) {
     logger.error('Injection of OPD css & script failed');
     logger.error(error);
-    recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.injected_error);
-    dismissDialogCommand(ipmId);
+    if (ipmId) {
+      recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.injected_error);
+      dismissDialogCommand(ipmId);
+    }
     return false;
   }
 }
@@ -356,24 +402,139 @@ async function injectScriptAndStyle(
  *
  * @param tabId - Tab ID
  * @param ipmId - IPM ID
- * @param stats - On-page dialog stats
  */
 async function showDialog(
   tabId: number,
-  ipmId: string,
-  stats: Stats,
+  ipmId: string | null,
 ): Promise<void> {
+  logger.debug('[onpage-dialog]: Show dialog');
+  await injectScriptAndStyle(tabId, ipmId);
+}
+
+/**
+ * Indicates whether user wants to ignore dialogs
+ *
+ * @returns whether dialogs should be ignored
+ */
+async function shouldBeIgnored(): Promise<boolean> {
+  // Ignore and dismiss command if user opted-out of 'surveys'
+  if (getSettings().show_survey === false) {
+    logger.debug('[onpage-dialog]:show_survey - disabled');
+    return true;
+  }
+
+  // Ignore and dismiss command if user opted-out of 'surveys'
+  if (getSettings().suppress_surveys) {
+    logger.debug('[onpage-dialog]:suppress_surveys - enabled');
+    return true;
+  }
+
+  // Ignore and dismiss command if user opted-out of 'on page messages'
+  if (getSettings().onpageMessages === false) {
+    logger.debug('[onpage-dialog]:onpageMessages - disabled');
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Show dialog based on incoming IPM command
+ *
+ * @param tabId - ID of tab in which to show the dialog
+ * @param tab - Tab in which to show the dialog
+ * @param ipmId - IPM ID
+ */
+async function showDialogForIpm(
+  tabId: number,
+  tab: Tabs.Tab,
+  ipmId: string,
+): Promise<void> {
+  // Ignore if the given tab already contains a dialog
+  if (await hasDialog(tabId)) {
+    logger.debug('[onpage-dialog]: Tab already contains dialog');
+    return;
+  }
+  // Ignore and dismiss command if user opted-out of notifications
+  if (await shouldBeIgnored()) {
+    logger.debug('[onpage-dialog]: User ignores notifications');
+    dismissDialogCommand(ipmId);
+    return;
+  }
+
+  // Ignore and dismiss command if it has no behavior
+  const behavior = getBehavior(ipmId);
+  if (!isDialogBehavior(behavior)) {
+    logger.debug('[onpage-dialog]: No command behavior');
+    dismissDialogCommand(ipmId);
+    return;
+  }
+
+  // Ignore and dismiss command if License states doesn't match the license state of the command
+  if (!await doesLicenseStateMatch(behavior)) {
+    logger.debug('[onpage-dialog]: License state mis-match');
+    dismissCommand(ipmId);
+    return;
+  }
+
+  // Ignore and dismiss command if it has no stats
+  const stats = getStats(ipmId);
+  if (!isStats(stats)) {
+    logger.debug('[onpage-dialog]: No command stats');
+    dismissDialogCommand(ipmId);
+    return;
+  }
+
+  // Ignore command if on-page dialog should not be shown for this tab
+  if (!(await shouldBeShown(behavior, tab, stats))) {
+    logger.debug("[onpage-dialog]: Don't show");
+    return;
+  }
+
   logger.debug('[onpage-dialog]: Show dialog');
   await assignedIpmIds.transaction(async () => {
     await assignedIpmIds.set(tabId, ipmId);
   });
-  if (await injectScriptAndStyle(tabId, ipmId)) {
-    setStats(ipmId, {
-      displayCount: stats.displayCount + 1,
-      lastDisplayTime: Date.now(),
-    });
-    recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.injected);
+
+  setStats(ipmId, {
+    displayCount: stats.displayCount + 1,
+    lastDisplayTime: Date.now(),
+  });
+
+  await showDialog(tabId, ipmId);
+
+  void recordEvent(
+    ipmId,
+    CommandName.createOnPageDialog,
+    DialogEventType.injected,
+  );
+}
+
+/**
+ * Shows a dialog in the given tab based on the given configuration
+ *
+ * @param tabId - ID of tab in which to show the dialog
+ * @param target - Target URL
+ * @param content - Dialog content
+ */
+export async function showDialogForConfig(
+  tabId: number,
+  target: string,
+  content: DialogContent,
+): Promise<void> {
+  // Ignore if user opted-out of notifications
+  if (await shouldBeIgnored()) {
+    return;
   }
+  // Ignore if the given tab already contains a dialog
+  if (await hasDialog(tabId)) {
+    return;
+  }
+  logger.debug('[onpage-dialog]: Show local dialog');
+  logger.debug('[onpage-dialog]: target', target);
+  logger.debug('[onpage-dialog]: content', content);
+  await localDialogs.set(tabId, { content, target });
+
+  await showDialog(tabId, null);
 }
 
 /**
@@ -404,63 +565,7 @@ async function handleTabsUpdatedEvent(
 
   /* eslint-disable no-await-in-loop */
   for (const ipmId of unassignedIpmIds) {
-    // Ignore and dismiss command if user opted-out of 'surveys'
-    if (getSettings().show_survey === false) {
-      logger.debug('[onpage-dialog]:show_survey - disabled');
-      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_disabled);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-
-    // Ignore and dismiss command if user opted-out of 'surveys'
-    if (getSettings().suppress_surveys) {
-      logger.debug('[onpage-dialog]:suppress_surveys - enabled');
-      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_suppress_surveys);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-
-    // Ignore and dismiss command if user opted-out of 'on page messages'
-    if (getSettings().onpageMessages === false) {
-      logger.debug('[onpage-dialog]:onpageMessages - disabled');
-      recordEvent(ipmId, CommandName.createOnPageDialog, DialogExitEventType.tab_opm_disabled);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-
-    // Ignore and dismiss command if it has no behavior
-    const behavior = getBehavior(ipmId);
-    if (!isDialogBehavior(behavior)) {
-      logger.debug('[onpage-dialog]: No command behavior');
-      recordEvent(ipmId, CommandName.createOnPageDialog,
-        DialogErrorEventType.tab_no_behavior_found);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-
-    // Ignore and dismiss command if License states doesn't match the license state of the command
-    if (!await doesLicenseStateMatch(behavior)) {
-      logger.debug('[onpage-dialog]: License state mis-match');
-      dismissCommand(ipmId);
-      return;
-    }
-
-    // Ignore and dismiss command if it has no stats
-    const stats = getStats(ipmId);
-    if (!isStats(stats)) {
-      logger.debug('[onpage-dialog]: No command stats');
-      recordEvent(ipmId, CommandName.createOnPageDialog, DialogErrorEventType.tab_no_stats_found);
-      dismissDialogCommand(ipmId);
-      continue;
-    }
-    // Ignore command if on-page dialog should not be shown for this tab
-    // eslint-disable-next-line no-nested-ternary
-    if (!(await shouldBeShown(behavior, tab, stats))) {
-      logger.debug("[onpage-dialog]: Don't show");
-      continue;
-    }
-
-    await showDialog(tabId, ipmId, stats);
+    await showDialogForIpm(tabId, tab, ipmId);
   }
 }
 

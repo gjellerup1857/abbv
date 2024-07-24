@@ -25,6 +25,7 @@ import {
   sevenDaysInMilliSeconds,
   ytAllowlistHardEndDate,
   ytAllowlistLanguageCodes,
+  ytAllowlistOPDLanguageCodes,
   ytAllowlistStartDate,
 } from "./detection.types";
 import { determineUserLanguage } from "~/utilities/background/bg-functions";
@@ -33,7 +34,10 @@ import { MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
+import { showDialogForConfig } from "~/onpage-dialog/background";
 import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "../shared/index";
+
+let pageLoadedHandler: (tab: browser.Tabs.Tab) => void;
 
 /**
  * Should the extension allowlist YT users in a specific locale/language
@@ -44,6 +48,17 @@ const shouldAllowlistForLanguages = function (): Boolean {
   const locale = determineUserLanguage();
   const language = locale.substring(0, 2);
   return allowlistLanguages.includes(language);
+};
+
+/**
+ * Should the extension show an OPD after allowing ads on YT
+ *
+ */
+const shouldShowOPDForLanguages = function (): Boolean {
+  const OPDLanguages = Prefs.get(ytAllowlistOPDLanguageCodes);
+  const locale = determineUserLanguage();
+  const language = locale.substring(0, 2);
+  return OPDLanguages.includes(language);
 };
 
 /**
@@ -110,6 +125,24 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
 };
 
 /**
+ * Show the OPD once the tab has been reloaded
+ *
+ */
+const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
+  if (tabId === tab.id) {
+    void showDialogForConfig(tabId, "https://getadblock.com/youtube", {
+      body: [
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
+      ],
+      button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
+      title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
+    });
+    ext.pages.onLoaded.removeListener(pageLoadedHandler);
+  }
+};
+
+/**
  * Process the YouTube Wall Detected message from the content script
  *
  */
@@ -126,8 +159,12 @@ const processYouTubeWallDetectedMessage = async (
   );
   if (sender && sender.page && shouldAllowList()) {
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true);
-    browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
+    if (shouldShowOPDForLanguages()) {
+      pageLoadedHandler = onLoaded.bind(null, sender.page.id);
+      ext.pages.onLoaded.addListener(pageLoadedHandler);
+    }
+    browser.tabs.reload(sender.page.id);
   }
 };
 

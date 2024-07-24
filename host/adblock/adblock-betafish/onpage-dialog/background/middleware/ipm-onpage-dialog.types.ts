@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LicenseStateBehavior, Command, Content } from '../../../ipm/background';
+import { LicenseStateBehavior, Command } from '../../../ipm/background';
 
 /**
  * Timing name
@@ -46,24 +46,6 @@ export interface DialogBehavior extends LicenseStateBehavior {
      * Domain(s) which the OPD should or should not be shown
      */
     domain_list?: string;
-}
-
-/**
- * On-page dialog content
- */
-export interface DialogContent extends Content {
-    /**
-     * Paragraph text for body
-     */
-    body: string[];
-    /**
-     * Button text
-     */
-    button: string;
-    /**
-     * Title text
-     */
-    title: string;
 }
 
 /**

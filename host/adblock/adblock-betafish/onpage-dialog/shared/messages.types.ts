@@ -16,7 +16,7 @@
  */
 import { LocaleInfo } from '../../i18n/background';
 import { Message } from '../../polyfills/shared';
-import { DialogContent } from '../background/middleware';
+import { DialogContent } from '../background/dialog.types';
 
 /**
  * Message for hiding the on-page dialog
