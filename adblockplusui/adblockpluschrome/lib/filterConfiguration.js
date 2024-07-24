@@ -42,10 +42,7 @@ export async function addFilter(filterText, origin) {
     await ewe.filters.enable([filterText]);
   }
   catch (ex) {
-    // If we add an existing filter again, we ignore the resulting error to
-    // avoid showing unnecessary error messages to the user
-    if (ex.type !== "storage_duplicate_filters")
-      return ex;
+    return ex;
   }
 
   return null;

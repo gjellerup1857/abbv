@@ -91,15 +91,23 @@ function getAllowlistingDomain(hostname) {
  * Function to be called when a valid allowlisting request was received
  *
  * @param domain - Domain to allowlist
+ * @param {?Object} options Additional options for the allowlisting.
+ * @param {Number} [options.expiresAt] The timestamp when the filter should
+ *  expire (allowed 1 day - 365 days in the future).
+ *
  */
-async function onAllowlisting(domain) {
+async function onAllowlisting(domain, options) {
   if (License.isActiveLicense()) {
     return;
   }
 
   const host = getAllowlistingDomain(domain);
+  const metadata = createFilterMetaData('web');
+  if (options && options.expiresAt) {
+    metadata.expiresAt = options.expiresAt;
+  }
 
-  await ewe.filters.add([`@@||${host}^$document`], createFilterMetaData('web'));
+  await ewe.filters.add([`@@||${host}^$document`], metadata);
 }
 
 /**

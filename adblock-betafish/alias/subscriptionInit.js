@@ -153,26 +153,22 @@ const start = async function () {
     version: info.addonVersion,
   };
 
-  // The following code may need to be updated once the extension engine
-  // adds a opt out for eyeometry (https://eyeo.atlassian.net/browse/EE-579)
-  if (info.platform !== "gecko") {
-    let cdp = {
-      pingUrl: webpackDotenvPlugin.ADBLOCK_CDP_PING_URL,
-      aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
-      bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER
-    };
+  let cdp = {
+    pingUrl: webpackDotenvPlugin.ADBLOCK_CDP_PING_URL,
+    aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
+    bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER
+  };
 
-    if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) {
-      addonInfo.cdp = cdp;
-    }
-    let telemetry = {
-      url: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_URL,
-      bearer: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_BEARER
-    }
+  if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) {
+    addonInfo.cdp = cdp;
+  }
+  let telemetry = {
+    url: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_URL,
+    bearer: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_BEARER
+  }
 
-    if (telemetry.url && telemetry.bearer) {
-      addonInfo.telemetry = telemetry;
-    }
+  if (telemetry.url && telemetry.bearer) {
+    addonInfo.telemetry = telemetry;
   }
 
   return ewe.start(addonInfo).then(async (eweFirstRun) => {

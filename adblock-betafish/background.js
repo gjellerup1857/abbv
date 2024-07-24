@@ -45,6 +45,7 @@ import {
   IPM as IPMTelemetry,
   TELEMETRY,
   startCdpOptOutListener,
+  startTelemetryOptOutListener,
 } from './telemetry/background';
 import { getBlockedPerPage, Stats } from '../adblockplusui/adblockpluschrome/lib/stats';
 import { getSettings, settings } from './prefs/background';
@@ -656,6 +657,7 @@ initialize.then(async () => {
   setUninstallURL();
   await IPMTelemetry.untilLoaded();
   IPMTelemetry.start();
+  await startTelemetryOptOutListener();
   await startCdpOptOutListener();
   revalidateAllowlistingStates();
   prefs.migrateUserData();
