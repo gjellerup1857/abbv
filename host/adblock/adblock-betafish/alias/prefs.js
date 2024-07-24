@@ -272,15 +272,14 @@ defaults.send_ad_wall_messages = true;
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = ["ar", "fr", "jp", "nl", "pl", "pt", "tr"];
+defaults.yt_allowlist_language_codes = [ 'ar', 'fr', 'ja', 'nl', 'pl', 'tr', 'zh'];
 
 /**
  * Language codes that should show an OPD after auto allowing
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_plus_opd_language_codes = ["ar", "jp", "nl", "pl", "tr"];
-
+defaults.yt_allowlist_plus_opd_language_codes = ['ar', 'ja', 'nl', 'pl', 'tr'];
 
 /**
  * Start date (as a number) to start auto allowing YT
