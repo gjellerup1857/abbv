@@ -45,6 +45,44 @@ let errorCount = 0;
 let processingIntervalId = null;
 
 /**
+ * Checks whether event contains authentication data
+ *
+ * @param {Event} event - Event
+ *
+ * @returns {boolean} whether event contains authentication data
+ */
+function isAuthRequestEvent(event) {
+  return (
+    event.detail
+    && typeof event.detail.signature === 'string'
+    && typeof event.detail.timestamp === 'number'
+  );
+}
+
+/**
+ * Check whether incoming event hasn't been tampered with
+ *
+ * @param {Event} event - DOM event
+ *
+ * @returns {boolean} whether the event can be trusted
+ */
+function isTrustedEvent(event) {
+  return Object.getPrototypeOf(event) === CustomEvent.prototype
+    && !Object.hasOwnProperty.call(event, 'detail');
+}
+
+/**
+ * Checks whether event contains website ID
+ *
+ * @param {Event} event - Event
+ *
+ * @returns {boolean} whether event contains website ID
+ */
+function isSignatureRequestEvent(event) {
+  return event.detail != null && typeof event.detail.website_id === 'string';
+}
+
+/**
  * Retrieves requested payload from background page
  *
  * @param {Event} event - "flattr-request-payload" DOM event
@@ -52,22 +90,58 @@ let processingIntervalId = null;
  * @returns {Promise<string|null>} payload - Encoded signed Premium license data
  */
 async function getPayload(event) {
-  /* eslint-disable-next-line no-use-before-define */
-  if (!isTrustedEvent(event)) {
-    return null;
-  }
-
-  /* eslint-disable-next-line no-use-before-define */
-  if (!isAuthRequestEvent(event)) {
-    return null;
-  }
-
-  const payload = await browser.runtime.sendMessage({
-    command: "users.isPaying",
+  return browser.runtime.sendMessage({
+    command: 'users.isPaying',
     timestamp: event.detail.timestamp,
     signature: event.detail.signature,
   });
-  return payload;
+}
+
+/**
+ * Retrieves additional data to be sent along with the payload
+ *
+ * @param {Event} event - Event containing signature request data
+ * @returns {Promise<Object|null>} extensionInfo - Additional data or null if conditions are not met
+ */
+async function getExtensionInfo(event) {
+  if (!isSignatureRequestEvent(event)) {
+    return null;
+  }
+
+  try {
+    const [
+      dataCollectionOptOut,
+      manifest,
+      signature,
+      acceptableAds,
+      allowlist,
+    ] = await Promise.all([
+      browser.runtime.sendMessage({ type: 'prefs.get', key: 'data_collection_opt_out' }),
+      browser.runtime.getManifest(),
+      browser.runtime.sendMessage({
+        command: 'premium.signature',
+        signature: event.detail.signature,
+        timestamp: event.detail.timestamp,
+        w: event.detail.website_id,
+      }),
+      isAcceptableAdsActive(),
+      allowlistState(),
+    ]);
+
+    if (dataCollectionOptOut === true || signature === null) {
+      return null;
+    }
+
+    return {
+      name: manifest.short_name,
+      version: manifest.version,
+      acceptableAds,
+      allowlistState: allowlist,
+      ...signature,
+    };
+  } catch (error) {
+    return null;
+  }
 }
 
 /**
@@ -81,72 +155,80 @@ function handleFlattrRequestPayloadEvent(event) {
   }
 
   eventQueue.push(event);
-  /* eslint-disable-next-line no-use-before-define */
   startProcessingInterval();
 }
 
 /**
- * Checks whether event contains authentication data
+ * Checks whether Acceptable Ads are active
  *
- * @param {Event} event - Event
- *
- * @returns {boolean} whether event contains authentication data
+ * @returns {Promise<boolean>} Whether Acceptable Ads are active
  */
-function isAuthRequestEvent(event) {
-  return (
-    event.detail &&
-    typeof event.detail.signature === "string" &&
-    typeof event.detail.timestamp === "number"
-  );
-}
+const isAcceptableAdsActive = async () => {
+  const [
+    acceptableAdsUrl,
+    subscriptions,
+  ] = await Promise.all([
+    browser.runtime.sendMessage({ type: 'app.get', what: 'acceptableAdsUrl' }),
+    browser.runtime.sendMessage({ type: 'subscriptions.get' }),
+  ]);
+  const activeSubscriptionUrls = subscriptions.map(
+    ({ disabled, url }) => !disabled && url,
+  ).filter(Boolean);
+
+  return activeSubscriptionUrls.includes(acceptableAdsUrl);
+};
 
 /**
- * Check whether incoming event hasn't been tampered with
+ * Checks whether current tab is allowlisted
  *
- * @param {Event} event - DOM event
- *
- * @returns {boolean} whether the event can be trusted
+ * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
  */
-function isTrustedEvent(event) {
-  return (
-    Object.getPrototypeOf(event) === CustomEvent.prototype &&
-    !Object.hasOwnProperty.call(event, "detail")
-  );
-}
+const allowlistState = async () => {
+  const allowlistResponse = await browser.runtime.sendMessage({ command: 'filters.isTabAllowlisted' });
+  const [status, source, oneCA] = allowlistResponse || [false, null, false];
+  return { status, source, oneCA };
+};
 
 /**
  * Processes incoming requests
  *
- * @returns {Promise}
+ * @returns {Promise<void>}
  */
 async function processNextEvent() {
   const event = eventQueue.shift();
   if (event) {
+    if (!isTrustedEvent(event)) {
+      return;
+    }
+    if (!isAuthRequestEvent(event)) {
+      return;
+    }
+
     try {
-      const payload = await getPayload(event);
-      if (!payload) {
-        throw new Error("Premium request rejected");
-      }
-      let detail = { detail: { payload } };
-      if (typeof cloneInto === "function") {
+      const [payload, extensionInfo] = await Promise.all([
+        getPayload(event),
+        getExtensionInfo(event),
+      ]);
+
+      let detail = { detail: { payload, extras: extensionInfo } };
+      if (typeof cloneInto === 'function') {
         // Firefox requires content scripts to clone objects
         // that are passed to the document
         detail = cloneInto(detail, document.defaultView);
       }
-      document.dispatchEvent(new CustomEvent("flattr-payload", detail));
-      /* eslint-disable-next-line no-use-before-define */
+      document.dispatchEvent(
+        new CustomEvent('flattr-payload', detail),
+      );
       stop();
     } catch (e) {
       errorCount += 1;
       if (errorCount >= maxErrorThreshold) {
-        /* eslint-disable-next-line no-use-before-define */
         stop();
       }
     }
   }
 
   if (!eventQueue.length) {
-    /* eslint-disable-next-line no-use-before-define */
     stopProcessingInterval();
   }
 }
@@ -175,14 +257,16 @@ function stopProcessingInterval() {
  * Initializes module
  */
 function start() {
-  document.addEventListener("flattr-request-payload", handleFlattrRequestPayloadEvent, true);
+  document.addEventListener('flattr-request-payload',
+    handleFlattrRequestPayloadEvent, true);
 }
 
 /**
  * Uninitializes module
  */
 function stop() {
-  document.removeEventListener("flattr-request-payload", handleFlattrRequestPayloadEvent, true);
+  document.removeEventListener('flattr-request-payload',
+    handleFlattrRequestPayloadEvent, true);
   eventQueue.length = 0;
   stopProcessingInterval();
 }
