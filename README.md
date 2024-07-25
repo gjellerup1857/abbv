@@ -9,7 +9,9 @@ called 'fragments' into the host extension, in order to create customized
 extensions with different features and branding to suit various user needs.
 
 This architecture also streamlines dependency management, making development and
-collaboration more efficient.  Main architectural components
+collaboration more efficient.  
+
+## Main architectural components
 
 There are three main types of architectural components:
 
