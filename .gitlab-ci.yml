@@ -1,3 +1,7 @@
+default:
+  tags:
+    - "GCP"
+
 include:
   - local: 'host/adblock/.gitlab-ci.yml'
     inputs:
