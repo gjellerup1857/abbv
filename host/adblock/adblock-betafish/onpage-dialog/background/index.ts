@@ -15,4 +15,11 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export * from './dialog';
+export * from './dialog.types';
+export * from './stats';
+export * from './stats.types';
 export * from './tab-manager';
+export * from './tab-manager.types';
+export * from './timing';
+export * from './timing.types';
