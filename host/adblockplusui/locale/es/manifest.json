@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Elimina anuncios en YouTube y dondequiera que navegues."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus (versión de desarrollo)"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - bloqueador de anuncios gratis"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "YouTube’da ve ziyaret ettiğiniz tüm sitelerdeki reklamları kaldırın."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus geliştirme yapısı"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - ücretsiz reklam engelleyici"
+  }
+}

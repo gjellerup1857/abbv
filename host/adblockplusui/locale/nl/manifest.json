@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Verwijder reclame op YouTube en overal waar u surft."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus-ontwikkelversie"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - gratis adblocker"
+  }
+}
