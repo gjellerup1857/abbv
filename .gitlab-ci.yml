@@ -2,6 +2,9 @@ default:
   tags:
     - "GCP"
 
+stages:
+  - hostpipeline
+
 adblock:
   trigger:
     include:
