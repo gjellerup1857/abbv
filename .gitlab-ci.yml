@@ -6,6 +6,7 @@ stages:
   - hostpipeline
 
 adblock:
+  stage: hostpipeline
   trigger:
     include:
       - local: 'host/adblock/.gitlab-ci.yml'
@@ -16,6 +17,7 @@ adblock:
       pipeline_variables: true
 
 adblockplus:
+  stage: hostpipeline
   trigger:
     include:
       - local: 'host/adblockplus/.gitlab-ci.yml'
