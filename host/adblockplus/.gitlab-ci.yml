@@ -139,7 +139,7 @@ buildfromsource:
   before_script:
     - cd $[[ inputs.hostpath ]]
   script:
-   - unzip -d unpacked-extension/ $[[ inputs.hostpath ]]/dist/release/$EXTENSION
+   - unzip -d unpacked-extension/ dist/release/$EXTENSION
    - cd unpacked-extension/
    - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
        echo 'Some extension files are bigger than 4 MB:' &&
