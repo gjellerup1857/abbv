@@ -152,4 +152,7 @@ module.exports = {
       },
     },
   ],
+  globals: {
+    "modulesAsGlobal": true,
+  },
 };

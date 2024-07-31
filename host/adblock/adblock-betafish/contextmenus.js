@@ -82,6 +82,7 @@ const emitPageBroadcast = (function emitBroadcast() {
       allFrames: false,
       include: [
         'jquery-3.5.1.min.js',
+        'globals-front.js',
         'adblock-uiscripts-load_wizard_resources.js',
         'adblock-uiscripts-top_open_whitelist_completion_ui.js',
       ],
@@ -92,6 +93,7 @@ const emitPageBroadcast = (function emitBroadcast() {
       include: [
         'jquery-3.5.1.min.js',
         'purify.min.js',
+        'globals-front.js',
         'adblock-uiscripts-load_wizard_resources.js',
         'adblock-uiscripts-blacklisting-overlay.js',
         'adblock-uiscripts-blacklisting-clickwatcher.js',

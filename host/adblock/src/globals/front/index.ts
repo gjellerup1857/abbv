@@ -15,4 +15,17 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-void modulesAsGlobal.messaging.send('adblock:load_my_adblock');
+import * as messaging from "../../core/messaging/front";
+
+/**
+ * Initializes functionality for exposing modules as globals
+ */
+function start(): void {
+  if (self.modulesAsGlobal) {
+    return;
+  }
+
+  self.modulesAsGlobal = { messaging };
+}
+
+start();

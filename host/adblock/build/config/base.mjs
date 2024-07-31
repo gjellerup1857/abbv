@@ -60,6 +60,10 @@ export default {
         ],
       },
       {
+        dest: 'globals-front.js',
+        src: ['src/globals/front/index.ts'],
+      },
+      {
         dest: 'onpage-dialog.postload.js',
         src: ['adblock-betafish/onpage-dialog/content/dialog.ts'],
       },

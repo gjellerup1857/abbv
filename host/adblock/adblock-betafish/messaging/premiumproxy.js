@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global EventEmitter, send, browser */
+/* global EventEmitter, browser */
 
 /**
  * Act as Proxy to the Premium modules - License, Channels, CustomChannel, SyncService
@@ -32,7 +32,7 @@ let localLicense = {};
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeLicense() {
   const returnPropertiesAsFunctions = ['shouldShowMyAdBlockEnrollment', 'isActiveLicense', 'shouldShowPremiumCTA', 'getFormattedActiveSinceDate', 'isLicenseCodeValid'];
-  localLicense = await send('getLicenseConfig');
+  localLicense = await modulesAsGlobal.messaging.send('adblock:getLicenseConfig');
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   License = new Proxy(localLicense, {
     get(obj, prop) {
@@ -45,7 +45,7 @@ async function initializeLicense() {
       // The 'activate' function is here as a special case for testers to
       // enable premium (temporarily)
       if (prop === 'activate') {
-        return () => send('activate');
+        return () => modulesAsGlobal.messaging.send('adblock:activate');
       }
       return Reflect.get(obj, prop);
     },
@@ -57,30 +57,30 @@ const channelsNotifier = new EventEmitter();
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class channels {
-  static getIdByName = name => send('channels.getIdByName', { name });
+  static getIdByName = name => modulesAsGlobal.messaging.send('adblock:channels.getIdByName', { name });
 
-  static getGuide = () => send('channels.getGuide');
+  static getGuide = () => modulesAsGlobal.messaging.send('adblock:channels.getGuide');
 
-  static isAnyEnabled = () => send('channels.isAnyEnabled');
+  static isAnyEnabled = () => modulesAsGlobal.messaging.send('adblock:channels.isAnyEnabled');
 
-  static isCustomChannelEnabled = () => send('channels.isCustomChannelEnabled');
+  static isCustomChannelEnabled = () => modulesAsGlobal.messaging.send('adblock:channels.isCustomChannelEnabled');
 
-  static initializeListeners = () => send('channels.initializeListeners');
+  static initializeListeners = () => modulesAsGlobal.messaging.send('adblock:channels.initializeListeners');
 
-  static disableAllChannels = () => send('channels.disableAllChannels');
+  static disableAllChannels = () => modulesAsGlobal.messaging.send('adblock:channels.disableAllChannels');
 
-  static setEnabled = (channelId, enabled) => send('channels.setEnabled', { channelId, enabled });
+  static setEnabled = (channelId, enabled) => modulesAsGlobal.messaging.send('adblock:channels.setEnabled', { channelId, enabled });
 }
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class customChannel {
-  static isMaximumAllowedImages = () => send('customchannel.isMaximumAllowedImages');
+  static isMaximumAllowedImages = () => modulesAsGlobal.messaging.send('adblock:customchannel.isMaximumAllowedImages');
 
-  static getListings = () => send('customchannel.getListings');
+  static getListings = () => modulesAsGlobal.messaging.send('adblock:customchannel.getListings');
 
-  static addCustomImage = imageInfo => send('customchannel.addCustomImage', { imageInfo });
+  static addCustomImage = imageInfo => modulesAsGlobal.messaging.send('adblock:customchannel.addCustomImage', { imageInfo });
 
-  static removeListingByURL = url => send('customchannel.removeListingByURL', { url });
+  static removeListingByURL = url => modulesAsGlobal.messaging.send('adblock:customchannel.removeListingByURL', { url });
 }
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
@@ -90,25 +90,25 @@ async function initializeChannels() {
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class SyncService {
-  static enableSync = initialGet => send('SyncService.enableSync', { initialGet });
+  static enableSync = initialGet => modulesAsGlobal.messaging.send('adblock:SyncService.enableSync', { initialGet });
 
-  static disableSync = removeName => send('SyncService.disableSync', { removeName });
+  static disableSync = removeName => modulesAsGlobal.messaging.send('adblock:SyncService.disableSync', { removeName });
 
-  static getLastGetStatusCode = () => send('SyncService.getLastGetStatusCode');
+  static getLastGetStatusCode = () => modulesAsGlobal.messaging.send('adblock:SyncService.getLastGetStatusCode');
 
-  static getLastPostStatusCode = () => send('SyncService.getLastPostStatusCode');
+  static getLastPostStatusCode = () => modulesAsGlobal.messaging.send('adblock:SyncService.getLastPostStatusCode');
 
-  static resetAllErrors = () => send('SyncService.resetAllErrors');
+  static resetAllErrors = () => modulesAsGlobal.messaging.send('SyncService.resetAllErrors');
 
-  static processUserSyncRequest = () => send('SyncService.processUserSyncRequest');
+  static processUserSyncRequest = () => modulesAsGlobal.messaging.send('adblock:SyncService.processUserSyncRequest');
 
-  static getAllExtensionNames = () => send('SyncService.getAllExtensionNames');
+  static getAllExtensionNames = () => modulesAsGlobal.messaging.send('adblock:SyncService.getAllExtensionNames');
 
-  static getCurrentExtensionName = () => send('SyncService.getCurrentExtensionName');
+  static getCurrentExtensionName = () => modulesAsGlobal.messaging.send('adblock:SyncService.getCurrentExtensionName');
 
-  static removeExtensionName = (dataDeviceName, dataExtensionGUID) => send('SyncService.removeExtensionName', { dataDeviceName, dataExtensionGUID });
+  static removeExtensionName = (dataDeviceName, dataExtensionGUID) => modulesAsGlobal.messaging.send('adblock:SyncService.removeExtensionName', { dataDeviceName, dataExtensionGUID });
 
-  static setCurrentExtensionName = name => send('SyncService.setCurrentExtensionName', { name });
+  static setCurrentExtensionName = name => modulesAsGlobal.messaging.send('adblock:SyncService.setCurrentExtensionName', { name });
 
   static syncNotifier = new EventEmitter();
 }
@@ -128,7 +128,7 @@ async function initializePremiumPort() {
       }
     }
     if (message.type === 'license.respond') {
-      localLicense = await send('getLicenseConfig');
+      localLicense = await modulesAsGlobal.messaging.send('adblock:getLicenseConfig');
       if (message.args) {
         licenseNotifier.emit(`license.${message.action}`, ...message.args);
       }

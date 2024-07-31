@@ -259,7 +259,7 @@ const start = async function () {
     const genMsgData = { command: 'recordGeneralMessage', msg: 'popup_opened', additionalParams: { isBadgeTextNew, reason: newBadgeTextReason } };
     sendMessageWithNoResponse(genMsgData);
     sendMessageWithNoResponse({ command: 'resetBadgeText' });
-    sendMessageWithNoResponse({ command: 'cleanUpSevenDayAlarm' });
+    void modulesAsGlobal.messaging.send('adblock:cleanUpSevenDayAlarm');
 
     if (info.settings) {
       popupMenuTheme = info.settings.color_themes.popup_menu;
@@ -411,8 +411,8 @@ const start = async function () {
       && info.lastGetErrorResponse.code === 'invalid_sync_version'
     ) {
       show(['div_sync_outofdate_error_msg']);
-      sendMessageWithNoResponse({ command: 'resetLastGetStatusCode' }); // reset the code, so it doesn't show again.
-      sendMessageWithNoResponse({ command: 'resetLastGetErrorResponse' }); // reset the code, so it doesn't show again.
+      modulesAsGlobal.messaging.send('adblock:resetLastGetStatusCode'); // reset the code, so it doesn't show again.
+      modulesAsGlobal.messaging.send('adblock:resetLastGetErrorResponse'); // reset the code, so it doesn't show again.
     } else if (
       !info.settings.sync_settings
       && (info.lastGetStatusCode === 403
@@ -425,7 +425,7 @@ const start = async function () {
       && info.settings.sync_settings
     ) {
       show(['div_sync_error_msg']);
-      sendMessageWithNoResponse({ command: 'resetLastPostStatusCode' }); // reset the code, so it doesn't show again.
+      modulesAsGlobal.messaging.send('adblock:resetLastPostStatusCode'); // reset the code, so it doesn't show again.
     } else {
       hide(['div_sync_error_msg']);
     }

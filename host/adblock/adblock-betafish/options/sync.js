@@ -19,7 +19,7 @@
 /* global License, SyncService, translate, FIVE_SECONDS,
    settingsNotifier, MABPayment, storageSet, storageGet,
    determineUserLanguage, initializeProxies, licenseNotifier, settings,
-   send, info
+   info
     */
 
 const onSyncDataInitialGetError = async function () {
@@ -289,7 +289,7 @@ const onSyncDataInitialGetError = async function () {
       licenseNotifier.on('license.updating', onLicenseUpdating);
       licenseNotifier.on('license.updated', onLicenseUpdated);
       licenseNotifier.on('license.updated.error', onLicenseUpdatedError);
-      send('updatePeriodically');
+      void modulesAsGlobal.messaging.send('adblock:updatePeriodically');
     });
 
     $('#toggle-sync-details').on('click', () => {

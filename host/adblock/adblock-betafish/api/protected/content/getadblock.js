@@ -38,7 +38,10 @@ async function receiveMessage(event) {
   ) {
     window.removeEventListener('message', receiveMessage);
     browser.runtime.onMessage.addListener(onMessage);
-    const response = await browser.runtime.sendMessage({ command: 'payment_success', version: 1, origin: event.origin });
+    const response = await modulesAsGlobal.messaging.send('adblock:payment_success', {
+      version: 1,
+      origin: event.origin,
+    });
     window.postMessage(response, '*');
   }
 }
@@ -87,7 +90,7 @@ onReady(async () => {
       document.body.appendChild(elemDiv);
     }
 
-    response = await browser.runtime.sendMessage({ command: 'isActiveLicense' });
+    response = await modulesAsGlobal.messaging.send('adblock:isActiveLicense');
     const elemDiv = document.createElement('div');
     elemDiv.id = 'isAdblockLicenseActive';
     elemDiv.innerText = response;

@@ -23,6 +23,7 @@
         "polyfill.js",
         "ext/common.js",
         "ext/content.js",
+        "globals-front.js",
         "adblock-functions.js",
         "contentscript-loader.js",
         "premium.preload.js",
@@ -49,6 +50,7 @@
     {
       "all_frames": true,
       "js": [
+        "globals-front.js",
         "adblock-getadblock.js"
       ],
       "matches": [

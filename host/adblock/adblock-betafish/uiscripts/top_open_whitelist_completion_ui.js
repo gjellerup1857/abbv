@@ -19,7 +19,6 @@
 /* global browser, translate, bindEnterClickToDefault, mayOpenDialogUi:true, i18nJoin,
    processReplacementChildrenInContent, setLangAndDirAttributes, loadWizardResources */
 
-
 // Global lock so we can't open more than once on a tab.
 if (typeof window.mayOpenDialogUi === 'undefined') {
   window.mayOpenDialogUi = true;
@@ -112,11 +111,11 @@ function topOpenWhitelistCompletionUI(options) {
       (document.body || document.documentElement).removeChild(base);
     });
     $learnMoreBtn.on('click', () => {
-      browser.runtime.sendMessage({ command: 'openPremiumPayURL' });
+      void modulesAsGlobal.messaging.send('adblock:openPremiumPayURL');
       browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'whitelist_cta_clicked' });
     });
     $closeBtn.on('click', () => {
-      browser.runtime.sendMessage({ command: 'setWhitelistCTAStatus', isEnabled: false });
+      void modulesAsGlobal.messaging.send('adblock:setWhitelistCTAStatus', { isEnabled: false });
       browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'whitelist_cta_closed' });
       $premiumCTA.hide();
       $dismissedMsg.show();

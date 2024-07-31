@@ -376,7 +376,7 @@ BlacklistUi.prototype.buildPage3 = function buildPage3() {
   that.$dialog.children('.page').hide();
 
   const findOutBtnClickHandler = () => {
-    browser.runtime.sendMessage({ command: 'openPremiumPayURL' });
+    void modulesAsGlobal.messaging.send('adblock:openPremiumPayURL');
     browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'blacklist_cta_clicked' });
     that.preview(null);
     that.onClose();
@@ -385,7 +385,7 @@ BlacklistUi.prototype.buildPage3 = function buildPage3() {
   $pageThreeFindOutBtn.on('click', findOutBtnClickHandler);
 
   const optOutBtnClickHandler = () => {
-    browser.runtime.sendMessage({ command: 'setBlacklistCTAStatus', isEnabled: false });
+    void modulesAsGlobal.messaging.send('adblock:setBlacklistCTAStatus', { isEnabled: false });
     browser.runtime.sendMessage({ command: 'recordGeneralMessage', msg: 'blacklist_cta_closed' });
     that.preview(null);
     that.onClose();

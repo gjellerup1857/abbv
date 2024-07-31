@@ -15,4 +15,18 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-void modulesAsGlobal.messaging.send('adblock:load_my_adblock');
+import browser from "webextension-polyfill";
+
+/**
+ * Sends messages to background context
+ *
+ * @param type - Message type
+ * @param args - Message arguments
+ * @returns message response
+ */
+export async function send<T = unknown>(
+  type: string,
+  args = {}
+): Promise<T> {
+  return await browser.runtime.sendMessage({ ...args, type });
+}

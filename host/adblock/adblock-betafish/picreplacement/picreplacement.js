@@ -349,10 +349,12 @@ const imageSwap = {
       callback(false);
       return false;
     }
-    browser.runtime.sendMessage({
-      command: 'channels.getrandomlisting',
+    void modulesAsGlobal.messaging.send('adblock:channels.getrandomlisting', {
       opts: {
-        width: t.x, height: t.y, type: t.type, position: t.position,
+        width: t.x,
+        height: t.y,
+        type: t.type,
+        position: t.position,
       },
     }).then((picture) => {
       const pic = picture;
@@ -698,7 +700,7 @@ const imageSwap = {
       // a forced window resize event repaints the page to correctly lay it out
       totalSwaps += 1;
       window.dispatchEvent(new Event('resize'));
-      browser.runtime.sendMessage({ command: 'channels.recordOneAdReplaced' });
+      void modulesAsGlobal.messaging.send('adblock:channels.recordOneAdReplaced');
     }
   },
 }; // end imageSwap
