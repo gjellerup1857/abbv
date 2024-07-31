@@ -2,10 +2,22 @@ default:
   tags:
     - "GCP"
 
-include:
-  - local: 'host/adblock/.gitlab-ci.yml'
-    inputs:
-      hostpath: "host/adblock"
-  - local: 'host/adblockplus/.gitlab-ci.yml'
-    inputs:
-      hostpath: "host/adblockplus"
+adblock:
+  trigger:
+    include:
+      - local: 'host/adblock/.gitlab-ci.yml'
+        inputs:
+          hostpath: 'host/adblock'
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
+adblockplus:
+  trigger:
+    include:
+      - local: 'host/adblockplus/.gitlab-ci.yml'
+        inputs:
+          hostpath: 'host/adblockplus'
+    strategy: depend
+    forward:
+      pipeline_variables: true
