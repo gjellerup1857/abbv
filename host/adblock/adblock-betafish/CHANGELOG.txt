@@ -1,3 +1,7 @@
+Version: 6.7.0, Date: 2024-07-31
+- Update webext-ad-filtering-solution to 1.10.0
+- Make messaging API usable in standalone JavaScript files
+
 Version: 6.6.0, Date: 2024-07-17
 - Updated AdBlock's name and description
 - Moved the update of the kebob URL
