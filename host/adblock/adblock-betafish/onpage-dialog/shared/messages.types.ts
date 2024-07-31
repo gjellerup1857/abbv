@@ -16,7 +16,7 @@
  */
 import { LocaleInfo } from '../../i18n/background';
 import { Message } from '../../polyfills/shared';
-import { DialogContent } from '../background/dialog.types';
+import { Content } from '../../ipm/background';
 
 /**
  * Message for hiding the on-page dialog
@@ -71,4 +71,22 @@ export interface StartInfo {
      * Locale information
      */
     localeInfo: LocaleInfo;
+}
+
+/**
+ * On-page dialog content
+ */
+export interface DialogContent extends Content {
+  /**
+   * Paragraph text for body
+   */
+  body: string[];
+  /**
+   * Button text
+   */
+  button: string;
+  /**
+   * Title text
+   */
+  title: string;
 }

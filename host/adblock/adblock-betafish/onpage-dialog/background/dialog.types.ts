@@ -16,7 +16,6 @@
  */
 import { type LicenseStateBehavior } from '../../ipm/background';
 import { type Timing } from './timing.types';
-import { Content } from '../../ipm/background';
 
 /**
  * On-page dialog behavior
@@ -60,22 +59,4 @@ export interface Dialog {
    * IPM ID, if applicable
    */
   ipmId?: string;
-}
-
-/**
- * On-page dialog content
- */
-export interface DialogContent extends Content {
-  /**
-   * Paragraph text for body
-   */
-  body: string[];
-  /**
-   * Button text
-   */
-  button: string;
-  /**
-   * Title text
-   */
-  title: string;
 }

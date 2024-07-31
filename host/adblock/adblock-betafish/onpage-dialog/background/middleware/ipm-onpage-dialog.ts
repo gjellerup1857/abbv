@@ -30,7 +30,6 @@ import {
 } from '../../../ipm/background';
 import * as logger from '../../../utilities/background';
 import {
-  DialogBehavior,
   DialogCommand,
   DialogParams,
   Timing,

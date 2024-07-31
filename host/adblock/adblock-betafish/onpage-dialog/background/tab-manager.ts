@@ -43,7 +43,6 @@ import {
 import { Message, ErrorMessage } from '../../polyfills/shared';
 import { HideMessage, PingMessage, StartInfo } from '../shared';
 import {
-  DialogBehavior,
   DialogEventType,
   DialogErrorEventType,
   isDialogBehavior,
@@ -119,7 +118,7 @@ async function dismissDialog(
 
   // Dismiss command if on-page dialog should no longer be shown for any tab
   const behavior = getBehavior(ipmId);
-  if (!isDialogBehavior(behavior)) {
+  if (!behavior || !isDialogBehavior(behavior)) {
     return;
   }
 
@@ -188,8 +187,8 @@ async function handleContinueMessage(
   const ipmId = await assignedIpmIds.get(sender.page.id);
 
   if (ipmId) {
-    const behavior = getBehavior(ipmId) as DialogBehavior;
-    if (!behavior) {
+    const behavior = getBehavior(ipmId);
+    if (!behavior || !isDialogBehavior(behavior)) {
       return;
     }
 
