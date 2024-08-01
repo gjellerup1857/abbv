@@ -455,6 +455,8 @@ unit:standard:
     FIREFOX_BUILD: dist/release/adblockplus-firefox-${CI_COMMIT_SHORT_SHA}.xpi
     LT_USERNAME: $LT_USERNAME
     LT_ACCESS_KEY: $LT_ACCESS_KEY
+  before_script:
+    - cd $[[ inputs.hostpath ]]
   script:
     - npm ci --cache .npm --prefer-offline
     - npm run test:$CONFIGURATION $SUITE 2>&1 | tee lambdatest_output.txt || true
