@@ -15,9 +15,9 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { License } from '../../picreplacement/check';
-import { LicenseState } from './data-collection.types';
-import { LicenseStateBehavior } from './command-library.types';
+import { License } from "../../picreplacement/check";
+import { LicenseState } from "./data-collection.types";
+import { LicenseStateBehavior } from "./command-library.types";
 
 /**
  * Checks whether the given parameter is of type LicenseState.
@@ -27,16 +27,15 @@ import { LicenseStateBehavior } from './command-library.types';
  */
 export function isValidLicenseState(candidate: unknown): candidate is LicenseState {
   return (
-    typeof candidate === 'string'
-    && Object.values(LicenseState).includes(candidate as LicenseState)
+    typeof candidate === "string" && Object.values(LicenseState).includes(candidate as LicenseState)
   );
 }
 
 /**
-   * Checks whether the current Premium license state match the license state on the command
-   * @param behavior - the behavior of the command
-   * @return true - the current Premium license state matches the license state on the command
-   */
+ * Checks whether the current Premium license state match the license state on the command
+ * @param behavior - the behavior of the command
+ * @return true - the current Premium license state matches the license state on the command
+ */
 export const doesLicenseStateMatch = async function (
   behavior: LicenseStateBehavior,
 ): Promise<boolean> {
@@ -44,10 +43,13 @@ export const doesLicenseStateMatch = async function (
   if (!behavior.license_state_list) {
     return true;
   }
-  const licenseStates = behavior.license_state_list.split(',');
+  const licenseStates = behavior.license_state_list.split(",");
   await License.ready();
-  return licenseStates.some(state => ((state === LicenseState.active && License.isActiveLicense())
-     || (state === LicenseState.inactive && !License.isActiveLicense())));
+  return licenseStates.some(
+    (state) =>
+      (state === LicenseState.active && License.isActiveLicense()) ||
+      (state === LicenseState.inactive && !License.isActiveLicense()),
+  );
 };
 
 /**

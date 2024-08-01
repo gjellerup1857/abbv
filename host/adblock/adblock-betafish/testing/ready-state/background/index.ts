@@ -15,5 +15,5 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './ready-state';
-export * from './ready-state.types';
+export * from "./ready-state";
+export * from "./ready-state.types";

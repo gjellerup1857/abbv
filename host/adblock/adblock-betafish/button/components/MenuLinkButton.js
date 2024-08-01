@@ -19,15 +19,11 @@
 /* global browser, translate, sessionStorageGet */
 
 /* eslint-disable import/extensions */
-import {
-  closePopup,
-  PAGE_INFO_KEY,
-  sendMessageWithNoResponse,
-} from '../utils.js';
+import { closePopup, PAGE_INFO_KEY, sendMessageWithNoResponse } from "../utils.js";
 
 const eventHandlers = {
   async pauseAlways() {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'allowlist_domain_clicked' });
+    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "allowlist_domain_clicked" });
 
     if (!this.pageInfo.url) {
       return;
@@ -35,19 +31,27 @@ const eventHandlers = {
 
     const pageUrl = new URL(this.pageInfo.url);
     const { href } = pageUrl;
-    await browser.runtime.sendMessage({ command: 'createDomainAllowlistFilter', url: href, origin: 'popup' });
-    await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
+    await browser.runtime.sendMessage({
+      command: "createDomainAllowlistFilter",
+      url: href,
+      origin: "popup",
+    });
+    await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
     browser.tabs.reload();
     closePopup();
   },
   async openAllowListWizard() {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'whitelist_domain_clicked' });
-    await browser.runtime.sendMessage({ command: 'showWhitelist', tabId: this.pageInfo.id });
+    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "whitelist_domain_clicked" });
+    await browser.runtime.sendMessage({ command: "showWhitelist", tabId: this.pageInfo.id });
     closePopup();
   },
   async openHidingWizard() {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'blacklist_clicked' });
-    await browser.runtime.sendMessage({ command: 'showBlacklist', nothingClicked: true, tabId: this.pageInfo.id });
+    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "blacklist_clicked" });
+    await browser.runtime.sendMessage({
+      command: "showBlacklist",
+      nothingClicked: true,
+      tabId: this.pageInfo.id,
+    });
     closePopup();
   },
 };
@@ -63,13 +67,13 @@ export default class MenuLinkButton extends HTMLElement {
     const { clickHandler, i18n, name } = this.dataset;
 
     if (showConditions[name] && !showConditions[name].call(this)) {
-      this.outerHTML = '';
+      this.outerHTML = "";
       return;
     }
 
-    const actionButton = document.createElement('button');
+    const actionButton = document.createElement("button");
     actionButton.innerText = translate(i18n);
-    actionButton.addEventListener('click', eventHandlers[clickHandler].bind(this));
+    actionButton.addEventListener("click", eventHandlers[clickHandler].bind(this));
     this.appendChild(actionButton);
   }
 }

@@ -18,21 +18,21 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, setLangAndDirAttributes, sessionStorageGet, sessionStorageSet, translate */
 
-const CLOSED_KEY = 'closedProgrammatically';
-const PAGE_INFO_KEY = 'pageInfo';
-const COOKIE_FILTER_KEY = 'cookies-premium';
-const DISTRACTIONS_KEY = 'distraction-control';
+const CLOSED_KEY = "closedProgrammatically";
+const PAGE_INFO_KEY = "pageInfo";
+const COOKIE_FILTER_KEY = "cookies-premium";
+const DISTRACTIONS_KEY = "distraction-control";
 
 const addLanguageAndDir = () => {
-  if ((document.readyState === 'complete') && (typeof setLangAndDirAttributes === 'function')) {
+  if (document.readyState === "complete" && typeof setLangAndDirAttributes === "function") {
     setLangAndDirAttributes();
   }
 };
 
 const addUserIdToUrl = async function (url) {
-  const userID = await browser.runtime.sendMessage({ command: 'getUserId' });
+  const userID = await browser.runtime.sendMessage({ command: "getUserId" });
   const urlToOpen = new URL(url);
-  urlToOpen.searchParams.append('u', userID);
+  urlToOpen.searchParams.append("u", userID);
   return urlToOpen.href;
 };
 
@@ -43,11 +43,12 @@ const closePopup = function () {
 
 const getTabId = function () {
   let tabId;
-  if (document.location.search && document.location.search.indexOf('tabId') > 0) {
+  if (document.location.search && document.location.search.indexOf("tabId") > 0) {
     const params = new URLSearchParams(document.location.search);
-    tabId = params.get('tabId');
-    if (tabId === 'error') { // allows testing of the error handling logic
-      throw new Error('anError');
+    tabId = params.get("tabId");
+    if (tabId === "error") {
+      // allows testing of the error handling logic
+      throw new Error("anError");
     }
   }
   return tabId;
@@ -60,17 +61,17 @@ const navigateTo = (url) => {
 const reportClose = () => {
   const programaticallyClosed = sessionStorageGet(CLOSED_KEY);
   if (!programaticallyClosed) {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'popup_closed' });
+    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "popup_closed" });
   }
 };
 
 const setupBehaviorListeners = () => {
-  window.addEventListener('unload', reportClose);
-  document.addEventListener('readystatechange', addLanguageAndDir);
+  window.addEventListener("unload", reportClose);
+  document.addEventListener("readystatechange", addLanguageAndDir);
 };
 
 const returnToIndex = function () {
-  window.location.assign('adblock-button-popup.html');
+  window.location.assign("adblock-button-popup.html");
 };
 
 const sendMessageWithNoResponse = function (message) {
@@ -81,17 +82,17 @@ const sendMessageWithNoResponse = function (message) {
 // but with web-components, we cannot pass an array and we want to populate
 // in the HTML itself
 const splitAndTranslate = (i18n) => {
-  const shouldSplit = i18n.includes('|');
+  const shouldSplit = i18n.includes("|");
 
   if (!shouldSplit) {
     return translate(i18n);
   }
 
-  return i18n.split('|').map(translate).join(' ');
+  return i18n.split("|").map(translate).join(" ");
 };
 
 const translatePageTitle = () => {
-  const title = document.querySelector('title');
+  const title = document.querySelector("title");
   const { i18n } = title.dataset;
   const translatedTitle = translate(i18n);
 
@@ -102,10 +103,9 @@ const translatePageTitle = () => {
 // Currently not recursive.
 const translateWithTags = (messageID, innerText, [openingTag, closingTag]) => {
   const rawMessage = translate(messageID, innerText);
-  const replacedMessage = rawMessage.replace('[[', openingTag).replace(']]', closingTag);
+  const replacedMessage = rawMessage.replace("[[", openingTag).replace("]]", closingTag);
   return replacedMessage;
 };
-
 
 export {
   CLOSED_KEY,

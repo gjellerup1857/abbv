@@ -25,12 +25,12 @@ import { LogFunction, LogLevel } from "./logger.types";
  * @param ...data - Data to log
  */
 function log(level: LogLevel, fn: LogFunction, ...data: any[]): void {
-    const minLevel: number = Prefs.get("logger_log_level");
-    if (level < minLevel) {
-        return;
-    }
+  const minLevel: number = Prefs.get("logger_log_level");
+  if (level < minLevel) {
+    return;
+  }
 
-    fn(...data);
+  fn(...data);
 }
 
 /* eslint-disable no-console */

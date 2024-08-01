@@ -22,7 +22,7 @@ import {
   addMessageListener,
   connect,
   listen,
-  removeDisconnectListener
+  removeDisconnectListener,
 } from "./api.port";
 
 import type {
@@ -38,7 +38,7 @@ import type {
   SendArgs,
   SendType,
   Store,
-  SubscriptionOptions
+  SubscriptionOptions,
 } from "./api.types";
 
 declare const browser: Browser.Browser;
@@ -49,7 +49,7 @@ declare const browser: Browser.Browser;
 const platformToStore: Readonly<Partial<PlatformToStore>> = {
   chromium: "chrome",
   edgehtml: "edge",
-  gecko: "firefox"
+  gecko: "firefox",
 };
 
 /**
@@ -84,9 +84,9 @@ export const app = {
         return {
           application,
           platform,
-          store
+          store,
         };
-      }
+      },
     );
   },
 
@@ -102,7 +102,7 @@ export const app = {
    *
    * @param what which app page to open
    */
-  open: (what: AppOpenWhat) => send("app.open", { what })
+  open: (what: AppOpenWhat) => send("app.open", { what }),
 };
 
 /**
@@ -116,7 +116,7 @@ export const ctalinks = {
    * @param queryParams extra query parameters that should be added to the link
    */
   get: (link: string, queryParams: QueryParams = {}) =>
-    send("app.get", { what: "ctalink", link, queryParams })
+    send("app.get", { what: "ctalink", link, queryParams }),
 };
 
 /**
@@ -128,7 +128,7 @@ export const doclinks = {
    *
    * @param link which link to retrieve
    */
-  get: (link: string) => send("app.get", { what: "doclink", link })
+  get: (link: string) => send("app.get", { what: "doclink", link }),
 };
 
 /**
@@ -145,7 +145,7 @@ export const filters = {
    *
    * @param filter Filters to listen for
    */
-  listen: (filter: ListenFilters) => listen({ type: "filters", filter })
+  listen: (filter: ListenFilters) => listen({ type: "filters", filter }),
 };
 
 /**
@@ -157,13 +157,12 @@ export const notifications = {
    *
    * @param displayMethod the way the notification intends to be displayed
    */
-  get: (displayMethod: DisplayMethod) =>
-    send("notifications.get", { displayMethod }),
+  get: (displayMethod: DisplayMethod) => send("notifications.get", { displayMethod }),
 
   /**
    * Marks all active notifications as seen.
    */
-  seen: () => send("notifications.seen")
+  seen: () => send("notifications.seen"),
 };
 
 /**
@@ -180,7 +179,7 @@ export const prefs = {
    *
    * @param filter Filters to listen for
    */
-  listen: (filter: ListenFilters) => listen({ type: "prefs", filter })
+  listen: (filter: ListenFilters) => listen({ type: "prefs", filter }),
 };
 
 /**
@@ -204,7 +203,7 @@ export const premium = {
    *
    * @param filter - Filters what to listen for
    */
-  listen: (filter: ListenFilters) => listen({ type: "premium", filter })
+  listen: (filter: ListenFilters) => listen({ type: "premium", filter }),
 };
 
 /**
@@ -217,8 +216,7 @@ export const requests = {
    * @param filter Filters to listen for
    * @param tabId tab to listen for changes on
    */
-  listen: (filter: ListenFilters, tabId: string) =>
-    listen({ type: "requests", filter, tabId })
+  listen: (filter: ListenFilters, tabId: string) => listen({ type: "requests", filter, tabId }),
 };
 
 /**
@@ -227,13 +225,10 @@ export const requests = {
  * @param sendType accepted message strings
  * @param rawArgs other arguments to be sent to the browser
  */
-function send<T = string>(
-  sendType: SendType,
-  rawArgs: SendArgs = {}
-): Promise<T> {
+function send<T = string>(sendType: SendType, rawArgs: SendArgs = {}): Promise<T> {
   const args = {
     ...rawArgs,
-    type: sendType
+    type: sendType,
   };
 
   return browser.runtime.sendMessage(args);
@@ -260,7 +255,7 @@ export const stats = {
    *
    * @param filter Filters to listen for
    */
-  listen: (filter: ListenFilters) => listen({ type: "stats", filter })
+  listen: (filter: ListenFilters) => listen({ type: "stats", filter }),
 };
 
 /**
@@ -284,7 +279,7 @@ export const subscriptions = {
    *
    * @param filter Filters to listen for
    */
-  listen: (filter: ListenFilters) => listen({ type: "subscriptions", filter })
+  listen: (filter: ListenFilters) => listen({ type: "subscriptions", filter }),
 };
 
 /**
@@ -305,7 +300,7 @@ const api = {
   requests,
   removeDisconnectListener,
   subscriptions,
-  stats
+  stats,
 };
 
 /**

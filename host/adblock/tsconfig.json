@@ -9,14 +9,8 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "*",
-        "adblock-betafish/*",
-        "src/*"
-      ],
-      "~/*": [
-        "./adblock-betafish/*"
-      ]
+      "*": ["*", "adblock-betafish/*", "src/*"],
+      "~/*": ["./adblock-betafish/*"]
     },
     "module": "es2020",
     "allowUnreachableCode": false,
@@ -29,9 +23,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": [
-    "adblock-betafish/**/*",
-    "src/**/*"
-  ],
+  "include": ["adblock-betafish/**/*", "src/**/*"],
   "compileOnSave": false
 }

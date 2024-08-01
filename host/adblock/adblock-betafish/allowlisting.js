@@ -18,10 +18,10 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global License*/
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import ServerMessages from './servermessages';
-import { createFilterMetaData } from './utilities/background/bg-functions';
+import ServerMessages from "./servermessages";
+import { createFilterMetaData } from "./utilities/background/bg-functions";
 
 const authorizedKeys = [
   `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAuePfbm865kumeftXjlbt
@@ -51,20 +51,20 @@ UaTE0E4KN9Mzb/2zEYTgCzcCAwEAAQ==`,
 ];
 
 const trustedSoftonicDomains = [
-  'softonic-ar.com',
-  'softonic-id.com',
-  'softonic-th.com',
-  'softonic.cn',
-  'softonic.com',
-  'softonic.com.br',
-  'softonic.com.tr',
-  'softonic.jp',
-  'softonic.kr',
-  'softonic.nl',
-  'softonic.pl',
-  'softonic.ru',
-  'softonic.vn',
-  'softoniclabs.com',
+  "softonic-ar.com",
+  "softonic-id.com",
+  "softonic-th.com",
+  "softonic.cn",
+  "softonic.com",
+  "softonic.com.br",
+  "softonic.com.tr",
+  "softonic.jp",
+  "softonic.kr",
+  "softonic.nl",
+  "softonic.pl",
+  "softonic.ru",
+  "softonic.vn",
+  "softoniclabs.com",
 ];
 
 function getAllowlistingDomain(hostname) {
@@ -72,10 +72,10 @@ function getAllowlistingDomain(hostname) {
   // (e.g., chrome.softonic.com, minecraft.softonic.com).
   // Allowlisting the subdomains of the trusted Softonic domains list
   // is intended to affect other subdomains.
-  if (hostname.includes('softonic')) {
-    const domainParts = hostname.split('.');
+  if (hostname.includes("softonic")) {
+    const domainParts = hostname.split(".");
     while (domainParts.length > 0) {
-      const subdomain = domainParts.join('.');
+      const subdomain = domainParts.join(".");
       if (trustedSoftonicDomains.includes(subdomain)) {
         return subdomain;
       }
@@ -84,7 +84,7 @@ function getAllowlistingDomain(hostname) {
     }
   }
 
-  return hostname.replace(/^www\./, '');
+  return hostname.replace(/^www\./, "");
 }
 
 /**
@@ -102,7 +102,7 @@ async function onAllowlisting(domain, options) {
   }
 
   const host = getAllowlistingDomain(domain);
-  const metadata = createFilterMetaData('web');
+  const metadata = createFilterMetaData("web");
   if (options && options.expiresAt) {
     metadata.expiresAt = options.expiresAt;
   }
@@ -114,8 +114,9 @@ async function onAllowlisting(domain, options) {
  * Remove all web based allowlisting filters
  */
 async function removeWebAllowlistingFilters() {
-  const allowlistingFilters = (await ewe.filters.getUserFilters())
-    .filter(filter => filter.type === 'allowing');
+  const allowlistingFilters = (await ewe.filters.getUserFilters()).filter(
+    (filter) => filter.type === "allowing",
+  );
 
   const allowlistingFiltersWithMetadata = await Promise.all(
     allowlistingFilters.map(async (filter) => {
@@ -124,11 +125,10 @@ async function removeWebAllowlistingFilters() {
     }),
   );
   const webAllowlistingFilters = allowlistingFiltersWithMetadata
-    .filter(({ metadata }) => (metadata && metadata.origin === 'web'))
+    .filter(({ metadata }) => metadata && metadata.origin === "web")
     .map(({ filter }) => filter);
-  return ewe.filters.remove(webAllowlistingFilters.map(filter => filter.text));
+  return ewe.filters.remove(webAllowlistingFilters.map((filter) => filter.text));
 }
-
 
 /**
  * Initializes module
@@ -142,7 +142,7 @@ async function start() {
     removeWebAllowlistingFilters();
   }
 
-  License.licenseNotifier.on('license.status.changed', () => {
+  License.licenseNotifier.on("license.status.changed", () => {
     if (License.isActiveLicense()) {
       ewe.allowlisting.setAuthorizedKeys([]);
       removeWebAllowlistingFilters();
@@ -152,7 +152,9 @@ async function start() {
   });
 
   ewe.allowlisting.onUnauthorized.addListener((error) => {
-    ServerMessages.recordErrorMessage('one_click_allowlisting_error ', undefined, { errorMessage: error.toString() });
+    ServerMessages.recordErrorMessage("one_click_allowlisting_error ", undefined, {
+      errorMessage: error.toString(),
+    });
     // eslint-disable-next-line no-console
     console.error(error);
   });

@@ -1,40 +1,37 @@
 /* eslint-disable import/extensions */
 
-import gulp from 'gulp';
-import argparse from 'argparse';
-import merge from 'merge-stream';
-import zip from 'gulp-vinyl-zip';
-import { deleteAsync } from 'del';
-import url from 'url';
-import * as tasks from './build/tasks/index.mjs';
-import * as config from './build/config/index.mjs';
-import * as configParser from './build/configParser.mjs';
-import * as gitUtils from './build/utils/git.mjs';
+import gulp from "gulp";
+import argparse from "argparse";
+import merge from "merge-stream";
+import zip from "gulp-vinyl-zip";
+import { deleteAsync } from "del";
+import url from "url";
+import * as tasks from "./build/tasks/index.mjs";
+import * as config from "./build/config/index.mjs";
+import * as configParser from "./build/configParser.mjs";
+import * as gitUtils from "./build/utils/git.mjs";
 
 const argumentParser = new argparse.ArgumentParser({
-  description: 'Build the extension',
+  description: "Build the extension",
 });
 
-argumentParser.addArgument(['-t', '--target'], { choices: ['chrome', 'firefox'] });
-argumentParser.addArgument(['-o', '--outputDirectory']);
-argumentParser.addArgument(['-c', '--channel'], {
-  choices: ['development', 'release'],
-  defaultValue: 'release',
+argumentParser.addArgument(["-t", "--target"], { choices: ["chrome", "firefox"] });
+argumentParser.addArgument(["-o", "--outputDirectory"]);
+argumentParser.addArgument(["-c", "--channel"], {
+  choices: ["development", "release"],
+  defaultValue: "release",
 });
-argumentParser.addArgument(['-b', '--build-num']);
-argumentParser.addArgument(['--ext-version']);
-argumentParser.addArgument(['--ext-id']);
-argumentParser.addArgument('--config');
-argumentParser.addArgument('--manifest-path');
-argumentParser.addArgument(
-  ["-m", "--manifest-version"],
-  {
-    choices: [2, 3],
-    defaultValue: 2,
-    type: "int"
-  }
-);
-argumentParser.addArgument(['--basename']);
+argumentParser.addArgument(["-b", "--build-num"]);
+argumentParser.addArgument(["--ext-version"]);
+argumentParser.addArgument(["--ext-id"]);
+argumentParser.addArgument("--config");
+argumentParser.addArgument("--manifest-path");
+argumentParser.addArgument(["-m", "--manifest-version"], {
+  choices: [2, 3],
+  defaultValue: 2,
+  type: "int",
+});
+argumentParser.addArgument(["--basename"]);
 
 const args = argumentParser.parseKnownArgs()[0];
 let targetDir = `devenv.${args.target}`;
@@ -63,7 +60,7 @@ async function getBuildSteps(options) {
       addonName,
       addonVersion: options.version,
       sourceMapType: options.sourceMapType,
-      skipTypeChecks: args["skip_type_checks"] === "true"
+      skipTypeChecks: args["skip_type_checks"] === "true",
     }),
     tasks.createManifest(options.manifest),
   );
@@ -80,15 +77,13 @@ async function getBuildOptions(isDevenv, isSource) {
     isDevenv,
     target: args.target,
     channel: args.channel,
-    archiveType: args.target === 'chrome' ? '.zip' : '.xpi',
-    manifestVersion: args.manifest_version
+    archiveType: args.target === "chrome" ? ".zip" : ".xpi",
+    manifestVersion: args.manifest_version,
   };
 
   // eslint-disable-next-line no-nested-ternary
-  opts.sourceMapType = opts.target == "chrome" ?
-    isDevenv == true ?
-      "inline-source-map" : false :
-    "source-map";
+  opts.sourceMapType =
+    opts.target == "chrome" ? (isDevenv == true ? "inline-source-map" : false) : "source-map";
 
   if (args.config) {
     configParser.setConfig(await import(url.pathToFileURL(args.config)));
@@ -98,18 +93,18 @@ async function getBuildOptions(isDevenv, isSource) {
 
   let configName;
   if (isSource) {
-    configName = 'base';
+    configName = "base";
   } else if (isDevenv && configParser.hasTarget(`${opts.target}Dev`)) {
     configName = `${opts.target}Dev`;
   } else {
     configName = opts.target;
   }
 
-  opts.webpackInfo = configParser.getSection(configName, 'webpack');
-  opts.mapping = configParser.getSection(configName, 'mapping');
-  opts.unitTests = configParser.getSection(configName, 'unitTests');
-  opts.basename = configParser.getSection(configName, 'basename');
-  opts.version = configParser.getSection(configName, 'version');
+  opts.webpackInfo = configParser.getSection(configName, "webpack");
+  opts.mapping = configParser.getSection(configName, "mapping");
+  opts.unitTests = configParser.getSection(configName, "unitTests");
+  opts.basename = configParser.getSection(configName, "basename");
+  opts.version = configParser.getSection(configName, "version");
   if (args.basename) {
     opts.basename = args.basename;
   }
@@ -117,12 +112,14 @@ async function getBuildOptions(isDevenv, isSource) {
   if (isDevenv) {
     opts.output = gulp.dest(targetDir);
   } else {
-    if (opts.channel === 'development') {
+    if (opts.channel === "development") {
       opts.version = args.build_num
-        ? opts.version.concat('.', args.build_num)
-        : opts.version.concat('.', await gitUtils.getBuildnum());
+        ? opts.version.concat(".", args.build_num)
+        : opts.version.concat(".", await gitUtils.getBuildnum());
     }
-    opts.output = zip.dest(`${opts.basename}${opts.target}-${opts.version}-mv${opts.manifestVersion}${opts.archiveType}`);
+    opts.output = zip.dest(
+      `${opts.basename}${opts.target}-${opts.version}-mv${opts.manifestVersion}${opts.archiveType}`,
+    );
   }
   if (args.ext_version) {
     opts.version = args.ext_version;
@@ -134,7 +131,7 @@ async function getBuildOptions(isDevenv, isSource) {
     channel: opts.channel,
     extensionId: args.ext_id,
     manifestPath: args.manifest_path,
-    manifestVersion: args.manifest_version
+    manifestVersion: args.manifest_version,
   });
   return opts;
 }
@@ -165,7 +162,7 @@ export async function source() {
 
 function startWatch() {
   gulp.watch(
-    ['*.js', '*.html', 'adblock-betafish/*', '!gulpfile.js'],
+    ["*.js", "*.html", "adblock-betafish/*", "!gulpfile.js"],
     {
       ignoreInitial: false,
     },

@@ -28,11 +28,11 @@ let localsettings = {};
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let settings = {};
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
-const isValidTheme = async name => send('isValidTheme', { name });
+const isValidTheme = async (name) => send("isValidTheme", { name });
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeSettings() {
-  localsettings = await send('getSettings');
+  localsettings = await send("getSettings");
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   settings = new Proxy(localsettings, {
     get(obj, prop) {
@@ -41,21 +41,21 @@ async function initializeSettings() {
     set(objParm, prop, value) {
       const obj = objParm;
       obj[prop] = value;
-      return send('setSetting', { name: prop, isEnabled: value });
+      return send("setSetting", { name: prop, isEnabled: value });
     },
   });
 }
 
-const settingsPort = browser.runtime.connect({ name: 'settings' });
+const settingsPort = browser.runtime.connect({ name: "settings" });
 settingsPort.onMessage.addListener((message) => {
-  if (message.action === 'changed' && message.args && message.args.length > 2) {
+  if (message.action === "changed" && message.args && message.args.length > 2) {
     const [key, value] = message.args;
     localsettings[key] = value;
-    settingsNotifier.emit('settings.changed', ...message.args);
+    settingsNotifier.emit("settings.changed", ...message.args);
   }
 });
 
 settingsPort.postMessage({
-  type: 'settings.listen',
-  filter: ['changed'],
+  type: "settings.listen",
+  filter: ["changed"],
 });

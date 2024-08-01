@@ -15,12 +15,11 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 export default {
-  extends: 'base',
+  extends: "base",
   webpack: {
     alias: {
-      info$: 'info.chrome.js.tmpl',
+      info$: "info.chrome.js.tmpl",
     },
   },
 };

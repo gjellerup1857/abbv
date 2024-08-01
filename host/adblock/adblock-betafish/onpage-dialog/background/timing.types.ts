@@ -18,28 +18,28 @@
 /**
  * Key for on-page dialog timing configurations storage
  */
-export const configsStorageKey = 'onpage_dialog_timing_configurations';
+export const configsStorageKey = "onpage_dialog_timing_configurations";
 
 /**
  * On-page UI timing configuration
  */
 export interface TimingConfiguration {
-    /**
-     * Number of hours after which on-page dialog can be shown again
-     */
-    cooldownDuration: number;
-    /**
-     * Maximum number of minutes after the page was allowlisted that the on-page
-     * dialog can be shown for the first time
-     */
-    maxAllowlistingDelay?: number;
-    /**
-     * Maximum number of times the on-page dialog can be shown
-     */
-    maxDisplayCount: number;
-    /**
-     * Minimum number of minutes after the page was allowlisted that the on-page
-     * dialog can be shown for the first time
-     */
-    minAllowlistingDelay?: number;
+  /**
+   * Number of hours after which on-page dialog can be shown again
+   */
+  cooldownDuration: number;
+  /**
+   * Maximum number of minutes after the page was allowlisted that the on-page
+   * dialog can be shown for the first time
+   */
+  maxAllowlistingDelay?: number;
+  /**
+   * Maximum number of times the on-page dialog can be shown
+   */
+  maxDisplayCount: number;
+  /**
+   * Minimum number of minutes after the page was allowlisted that the on-page
+   * dialog can be shown for the first time
+   */
+  minAllowlistingDelay?: number;
 }

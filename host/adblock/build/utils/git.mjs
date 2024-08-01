@@ -16,48 +16,55 @@
  */
 
 import argparse from "argparse";
-import {pathToFileURL} from "url";
-import {execFile} from "child_process";
-import {promisify} from "util";
-import {EOL} from "os";
+import { pathToFileURL } from "url";
+import { execFile } from "child_process";
+import { promisify } from "util";
+import { EOL } from "os";
 
 const BUILDNUM_OFFSET = 10000;
 
-export async function getBuildnum(revision = "HEAD")
-{
-  let until = (await promisify(execFile)("git", ["log", "--pretty=%ct", "-n1",
-                                                 revision])).stdout.trim();
+export async function getBuildnum(revision = "HEAD") {
+  let until = (
+    await promisify(execFile)("git", ["log", "--pretty=%ct", "-n1", revision])
+  ).stdout.trim();
 
-  return BUILDNUM_OFFSET +
-         parseInt((await promisify(execFile)("git", ["rev-list", "--count",
-                                                     "--until", until,
-                                                     "origin/master",
-                                                     revision])).stdout, 10);
+  return (
+    BUILDNUM_OFFSET +
+    parseInt(
+      (
+        await promisify(execFile)("git", [
+          "rev-list",
+          "--count",
+          "--until",
+          until,
+          "origin/master",
+          revision,
+        ])
+      ).stdout,
+      10,
+    )
+  );
 }
 
-export async function lsFiles()
-{
-  let {stdout} = await promisify(execFile)(
-    "git", ["-C", ".", "ls-files", "--recurse-submodules"]
-  );
+export async function lsFiles() {
+  let { stdout } = await promisify(execFile)("git", [
+    "-C",
+    ".",
+    "ls-files",
+    "--recurse-submodules",
+  ]);
   return stdout.trim().split(EOL);
 }
 
-if (import.meta.url == pathToFileURL(process.argv[1]))
-{
+if (import.meta.url == pathToFileURL(process.argv[1])) {
   let parser = argparse.ArgumentParser();
-  parser.addArgument(["-r", "--revision"],
-                     {required: false, defaultValue: "HEAD"});
+  parser.addArgument(["-r", "--revision"], { required: false, defaultValue: "HEAD" });
   let args = parser.parseArgs();
 
-  (async() =>
-  {
-    try
-    {
+  (async () => {
+    try {
       console.log(await getBuildnum(args.revision));
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error(err);
       process.exit(1);
     }

@@ -19,33 +19,33 @@
  * Module generated when building the extension, which provides information
  * about the extension
  */
-declare module 'info' {
-    /**
-     * Extension name
-     */
-    const addonName: string;
-    /**
-     * A 'short' extension name, with no platform or browser info
-     */
-    const baseName: string;
-    /**
-     * Extension version string
-     */
-    const addonVersion: string;
-    /**
-     * Browser name
-     */
-    const application: string;
-    /**
-     * Browser version string
-     */
-    const applicationVersion: string;
-    /**
-     * Browser platform name
-     */
-    const platform: string;
-    /**
-     * Browser platform version string
-     */
-    const platformVersion: string;
+declare module "info" {
+  /**
+   * Extension name
+   */
+  const addonName: string;
+  /**
+   * A 'short' extension name, with no platform or browser info
+   */
+  const baseName: string;
+  /**
+   * Extension version string
+   */
+  const addonVersion: string;
+  /**
+   * Browser name
+   */
+  const application: string;
+  /**
+   * Browser version string
+   */
+  const applicationVersion: string;
+  /**
+   * Browser platform name
+   */
+  const platform: string;
+  /**
+   * Browser platform version string
+   */
+  const platformVersion: string;
 }

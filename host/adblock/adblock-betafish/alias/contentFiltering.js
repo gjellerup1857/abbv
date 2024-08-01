@@ -33,7 +33,7 @@ function updateMlTelemetryOptout() {
   mlService.setOptions({
     privateBrowsingTelemetry: false,
     telemetryOptOut: Prefs.get("data_collection_opt_out"),
-    exceptionRules: ewe.filters.getAllowingFilters
+    exceptionRules: ewe.filters.getAllowingFilters,
   });
 }
 
@@ -42,7 +42,7 @@ export async function start() {
 
   ewe.snippets.setLibrary({
     injectedCode: snippets.main,
-    isolatedCode: snippets.isolated
+    isolatedCode: snippets.isolated,
   });
 
   updateMlTelemetryOptout();

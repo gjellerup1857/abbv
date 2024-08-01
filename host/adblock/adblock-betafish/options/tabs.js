@@ -21,7 +21,7 @@
    splitMessageWithReplacementText, setLangAndDirAttributes, storageSet, storageGet,
    initializeProxies, ServerMessages, settings:true, */
 
-const userSeenNewPFPageKey = 'options_menu_pf_key';
+const userSeenNewPFPageKey = "options_menu_pf_key";
 let userSeenNewPFPage = storageGet(userSeenNewPFPageKey);
 
 const syncMessageContainer = '<div class="sync-message-container"></div>';
@@ -52,7 +52,9 @@ const unsyncMessageDiv = `
   </div>
 </div>`;
 
-const unsyncErrorMsgPart3 = splitMessageWithReplacementText(browser.i18n.getMessage('unsync_error_msg_part_3'));
+const unsyncErrorMsgPart3 = splitMessageWithReplacementText(
+  browser.i18n.getMessage("unsync_error_msg_part_3"),
+);
 const unsyncMessageDivSyncTab = `
 <div class="unsync-header sync-message-hidden">
   <span class="sync-message-error" id="unsync-message-box-close-sync-tab">
@@ -62,7 +64,7 @@ const unsyncMessageDivSyncTab = `
     <div class="unsync-message-box">
       <i class="material-icons md-24" role="img" aria-hidden="true">error</i>
       &nbsp;
-      <span id="sync-reload-page-message">${translate('unsync_error_msg_part_1')}&nbsp;&nbsp;&nbsp;${translate('unsync_error_msg_part_2')}&nbsp;&nbsp;&nbsp;${unsyncErrorMsgPart3.anchorPrefixText}<span class="sync-message-link">${unsyncErrorMsgPart3.anchorText}</span>${unsyncErrorMsgPart3.anchorPostfixText}</span>
+      <span id="sync-reload-page-message">${translate("unsync_error_msg_part_1")}&nbsp;&nbsp;&nbsp;${translate("unsync_error_msg_part_2")}&nbsp;&nbsp;&nbsp;${unsyncErrorMsgPart3.anchorPrefixText}<span class="sync-message-link">${unsyncErrorMsgPart3.anchorText}</span>${unsyncErrorMsgPart3.anchorPostfixText}</span>
     </div>
   </div>
 </div>`;
@@ -80,21 +82,21 @@ function getSyncOutOfDateMessageDiv(id) {
 }
 
 function showNewIcon() {
-  $('#pfIcon').fadeOut();
-  $('#new-pf-icon').fadeIn();
-  $('#pf-menu-item').addClass('newItem');
+  $("#pfIcon").fadeOut();
+  $("#new-pf-icon").fadeIn();
+  $("#pf-menu-item").addClass("newItem");
 }
 
 function showPFIcon() {
-  $('#pfIcon').fadeIn();
-  $('#new-pf-icon').fadeOut();
-  $('#pf-menu-item').removeClass('newItem');
+  $("#pfIcon").fadeIn();
+  $("#new-pf-icon").fadeOut();
+  $("#pf-menu-item").removeClass("newItem");
 }
 
 function hideBothIcons() {
-  $('#pfIcon').fadeOut();
-  $('#new-pf-icon').fadeOut();
-  $('#pf-menu-item').removeClass('newItem');
+  $("#pfIcon").fadeOut();
+  $("#new-pf-icon").fadeOut();
+  $("#pf-menu-item").removeClass("newItem");
 }
 
 function checkWindowWidth() {
@@ -115,13 +117,13 @@ function checkWindowWidth() {
 
 function shouldShowDCNewIcon() {
   if (!userSeenNewPFPage) {
-    window.addEventListener('resize', checkWindowWidth);
+    window.addEventListener("resize", checkWindowWidth);
     checkWindowWidth();
   }
 }
 
 function checkPFNewIcon(tabID) {
-  if (tabID === '#premium-filters') {
+  if (tabID === "#premium-filters") {
     userSeenNewPFPage = true;
     storageSet(userSeenNewPFPageKey, userSeenNewPFPage);
     checkWindowWidth();
@@ -130,9 +132,11 @@ function checkPFNewIcon(tabID) {
 
 // Output an array of all tab ids in HTML
 function allTabIDs() {
-  return $('.tablink').map(function getTabId() {
-    return $(this).attr('href');
-  }).get();
+  return $(".tablink")
+    .map(function getTabId() {
+      return $(this).attr("href");
+    })
+    .get();
 }
 
 // Inputs:
@@ -141,7 +145,7 @@ function allTabIDs() {
 //    - tabID -- string (valid tab ID to activate)
 function validateTabID(tabID) {
   if (!tabID || !allTabIDs().includes(tabID)) {
-    return '#general';
+    return "#general";
   }
   return tabID;
 }
@@ -150,9 +154,9 @@ function validateTabID(tabID) {
 // activated for the first time.
 // Inputs: $activeTabPanel -- jQuery Object
 function loadTabPanelScript($activeTabPanel) {
-  const activePanelID = $activeTabPanel.attr('id');
+  const activePanelID = $activeTabPanel.attr("id");
   const scriptToLoad = `adblock-options-${activePanelID}.js`;
-  const scriptTag = document.createElement('script');
+  const scriptTag = document.createElement("script");
   const alreadyLoaded = $(`script[src='${scriptToLoad}']`).length > 0;
 
   if (alreadyLoaded) {
@@ -167,10 +171,10 @@ function loadTabPanelScript($activeTabPanel) {
 // Display tabs and panel based on the current active tab
 // Inputs: $activeTab - active tab jQuery object
 function displayActiveTab($activeTab) {
-  const $activeTabPanel = $($activeTab.attr('href'));
+  const $activeTabPanel = $($activeTab.attr("href"));
   loadTabPanelScript($activeTabPanel);
   $activeTabPanel.show();
-  if (document.readyState === 'complete') {
+  if (document.readyState === "complete") {
     setLangAndDirAttributes();
   }
 }
@@ -178,15 +182,15 @@ function displayActiveTab($activeTab) {
 function activateTab(tabHref) {
   const tabID = validateTabID(tabHref);
   const $activeTab = $(`.tablink[href='${tabID}']`);
-  const $allTabs = $('.tablink');
-  const $allTabPanels = $('.tab');
+  const $allTabs = $(".tablink");
+  const $allTabPanels = $(".tab");
 
-  $allTabs.removeClass('active');
+  $allTabs.removeClass("active");
   $allTabPanels.hide();
 
-  $activeTab.addClass('active');
+  $activeTab.addClass("active");
 
-  setStorageCookie('active_tab', $activeTab.attr('href'), THIRTY_MINUTES_IN_MILLISECONDS);
+  setStorageCookie("active_tab", $activeTab.attr("href"), THIRTY_MINUTES_IN_MILLISECONDS);
 
   displayActiveTab($activeTab);
 
@@ -202,55 +206,57 @@ function activateTab(tabHref) {
 // Premium - Sync
 const displayMABFeedbackCTA = function () {
   const lang = determineUserLanguage();
-  if (lang === 'en' || lang.startsWith('en')) {
-    $('footer.myadblock_feedback_footer').css('display', 'flex');
-    const $feedbackButton = $('.mab-feedback-button, #support-feedback-button');
-    $feedbackButton.on('click', (e) => {
+  if (lang === "en" || lang.startsWith("en")) {
+    $("footer.myadblock_feedback_footer").css("display", "flex");
+    const $feedbackButton = $(".mab-feedback-button, #support-feedback-button");
+    $feedbackButton.on("click", (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
-      let url = 'https://portal.productboard.com/getadblock/4-adblock-extension';
+      let url = "https://portal.productboard.com/getadblock/4-adblock-extension";
       if (License.isActiveLicense()) {
-        url = 'https://portal.productboard.com/getadblock/5-adblock-extension-premium';
+        url = "https://portal.productboard.com/getadblock/5-adblock-extension-premium";
       }
       browser.tabs.create({ url });
-      $feedbackButton.trigger('blur');
+      $feedbackButton.trigger("blur");
     });
   }
 };
 
 const hideAdvancedOptionsWhenNeeded = function () {
   if (!settings.show_advanced_options) {
-    $('.advanced').hide();
+    $(".advanced").hide();
   }
 };
 
 // Load all HTML templates in respective tab panels
 // and translate strings on load completion
 function loadTabPanelsHTML() {
-  const $tabPanels = $('#tab-content .tab');
+  const $tabPanels = $("#tab-content .tab");
   let tabsLoaded = 1; // track the tabs that are loaded
   $.each($tabPanels, (i, panel) => {
     const $panel = $(panel);
-    const panelID = $(panel).attr('id');
+    const panelID = $(panel).attr("id");
 
     const panelHTML = `adblock-options-${panelID}.html`;
     $panel.load(panelHTML, () => {
-      if ($panel.find('.sync-message-container').length === 0) {
+      if ($panel.find(".sync-message-container").length === 0) {
         $panel.prepend(syncMessageContainer);
       }
-      const $messageContainer = $panel.find('.sync-message-container');
+      const $messageContainer = $panel.find(".sync-message-container");
       $messageContainer.prepend(getSyncOutOfDateMessageDiv(i));
-      if ($panel.attr('syncMessageDiv')) {
+      if ($panel.attr("syncMessageDiv")) {
         $messageContainer.prepend(syncMessageDiv);
       }
-      if ($panel.attr('unsyncMessageDiv')) {
+      if ($panel.attr("unsyncMessageDiv")) {
         $messageContainer.prepend(unsyncMessageDiv);
       }
-      if ($panel.attr('unsyncMessage2Div')) {
+      if ($panel.attr("unsyncMessage2Div")) {
         $messageContainer.prepend(unsyncMessageDivSyncTab);
       }
       localizePage();
-      document.documentElement.classList.add(`manifest-v${browser.runtime.getManifest().manifest_version}`);
+      document.documentElement.classList.add(
+        `manifest-v${browser.runtime.getManifest().manifest_version}`,
+      );
       tabsLoaded += 1;
       if (tabsLoaded >= $tabPanels.length) {
         // all tabs have been loaded and localized - call
@@ -269,19 +275,17 @@ function loadTabPanelsHTML() {
 // and display the tabs and tabel accordingly
 function activateTabOnPageLoad() {
   // Set active tab from cookie
-  let activeTabID = getStorageCookie('active_tab');
+  let activeTabID = getStorageCookie("active_tab");
 
   // Set active tab from hash (has priority over cookie)
   if (window.location && window.location.hash) {
-    [activeTabID] = window.location.hash.split('_');
+    [activeTabID] = window.location.hash.split("_");
   }
   activateTab(activeTabID);
 }
 
 function getFormattedTabName() {
-  return $('.tablink.active span').parent().attr('href')
-    .replace('#', '')
-    .replace(/-/g, '_');
+  return $(".tablink.active span").parent().attr("href").replace("#", "").replace(/-/g, "_");
 }
 
 $(async () => {
@@ -300,8 +304,8 @@ $(async () => {
   activateTabOnPageLoad();
 
   // 4. Activate tab when clicked
-  $('.tablink').on('click', function tabLinkClicked() {
-    const tabID = $(this).attr('href');
+  $(".tablink").on("click", function tabLinkClicked() {
+    const tabID = $(this).attr("href");
     activateTab(tabID);
     ServerMessages.recordGeneralMessage(`options_page_tab_clicked_${getFormattedTabName()}`);
   });

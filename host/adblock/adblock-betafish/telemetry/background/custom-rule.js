@@ -30,7 +30,7 @@ const allFilterTypesRegex = new RegExp(/.*/);
  */
 async function getFiltersByType(typeRegEx) {
   return (await ewe.filters.getUserFilters()).filter(
-    filter => filter.type.match(typeRegEx) && filter.enabled,
+    (filter) => filter.type.match(typeRegEx) && filter.enabled,
   );
 }
 
@@ -55,10 +55,10 @@ function doesOriginMatch(data, origin) {
 async function getFilterCountForOrigin(filters, origin) {
   // collect the origin from the metadata
   const filtersMetadata = await Promise.all(
-    filters.map(async filter => ewe.filters.getMetadata(filter.text)),
+    filters.map(async (filter) => ewe.filters.getMetadata(filter.text)),
   );
   // count the ones that originated from the given origin
-  return filtersMetadata.filter(data => doesOriginMatch(data, origin)).length;
+  return filtersMetadata.filter((data) => doesOriginMatch(data, origin)).length;
 }
 
 /**
@@ -70,7 +70,7 @@ async function getFilterCountForOrigin(filters, origin) {
  */
 export async function getWebAllowlistingFilterCount() {
   // count the filters that originated in the web
-  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'web');
+  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), "web");
 }
 
 /**
@@ -81,7 +81,7 @@ export async function getWebAllowlistingFilterCount() {
  */
 export async function getPopupAllowlistingFilterCount() {
   // count the filters that originated from the popup menu
-  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), 'popup');
+  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), "popup");
 }
 
 /**
@@ -92,7 +92,7 @@ export async function getPopupAllowlistingFilterCount() {
  */
 export async function getCustomizedFilterCount() {
   // count the filters that originated from the customize tab
-  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'customize');
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), "customize");
 }
 
 /**
@@ -103,7 +103,7 @@ export async function getCustomizedFilterCount() {
  */
 export async function getWizardFilterCount() {
   // count the filters that originated from either of the wizards
-  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), 'wizard');
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), "wizard");
 }
 
 /**

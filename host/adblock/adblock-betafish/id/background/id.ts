@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-import * as browser from 'webextension-polyfill';
+import * as browser from "webextension-polyfill";
 
-import { chromeStorageSetHelper } from '../../utilities/background/bg-functions';
+import { chromeStorageSetHelper } from "../../utilities/background/bg-functions";
 
-const userIdStorageKey = 'userid';
+const userIdStorageKey = "userid";
 
 /**
  * Generates a 16 character random string
@@ -28,17 +28,17 @@ const userIdStorageKey = 'userid';
 // eslint-disable-next-line import/prefer-default-export
 export async function getUserId(): Promise<string> {
   const response = await browser.storage.local.get(userIdStorageKey);
-  let userId = '';
+  let userId = "";
   if (!response[userIdStorageKey]) {
-    const timeSuffix = (Date.now()) % 1e8; // 8 digits from end of
+    const timeSuffix = Date.now() % 1e8; // 8 digits from end of
     // timestamp
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
     const result = [];
     for (let i = 0; i < 8; i++) {
       const choice = Math.floor(Math.random() * alphabet.length);
       result.push(alphabet[choice]);
     }
-    userId = result.join('') + timeSuffix;
+    userId = result.join("") + timeSuffix;
     chromeStorageSetHelper(userIdStorageKey, userId);
   } else {
     userId = response[userIdStorageKey];

@@ -15,11 +15,11 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isValidHostname, parseDomains } from 'adblockpluscore/lib/url';
-import { isValidLicenseState } from './license';
-import { Command } from './command-library.types';
-import { ParamDefinitionList, ParamValidator } from './param-validator.types';
-import { createSafeOriginUrl } from './url';
+import { isValidHostname, parseDomains } from "adblockpluscore/lib/url";
+import { isValidLicenseState } from "./license";
+import { Command } from "./command-library.types";
+import { ParamDefinitionList, ParamValidator } from "./param-validator.types";
+import { createSafeOriginUrl } from "./url";
 
 /**
  * Checks whether the given parameter is of type number, and not NaN.
@@ -27,7 +27,8 @@ import { createSafeOriginUrl } from './url';
  * @param param The parameter to validate
  * @returns Whether the parameter is numeric
  */
-export const isNumeric: ParamValidator = param => typeof param === 'number' && !Number.isNaN(param);
+export const isNumeric: ParamValidator = (param) =>
+  typeof param === "number" && !Number.isNaN(param);
 
 /**
  * Checks whether the given parameter is of type string and not empty.
@@ -35,7 +36,7 @@ export const isNumeric: ParamValidator = param => typeof param === 'number' && !
  * @param param The parameter to check
  * @returns Whether the param is a string that's not empty
  */
-export const isNotEmpty: ParamValidator = param => typeof param === 'string' && param.length > 0;
+export const isNotEmpty: ParamValidator = (param) => typeof param === "string" && param.length > 0;
 
 /**
  * Checks whether the given parameter contains only values of type LicenseState.
@@ -47,11 +48,11 @@ export const isValidLicenseStates: ParamValidator = (param: unknown): boolean =>
   if (!param) {
     return true;
   }
-  if (typeof param !== 'string') {
+  if (typeof param !== "string") {
     return false;
   }
-  const licenseStates = param.split(',');
-  return licenseStates.every(state => isValidLicenseState(state));
+  const licenseStates = param.split(",");
+  return licenseStates.every((state) => isValidLicenseState(state));
 };
 
 /**
@@ -61,14 +62,14 @@ export const isValidLicenseStates: ParamValidator = (param: unknown): boolean =>
  * @returns whether the given parameter is a safe URL string
  */
 export const isSafeUrl: ParamValidator = (param: unknown): boolean => {
-  if (typeof param !== 'string') {
+  if (typeof param !== "string") {
     return false;
   }
 
   // We consider the URL safe if we can successfully create a URL
   // with a safe origin from it.
   const url = createSafeOriginUrl(param);
-  return typeof url === 'string';
+  return typeof url === "string";
 };
 
 /**
@@ -92,10 +93,10 @@ export function validateParams<T>(
       const name = String(definition.name);
       const param = command[name];
       return definition.validate(param)
-        ? ''
+        ? ""
         : `Invalid value for parameter "${name}", got "${param}":`;
     })
-    .filter(result => result !== '');
+    .filter((result) => result !== "");
 }
 
 /**
@@ -108,10 +109,10 @@ export const isValidDomainList: ParamValidator = (param: unknown): boolean => {
   if (!param) {
     return true;
   }
-  if (typeof param !== 'string') {
+  if (typeof param !== "string") {
     return false;
   }
-  const parsedDomains = parseDomains(param, ',');
+  const parsedDomains = parseDomains(param, ",");
   if (!parsedDomains) {
     return true;
   }

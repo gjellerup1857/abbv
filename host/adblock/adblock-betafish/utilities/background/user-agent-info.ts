@@ -15,16 +15,16 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UserAgentInfo, FlavorType } from './user-agent-info.types';
+import { UserAgentInfo, FlavorType } from "./user-agent-info.types";
 
-let info:UserAgentInfo;
+let info: UserAgentInfo;
 
-function parseUserAgent():UserAgentInfo {
+function parseUserAgent(): UserAgentInfo {
   let flavor = FlavorType.chrome; // default to Chrome
   // RegEx to obtain the OS and OS Version
   let match = navigator.userAgent.match(/(CrOS \w+|Windows NT|Mac OS X|Linux) ([\d._]+)?/);
-  const os = (match || [])[1] || 'Unknown';
-  const osVersion = (match || [])[2] || 'Unknown';
+  const os = (match || [])[1] || "Unknown";
+  const osVersion = (match || [])[2] || "Unknown";
   // RegEx for the Chrome browser version
   match = navigator.userAgent.match(/(?:Chrome|Version)\/([\d.]+)/);
   // RegEx for the Edge browser
@@ -38,14 +38,17 @@ function parseUserAgent():UserAgentInfo {
     match = firefoxMatch;
     flavor = FlavorType.firefox;
   }
-  const browserVersion = (match || [])[1] || 'Unknown';
+  const browserVersion = (match || [])[1] || "Unknown";
 
   return {
-    flavor, os, osVersion, browserVersion,
+    flavor,
+    os,
+    osVersion,
+    browserVersion,
   };
 }
 
-export function getUserAgentInfo():UserAgentInfo {
+export function getUserAgentInfo(): UserAgentInfo {
   if (!info) {
     info = parseUserAgent();
   }

@@ -18,16 +18,13 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, addCustomFilter, getUserFilters, isWhitelistFilter */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { settings, getSettings } from '~/prefs/background/settings';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { settings, getSettings } from "~/prefs/background/settings";
 
 const ytChannelNamePages = new Map();
 
 const webRequestFilter = {
-  url:
-    [
-      { hostEquals: 'www.youtube.com' },
-    ],
+  url: [{ hostEquals: "www.youtube.com" }],
 };
 
 let lastInjectedTimestamp = 10000;
@@ -51,7 +48,7 @@ const createWhitelistFilterForYoutubeChannel = function (url, origin) {
   if (/ab_channel=/.test(url)) {
     [, ytChannel] = url.match(/ab_channel=([^]*)/);
   } else {
-    ytChannel = url.split('/').pop();
+    ytChannel = url.split("/").pop();
   }
   if (ytChannel) {
     return createAllowlistFilterForYoutubeChannelName(ytChannel, origin);
@@ -73,7 +70,11 @@ const injectScript = async function (scriptFileName, tabId) {
         files: [scriptFileName],
       });
     }
-    return browser.tabs.executeScript(tabId, { file: scriptFileName, allFrames: false, runAt: 'document_start' });
+    return browser.tabs.executeScript(tabId, {
+      file: scriptFileName,
+      allFrames: false,
+      runAt: "document_start",
+    });
   } catch (error) {
     /* eslint-disable-next-line no-console */
     console.error(error);
@@ -84,18 +85,19 @@ const injectScript = async function (scriptFileName, tabId) {
 // inject the manage YT subscription
 const injectManagedContentScript = async function (details, historyUpdated) {
   const { tabId } = details;
-  const pingResponse = await browser.tabs.sendMessage(tabId, { command: 'ping_yt_manage_cs' });
+  const pingResponse = await browser.tabs.sendMessage(tabId, { command: "ping_yt_manage_cs" });
   // Since the onHistoryStateUpdated may get called more than once with the exact same data,
   // check the timestamps, and only inject the content script once
   const diff = details.timeStamp - lastInjectedTimestamp;
-  if (pingResponse && pingResponse.status === 'yes') {
+  if (pingResponse && pingResponse.status === "yes") {
     lastInjectedTimestamp = details.timeStamp;
-    void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
-  } else if (diff > 100) { // check if the timestamp difference is more than 100 ms
+    void browser.tabs.sendMessage(tabId, { command: "addYouTubeOnPageIcons", historyUpdated });
+  } else if (diff > 100) {
+    // check if the timestamp difference is more than 100 ms
     lastInjectedTimestamp = details.timeStamp;
-    await injectScript('purify.min.js', tabId);
-    await injectScript('adblock-yt-manage-cs.js', tabId);
-    void browser.tabs.sendMessage(tabId, { command: 'addYouTubeOnPageIcons', historyUpdated });
+    await injectScript("purify.min.js", tabId);
+    await injectScript("adblock-yt-manage-cs.js", tabId);
+    void browser.tabs.sendMessage(tabId, { command: "addYouTubeOnPageIcons", historyUpdated });
   }
 };
 
@@ -108,7 +110,7 @@ const managedSubPageCompleted = async (details) => {
   }
 
   const theURL = new URL(details.url);
-  if (theURL.pathname === '/feed/channels') {
+  if (theURL.pathname === "/feed/channels") {
     void injectManagedContentScript(details);
   }
 };
@@ -125,16 +127,21 @@ const ytHistoryHandler = async (details) => {
     return;
   }
 
-  if (details
-    && Object.prototype.hasOwnProperty.call(details, 'tabId')
-    && Object.prototype.hasOwnProperty.call(details, 'url')
-    && details.transitionType === 'link') {
+  if (
+    details &&
+    Object.prototype.hasOwnProperty.call(details, "tabId") &&
+    Object.prototype.hasOwnProperty.call(details, "url") &&
+    details.transitionType === "link"
+  ) {
     const myURL = new URL(details.url);
-    if (getSettings().youtube_manage_subscribed && myURL.pathname === '/feed/channels') {
+    if (getSettings().youtube_manage_subscribed && myURL.pathname === "/feed/channels") {
       // check if the user clicked the back / forward buttons, if so,
       // the data on the page is already loaded,
       // so the content script does not have to wait for it to load.
-      void injectManagedContentScript(details, !(details.transitionQualifiers && details.transitionQualifiers.includes('forward_back')));
+      void injectManagedContentScript(
+        details,
+        !(details.transitionQualifiers && details.transitionQualifiers.includes("forward_back")),
+      );
     }
   }
 };
@@ -150,7 +157,7 @@ const removeYTChannelListeners = function () {
 };
 
 const openYTManagedSubPage = function () {
-  browser.tabs.create({ url: 'https://www.youtube.com/feed/channels' });
+  browser.tabs.create({ url: "https://www.youtube.com/feed/channels" });
 };
 
 const getAllAdsAllowedUserFilters = async function () {
@@ -158,7 +165,7 @@ const getAllAdsAllowedUserFilters = async function () {
   const adsAllowedUserFilters = [];
   for (let inx = 0; inx < userFilters.length; inx++) {
     const filter = userFilters[inx];
-    if (isWhitelistFilter(filter.text) && filter.text && filter.text.includes('youtube.com')) {
+    if (isWhitelistFilter(filter.text) && filter.text && filter.text.includes("youtube.com")) {
       adsAllowedUserFilters.push(filter.text);
     }
   }
@@ -171,26 +178,26 @@ const start = function () {
 
 // Listen for the message from the content scripts
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command === 'updateYouTubeChannelName' && message.channelName) {
+  if (message.command === "updateYouTubeChannelName" && message.channelName) {
     ytChannelNamePages.set(sender.tab.id, message.channelName);
     sendResponse({});
     return;
   }
-  if (message.command === 'getAllAdsAllowedUserFilters') {
+  if (message.command === "getAllAdsAllowedUserFilters") {
     /* eslint-disable consistent-return */
     return getAllAdsAllowedUserFilters();
   }
-  if (message.command === 'removeAllowlistFilterForYoutubeChannel' && message.text) {
+  if (message.command === "removeAllowlistFilterForYoutubeChannel" && message.text) {
     removeAllowlistFilterForYoutubeChannel(message.text);
     sendResponse({});
   }
-  if (message.command === 'createWhitelistFilterForYoutubeChannel' && message.url) {
+  if (message.command === "createWhitelistFilterForYoutubeChannel" && message.url) {
     sendResponse(createWhitelistFilterForYoutubeChannel(message.url, message.origin));
   }
-  if (message.command === 'createAllowlistFilterForYoutubeChannelName' && message.channelName) {
+  if (message.command === "createAllowlistFilterForYoutubeChannelName" && message.channelName) {
     sendResponse(createAllowlistFilterForYoutubeChannelName(message.channelName, message.origin));
   }
-  if (message.command === 'blockAllSubscribedChannel' && message.channelNames) {
+  if (message.command === "blockAllSubscribedChannel" && message.channelNames) {
     setTimeout(async () => {
       const { channelNames } = message;
       const parsedChannelNames = [];
@@ -208,7 +215,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }, 10);
     sendResponse({});
   }
-  if (message.command === 'allowAllSubscribedChannel' && message.channelNames) {
+  if (message.command === "allowAllSubscribedChannel" && message.channelNames) {
     const { channelNames } = message;
     for (const [channelName] of Object.entries(channelNames)) {
       const name = channelNames[channelName].parsedChannelName;

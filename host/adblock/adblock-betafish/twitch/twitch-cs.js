@@ -27,9 +27,9 @@ This content script, when injected into tab that is on twitch.tv, will:
 
 const toContentScriptEventName = `ab-twitch-channel-name-${Math.random().toString(36).substr(2)}`;
 
-const injectScriptIntoTabJS = ({ src, name = '', params = {} }) => {
-  const scriptElem = document.createElement('script');
-  scriptElem.type = 'module';
+const injectScriptIntoTabJS = ({ src, name = "", params = {} }) => {
+  const scriptElem = document.createElement("script");
+  scriptElem.type = "module";
   scriptElem.src = browser.runtime.getURL(src);
   scriptElem.dataset.params = JSON.stringify(params);
   scriptElem.dataset.name = name;
@@ -44,26 +44,29 @@ const injectScriptIntoTabJS = ({ src, name = '', params = {} }) => {
 
 const runOnTwitch = function () {
   // Inject main script and script on which it depends
-  injectScriptIntoTabJS({ src: 'purify.min.js' });
+  injectScriptIntoTabJS({ src: "purify.min.js" });
   injectScriptIntoTabJS({
-    src: 'adblock-twitch-capture-requests.js',
-    name: 'capture-requests',
+    src: "adblock-twitch-capture-requests.js",
+    name: "capture-requests",
     params: {
       toContentScriptEventName,
     },
   });
 
   // process the event messages from the injected script
-  window.addEventListener('message', (event) => {
+  window.addEventListener("message", (event) => {
     if (event.data.channelName && event.data.eventName === toContentScriptEventName) {
-      browser.runtime.sendMessage({ command: 'updateTwitchChannelName', channelName: event.data.channelName });
+      browser.runtime.sendMessage({
+        command: "updateTwitchChannelName",
+        channelName: event.data.channelName,
+      });
     }
   });
 };
 
 const startTwitchChannelNameCapture = async function () {
   try {
-    const settings = await browser.runtime.sendMessage({ command: 'getSettings' });
+    const settings = await browser.runtime.sendMessage({ command: "getSettings" });
 
     if (settings.twitch_channel_allowlist) {
       runOnTwitch();

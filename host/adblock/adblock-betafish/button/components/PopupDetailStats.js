@@ -19,20 +19,19 @@
 /* global DOMPurify, sessionStorageGet */
 
 /* eslint-disable import/extensions */
-import { PAGE_INFO_KEY, translateWithTags } from '../utils.js';
+import { PAGE_INFO_KEY, translateWithTags } from "../utils.js";
 
 const generateNumberAndLabel = (label, count) => {
   const numberSpanOpeningTemplate = '<span class="count-numbers">';
-  const numberSpanClosingTemplate = '</span>';
+  const numberSpanClosingTemplate = "</span>";
 
-  const translationWithCount = translateWithTags(
-    label,
-    count,
-    [numberSpanOpeningTemplate, numberSpanClosingTemplate],
-  );
+  const translationWithCount = translateWithTags(label, count, [
+    numberSpanOpeningTemplate,
+    numberSpanClosingTemplate,
+  ]);
 
-  const wrapper = document.createElement('div');
-  wrapper.classList.add('counts');
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("counts");
   wrapper.innerHTML = DOMPurify.sanitize(translationWithCount);
 
   return wrapper;
@@ -43,10 +42,10 @@ export default class PopupDetailStats extends HTMLElement {
     this.pageInfo = sessionStorageGet(PAGE_INFO_KEY);
 
     const pageCountValue = this.pageInfo.blockCountPage.toLocaleString();
-    const pageCount = generateNumberAndLabel('blocked_n_on_this_page', pageCountValue);
+    const pageCount = generateNumberAndLabel("blocked_n_on_this_page", pageCountValue);
 
     const totalCountValue = this.pageInfo.blockCountTotal.toLocaleString();
-    const totalCount = generateNumberAndLabel('blocked_n_in_total', totalCountValue);
+    const totalCount = generateNumberAndLabel("blocked_n_in_total", totalCountValue);
 
     this.appendChild(pageCount);
     this.appendChild(totalCount);

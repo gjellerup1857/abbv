@@ -18,7 +18,7 @@
 /**
  * Adblock Plus Core libraries
  */
-declare module 'adblockpluscore/lib/url' {
+declare module "adblockpluscore/lib/url" {
   /**
    * Parses the domains part of a filter text
    *
@@ -26,10 +26,7 @@ declare module 'adblockpluscore/lib/url' {
    * @param separator - The string used to separate two or more domains in
    *                    the domains part
    */
-  const parseDomains: (
-    source: string,
-    separator: string
-  ) => Map<string, boolean> | null;
+  const parseDomains: (source: string, separator: string) => Map<string, boolean> | null;
 
   /**
    * Yields all suffixes for a domain.
@@ -38,10 +35,7 @@ declare module 'adblockpluscore/lib/url' {
    * @param separator - The string used to separate two or more domains in
    *                    the domains part
    */
-  const domainSuffixes: (
-    domain: string,
-    includeBlank?: boolean
-  ) => string;
+  const domainSuffixes: (domain: string, includeBlank?: boolean) => string;
 
   /**
    * Checks whether a given hostname is valid.
@@ -57,7 +51,5 @@ declare module 'adblockpluscore/lib/url' {
    *
    * @returns {boolean} Whether the hostname is valid.
    */
-  const isValidHostname: (
-    hostname: string
-  ) => boolean;
+  const isValidHostname: (hostname: string) => boolean;
 }

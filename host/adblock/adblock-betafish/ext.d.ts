@@ -18,14 +18,11 @@
  * Global extension utilities
  */
 declare namespace ext {
-    /**
-     * Adds trusted message types for certain origins
-     *
-     * @param origin - URL origin of sender page
-     * @param types - Message types to trust for given origin
-     */
-    const addTrustedMessageTypes: (
-        origin: string | null,
-        types: string[]
-    ) => void;
+  /**
+   * Adds trusted message types for certain origins
+   *
+   * @param origin - URL origin of sender page
+   * @param types - Message types to trust for given origin
+   */
+  const addTrustedMessageTypes: (origin: string | null, types: string[]) => void;
 }

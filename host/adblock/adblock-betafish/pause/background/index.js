@@ -18,10 +18,10 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, updateButtonUIAndContextMenus  */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { initialize } from '~/alias/subscriptionInit';
-import ServerMessages from '~/servermessages';
+import { initialize } from "~/alias/subscriptionInit";
+import ServerMessages from "~/servermessages";
 
 import {
   chromeStorageSetHelper,
@@ -29,13 +29,13 @@ import {
   parseUri,
   sessionStorageGet,
   sessionStorageSet,
-} from '~/utilities/background/bg-functions';
+} from "~/utilities/background/bg-functions";
 
-const pausedKey = 'paused';
+const pausedKey = "paused";
 // white-list all blocking requests regardless of frame / document, but still allows element hiding
-const pausedFilterText1 = '@@*';
+const pausedFilterText1 = "@@*";
 // white-list all documents, which prevents element hiding
-const pausedFilterText2 = '@@*$document';
+const pausedFilterText2 = "@@*$document";
 
 // Get or set if AdBlock is paused
 // Inputs: newValue (optional boolean): if true, AdBlock will be paused, if
@@ -44,7 +44,7 @@ const pausedFilterText2 = '@@*$document';
 // if paused, false otherwise.
 const adblockIsPaused = function (newValue) {
   if (newValue === undefined) {
-    return (sessionStorageGet(pausedKey) === true);
+    return sessionStorageGet(pausedKey) === true;
   }
 
   if (newValue === true) {
@@ -61,7 +61,7 @@ const adblockIsPaused = function (newValue) {
   return undefined;
 };
 
-const domainPausedKey = 'domainPaused';
+const domainPausedKey = "domainPaused";
 
 // Helper that saves the domain pauses
 // Inputs:  domainPauses (required object): domain pauses to save
@@ -184,7 +184,6 @@ browser.storage.local.get(pausedKey).then((response) => {
   }
 });
 
-
 // If AdBlock was domain paused on shutdown, then unpause / remove
 // all domain pause white-list entries at startup.
 browser.storage.local.get(domainPausedKey).then((response) => {
@@ -200,9 +199,9 @@ browser.storage.local.get(domainPausedKey).then((response) => {
 });
 
 browser.commands.onCommand.addListener((command) => {
-  if (command === 'toggle_pause') {
+  if (command === "toggle_pause") {
     adblockIsPaused(!adblockIsPaused());
-    ServerMessages.recordGeneralMessage('pause_shortcut_used');
+    ServerMessages.recordGeneralMessage("pause_shortcut_used");
   }
 });
 

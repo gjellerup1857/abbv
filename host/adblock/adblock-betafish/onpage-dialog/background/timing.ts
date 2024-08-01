@@ -15,17 +15,17 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tabs } from 'webextension-polyfill';
-import { domainSuffixes, parseDomains } from 'adblockpluscore/lib/url';
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import { Tabs } from "webextension-polyfill";
+import { domainSuffixes, parseDomains } from "adblockpluscore/lib/url";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { Prefs } from '../../alias/prefs';
+import { Prefs } from "../../alias/prefs";
 
-import * as logger from '../../utilities/background';
-import { isFilterMetadata } from '../../polyfills/background';
-import { DialogBehavior, Timing, isTiming } from './middleware';
-import { Stats } from './stats.types';
-import { configsStorageKey, TimingConfiguration } from './timing.types';
+import * as logger from "../../utilities/background";
+import { isFilterMetadata } from "../../polyfills/background";
+import { DialogBehavior, Timing, isTiming } from "./middleware";
+import { Stats } from "./stats.types";
+import { configsStorageKey, TimingConfiguration } from "./timing.types";
 
 /**
  * Timing configurations
@@ -54,7 +54,7 @@ async function getAllowlistingTime(tabId: number): Promise<number | null> {
       continue;
     }
 
-    if (metadata.origin !== 'web') {
+    if (metadata.origin !== "web") {
       continue;
     }
 
@@ -71,14 +71,12 @@ async function getAllowlistingTime(tabId: number): Promise<number | null> {
  *
  * @returns whether given candidate is on-page UI timing configuration
  */
-function isTimingConfiguration(
-  candidate: unknown,
-): candidate is TimingConfiguration {
+function isTimingConfiguration(candidate: unknown): candidate is TimingConfiguration {
   return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'cooldownDuration' in candidate
-        && 'maxDisplayCount' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "cooldownDuration" in candidate &&
+    "maxDisplayCount" in candidate
   );
 }
 
@@ -102,13 +100,13 @@ function initializeConfigs(): void {
   const configs = Prefs.get(configsStorageKey);
   for (const [timing, config] of Object.entries(configs)) {
     if (!isTiming(timing) || !isTimingConfiguration(config)) {
-      logger.warn('[onpage-dialog] Unknown timing configuration', timing);
+      logger.warn("[onpage-dialog] Unknown timing configuration", timing);
       continue;
     }
 
     knownConfigs.set(timing, config);
   }
-  logger.debug('[onpage-dialog]: Known timing configurations', knownConfigs);
+  logger.debug("[onpage-dialog]: Known timing configurations", knownConfigs);
 }
 
 /**
@@ -122,51 +120,45 @@ function initializeConfigs(): void {
 export function shouldBeDismissed(timing: Timing, stats: Stats): boolean {
   const config = knownConfigs.get(timing);
   if (!config) {
-    logger.debug('[onpage-dialog]: Unknown timing');
+    logger.debug("[onpage-dialog]: Unknown timing");
     return true;
   }
 
-  logger.debug(
-    '[onpage-dialog]: Display count',
-    `${stats.displayCount}/${config.maxDisplayCount}`,
-  );
+  logger.debug("[onpage-dialog]: Display count", `${stats.displayCount}/${config.maxDisplayCount}`);
   return stats.displayCount >= config.maxDisplayCount;
 }
 
 /**
-   * Checks whether the tab URL is a match to the domain(s) on the command
-   * @param tabDomain - the domain of the tab
-   * @param domains - the domains
-   * @return true if the tab URL is a match to the domain(s) on the command
-   */
-const isActiveOnDomain = function (
-  tabDomain: string,
-  domains: Map<string, boolean>,
-): boolean {
+ * Checks whether the tab URL is a match to the domain(s) on the command
+ * @param tabDomain - the domain of the tab
+ * @param domains - the domains
+ * @return true if the tab URL is a match to the domain(s) on the command
+ */
+const isActiveOnDomain = function (tabDomain: string, domains: Map<string, boolean>): boolean {
   // If no domains are set the rule matches everywhere
   if (!domains) {
     return true;
   }
   let docDomain = tabDomain;
   if (docDomain === null) {
-    docDomain = '';
-  } else if (docDomain[docDomain.length - 1] === '.') {
+    docDomain = "";
+  } else if (docDomain[docDomain.length - 1] === ".") {
     docDomain = docDomain.substring(0, docDomain.length - 1);
   }
   // If the document has no host name, match only if the command
   // isn't restricted to specific domains
   if (!docDomain) {
-    return !!domains.get('');
+    return !!domains.get("");
   }
 
   for (docDomain of domainSuffixes(docDomain)) {
     const isDomainIncluded = domains.get(docDomain);
-    if (typeof isDomainIncluded !== 'undefined') {
+    if (typeof isDomainIncluded !== "undefined") {
       return isDomainIncluded;
     }
   }
 
-  return !!domains.get('');
+  return !!domains.get("");
 };
 
 /**
@@ -186,18 +178,18 @@ function shouldBeShownForAfterNavigation(
   const { timing } = behavior;
   // Ignore commands that should have already been dismissed
   if (shouldBeDismissed(timing, stats)) {
-    logger.debug('[onpage-dialog]: No more dialogs to show for command');
+    logger.debug("[onpage-dialog]: No more dialogs to show for command");
     return false;
   }
   // if there are no domains, then it should be shown
   if (!behavior.domain_list) {
     return true;
   }
-  const parsedDomains = parseDomains(behavior.domain_list, ',');
+  const parsedDomains = parseDomains(behavior.domain_list, ",");
   if (!parsedDomains) {
     return true;
   }
-  const tabURL = new URL(tab.url || '');
+  const tabURL = new URL(tab.url || "");
   return isActiveOnDomain(tabURL.hostname, parsedDomains);
 }
 
@@ -220,50 +212,52 @@ async function shouldBeShownForAfterWebAllowlisting(
   const tabId = tab.id || 0;
   const config = knownConfigs.get(timing);
   if (!config) {
-    logger.debug('[onpage-dialog]: Unknown timing');
+    logger.debug("[onpage-dialog]: Unknown timing");
     return false;
   }
   const allowlistingTime = await getAllowlistingTime(tabId);
   if (allowlistingTime === null) {
-    logger.debug('[onpage-dialog]: Not allowlisted');
+    logger.debug("[onpage-dialog]: Not allowlisted");
     return false;
   }
 
   // Ignore if allowlisting happened too long ago
-  if (typeof config.maxAllowlistingDelay === 'number'
-        && isWithin(allowlistingTime, config.maxAllowlistingDelay)
+  if (
+    typeof config.maxAllowlistingDelay === "number" &&
+    isWithin(allowlistingTime, config.maxAllowlistingDelay)
   ) {
-    logger.debug('[onpage-dialog]: Allowlisted too long ago');
+    logger.debug("[onpage-dialog]: Allowlisted too long ago");
     return false;
   }
 
   // Ignore if allowlisting happened too recently
-  if (typeof config.minAllowlistingDelay === 'number'
-        && !isWithin(allowlistingTime, config.minAllowlistingDelay)
+  if (
+    typeof config.minAllowlistingDelay === "number" &&
+    !isWithin(allowlistingTime, config.minAllowlistingDelay)
   ) {
-    logger.debug('[onpage-dialog]: Allowlisted too recently');
+    logger.debug("[onpage-dialog]: Allowlisted too recently");
     return false;
   }
 
   // Wait a bit before triggering command again
   if (!isWithin(stats.lastDisplayTime, config.cooldownDuration * 60)) {
-    logger.debug('[onpage-dialog]: Dialog shown too recently');
+    logger.debug("[onpage-dialog]: Dialog shown too recently");
     return false;
   }
 
   // Ignore commands that should have already been dismissed
   if (shouldBeDismissed(timing, stats)) {
-    logger.debug('[onpage-dialog]: No more dialogs to show for command');
+    logger.debug("[onpage-dialog]: No more dialogs to show for command");
     return false;
   }
 
   // Check if there are domains for the command
   if (behavior.domain_list) {
-    const parsedDomains = parseDomains(behavior.domain_list, ',');
+    const parsedDomains = parseDomains(behavior.domain_list, ",");
     if (!parsedDomains) {
       return true;
     }
-    const tabURL = new URL(tab.url || '');
+    const tabURL = new URL(tab.url || "");
     return isActiveOnDomain(tabURL.hostname, parsedDomains);
   }
   return true;
@@ -287,8 +281,7 @@ export async function shouldBeShown(
   if (Timing.afterNavigation === timing) {
     return shouldBeShownForAfterNavigation(behavior, tab, stats);
   }
-  if (Timing.afterWebAllowlisting === timing
-    || Timing.revisitWebAllowlisted === timing) {
+  if (Timing.afterWebAllowlisting === timing || Timing.revisitWebAllowlisted === timing) {
     return shouldBeShownForAfterWebAllowlisting(behavior, tab, stats);
   }
   return false;

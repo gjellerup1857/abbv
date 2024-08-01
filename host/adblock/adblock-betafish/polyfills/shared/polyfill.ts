@@ -25,7 +25,5 @@ import { Message } from "./polyfill.types";
  * @returns whether candidate is message
  */
 export function isMessage(candidate: unknown): candidate is Message {
-    return (
-        candidate !== null && typeof candidate === "object" && "type" in candidate
-    );
+  return candidate !== null && typeof candidate === "object" && "type" in candidate;
 }

@@ -18,20 +18,21 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, adblockIsPaused, replacedCounts */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { getSettings, setSetting, settings } from './prefs/background';
-import { isEmptyObject, chromeStorageSetHelper } from './utilities/background/bg-functions';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { getSettings, setSetting, settings } from "./prefs/background";
+import { isEmptyObject, chromeStorageSetHelper } from "./utilities/background/bg-functions";
 
 const LocalDataCollection = (function getLocalDataCollection() {
-  const easyPrivacyURL = (browser.runtime.getManifest().manifest_version === 2)
-    ? 'https://easylist-downloads.adblockplus.org/easyprivacy.txt'
-    : 'https://easylist-downloads.adblockplus.org/v3/full/easyprivacy.txt';
+  const easyPrivacyURL =
+    browser.runtime.getManifest().manifest_version === 2
+      ? "https://easylist-downloads.adblockplus.org/easyprivacy.txt"
+      : "https://easylist-downloads.adblockplus.org/v3/full/easyprivacy.txt";
   const FIFTEEN_MINS = 15;
-  const EXT_STATS_KEY = 'ext_stats_key';
-  const STATS_ALARM_NAME = 'statsalarm';
-  const STATS_STORAGE_KEY = 'ab:stats.storage.key';
+  const EXT_STATS_KEY = "ext_stats_key";
+  const STATS_ALARM_NAME = "statsalarm";
+  const STATS_STORAGE_KEY = "ab:stats.storage.key";
   const REPORTING_OPTIONS = {
-    filterType: 'blocking',
+    filterType: "blocking",
     includeElementHiding: false,
   };
 
@@ -49,7 +50,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   };
 
   const addFilterToCache = function (details, filter) {
-    const validFilterText = filter && filter.text && (typeof filter.text === 'string');
+    const validFilterText = filter && filter.text && typeof filter.text === "string";
     if (details.tabId > 0 && validFilterText && validFilterText && details && details.url) {
       browser.tabs.get(details.tabId).then(async (tab) => {
         if (tab.incognito) {
@@ -95,7 +96,6 @@ const LocalDataCollection = (function getLocalDataCollection() {
     }
   };
 
-
   const clearCache = function () {
     dataCollectionCache = {};
     dataCollectionCache.domains = {};
@@ -105,10 +105,12 @@ const LocalDataCollection = (function getLocalDataCollection() {
   const saveCacheData = function () {
     return new Promise(async (resolve) => {
       if (getSettings().local_data_collection && !isEmptyObject(dataCollectionCache.domains)) {
-        const hourSnapShot = JSON.parse(JSON.stringify({
-          v: '1',
-          doms: dataCollectionCache.domains,
-        }));
+        const hourSnapShot = JSON.parse(
+          JSON.stringify({
+            v: "1",
+            doms: dataCollectionCache.domains,
+          }),
+        );
         browser.storage.local.get(EXT_STATS_KEY).then((hourlyResponse) => {
           const savedData = hourlyResponse[EXT_STATS_KEY] || {};
           savedData[Date.now().toString()] = hourSnapShot;
@@ -154,7 +156,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
       await loadCache();
       browser.alarms.create(STATS_ALARM_NAME, { periodInMinutes: FIFTEEN_MINS });
       ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
-      replacedCounts.adReplacedNotifier.on('adReplaced', adReplacedListener);
+      replacedCounts.adReplacedNotifier.on("adReplaced", adReplacedListener);
     });
   };
   initialize();
@@ -165,7 +167,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   returnObj.start = function returnObjStart() {
     return new Promise((resolve) => {
       dataCollectionCache.domains = {};
-      setSetting('local_data_collection', true, () => {
+      setSetting("local_data_collection", true, () => {
         initialize();
         resolve();
       });
@@ -177,8 +179,8 @@ const LocalDataCollection = (function getLocalDataCollection() {
       browser.alarms.clear(STATS_ALARM_NAME);
       clearCache();
       ewe.reporting.onBlockableItem.removeListener(filterListener, REPORTING_OPTIONS);
-      replacedCounts.adReplacedNotifier.off('adReplaced', adReplacedListener);
-      setSetting('local_data_collection', false, resolve);
+      replacedCounts.adReplacedNotifier.off("adReplaced", adReplacedListener);
+      setSetting("local_data_collection", false, resolve);
     });
   };
   returnObj.clearCache = clearCache;
@@ -193,7 +195,7 @@ const LocalDataCollection = (function getLocalDataCollection() {
   };
   returnObj.getRawStatsSize = async function returnObjFilterStatsSize() {
     const rawStats = await LocalDataCollection.exportRawStats();
-    return Promise.resolve((JSON.stringify(rawStats).length));
+    return Promise.resolve(JSON.stringify(rawStats).length);
   };
   // Note: the following function is used for testing purposes
   // Import filter list statistics which will be converted to the format needed / used
@@ -225,7 +227,10 @@ const LocalDataCollection = (function getLocalDataCollection() {
               hourSnapShot[domain].ads = 0;
               hourSnapShot[domain].trackers = 0;
               hourSnapShot[domain].adsReplaced = 0;
-              if (dupDataCache.domains[domain] && typeof dupDataCache.domains[domain].adsReplaced === 'number') {
+              if (
+                dupDataCache.domains[domain] &&
+                typeof dupDataCache.domains[domain].adsReplaced === "number"
+              ) {
                 hourSnapShot[domain].adsReplaced = dupDataCache.domains[domain].adsReplaced;
               }
             };
@@ -237,33 +242,45 @@ const LocalDataCollection = (function getLocalDataCollection() {
                 if (!hourSnapShot[domain]) {
                   initializeDomainDataObject(domain);
                 }
-                if (dupDataCache.filters[filter].subscriptions
-                  && dupDataCache.filters[filter].subscriptions.length
-                  && dupDataCache.filters[filter].subscriptions.includes(easyPrivacyURL)) {
-                  hourSnapShot[domain].trackers
-                    += dupDataCache.filters[filter][filterRequestType][domain].hits;
+                if (
+                  dupDataCache.filters[filter].subscriptions &&
+                  dupDataCache.filters[filter].subscriptions.length &&
+                  dupDataCache.filters[filter].subscriptions.includes(easyPrivacyURL)
+                ) {
+                  hourSnapShot[domain].trackers +=
+                    dupDataCache.filters[filter][filterRequestType][domain].hits;
                 } else {
-                  hourSnapShot[domain].ads
-                    += dupDataCache.filters[filter][filterRequestType][domain].hits;
+                  hourSnapShot[domain].ads +=
+                    dupDataCache.filters[filter][filterRequestType][domain].hits;
                 }
               }
             };
             for (const filter in dupDataCache.filters) {
-              processDomainByFilterType(filter, dupDataCache.filters[filter].firstParty, 'firstParty');
-              processDomainByFilterType(filter, dupDataCache.filters[filter].thirdParty, 'thirdParty');
+              processDomainByFilterType(
+                filter,
+                dupDataCache.filters[filter].firstParty,
+                "firstParty",
+              );
+              processDomainByFilterType(
+                filter,
+                dupDataCache.filters[filter].thirdParty,
+                "thirdParty",
+              );
             }
-            savedData[Date.parse(dupDataCache.timeOfLastPush)] = JSON.parse(JSON.stringify({
-              v: '1',
-              doms: hourSnapShot,
-            }));
+            savedData[Date.parse(dupDataCache.timeOfLastPush)] = JSON.parse(
+              JSON.stringify({
+                v: "1",
+                doms: hourSnapShot,
+              }),
+            );
           }
-        }// end for loop
+        } // end for loop
         chromeStorageSetHelper(EXT_STATS_KEY, savedData);
-        resolve(' success! ');
+        resolve(" success! ");
       });
     });
   };
   return returnObj;
-}());
+})();
 
 export default LocalDataCollection;

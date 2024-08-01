@@ -19,11 +19,7 @@
 /* global browser, DOMPurify, sessionStorageGet, translate */
 
 /* eslint-disable import/extensions */
-import {
-  PAGE_INFO_KEY,
-  splitAndTranslate,
-  translateWithTags,
-} from '../utils.js';
+import { PAGE_INFO_KEY, splitAndTranslate, translateWithTags } from "../utils.js";
 
 const allowInlineButton = {
   CUSTOM_ELEMENT_HANDLING: {
@@ -37,19 +33,22 @@ async function customFilters(i18n) {
   const pageUrl = new URL(this.pageInfo.url);
   const { host } = pageUrl;
 
-  const customFilterCount = await browser.runtime.sendMessage({ command: 'getCustomFilterCount', host });
+  const customFilterCount = await browser.runtime.sendMessage({
+    command: "getCustomFilterCount",
+    host,
+  });
 
   return translate(i18n, [customFilterCount.response, host]);
 }
 
 function distractionControl(i18n) {
   const mainText = splitAndTranslate(i18n);
-  const link = 'https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control';
-  const linkText = translateWithTags(
-    'dc_more_information',
-    '',
-    [`<inline-link-button data-url="${link}">`, '</inline-link-button>'],
-  );
+  const link =
+    "https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control";
+  const linkText = translateWithTags("dc_more_information", "", [
+    `<inline-link-button data-url="${link}">`,
+    "</inline-link-button>",
+  ]);
 
   return `${mainText} ${linkText}`;
 }
@@ -64,7 +63,7 @@ export default class ConfirmText extends HTMLElement {
     this.pageInfo = sessionStorageGet(PAGE_INFO_KEY);
     const { i18n, i18nCompute } = this.dataset;
 
-    const para = document.createElement('p');
+    const para = document.createElement("p");
     const paraGuts = i18nCompute
       ? await textComputations[i18nCompute].call(this, i18n)
       : splitAndTranslate(i18n);

@@ -21,13 +21,21 @@
    SubscriptionsProxy, channels, SubscriptionAdapter, LocalDataCollection,
    DataCollectionV2, send */
 
-Chart.defaults.global.defaultFontFamily = 'Lato';
+Chart.defaults.global.defaultFontFamily = "Lato";
 
-const mainTextFontColor = getComputedStyle(document.body).getPropertyValue('--main-text-color').trim();
-const helpIconColor = getComputedStyle(document.body).getPropertyValue('--help-icon-color').trim();
-const adsBlockedColor = getComputedStyle(document.body).getPropertyValue('--ads-blocked-color').trim();
-const trackersBlockedColor = getComputedStyle(document.body).getPropertyValue('--trackers-blocked-color').trim();
-const adsReplacedColor = getComputedStyle(document.body).getPropertyValue('--ads-replaced-color').trim();
+const mainTextFontColor = getComputedStyle(document.body)
+  .getPropertyValue("--main-text-color")
+  .trim();
+const helpIconColor = getComputedStyle(document.body).getPropertyValue("--help-icon-color").trim();
+const adsBlockedColor = getComputedStyle(document.body)
+  .getPropertyValue("--ads-blocked-color")
+  .trim();
+const trackersBlockedColor = getComputedStyle(document.body)
+  .getPropertyValue("--trackers-blocked-color")
+  .trim();
+const adsReplacedColor = getComputedStyle(document.body)
+  .getPropertyValue("--ads-replaced-color")
+  .trim();
 
 let subs = {};
 window.theChart = undefined; // needs to be in the global name space.
@@ -51,7 +59,7 @@ const addResizeHandler = function () {
   }
   window.resizeHandler = true;
   let resizeTimer;
-  $(window).on('resize', () => {
+  $(window).on("resize", () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       // eslint-disable-next-line no-use-before-define
@@ -65,9 +73,9 @@ const addResizeHandler = function () {
 const showOrHideNoDataMsgIfNeeded = function () {
   if (settings.local_data_collection) {
     if ($.isEmptyObject(rawData)) {
-      $('#no-data-overlay').show();
+      $("#no-data-overlay").show();
     } else {
-      $('#no-data-overlay').hide();
+      $("#no-data-overlay").hide();
     }
     addResizeHandler();
   }
@@ -76,75 +84,71 @@ const showOrHideNoDataMsgIfNeeded = function () {
 const showOrHideAdPanelCountNeeded = function () {
   if (settings.local_data_collection && showAdsData) {
     showAdsData = false;
-    $('#adsblocked_value').hide();
-    $('#adsblocked_panel').css({ background: '#dadada' });
-    $('#adblocked_off_icon').show();
-    $('#adsblocked_header span[i18n="stats_hide_data"]').text(translate('stats_show_data'));
-    $('#adsblocked_header i').text('remove_red_eye');
+    $("#adsblocked_value").hide();
+    $("#adsblocked_panel").css({ background: "#dadada" });
+    $("#adblocked_off_icon").show();
+    $('#adsblocked_header span[i18n="stats_hide_data"]').text(translate("stats_show_data"));
+    $("#adsblocked_header i").text("remove_red_eye");
   } else if (settings.local_data_collection && !showAdsData) {
     showAdsData = true;
-    $('#adsblocked_panel').css({ background: '#ffffff' });
-    $('#adblocked_off_icon').hide();
-    $('#adsblocked_value').show();
-    $('#adsblocked_header span[i18n="stats_hide_data"]').text(translate('stats_hide_data'));
-    $('#adsblocked_header i').text('visibility_off');
+    $("#adsblocked_panel").css({ background: "#ffffff" });
+    $("#adblocked_off_icon").hide();
+    $("#adsblocked_value").show();
+    $('#adsblocked_header span[i18n="stats_hide_data"]').text(translate("stats_hide_data"));
+    $("#adsblocked_header i").text("visibility_off");
   }
 };
 
 const showOrHideTrackerPanelCountNeeded = function () {
-  if (
-    settings.local_data_collection
-    && subs.easyprivacy
-    && subs.easyprivacy.subscribed
-  ) {
+  if (settings.local_data_collection && subs.easyprivacy && subs.easyprivacy.subscribed) {
     if (showTrackerData) {
       showTrackerData = false;
-      $('#trackers_blocked_panel').css({ background: '#dadada' });
-      $('#trackers_blocked_value').hide();
-      $('#trackers_off_icon').show();
-      $('#trackers_blocked_header span[i18n="stats_hide_data"]').text(translate('stats_show_data'));
-      $('#trackers_blocked_header i').text('remove_red_eye');
+      $("#trackers_blocked_panel").css({ background: "#dadada" });
+      $("#trackers_blocked_value").hide();
+      $("#trackers_off_icon").show();
+      $('#trackers_blocked_header span[i18n="stats_hide_data"]').text(translate("stats_show_data"));
+      $("#trackers_blocked_header i").text("remove_red_eye");
     } else {
       showTrackerData = true;
-      $('#trackers_blocked_panel').css({ background: '#ffffff' });
-      $('#trackers_off_icon').hide();
-      $('#trackers_blocked_value').show();
-      $('#trackers_blocked_header span[i18n="stats_hide_data"]').text(translate('stats_hide_data'));
-      $('#trackers_blocked_header i').text('visibility_off');
+      $("#trackers_blocked_panel").css({ background: "#ffffff" });
+      $("#trackers_off_icon").hide();
+      $("#trackers_blocked_value").show();
+      $('#trackers_blocked_header span[i18n="stats_hide_data"]').text(translate("stats_hide_data"));
+      $("#trackers_blocked_header i").text("visibility_off");
     }
   }
 };
 
 const showOrHideReplacedPanelCountNeeded = async function () {
   if (
-    settings.local_data_collection
-        && License.isActiveLicense()
-        && channels
-        && await channels.isAnyEnabled()
+    settings.local_data_collection &&
+    License.isActiveLicense() &&
+    channels &&
+    (await channels.isAnyEnabled())
   ) {
     if (showReplacedData) {
       showReplacedData = false;
-      $('#ads_replaced_panel').css({ background: '#dadada' });
-      $('#ads_replaced_value').hide();
-      $('#ads_replaced_off_icon').show();
-      $('#ads_replaced_header span[i18n="stats_hide_data"]').text(translate('stats_show_data'));
-      $('#ads_replaced_header i').text('remove_red_eye');
+      $("#ads_replaced_panel").css({ background: "#dadada" });
+      $("#ads_replaced_value").hide();
+      $("#ads_replaced_off_icon").show();
+      $('#ads_replaced_header span[i18n="stats_hide_data"]').text(translate("stats_show_data"));
+      $("#ads_replaced_header i").text("remove_red_eye");
     } else {
       showReplacedData = true;
-      $('#ads_replaced_panel').css({ background: '#ffffff' });
-      $('#ads_replaced_off_icon').hide();
-      $('#ads_replaced_value').show();
-      $('#ads_replaced_header span[i18n="stats_hide_data"]').text(translate('stats_hide_data'));
-      $('#ads_replaced_header i').text('visibility_off');
+      $("#ads_replaced_panel").css({ background: "#ffffff" });
+      $("#ads_replaced_off_icon").hide();
+      $("#ads_replaced_value").show();
+      $('#ads_replaced_header span[i18n="stats_hide_data"]').text(translate("stats_hide_data"));
+      $("#ads_replaced_header i").text("visibility_off");
     }
   }
 };
 
 const hidePageProgressCircleIfNeeded = function () {
   return new Promise((resolve) => {
-    if ($('#loadingDiv').is(':visible')) {
-      $('#loadingDiv').fadeOut(400, () => {
-        $('#myChart').show();
+    if ($("#loadingDiv").is(":visible")) {
+      $("#loadingDiv").fadeOut(400, () => {
+        $("#myChart").show();
         resolve();
       });
       return;
@@ -154,31 +158,32 @@ const hidePageProgressCircleIfNeeded = function () {
 };
 
 const placeBlockStatsHeaderIcons = function () {
-  const headers = document.getElementById('domainTableHeader');
+  const headers = document.getElementById("domainTableHeader");
   // check if the domain table header is visibile
   if (headers.offsetHeight || headers.offsetWidth || headers.getClientRects().length) {
     const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    if (vw >= 1250) { // the static value should match the media query in the stats-tabs CSS file
+    if (vw >= 1250) {
+      // the static value should match the media query in the stats-tabs CSS file
       // where the domain table header is removed
-      $('#adHeader').show();
-      $('#trackerHeader').show();
-      $('#replacedHeader').show();
-      $('#adHeader').offset({
-        top: $('#adHeader').offset().top,
-        left: $('#adColumn-1').offset().left,
+      $("#adHeader").show();
+      $("#trackerHeader").show();
+      $("#replacedHeader").show();
+      $("#adHeader").offset({
+        top: $("#adHeader").offset().top,
+        left: $("#adColumn-1").offset().left,
       });
-      $('#trackerHeader').offset({
-        top: $('#trackerHeader').offset().top,
-        left: $('#trackerColumn-1').offset().left,
+      $("#trackerHeader").offset({
+        top: $("#trackerHeader").offset().top,
+        left: $("#trackerColumn-1").offset().left,
       });
-      $('#replacedHeader').offset({
-        top: $('#adHeader').offset().top,
-        left: $('#replacedColumn-1').offset().left,
+      $("#replacedHeader").offset({
+        top: $("#adHeader").offset().top,
+        left: $("#replacedColumn-1").offset().left,
       });
     } else {
-      $('#adHeader').hide();
-      $('#trackerHeader').hide();
-      $('#replacedHeader').hide();
+      $("#adHeader").hide();
+      $("#trackerHeader").hide();
+      $("#replacedHeader").hide();
     }
   }
 };
@@ -206,8 +211,12 @@ function sumChartData(chartDataArray) {
 
 // Chart JS Date data functions
 function calculateMonthDiff(dateFrom, dateTo) {
-  return dateTo.getMonth() - dateFrom.getMonth()
-    + (12 * (dateTo.getFullYear() - dateFrom.getFullYear())) + 1;
+  return (
+    dateTo.getMonth() -
+    dateFrom.getMonth() +
+    12 * (dateTo.getFullYear() - dateFrom.getFullYear()) +
+    1
+  );
 }
 
 // Midnight will be the 0 index, 1 AM is the 1 index, etc.
@@ -222,20 +231,43 @@ const hoursOfThisDay = (function getHoursOfThisDay() {
     hours.push(new Date(today.getTime()));
   }
   return hours;
-}());
+})();
 
 function createDailyLabelData() {
   labelData = [];
   for (let i = 0; i < hoursOfThisDay.length; i++) {
-    labelData.push(hoursOfThisDay[i].toLocaleTimeString(undefined, { hour: '2-digit' }));
+    labelData.push(hoursOfThisDay[i].toLocaleTimeString(undefined, { hour: "2-digit" }));
   }
   return labelData;
 }
 
 function filterTodaysData(chartDataArray) {
-  const hourBuckets = [null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null];
+  const hourBuckets = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
   for (let i = 0; i < chartDataArray.length; i++) {
     for (let j = 0; j < hoursOfThisDay.length; j++) {
       if (chartDataArray[i].x >= hoursOfThisDay[j] && chartDataArray[i].x < hoursOfThisDay[j + 1]) {
@@ -250,7 +282,8 @@ const firstMondayOfThisWeek = (function getFirstMondayOfThisWeek() {
   const dayOfWeek = new Date().getDay();
   const firstDayOfWeek = new Date();
   let diff = 0;
-  if (dayOfWeek >= 1) { // if Monday through Saturday
+  if (dayOfWeek >= 1) {
+    // if Monday through Saturday
     diff = dayOfWeek - 1;
   } else {
     diff = 6 - dayOfWeek;
@@ -258,7 +291,7 @@ const firstMondayOfThisWeek = (function getFirstMondayOfThisWeek() {
   firstDayOfWeek.setDate(new Date().getDate() - diff);
   firstDayOfWeek.setHours(0, 0, 0, 0);
   return firstDayOfWeek;
-}());
+})();
 
 function getDatesOfThisWeek() {
   const dates = [];
@@ -278,7 +311,7 @@ function filterThisWeeksData(chartDataArray) {
   followingMonday.setHours(24);
 
   for (let i = 0; i < chartDataArray.length; i++) {
-    for (let j = 0; (j < dates.length - 1); j++) {
+    for (let j = 0; j < dates.length - 1; j++) {
       if (chartDataArray[i].x >= dates[j] && chartDataArray[i].x < dates[j + 1]) {
         dayBuckets[j] += chartDataArray[i].y;
       }
@@ -295,12 +328,12 @@ const firstDayOfThisMonth = (function firstDayOfThisMonthFN() {
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
   firstDay.setHours(0, 0, 0, 0);
   return firstDay;
-}());
+})();
 
 const numberOfDaysThisMonth = (function numberOfDaysThisMonthFN() {
   const aDate = new Date(firstDayOfThisMonth.getFullYear(), firstDayOfThisMonth.getMonth() + 1, 0);
   return aDate.getDate();
-}());
+})();
 
 function getDatesOfThisMonth() {
   const dates = [];
@@ -318,12 +351,12 @@ function filterThisMonthsData(chartDataArray) {
   const dayBuckets = [];
   const firstDayOfNextMonth = new Date(dates[numberOfDaysThisMonth - 1].getTime());
   firstDayOfNextMonth.setHours(24);
-  for (let j = 0; (j < dates.length - 1); j++) {
+  for (let j = 0; j < dates.length - 1; j++) {
     dayBuckets[j] = null;
   }
 
   for (let i = 0; i < chartDataArray.length; i++) {
-    for (let j = 0; (j < dates.length - 1); j++) {
+    for (let j = 0; j < dates.length - 1; j++) {
       if (chartDataArray[i].x >= dates[j] && chartDataArray[i].x < dates[j + 1]) {
         dayBuckets[j] += chartDataArray[i].y;
       }
@@ -350,7 +383,7 @@ const firstDayOfThisYear = (function getFirstDayOfThisYear() {
   const firstOfYear = new Date(new Date().getFullYear(), 0, 1);
   firstOfYear.setHours(0, 0, 0, 0);
   return firstOfYear;
-}());
+})();
 
 function getMonthsOfThisYear() {
   const dates = [];
@@ -370,14 +403,12 @@ function filterThisYearsData(chartDataArray) {
   const nextYearFirstDate = new Date(firstDayOfYear.setFullYear(firstDayOfYear.getFullYear() + 1));
 
   for (let i = 0; i < chartDataArray.length; i++) {
-    for (let j = 0; (j < dates.length - 1); j++) {
+    for (let j = 0; j < dates.length - 1; j++) {
       if (chartDataArray[i].x >= dates[j] && chartDataArray[i].x < dates[j + 1]) {
         monthBuckets[j] += chartDataArray[i].y;
       }
     }
-    if (
-      chartDataArray[i].x >= dates[dates.length - 1]
-      && chartDataArray[i].x < nextYearFirstDate) {
+    if (chartDataArray[i].x >= dates[dates.length - 1] && chartDataArray[i].x < nextYearFirstDate) {
       monthBuckets[dates.length - 1] += chartDataArray[i].y;
     }
   }
@@ -406,17 +437,17 @@ function filterForAllData(chartDataArray) {
   const nextMonth = new Date(myDate.getTime());
 
   for (let i = 0; i < chartDataArray.length; i++) {
-    for (let j = 0; (j < numBuckets - 1); j++) {
+    for (let j = 0; j < numBuckets - 1; j++) {
       if (
-        chartDataArray[i].x >= monthDateBuckets[j]
-        && chartDataArray[i].x < monthDateBuckets[j + 1]
+        chartDataArray[i].x >= monthDateBuckets[j] &&
+        chartDataArray[i].x < monthDateBuckets[j + 1]
       ) {
         monthBuckets[j] += chartDataArray[i].y;
       }
     }
     if (
-      chartDataArray[i].x >= monthDateBuckets[numBuckets - 1]
-      && chartDataArray[i].x < nextMonth
+      chartDataArray[i].x >= monthDateBuckets[numBuckets - 1] &&
+      chartDataArray[i].x < nextMonth
     ) {
       monthBuckets[numBuckets - 1] += chartDataArray[i].y;
     }
@@ -429,14 +460,16 @@ function createAllDataLabels() {
   const numBuckets = calculateMonthDiff(earliestDate, new Date());
   const myDate = new Date(earliestDate.getTime());
   myDate.setHours(0, 0, 0, 0);
-  monthNameBuckets.push(myDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }));
+  monthNameBuckets.push(myDate.toLocaleDateString(undefined, { month: "long", year: "numeric" }));
 
   for (let i = 1; i < numBuckets; i++) {
     myDate.setMonth(myDate.getMonth() + 1);
-    if ((numBuckets <= 24) || ((numBuckets > 24) && (i % 3 === 0))) {
-      monthNameBuckets.push(myDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' }));
+    if (numBuckets <= 24 || (numBuckets > 24 && i % 3 === 0)) {
+      monthNameBuckets.push(
+        myDate.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+      );
     } else {
-      monthNameBuckets.push('');
+      monthNameBuckets.push("");
     }
   }
   return monthNameBuckets;
@@ -446,10 +479,10 @@ function createAllDataLabels() {
 function getNamesOfDays() {
   const names = [];
   const dayOfWeek = new Date(firstMondayOfThisWeek.getTime());
-  names.push(dayOfWeek.toLocaleDateString(undefined, { weekday: 'long' }));
+  names.push(dayOfWeek.toLocaleDateString(undefined, { weekday: "long" }));
   for (let i = 1; i < 7; i++) {
     dayOfWeek.setHours(24);
-    names.push(dayOfWeek.toLocaleDateString(undefined, { weekday: 'long' }));
+    names.push(dayOfWeek.toLocaleDateString(undefined, { weekday: "long" }));
   }
   return names;
 }
@@ -458,14 +491,13 @@ function getNamesOfDays() {
 function getNamesOfMonths() {
   const names = [];
   const firstDayOfMonth = new Date(firstDayOfThisYear.getTime());
-  names.push(firstDayOfMonth.toLocaleDateString(undefined, { month: 'long' }));
+  names.push(firstDayOfMonth.toLocaleDateString(undefined, { month: "long" }));
   for (let i = 1; i < 12; i++) {
     firstDayOfMonth.setMonth(i);
-    names.push(firstDayOfMonth.toLocaleDateString(undefined, { month: 'long' }));
+    names.push(firstDayOfMonth.toLocaleDateString(undefined, { month: "long" }));
   }
   return names;
 }
-
 
 // Hard coded sample Chart JS data to be shown to users when they don't have the feature enabled
 
@@ -521,7 +553,7 @@ const sampleChartConfig = {
   tooltips: {
     enabled: false,
   },
-  type: 'line',
+  type: "line",
   data: {
     labels: sampleLabelData,
     datasets: [sampleAdChartDataSet, sampleTrackerChartDataSet, sampleReplacedChartDataSet],
@@ -540,32 +572,36 @@ const sampleChartConfig = {
       display: false,
     },
     scales: {
-      xAxes: [{
-        display: true,
-        ticks: {
-          tickMarkLength: 0,
-          stepSize: 1,
-          // only show every forth
-          callback(value, index) {
-            if (!(index % 4)) {
-              return value;
-            }
-            return ' ';
+      xAxes: [
+        {
+          display: true,
+          ticks: {
+            tickMarkLength: 0,
+            stepSize: 1,
+            // only show every forth
+            callback(value, index) {
+              if (!(index % 4)) {
+                return value;
+              }
+              return " ";
+            },
+            fontColor: mainTextFontColor,
           },
-          fontColor: mainTextFontColor,
         },
-      }],
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: false,
+      ],
+      yAxes: [
+        {
+          display: true,
+          scaleLabel: {
+            display: false,
+          },
+          ticks: {
+            suggestedMax: 10,
+            tickMarkLength: 0,
+            fontColor: mainTextFontColor,
+          },
         },
-        ticks: {
-          suggestedMax: 10,
-          tickMarkLength: 0,
-          fontColor: mainTextFontColor,
-        },
-      }],
+      ],
     },
   },
 };
@@ -595,20 +631,26 @@ const getDomainTableRow = function (rowNum, filteredDomainData, processedDoms) {
 };
 
 // set the same font size of the count value in all three panels
-const setFontSize = function (totalAdsBlocked, totalAdsSelector, totalTrackersBlocked,
-  totalTrackersselector, totalReplaced, totalReplacedSelector) {
+const setFontSize = function (
+  totalAdsBlocked,
+  totalAdsSelector,
+  totalTrackersBlocked,
+  totalTrackersselector,
+  totalReplaced,
+  totalReplacedSelector,
+) {
   const count = Math.max(totalAdsBlocked, totalTrackersBlocked, totalReplaced);
-  let fontSize = '60px';
-  if ((count >= 1000) && (count < 10000)) {
-    fontSize = '48px';
-  } else if ((count >= 10000) && (count < 100000)) {
-    fontSize = '42px';
+  let fontSize = "60px";
+  if (count >= 1000 && count < 10000) {
+    fontSize = "48px";
+  } else if (count >= 10000 && count < 100000) {
+    fontSize = "42px";
   } else if (count >= 100000) {
-    fontSize = '36px';
+    fontSize = "36px";
   }
-  $(totalAdsSelector).css({ 'font-size': fontSize });
-  $(totalTrackersselector).css({ 'font-size': fontSize });
-  $(totalReplacedSelector).css({ 'font-size': fontSize });
+  $(totalAdsSelector).css({ "font-size": fontSize });
+  $(totalTrackersselector).css({ "font-size": fontSize });
+  $(totalReplacedSelector).css({ "font-size": fontSize });
 };
 
 // returns a promise that is resolved when all of the raw data is loaded from storage
@@ -618,14 +660,14 @@ const loadUserDataFromStorage = function () {
     browser.storage.local.get(EXT_STATS_KEY).then((storedData) => {
       rawData = storedData[EXT_STATS_KEY] || {};
       if (!$.isEmptyObject(rawData)) {
-        $('#stats-page-delete-icon').show();
+        $("#stats-page-delete-icon").show();
       }
       adChartData = [];
       trackerChartData = [];
       replacedChartData = [];
       earliestDate = new Date();
       for (const timestamp in rawData) {
-        if (!Number.isNaN(timestamp) && (rawData[timestamp].v === '1')) {
+        if (!Number.isNaN(timestamp) && rawData[timestamp].v === "1") {
           let totalAds = 0;
           let totalTrackers = 0;
           let totalReplaced = 0;
@@ -653,23 +695,23 @@ const loadUserDataFromStorage = function () {
 const getLineChartConfig = async function (chartType, filterName, labelName) {
   let filterFunction = filterTodaysData;
   let createLabelFunction = createDailyLabelData;
-  if (filterName === 'week') {
+  if (filterName === "week") {
     filterFunction = filterThisWeeksData;
-  } else if (filterName === 'months') {
+  } else if (filterName === "months") {
     filterFunction = filterThisMonthsData;
-  } else if (filterName === 'year') {
+  } else if (filterName === "year") {
     filterFunction = filterThisYearsData;
-  } else if (filterName === 'all') {
+  } else if (filterName === "all") {
     filterFunction = filterForAllData;
   }
 
-  if (labelName === 'days') {
+  if (labelName === "days") {
     createLabelFunction = getNamesOfDays;
-  } else if (labelName === 'months') {
+  } else if (labelName === "months") {
     createLabelFunction = createThisMonthsLabels;
-  } else if (labelName === 'year') {
+  } else if (labelName === "year") {
     createLabelFunction = getNamesOfMonths;
-  } else if (labelName === 'all') {
+  } else if (labelName === "all") {
     createLabelFunction = createAllDataLabels;
   }
   const chartDataSets = [];
@@ -679,9 +721,9 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
   if (showAdsData) {
     const theAdChartData = filterFunction(adChartData);
     totalAdsBlocked = sumChartData(theAdChartData);
-    $('#adsblocked_value').text(totalAdsBlocked.toLocaleString());
+    $("#adsblocked_value").text(totalAdsBlocked.toLocaleString());
     const adChartDataSet = {
-      label: translate('stats_ads_blocked'),
+      label: translate("stats_ads_blocked"),
       fill: false,
       backgroundColor: adsBlockedColor,
       borderColor: adsBlockedColor,
@@ -695,10 +737,10 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
   if (showTrackerData && subs && subs.easyprivacy && subs.easyprivacy.subscribed) {
     const theTrackerChartData = filterFunction(trackerChartData);
     totalTrackersBlocked = sumChartData(theTrackerChartData);
-    $('#trackers_blocked_value').text(totalTrackersBlocked.toLocaleString());
+    $("#trackers_blocked_value").text(totalTrackersBlocked.toLocaleString());
 
     const trackerChartDataSet = {
-      label: translate('stats_trackers_blocked'),
+      label: translate("stats_trackers_blocked"),
       fill: false,
       backgroundColor: trackersBlockedColor,
       borderColor: trackersBlockedColor,
@@ -711,16 +753,16 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
   }
 
   if (
-    showReplacedData
-      && License.isActiveLicense()
-      && channels
-      && await channels.isAnyEnabled()
+    showReplacedData &&
+    License.isActiveLicense() &&
+    channels &&
+    (await channels.isAnyEnabled())
   ) {
     const theReplacedChartData = filterFunction(replacedChartData);
     totalReplaced = sumChartData(theReplacedChartData);
-    $('#ads_replaced_value').text(totalReplaced.toLocaleString());
+    $("#ads_replaced_value").text(totalReplaced.toLocaleString());
     const replacedChartDataSet = {
-      label: translate('stats_replaced_blocked'),
+      label: translate("stats_replaced_blocked"),
       fill: false,
       backgroundColor: adsReplacedColor,
       borderColor: adsReplacedColor,
@@ -732,14 +774,20 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
     chartDataSets.push(replacedChartDataSet);
   }
 
-  setFontSize(totalAdsBlocked, '#adsblocked_value', totalTrackersBlocked,
-    '#trackers_blocked_value', totalReplaced, '#ads_replaced_value');
+  setFontSize(
+    totalAdsBlocked,
+    "#adsblocked_value",
+    totalTrackersBlocked,
+    "#trackers_blocked_value",
+    totalReplaced,
+    "#ads_replaced_value",
+  );
 
   const theLabelData = createLabelFunction();
 
   return {
     filterName, // for use in the tick callback
-    type: 'line',
+    type: "line",
     events: [],
     data: {
       labels: theLabelData,
@@ -750,7 +798,7 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
       responsive: true,
       maintainAspectRatio: false,
       tooltips: {
-        mode: 'x',
+        mode: "x",
       },
       legend: {
         display: false,
@@ -762,62 +810,66 @@ const getLineChartConfig = async function (chartType, filterName, labelName) {
         display: false,
       },
       scales: {
-        xAxes: [{
-          display: true,
-          gridLines: {
-            zeroLineColor: mainTextFontColor,
-          },
-          ticks: {
-            callback(value, index) {
-              const filter = this.chart.config.filterName;
-              if (!filter || filter === 'today') {
-                if (!(index % 4)) {
+        xAxes: [
+          {
+            display: true,
+            gridLines: {
+              zeroLineColor: mainTextFontColor,
+            },
+            ticks: {
+              callback(value, index) {
+                const filter = this.chart.config.filterName;
+                if (!filter || filter === "today") {
+                  if (!(index % 4)) {
+                    return value;
+                  }
+                  return " ";
+                }
+                if (filter === "week") {
                   return value;
                 }
-                return ' ';
-              }
-              if (filter === 'week') {
-                return value;
-              }
-              if (filter === 'months') {
-                // since the index is zero based, 1 needs to added to get the date
-                if (index === 0 || !((index + 1) % 7)) {
+                if (filter === "months") {
+                  // since the index is zero based, 1 needs to added to get the date
+                  if (index === 0 || !((index + 1) % 7)) {
+                    return value;
+                  }
+                  return " ";
+                }
+                if (filter === "year") {
                   return value;
                 }
-                return ' ';
-              }
-              if (filter === 'year') {
+                if (filter === "all") {
+                  return value;
+                }
                 return value;
-              }
-              if (filter === 'all') {
-                return value;
-              }
-              return value;
+              },
+              fontColor: mainTextFontColor,
             },
-            fontColor: mainTextFontColor,
           },
-        }],
-        yAxes: [{
-          display: true,
-          scaleLabel: {
-            display: false,
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            // only show Integers
-            callback(value) {
-              if (Number.isInteger(value)) {
-                return value;
-              }
-              return ' ';
+        ],
+        yAxes: [
+          {
+            display: true,
+            scaleLabel: {
+              display: false,
             },
-            fontColor: mainTextFontColor,
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+              // only show Integers
+              callback(value) {
+                if (Number.isInteger(value)) {
+                  return value;
+                }
+                return " ";
+              },
+              fontColor: mainTextFontColor,
+            },
+            gridLines: {
+              zeroLineColor: mainTextFontColor,
+            },
           },
-          gridLines: {
-            zeroLineColor: mainTextFontColor,
-          },
-        }],
+        ],
       },
     },
   };
@@ -831,8 +883,9 @@ const filterBarChartDataForDateRange = async function (startTime, endTime) {
       if (theDate > startTime && theDate < endTime) {
         /* eslint-disable no-await-in-loop */
         for (const domain in rawData[timestamp].doms) {
-          const cleanDomain = domain.replace(/^www\./, ''); // remove lead 'www.'
-          if (cleanDomain && cleanDomain.length > 1) { // check if domain is not blank
+          const cleanDomain = domain.replace(/^www\./, ""); // remove lead 'www.'
+          if (cleanDomain && cleanDomain.length > 1) {
+            // check if domain is not blank
             if (!domainData[cleanDomain]) {
               domainData[cleanDomain] = {};
               domainData[cleanDomain].ads = 0;
@@ -844,13 +897,13 @@ const filterBarChartDataForDateRange = async function (startTime, endTime) {
             if (subs && subs.easyprivacy && subs.easyprivacy.subscribed) {
               domainData[cleanDomain].trackers += rawData[timestamp].doms[domain].trackers;
             }
-            if (License.isActiveLicense() && channels && await channels.isAnyEnabled()) {
-              domainData[cleanDomain].adsReplaced
-                += rawData[timestamp].doms[domain].adsReplaced;
+            if (License.isActiveLicense() && channels && (await channels.isAnyEnabled())) {
+              domainData[cleanDomain].adsReplaced += rawData[timestamp].doms[domain].adsReplaced;
             }
-            domainData[cleanDomain].total = domainData[cleanDomain].ads
-                                          + domainData[cleanDomain].trackers
-                                          + domainData[cleanDomain].adsReplaced;
+            domainData[cleanDomain].total =
+              domainData[cleanDomain].ads +
+              domainData[cleanDomain].trackers +
+              domainData[cleanDomain].adsReplaced;
           }
         }
       }
@@ -860,18 +913,18 @@ const filterBarChartDataForDateRange = async function (startTime, endTime) {
 };
 
 const getBarChartConfig = async function (chartType, filterName) {
-  if (chartType !== 'bar') {
+  if (chartType !== "bar") {
     return {};
   }
   const endTime = new Date();
   let startTime = new Date();
-  if (filterName === 'week') {
+  if (filterName === "week") {
     startTime = new Date(firstMondayOfThisWeek.getTime());
-  } else if (filterName === 'months') {
+  } else if (filterName === "months") {
     startTime = new Date(firstDayOfThisMonth.getTime());
-  } else if (filterName === 'year') {
+  } else if (filterName === "year") {
     startTime = new Date(firstDayOfThisYear.getTime());
-  } else if (filterName === 'all') {
+  } else if (filterName === "all") {
     startTime = earliestDate;
   }
   startTime.setHours(0, 0, 0, 0);
@@ -886,7 +939,7 @@ const getBarChartConfig = async function (chartType, filterName) {
   }
   processedBarDoms.sort(compareDomainCount);
 
-  for (let inx = 0; (inx < processedBarDoms.length && inx < 10); inx++) {
+  for (let inx = 0; inx < processedBarDoms.length && inx < 10; inx++) {
     topNineDomainArray.push(processedBarDoms[inx].domain);
     barChartAdsDS.push(filteredDomainData[processedBarDoms[inx].domain].ads);
     barChartTrackersDS.push(filteredDomainData[processedBarDoms[inx].domain].trackers);
@@ -896,8 +949,8 @@ const getBarChartConfig = async function (chartType, filterName) {
   // fill in any empty positions
   // these arrays should always have exactly 10 items in them
   if (topNineDomainArray.length < 10) {
-    for (let inx = topNineDomainArray.length; (inx < 10); inx++) {
-      topNineDomainArray.push('');
+    for (let inx = topNineDomainArray.length; inx < 10; inx++) {
+      topNineDomainArray.push("");
       barChartAdsDS.push(0);
       barChartTrackersDS.push(0);
       barChartImageReplsDS.push(0);
@@ -905,34 +958,38 @@ const getBarChartConfig = async function (chartType, filterName) {
   }
   const barChartData = {
     labels: topNineDomainArray,
-    datasets: [{
-      label: translate('stats_ads_blocked'),
-      backgroundColor: adsBlockedColor,
-      borderColor: adsBlockedColor,
-      borderWidth: 0,
-      data: barChartAdsDS,
-    }, {
-      label: translate('stats_trackers_blocked'),
-      backgroundColor: trackersBlockedColor,
-      borderColor: trackersBlockedColor,
-      borderWidth: 0,
-      data: barChartTrackersDS,
-    }, {
-      label: translate('stats_replaced_blocked'),
-      backgroundColor: adsReplacedColor,
-      borderColor: adsReplacedColor,
-      borderWidth: 0,
-      data: barChartImageReplsDS,
-    }],
+    datasets: [
+      {
+        label: translate("stats_ads_blocked"),
+        backgroundColor: adsBlockedColor,
+        borderColor: adsBlockedColor,
+        borderWidth: 0,
+        data: barChartAdsDS,
+      },
+      {
+        label: translate("stats_trackers_blocked"),
+        backgroundColor: trackersBlockedColor,
+        borderColor: trackersBlockedColor,
+        borderWidth: 0,
+        data: barChartTrackersDS,
+      },
+      {
+        label: translate("stats_replaced_blocked"),
+        backgroundColor: adsReplacedColor,
+        borderColor: adsReplacedColor,
+        borderWidth: 0,
+        data: barChartImageReplsDS,
+      },
+    ],
   };
   const barChartConfig = {
-    type: 'bar',
+    type: "bar",
     data: barChartData,
     options: {
       responsive: true,
       maintainAspectRatio: false,
       tooltips: {
-        mode: 'x',
+        mode: "x",
         intersect: true,
       },
       legend: {
@@ -945,41 +1002,45 @@ const getBarChartConfig = async function (chartType, filterName) {
         display: false,
       },
       scales: {
-        xAxes: [{
-          stacked: true,
-          radius: 25,
-          ticks: {
-            callback(value, index) {
-              return index + 1;
+        xAxes: [
+          {
+            stacked: true,
+            radius: 25,
+            ticks: {
+              callback(value, index) {
+                return index + 1;
+              },
+              fontColor: mainTextFontColor,
             },
-            fontColor: mainTextFontColor,
+            gridLines: {
+              color: "#ffffff",
+              lineWidth: 0,
+              zeroLineColor: mainTextFontColor,
+            },
           },
-          gridLines: {
-            color: '#ffffff',
-            lineWidth: 0,
-            zeroLineColor: mainTextFontColor,
-          },
-        }],
-        yAxes: [{
-          stacked: true,
-          beginAtZero: true,
-          min: 0,
-          ticks: {
-            fontColor: mainTextFontColor,
+        ],
+        yAxes: [
+          {
+            stacked: true,
+            beginAtZero: true,
             min: 0,
-            // only show Integers
-            callback(value) {
-              if (Number.isInteger(value)) {
-                return value;
-              }
-              return ' ';
+            ticks: {
+              fontColor: mainTextFontColor,
+              min: 0,
+              // only show Integers
+              callback(value) {
+                if (Number.isInteger(value)) {
+                  return value;
+                }
+                return " ";
+              },
+              color: mainTextFontColor,
             },
-            color: mainTextFontColor,
+            gridLines: {
+              zeroLineColor: mainTextFontColor,
+            },
           },
-          gridLines: {
-            zeroLineColor: mainTextFontColor,
-          },
-        }],
+        ],
       },
     },
   };
@@ -992,128 +1053,134 @@ const getBarChartConfig = async function (chartType, filterName) {
 
 // process or reprocess the raw chart data for initial display
 // or after the user clicks a menu item
-const updateChart = async function (chartType = 'line', filterName, labelName) {
+const updateChart = async function (chartType = "line", filterName, labelName) {
   showOrHideNoDataMsgIfNeeded();
   let theChartConfig = {};
   let filteredDomainData = {};
   let processedDoms = [];
-  if (chartType === 'line') {
+  if (chartType === "line") {
     theChartConfig = await getLineChartConfig(chartType, filterName, labelName);
-  } else if (chartType === 'bar') {
+  } else if (chartType === "bar") {
     // eslint-disable-next-line max-len
-    ({ theChartConfig, filteredDomainData, processedDoms } = await getBarChartConfig(chartType, filterName, labelName));
+    ({ theChartConfig, filteredDomainData, processedDoms } = await getBarChartConfig(
+      chartType,
+      filterName,
+      labelName,
+    ));
   } else {
-    $('#adsblocked_progress_div').fadeOut(500, () => {
-      $('#adsblocked_value').fadeIn(500);
+    $("#adsblocked_progress_div").fadeOut(500, () => {
+      $("#adsblocked_value").fadeIn(500);
     });
     return;
   }
 
   hidePageProgressCircleIfNeeded().then(() => {
-    if (typeof window.theChart === 'undefined') {
-      const myChartCTX = document.getElementById('myChart').getContext('2d');
+    if (typeof window.theChart === "undefined") {
+      const myChartCTX = document.getElementById("myChart").getContext("2d");
       window.theChart = new Chart(myChartCTX, theChartConfig);
     } else if (window.theChart.config.type === chartType) {
       window.theChart.config = theChartConfig;
       window.theChart.update(0);
     } else {
       window.theChart.destroy();
-      const myChartCTX = document.getElementById('myChart').getContext('2d');
+      const myChartCTX = document.getElementById("myChart").getContext("2d");
       window.theChart = new Chart(myChartCTX, theChartConfig);
     }
-    if (chartType === 'line') {
-      $('#siteBlocks-stats').hide();
-      $('#timeBlocks-stats').css({ display: 'flex' });
-      if (showAdsData && $('#adsblocked_progress_div').is(':visible')) {
-        $('#adsblocked_progress_div').fadeOut(500, () => {
-          $('#adsblocked_value').fadeIn(500);
+    if (chartType === "line") {
+      $("#siteBlocks-stats").hide();
+      $("#timeBlocks-stats").css({ display: "flex" });
+      if (showAdsData && $("#adsblocked_progress_div").is(":visible")) {
+        $("#adsblocked_progress_div").fadeOut(500, () => {
+          $("#adsblocked_value").fadeIn(500);
         });
       }
     } else {
-      $('.domainTableRow').remove();
-      const table = $('#domainTable');
-      for (let inx = 0; (inx < processedDoms.length && inx < 10); inx++) {
+      $(".domainTableRow").remove();
+      const table = $("#domainTable");
+      for (let inx = 0; inx < processedDoms.length && inx < 10; inx++) {
         const row = getDomainTableRow(inx, filteredDomainData, processedDoms);
         table.append(DOMPurify.sanitize(row, { SAFE_FOR_JQUERY: true }));
       }
-      $('.siteBlocks-stats').css('background', '#ffffff');
-      $('.siteBlocks-stats').css('padding', '0');
-      $('.siteBlocks-stats').css('border', '0');
-      $('#timeBlocks-stats').hide();
-      $('#siteBlocks-stats').css({ display: 'grid' });
+      $(".siteBlocks-stats").css("background", "#ffffff");
+      $(".siteBlocks-stats").css("padding", "0");
+      $(".siteBlocks-stats").css("border", "0");
+      $("#timeBlocks-stats").hide();
+      $("#siteBlocks-stats").css({ display: "grid" });
       if (processedDoms.length) {
         placeBlockStatsHeaderIcons();
       } else {
-        $('#adHeader').hide();
-        $('#trackerHeader').hide();
-        $('#replacedHeader').hide();
+        $("#adHeader").hide();
+        $("#trackerHeader").hide();
+        $("#replacedHeader").hide();
       }
     }
-    $('#no-click-overlay').hide();
+    $("#no-click-overlay").hide();
   });
 };
 
 const initializeStatsTabContent = async function () {
   if (!settings.local_data_collection) {
-    $('#opt-in-panel').css('display', 'flex').hide().fadeIn();
-    $('li a').css({ cursor: 'default' });
-    $('#stats_enable_data_collection').prop('checked', false);
-    const myChartCTX = document.getElementById('myChart').getContext('2d');
+    $("#opt-in-panel").css("display", "flex").hide().fadeIn();
+    $("li a").css({ cursor: "default" });
+    $("#stats_enable_data_collection").prop("checked", false);
+    const myChartCTX = document.getElementById("myChart").getContext("2d");
     window.theChart = new Chart(myChartCTX, sampleChartConfig);
     if (settings.data_collection_v2) {
-      $('#opt_in_data_collection').hide();
-      $('#stats_opt_in_msg').hide();
-      $('#already_opt_in_msg').show();
-      $('#btnStatsOptIn').html(DOMPurify.sanitize(translate('stats_opt_in_local_text_button')));
+      $("#opt_in_data_collection").hide();
+      $("#stats_opt_in_msg").hide();
+      $("#already_opt_in_msg").show();
+      $("#btnStatsOptIn").html(DOMPurify.sanitize(translate("stats_opt_in_local_text_button")));
     } else if (!settings.data_collection_v2) {
-      $('#opt_in_data_collection').css('display', 'inline');
-      $('#stats_opt_in_msg').show();
-      $('#already_opt_in_msg').hide();
-      $('#btnStatsOptIn').html(DOMPurify.sanitize(translate('stats_opt_in_text_button')));
+      $("#opt_in_data_collection").css("display", "inline");
+      $("#stats_opt_in_msg").show();
+      $("#already_opt_in_msg").hide();
+      $("#btnStatsOptIn").html(DOMPurify.sanitize(translate("stats_opt_in_text_button")));
     }
     hidePageProgressCircleIfNeeded();
-    $('#stats-menu-parent-panel').fadeIn();
+    $("#stats-menu-parent-panel").fadeIn();
   } else {
-    $('#opt-in-panel').hide();
-    $('.stats-menu-content-panel').css('background', '#ffffff');
-    $('.stats-menu-content-panel').css('padding', '0');
-    $('.stats-menu-content-panel').css('border', '0');
+    $("#opt-in-panel").hide();
+    $(".stats-menu-content-panel").css("background", "#ffffff");
+    $(".stats-menu-content-panel").css("padding", "0");
+    $(".stats-menu-content-panel").css("border", "0");
     if (subs && subs.easyprivacy && subs.easyprivacy.subscribed) {
-      $('#trackers_cta_panel').hide();
-      $('#trackers_blocked_panel').css('display', 'flex').hide().fadeIn();
+      $("#trackers_cta_panel").hide();
+      $("#trackers_blocked_panel").css("display", "flex").hide().fadeIn();
     } else {
-      $('#trackers_blocked_panel').hide();
-      $('#trackers_cta_panel').fadeIn();
+      $("#trackers_blocked_panel").hide();
+      $("#trackers_cta_panel").fadeIn();
     }
     if (License.isActiveLicense()) {
-      if (channels && await channels.isAnyEnabled()) {
-        $('#premium_cta_panel').hide();
-        $('#ads_replaced_panel').css('display', 'flex').hide().fadeIn();
+      if (channels && (await channels.isAnyEnabled())) {
+        $("#premium_cta_panel").hide();
+        $("#ads_replaced_panel").css("display", "flex").hide().fadeIn();
       } else {
-        $('#ads_replaced_panel').hide();
-        $('#premium_cta_panel .cta_panel_content').text(translate('premium_cta_msg_not_enabled'));
-        $('#btnGetPremium').hide();
-        $('#btnImageSwapEnable').show();
-        $('#premium_cta_panel').fadeIn();
+        $("#ads_replaced_panel").hide();
+        $("#premium_cta_panel .cta_panel_content").text(translate("premium_cta_msg_not_enabled"));
+        $("#btnGetPremium").hide();
+        $("#btnImageSwapEnable").show();
+        $("#premium_cta_panel").fadeIn();
       }
     } else {
-      $('#premium_cta_panel').fadeIn();
-      $('#ads_replaced_panel').hide();
+      $("#premium_cta_panel").fadeIn();
+      $("#ads_replaced_panel").hide();
     }
 
     loadUserDataFromStorage().then(async () => {
       await updateChart();
-      $('#stats-menu-parent-panel').fadeIn();
+      $("#stats-menu-parent-panel").fadeIn();
     });
   }
 };
 
 const resetPageToInitialState = async function () {
   // reset menu selections to initial state
-  $('.active-stats-menu-item').removeClass('active-stats-menu-item');
-  $('#stats-menu-level1 [data-chart-type="line"]').parent().addClass('active-stats-menu-item');
-  $('.active-stats-sub-menu-item').removeClass('active-stats-sub-menu-item');
-  $('#timeBlocks [data-filter-function-name="today"]').parent().addClass('active-stats-sub-menu-item');
+  $(".active-stats-menu-item").removeClass("active-stats-menu-item");
+  $('#stats-menu-level1 [data-chart-type="line"]').parent().addClass("active-stats-menu-item");
+  $(".active-stats-sub-menu-item").removeClass("active-stats-sub-menu-item");
+  $('#timeBlocks [data-filter-function-name="today"]')
+    .parent()
+    .addClass("active-stats-sub-menu-item");
   // reset global vars
   subs = await SubscriptionAdapter.getSubscriptionsMinusText();
   showAdsData = false;
@@ -1137,15 +1204,15 @@ $(async () => {
   // use a MutationObserver to watch if the stats tab is redisplayed.
   // the settings may have changed on another tab, which may require
   // the page to be updated.
-  const observer = new MutationObserver((async (mutations) => {
+  const observer = new MutationObserver(async (mutations) => {
     /* eslint-disable no-await-in-loop */
     for (const mutation of mutations) {
-      if ($('#stats-tabs').is(':visible') && mutation.attributeName === 'style') {
+      if ($("#stats-tabs").is(":visible") && mutation.attributeName === "style") {
         await resetPageToInitialState();
       }
     }
-  }));
-  const target = document.querySelector('#stats-tabs');
+  });
+  const target = document.querySelector("#stats-tabs");
   observer.observe(target, {
     attributes: true,
   });
@@ -1153,11 +1220,11 @@ $(async () => {
 
 // button click handlers
 
-$('#btnStatsOptIn').on('click', async () => {
+$("#btnStatsOptIn").on("click", async () => {
   await LocalDataCollection.start();
   // this check is nested in a callback to prevent data loss when
   // the set setting function is called quickly in succession
-  if ($('#stats_enable_data_collection').is(':checked')) {
+  if ($("#stats_enable_data_collection").is(":checked")) {
     // eslint-disable-next-line camelcase
     settings.data_collection_v2 = true;
   }
@@ -1166,71 +1233,75 @@ $('#btnStatsOptIn').on('click', async () => {
 
 // menu item click handlers
 
-$('#stats-menu-level2 a').on('click', async function statsOptionLinkClicked() {
+$("#stats-menu-level2 a").on("click", async function statsOptionLinkClicked() {
   if (!settings.local_data_collection) {
     return;
   }
-  $('#no-click-overlay').show();
-  $('#loadingDiv').show();
-  $('.active-stats-sub-menu-item').removeClass('active-stats-sub-menu-item');
-  $(this).parent().addClass('active-stats-sub-menu-item');
+  $("#no-click-overlay").show();
+  $("#loadingDiv").show();
+  $(".active-stats-sub-menu-item").removeClass("active-stats-sub-menu-item");
+  $(this).parent().addClass("active-stats-sub-menu-item");
 
-  const filterFunctionName = $(this).data('filter-function-name');
-  if (filterFunctionName === 'today') {
-    $('#timeBlocks-stats').css({ 'border-top-left-radius': '0' });
-    $('#siteBlocks-stats').css({ 'border-top-left-radius': '0' });
+  const filterFunctionName = $(this).data("filter-function-name");
+  if (filterFunctionName === "today") {
+    $("#timeBlocks-stats").css({ "border-top-left-radius": "0" });
+    $("#siteBlocks-stats").css({ "border-top-left-radius": "0" });
   } else {
-    $('#timeBlocks-stats').css({ 'border-top-left-radius': '6px' });
-    $('#siteBlocks-stats').css({ 'border-top-left-radius': '6px' });
+    $("#timeBlocks-stats").css({ "border-top-left-radius": "6px" });
+    $("#siteBlocks-stats").css({ "border-top-left-radius": "6px" });
   }
 
-  await updateChart($('.active-stats-menu-item a').data('chart-type'),
-    $(this).data('filter-function-name'), $(this).data('label-function-name'));
+  await updateChart(
+    $(".active-stats-menu-item a").data("chart-type"),
+    $(this).data("filter-function-name"),
+    $(this).data("label-function-name"),
+  );
 });
 
-$('.chart-parent-tab-link').on('click', async function statsOptionLinkClicked() {
+$(".chart-parent-tab-link").on("click", async function statsOptionLinkClicked() {
   if (!settings.local_data_collection) {
     return;
   }
-  $('#no-click-overlay').show();
-  $('#loadingDiv').show();
-  $('.active-stats-menu-item').removeClass('active-stats-menu-item');
-  const chartType = $(this).children('a').data('chart-type');
-  if (chartType === 'line') {
-    $('#stats-menu-level2').css({ 'border-top-left-radius': '0' });
+  $("#no-click-overlay").show();
+  $("#loadingDiv").show();
+  $(".active-stats-menu-item").removeClass("active-stats-menu-item");
+  const chartType = $(this).children("a").data("chart-type");
+  if (chartType === "line") {
+    $("#stats-menu-level2").css({ "border-top-left-radius": "0" });
   } else {
-    $('#stats-menu-level2').css({ 'border-top-left-radius': '6px' });
+    $("#stats-menu-level2").css({ "border-top-left-radius": "6px" });
   }
 
-  $(this).addClass('active-stats-menu-item');
-  await updateChart(chartType,
-    $('.active-stats-sub-menu-item a').data('filter-function-name'),
-    $('.active-stats-sub-menu-item a').data('label-function-name'));
+  $(this).addClass("active-stats-menu-item");
+  await updateChart(
+    chartType,
+    $(".active-stats-sub-menu-item a").data("filter-function-name"),
+    $(".active-stats-sub-menu-item a").data("label-function-name"),
+  );
 });
 
 // buttons on CTA panels click handlers
 
-$('#aTrackersEnable, #btnTrackersEnable').on('click', async () => {
+$("#aTrackersEnable, #btnTrackersEnable").on("click", async () => {
   if (!settings.local_data_collection) {
     return;
   }
-  $('#no-click-overlay').show();
-  $('#btnTrackersEnable').prop('disabled', true);
-  $('#btnTrackersEnable').css({ color: '#e6e6e6' });
-  $('#trackers_cta_msg_link').parent().parent().fadeOut(100, () => {
-    $('#trackers_cta_progress_div').css('display', 'flex').hide().fadeIn();
-  });
+  $("#no-click-overlay").show();
+  $("#btnTrackersEnable").prop("disabled", true);
+  $("#btnTrackersEnable").css({ color: "#e6e6e6" });
+  $("#trackers_cta_msg_link")
+    .parent()
+    .parent()
+    .fadeOut(100, () => {
+      $("#trackers_cta_progress_div").css("display", "flex").hide().fadeIn();
+    });
   const { easyPrivacyURL } = LocalDataCollection;
   const onStatsSubUpdated = function (items) {
     let item = items;
     if (Array.isArray(items)) {
       [item] = items;
     }
-    if (
-      item
-      && item.url === easyPrivacyURL
-      && item.downloadStatus === 'synchronize_ok'
-    ) {
+    if (item && item.url === easyPrivacyURL && item.downloadStatus === "synchronize_ok") {
       SubscriptionsProxy.onAdded.removeListener(onStatsSubUpdated);
       SubscriptionsProxy.onChanged.removeListener(onStatsSubUpdated);
       window.location.reload();
@@ -1242,96 +1313,108 @@ $('#aTrackersEnable, #btnTrackersEnable').on('click', async () => {
   await SubscriptionsProxy.sync(easyPrivacyURL);
 });
 
-$('#btnGetPremium').on('click', () => {
-  send('openTab', { urlToOpen: License.MAB_CONFIG.payURL });
+$("#btnGetPremium").on("click", () => {
+  send("openTab", { urlToOpen: License.MAB_CONFIG.payURL });
 });
 
-$('#btnImageSwapEnable').on('click', () => {
-  activateTab('#mab-image-swap');
+$("#btnImageSwapEnable").on("click", () => {
+  activateTab("#mab-image-swap");
 });
 
 // click handlers for the panels on the "Blocks over Time"
 
-$('#adsblocked_panel').on('click', async () => {
-  $('#no-click-overlay').show();
-  $('#loadingDiv').show();
+$("#adsblocked_panel").on("click", async () => {
+  $("#no-click-overlay").show();
+  $("#loadingDiv").show();
   showOrHideAdPanelCountNeeded();
-  await updateChart($('.active-stats-menu-item a').data('chart-type'),
-    $('.active-stats-sub-menu-item a').data('filter-function-name'),
-    $('.active-stats-sub-menu-item a').data('label-function-name'));
+  await updateChart(
+    $(".active-stats-menu-item a").data("chart-type"),
+    $(".active-stats-sub-menu-item a").data("filter-function-name"),
+    $(".active-stats-sub-menu-item a").data("label-function-name"),
+  );
 });
 
-$('#trackers_blocked_panel').on('click', async () => {
-  $('#no-click-overlay').show();
-  $('#loadingDiv').show();
+$("#trackers_blocked_panel").on("click", async () => {
+  $("#no-click-overlay").show();
+  $("#loadingDiv").show();
   showOrHideTrackerPanelCountNeeded();
-  await updateChart($('.active-stats-menu-item a').data('chart-type'),
-    $('.active-stats-sub-menu-item a').data('filter-function-name'),
-    $('.active-stats-sub-menu-item a').data('label-function-name'));
+  await updateChart(
+    $(".active-stats-menu-item a").data("chart-type"),
+    $(".active-stats-sub-menu-item a").data("filter-function-name"),
+    $(".active-stats-sub-menu-item a").data("label-function-name"),
+  );
 });
 
-$('#ads_replaced_panel').on('click', async () => {
-  $('#no-click-overlay').show();
-  $('#loadingDiv').show();
+$("#ads_replaced_panel").on("click", async () => {
+  $("#no-click-overlay").show();
+  $("#loadingDiv").show();
   await showOrHideReplacedPanelCountNeeded();
-  await updateChart($('.active-stats-menu-item a').data('chart-type'),
-    $('.active-stats-sub-menu-item a').data('filter-function-name'),
-    $('.active-stats-sub-menu-item a').data('label-function-name'));
+  await updateChart(
+    $(".active-stats-menu-item a").data("chart-type"),
+    $(".active-stats-sub-menu-item a").data("filter-function-name"),
+    $(".active-stats-sub-menu-item a").data("label-function-name"),
+  );
 });
 
 // Delete data overlay click handlers
 
-$('#stats-page-delete-icon').on('click', () => {
-  $('#no-data-overlay').hide();
-  $('#overlay').css({
-    display: 'block',
+$("#stats-page-delete-icon").on("click", () => {
+  $("#no-data-overlay").hide();
+  $("#overlay").css({
+    display: "block",
   });
-  $('#delete_all_stats_data').prop('checked', true);
-  $('#local_data_collection_opt_out').prop('checked', false);
-  $('#btnDelete').css({ background: 'var(--options-button-bg)' });
-  $('#delete-overlay-page1').fadeIn();
+  $("#delete_all_stats_data").prop("checked", true);
+  $("#local_data_collection_opt_out").prop("checked", false);
+  $("#btnDelete").css({ background: "var(--options-button-bg)" });
+  $("#delete-overlay-page1").fadeIn();
 });
 
-$('#btnCancelDelete, #delete-overlay-close-icon-page1, #delete-overlay-close-icon-page2').on('click', () => {
-  $('#delete-overlay-page1').hide();
-  $('#delete-overlay-page2').hide();
-  $('#overlay').css({
-    display: 'none',
-  });
-  $('body').css({
-    overflow: '',
-  });
-});
+$("#btnCancelDelete, #delete-overlay-close-icon-page1, #delete-overlay-close-icon-page2").on(
+  "click",
+  () => {
+    $("#delete-overlay-page1").hide();
+    $("#delete-overlay-page2").hide();
+    $("#overlay").css({
+      display: "none",
+    });
+    $("body").css({
+      overflow: "",
+    });
+  },
+);
 
-$('#btnDelete').on('click', () => {
-  if (!$('#local_data_collection_opt_out').is(':checked')
-      && !$('#delete_all_stats_data').is(':checked')) {
+$("#btnDelete").on("click", () => {
+  if (
+    !$("#local_data_collection_opt_out").is(":checked") &&
+    !$("#delete_all_stats_data").is(":checked")
+  ) {
     return;
   }
-  $('#delete-overlay-page1').fadeOut(400, () => {
-    $('#delete-overlay-page2').fadeIn();
+  $("#delete-overlay-page1").fadeOut(400, () => {
+    $("#delete-overlay-page2").fadeIn();
   });
 });
 
-$('#btnGoBack').on('click', () => {
-  $('#delete-overlay-page2').fadeOut(400, () => {
-    $('#delete-overlay-page1').fadeIn();
+$("#btnGoBack").on("click", () => {
+  $("#delete-overlay-page2").fadeOut(400, () => {
+    $("#delete-overlay-page1").fadeIn();
   });
 });
 
-$('#delete_all_stats_data, #local_data_collection_opt_out').on('change', () => {
-  if (!$('#local_data_collection_opt_out').is(':checked')
-      && !$('#delete_all_stats_data').is(':checked')) {
-    $('#btnDelete').css({ background: '#E6E6E6' });
+$("#delete_all_stats_data, #local_data_collection_opt_out").on("change", () => {
+  if (
+    !$("#local_data_collection_opt_out").is(":checked") &&
+    !$("#delete_all_stats_data").is(":checked")
+  ) {
+    $("#btnDelete").css({ background: "#E6E6E6" });
     return;
   }
-  $('#btnDelete').css({ background: 'var(--options-button-bg)' });
+  $("#btnDelete").css({ background: "var(--options-button-bg)" });
 });
 
-
-$('#btnSureDelete').on('click', async () => {
+$("#btnSureDelete").on("click", async () => {
   const checkOtherCheckBox = async function () {
-    if ($('#local_data_collection_opt_out').is(':checked')) {
+    if ($("#local_data_collection_opt_out").is(":checked")) {
       await LocalDataCollection.end();
       await DataCollectionV2.end();
       window.location.reload();
@@ -1339,7 +1422,7 @@ $('#btnSureDelete').on('click', async () => {
       window.location.reload();
     }
   };
-  if ($('#delete_all_stats_data').is(':checked')) {
+  if ($("#delete_all_stats_data").is(":checked")) {
     await browser.storage.local.remove(EXT_STATS_KEY);
     LocalDataCollection.clearCache();
     await checkOtherCheckBox();

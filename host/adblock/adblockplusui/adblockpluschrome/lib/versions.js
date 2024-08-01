@@ -17,10 +17,8 @@
 
 /** @module */
 
-function parseVersionComponent(comp)
-{
-  if (comp == "*")
-    return Infinity;
+function parseVersionComponent(comp) {
+  if (comp == "*") return Infinity;
   return parseInt(comp, 10) || 0;
 }
 
@@ -35,31 +33,23 @@ function parseVersionComponent(comp)
  *
  * @package
  */
-export function compareVersions(v1, v2)
-{
+export function compareVersions(v1, v2) {
   let regexp = /^(.*?)([a-z].*)?$/i;
   let [, head1, tail1] = regexp.exec(v1);
   let [, head2, tail2] = regexp.exec(v2);
   let components1 = head1.split(".");
   let components2 = head2.split(".");
 
-  for (let i = 0; i < components1.length ||
-                  i < components2.length; i++)
-  {
-    let result = parseVersionComponent(components1[i]) -
-                 parseVersionComponent(components2[i]) || 0;
+  for (let i = 0; i < components1.length || i < components2.length; i++) {
+    let result = parseVersionComponent(components1[i]) - parseVersionComponent(components2[i]) || 0;
 
-    if (result < 0)
-      return -1;
-    else if (result > 0)
-      return 1;
+    if (result < 0) return -1;
+    else if (result > 0) return 1;
   }
 
   // Compare version suffix (e.g. 0.1alpha < 0.1b1 < 01.b2 < 0.1).
   // However, note that this is a simple string comparision, meaning: b10 < b2
-  if (tail1 == tail2)
-    return 0;
-  if (!tail1 || tail2 && tail1 > tail2)
-    return 1;
+  if (tail1 == tail2) return 0;
+  if (!tail1 || (tail2 && tail1 > tail2)) return 1;
   return -1;
 }

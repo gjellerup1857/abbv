@@ -23,6 +23,6 @@
 
 ### Filterlist updates
 
-- [ ]  E2E autotests are passing (filterlists tag)
+- [ ] E2E autotests are passing (filterlists tag)
 
 /label ~"Product:: AdBlock"

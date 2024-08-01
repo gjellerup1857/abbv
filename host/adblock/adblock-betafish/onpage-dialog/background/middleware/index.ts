@@ -15,5 +15,5 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './ipm-onpage-dialog';
-export * from './ipm-onpage-dialog.types';
+export * from "./ipm-onpage-dialog";
+export * from "./ipm-onpage-dialog.types";

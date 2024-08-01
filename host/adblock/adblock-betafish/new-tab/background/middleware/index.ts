@@ -15,5 +15,5 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './new-tab';
-export * from './new-tab.types';
+export * from "./new-tab";
+export * from "./new-tab.types";

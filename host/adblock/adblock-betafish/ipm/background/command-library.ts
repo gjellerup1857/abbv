@@ -15,8 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as logger from '../../utilities/background';
-import { Prefs } from '../../alias/prefs';
+import * as logger from "../../utilities/background";
+import { Prefs } from "../../alias/prefs";
 import {
   Behavior,
   Command,
@@ -27,9 +27,9 @@ import {
   commandStorageKey,
   Content,
   DeleteEventType,
-} from './command-library.types';
-import { isDeleteBehavior, setDeleteCommandHandler } from './delete-commands';
-import { recordEvent } from './data-collection';
+} from "./command-library.types";
+import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
+import { recordEvent } from "./data-collection";
 
 /**
  * A list of known commands.
@@ -56,11 +56,11 @@ const unexecutableCommands = new Map<Command, boolean>();
  */
 function isCommand(candidate: unknown): candidate is Command {
   return (
-    typeof candidate === 'object'
-        && candidate !== null
-        && 'version' in candidate
-        && 'ipm_id' in candidate
-        && 'command_name' in candidate
+    typeof candidate === "object" &&
+    candidate !== null &&
+    "version" in candidate &&
+    "ipm_id" in candidate &&
+    "command_name" in candidate
   );
 }
 
@@ -70,10 +70,7 @@ function isCommand(candidate: unknown): candidate is Command {
  * @param commandName - Command name
  * @param actor - Command actor
  */
-export function setCommandActor(
-  commandName: CommandName,
-  actor: CommandActor,
-): void {
+export function setCommandActor(commandName: CommandName, actor: CommandActor): void {
   actorByCommandName.set(commandName, actor);
   retryExecuteCommands(commandName);
 }
@@ -194,17 +191,14 @@ function storeCommandData(command: Command): void {
  * @param isInitialization Whether the command is being restored when the
  *   module initializes
  */
-export function executeIPMCommand(
-  command: unknown,
-  isInitialization: boolean = false,
-): void {
+export function executeIPMCommand(command: unknown, isInitialization: boolean = false): void {
   if (!isCommand(command)) {
-    logger.error('[ipm]: Invalid command received.');
+    logger.error("[ipm]: Invalid command received.");
     return;
   }
 
   if (!knownCommandsList.includes(command.command_name)) {
-    logger.error('[ipm]: Unknown command name received:', command.command_name);
+    logger.error("[ipm]: Unknown command name received:", command.command_name);
     return;
   }
 
@@ -221,19 +215,19 @@ export function executeIPMCommand(
 
   const actor = actorByCommandName.get(command.command_name);
   if (!actor) {
-    logger.warn('[ipm]: No actor found:', command.command_name);
+    logger.warn("[ipm]: No actor found:", command.command_name);
     unexecutableCommands.set(command, isInitialization);
     return;
   }
 
   if (!actor.isValidCommand(command)) {
-    logger.error('[ipm]: Invalid parameters received.');
+    logger.error("[ipm]: Invalid parameters received.");
     return;
   }
 
   if (!isInitialization) {
     if (hasProcessedCommand(command.ipm_id)) {
-      logger.error('[ipm]: Campaign already processed:', command.ipm_id);
+      logger.error("[ipm]: Campaign already processed:", command.ipm_id);
       return;
     }
 
@@ -255,7 +249,7 @@ export async function removeAllCommands(name: CommandName): Promise<void> {
   const commandStorage = Prefs.get(commandStorageKey);
   for (const command of Object.values(commandStorage)) {
     if (isCommand(command) && name === command.command_name) {
-      logger.debug('[ipm]: removing command ', command.ipm_id, command.command_name);
+      logger.debug("[ipm]: removing command ", command.ipm_id, command.command_name);
       recordEvent(command.ipm_id, command.command_name, CommandEventType.ipmCancelled);
       dismissCommand(command.ipm_id);
     }
@@ -282,7 +276,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
   const behavior = getBehavior(ipmId);
 
   if (!isDeleteBehavior(behavior)) {
-    logger.error('[delete-commands]: Invalid command behavior.');
+    logger.error("[delete-commands]: Invalid command behavior.");
     return;
   }
 
@@ -294,11 +288,11 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
       dismissCommand(commandId);
 
       if (getCommand(commandId) !== null) {
-        throw new Error('Command was not successfully deleted.');
+        throw new Error("Command was not successfully deleted.");
       }
     } catch (error) {
       success = false;
-      logger.error('[delete-commands]: Error trying to delete command with ID ', commandId);
+      logger.error("[delete-commands]: Error trying to delete command with ID ", commandId);
     }
   }
 

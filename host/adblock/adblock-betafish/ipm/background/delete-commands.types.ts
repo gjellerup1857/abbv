@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Behavior, Command } from './command-library.types';
+import type { Behavior, Command } from "./command-library.types";
 
 /**
  * Delete-commands behavior
@@ -30,7 +30,7 @@ export interface DeleteBehavior extends Behavior {
 /**
  * Parameter key value to delete all commands
  */
-export const deleteAllKey = '__all__';
+export const deleteAllKey = "__all__";
 
 /**
  * Delete-commands IPM command parameters

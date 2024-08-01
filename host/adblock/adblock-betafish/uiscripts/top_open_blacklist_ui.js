@@ -21,7 +21,7 @@
    isLangRTL */
 
 // Global lock so we can't open more than once on a tab.
-if (typeof window.mayOpenDialogUi === 'undefined') {
+if (typeof window.mayOpenDialogUi === "undefined") {
   window.mayOpenDialogUi = true;
 }
 
@@ -90,14 +90,14 @@ function topOpenBlacklistUI(options) {
   mayOpenDialogUi = false;
 
   // Get Flash objects out of the way of our UI
-  browser.runtime.sendMessage({ command: 'sendContentToBack' });
+  browser.runtime.sendMessage({ command: "sendContentToBack" });
 
   // A empty base <div> is appended to the page's DOM and then a shadow is hosted in it.
   // The shadow protects our dialog from outside CSS 'leaking' in.
   // Existing page styles are reset in the shadow/base at the top of `adblock-wizard.css`
   // using `:host` to select our base and the CCS rule `all:initial;` to perform the reset.
-  const base = document.createElement('div');
-  const $base = $(base.attachShadow({ mode: 'open' }));
+  const base = document.createElement("div");
+  const $base = $(base.attachShadow({ mode: "open" }));
 
   loadWizardResources($base, () => {
     // If they chose 'Block an ad on this page...' ask them to click the ad
@@ -107,20 +107,20 @@ function topOpenBlacklistUI(options) {
 
     // If they right clicked in a frame in Chrome, use the frame instead
     if (options.info && options.info.frameUrl) {
-      const frame = $('iframe').filter((i, el) => el.src === options.info.frameUrl);
+      const frame = $("iframe").filter((i, el) => el.src === options.info.frameUrl);
       if (frame.length === 1) {
         rightClickedItem = frame.get(0);
       }
     }
-    if (rightClickedItem && rightClickedItem.nodeName === 'BODY') {
+    if (rightClickedItem && rightClickedItem.nodeName === "BODY") {
       rightClickedItem = null;
     }
 
     // check if we're running on website with a frameset, if so, tell
     // the user we can't run on it.
-    if ($('frameset').length >= 1) {
+    if ($("frameset").length >= 1) {
       // eslint-disable-next-line no-alert
-      alert(translate('wizardcantrunonframesets'));
+      alert(translate("wizardcantrunonframesets"));
       mayOpenDialogUi = true;
       return;
     }
@@ -128,73 +128,73 @@ function topOpenBlacklistUI(options) {
     <div id='hiding-wizard'>
       <div class='page' id='page_0'>
         <header class="center-and-right">
-          <h1>${translate('blockanadtitle')}</h1>
-          <i class="material-icons md-18 close" role="img" aria-label="${translate('close')}">close</i>
+          <h1>${translate("blockanadtitle")}</h1>
+          <i class="material-icons md-18 close" role="img" aria-label="${translate("close")}">close</i>
         </header>
         <section>
-          <p>${translate('clickthead')}</p>
+          <p>${translate("clickthead")}</p>
         </section>
       </div>
       <div class='page' id='page_1' style='display:none;'>
         <header class="left-center-right">
-          <i class="material-icons md-18 back" role="img" aria-label="${translate('back')}">chevron_left</i>
-          <h1>${translate('blockanadtitle')}</h1>
-          <i class="material-icons md-18 close" role="img" aria-label="${translate('close')}">close</i>
+          <i class="material-icons md-18 back" role="img" aria-label="${translate("back")}">chevron_left</i>
+          <h1>${translate("blockanadtitle")}</h1>
+          <i class="material-icons md-18 close" role="img" aria-label="${translate("close")}">close</i>
         </header>
         <section>
-          <p class="boldText">${translate('isithidden')}</p>
-          <p class="advanced-user-row" >${translate('blacklisterblockedelement')}</p>
+          <p class="boldText">${translate("isithidden")}</p>
+          <p class="advanced-user-row" >${translate("blacklisterblockedelement")}</p>
           <p class="advanced-user-row" id='selected-data'>
             <span id='selected_node_name'></span>
           </p>
-          <p>${translate('sliderexplanation')}</p>
+          <p>${translate("sliderexplanation")}</p>
           <input id='slider' type='range' min='0' value='0'/>
-          <p class="warningText non-advanced-user-text">${translate('sliderwarning')}</p>
-          <div class="buttonRow" ><button class='primary looks-good adblock-default-button'>${translate('buttonlooksgood')}</button></div>
+          <p class="warningText non-advanced-user-text">${translate("sliderwarning")}</p>
+          <div class="buttonRow" ><button class='primary looks-good adblock-default-button'>${translate("buttonlooksgood")}</button></div>
         </section>
       </div>
       <div class='page' id='page_2' style='display:none;'>
         <header class="left-center-right">
-          <i class="material-icons md-18 back" role="img" aria-label="${translate('back')}">chevron_left</i>
-          <h1>${translate('blockanadtitle')}</h1>
-          <i class="material-icons md-18 close" role="img" aria-label="${translate('close')}">close</i>
+          <i class="material-icons md-18 back" role="img" aria-label="${translate("back")}">chevron_left</i>
+          <h1>${translate("blockanadtitle")}</h1>
+          <i class="material-icons md-18 close" role="img" aria-label="${translate("close")}">close</i>
         </header>
         <section>
-          <p class="boldText">${translate('blacklisteroptions1')}</p>
+          <p class="boldText">${translate("blacklisteroptions1")}</p>
           <p class="advanced-user-row" >
             <input id="txtAdvanceFilter" type="text" disabled="true" />
             <span id="editBtnSpan">
-              <i id="editBtn" class="material-icons md-18" role="img" aria-label="${translate('buttonedit')}">mode_edit</i>
+              <i id="editBtn" class="material-icons md-18" role="img" aria-label="${translate("buttonedit")}">mode_edit</i>
             </span>
           </p>
           <p class="filter-warning-row" >
-            <span id="warningIconSpan"><i id="warningIcon" class="material-icons md-18 warning-icon" role="img" aria-label="${translate('warning')}">warning</i></span><span id='filter-warning-text' ></span>
+            <span id="warningIconSpan"><i id="warningIcon" class="material-icons md-18 warning-icon" role="img" aria-label="${translate("warning")}">warning</i></span><span id='filter-warning-text' ></span>
           </p>
-          <p class="advanced-user-row advanced-user-row-disarm boldText detail-header" id="add_info">${translate('add_info')}</p>
-          <p class="advanced-user-row advanced-user-row-disarm detail-header" >${translate('confirm_msg')}</p>
+          <p class="advanced-user-row advanced-user-row-disarm boldText detail-header" id="add_info">${translate("add_info")}</p>
+          <p class="advanced-user-row advanced-user-row-disarm detail-header" >${translate("confirm_msg")}</p>
           <div id='adblock-details'></div>
           <div id='summary'></div>
-          <p>${translate('blacklisternotsure_part_I')} <span class="non-advanced-user-text">${translate('blacklisternotsure_part_II')}</span></p>
-          <p id="countRow"><span id="count"></span>&nbsp;${translate('hiddenelementmessagecount')} <i id="helpIcon" class="material-icons md-18" role="img" aria-label="${translate('learn_more_without_period')}">live_help</i></p>
-          <div class="buttonRow" ><button class='primary confirm adblock-default-button'>${translate('buttonconfirm')}</button></div>
+          <p>${translate("blacklisternotsure_part_I")} <span class="non-advanced-user-text">${translate("blacklisternotsure_part_II")}</span></p>
+          <p id="countRow"><span id="count"></span>&nbsp;${translate("hiddenelementmessagecount")} <i id="helpIcon" class="material-icons md-18" role="img" aria-label="${translate("learn_more_without_period")}">live_help</i></p>
+          <div class="buttonRow" ><button class='primary confirm adblock-default-button'>${translate("buttonconfirm")}</button></div>
         </section>
       </div>
       <div class='page' id='page_3' style='display:none;'>
         <header class="center-and-right">
-          <h1>${translate('adblock_premium')}</h1>
-          <i class="material-icons md-18 close" role="img" aria-label="${translate('close')}">close</i>
+          <h1>${translate("adblock_premium")}</h1>
+          <i class="material-icons md-18 close" role="img" aria-label="${translate("close")}">close</i>
         </header>
         <section>
           <span style="display: flex; flex-direction: column;">
-            <span style="font-size: 18px; font-weight: bold;">${translate('wizard_premium_cta_title')}</span>
-            <span style="margin-top: 22px;">${translate('wizard_premium_cta_part_I')}  ${translate('wizard_premium_cta_part_II')}</span>
+            <span style="font-size: 18px; font-weight: bold;">${translate("wizard_premium_cta_title")}</span>
+            <span style="margin-top: 22px;">${translate("wizard_premium_cta_part_I")}  ${translate("wizard_premium_cta_part_II")}</span>
           </span>
-          <img aria-hidden='true' src='${browser.runtime.getURL('adblock-wizard_sync_cta.svg')}' style="height: 200px; width: 245px;">
+          <img aria-hidden='true' src='${browser.runtime.getURL("adblock-wizard_sync_cta.svg")}' style="height: 200px; width: 245px;">
         </section>
         <hr />
         <footer id='blacklist-cta' >
-          <button id='find_out_more' class='btnClose'>${translate('find_out_more')}</button>
-          <span id='opt-out-msg' class='btnClose'>${translate('dont_show_me_again')}</span>
+          <button id='find_out_more' class='btnClose'>${translate("find_out_more")}</button>
+          <span id='opt-out-msg' class='btnClose'>${translate("dont_show_me_again")}</span>
         </footer>
       </div>
     </div>
@@ -203,14 +203,14 @@ function topOpenBlacklistUI(options) {
 
     // Make any right-to-left translation
     if (isLangRTL()) {
-      $dialog.find('i.back').text('chevron_right');
+      $dialog.find("i.back").text("chevron_right");
     }
-    $dialog.find('header').each((i, header) => {
+    $dialog.find("header").each((i, header) => {
       // eslint-disable-next-line no-new
       new DragElement(header, $dialog.get(0));
     });
 
-    $dialog.find('i.close,.btnClose').on('click', () => {
+    $dialog.find("i.close,.btnClose").on("click", () => {
       mayOpenDialogUi = true;
       (document.body || document.documentElement).removeChild(base);
     });
@@ -219,9 +219,14 @@ function topOpenBlacklistUI(options) {
     bindEnterClickToDefault($dialog);
 
     $base.append($dialog);
-    const blacklistUI = new BlacklistUi(rightClickedItem, options.settings.show_advanced_options,
-      options.isActiveLicense, options.showBlacklistCTA, $dialog,
-      options.addCustomFilterRandomName);
+    const blacklistUI = new BlacklistUi(
+      rightClickedItem,
+      options.settings.show_advanced_options,
+      options.isActiveLicense,
+      options.showBlacklistCTA,
+      $dialog,
+      options.addCustomFilterRandomName,
+    );
     blacklistUI.cancel(() => {
       mayOpenDialogUi = true;
     });
@@ -235,6 +240,6 @@ function topOpenBlacklistUI(options) {
 
 // required return value for tabs.executeScript
 /* eslint-disable-next-line no-unused-expressions */
-'';
+("");
 
 //# sourceURL=/uiscripts/top_open_blacklist_ui.js

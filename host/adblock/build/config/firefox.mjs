@@ -16,10 +16,10 @@
  */
 
 export default {
-  extends: 'base',
+  extends: "base",
   webpack: {
     alias: {
-      info$: 'info.gecko.js.tmpl',
+      info$: "info.gecko.js.tmpl",
     },
   },
 };

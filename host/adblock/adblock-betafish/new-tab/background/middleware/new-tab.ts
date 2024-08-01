@@ -25,34 +25,35 @@ import {
   isValidLicenseStates,
   setCommandActor,
   validateParams,
-} from '../../../ipm/background';
-import * as logger from '~/utilities/background';
+} from "../../../ipm/background";
+import * as logger from "~/utilities/background";
 import {
   CreationMethod,
   NewTabBehavior,
   NewTabCommand,
   NewTabParams,
   defaultCreationMethod,
-} from './new-tab.types';
+} from "./new-tab.types";
 
 /**
  * List of new tab parameter definitions
  */
 const paramDefinitionList: ParamDefinitionList<NewTabParams> = [
   {
-    name: 'url',
+    name: "url",
     validate: isSafeUrl,
   },
   {
-    name: 'license_state_list',
+    name: "license_state_list",
     validate: isValidLicenseStates,
   },
   {
-    name: 'method',
-    validate: (param): boolean => typeof param === 'undefined'
-      || (typeof param === 'string'
-        && Object.values(CreationMethod)
-          .map(method => String(method))
+    name: "method",
+    validate: (param): boolean =>
+      typeof param === "undefined" ||
+      (typeof param === "string" &&
+        Object.values(CreationMethod)
+          .map((method) => String(method))
           .includes(param)),
   },
 ];
@@ -70,10 +71,7 @@ function isNewTabCommand(command: Command): command is NewTabCommand {
     return true;
   }
 
-  logger.error(
-    '[new-tab]: Invalid parameters received:',
-    validationErrors.join(' '),
-  );
+  logger.error("[new-tab]: Invalid parameters received:", validationErrors.join(" "));
   return false;
 }
 
@@ -84,14 +82,12 @@ function isNewTabCommand(command: Command): command is NewTabCommand {
  *
  * @returns whether given candidate is new-tab behavior
  */
-export function isNewTabBehavior(
-  candidate: unknown,
-): candidate is NewTabBehavior {
+export function isNewTabBehavior(candidate: unknown): candidate is NewTabBehavior {
   return (
-    candidate !== null
-    && typeof candidate === 'object'
-    && 'target' in candidate
-    && 'method' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "target" in candidate &&
+    "method" in candidate
   );
 }
 
@@ -106,9 +102,8 @@ function getBehavior(command: Command): NewTabBehavior | null {
   if (!isNewTabCommand(command)) {
     return null;
   }
-  const method = typeof command.method === 'undefined'
-    ? defaultCreationMethod
-    : CreationMethod[command.method];
+  const method =
+    typeof command.method === "undefined" ? defaultCreationMethod : CreationMethod[command.method];
 
   return {
     target: command.url,

@@ -15,4 +15,4 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './messages.types';
+export * from "./messages.types";

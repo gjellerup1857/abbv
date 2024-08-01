@@ -15,8 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from '../../alias/prefs.js';
-import { Stats, statsStorageKey } from './stats.types';
+import { Prefs } from "../../alias/prefs.js";
+import { Stats, statsStorageKey } from "./stats.types";
 
 /**
  * Clears stats for given IPM ID
@@ -50,10 +50,10 @@ export function getStats(ipmId: string): Stats | null {
  */
 export function isStats(candidate: unknown): candidate is Stats {
   return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'displayCount' in candidate
-        && 'lastDisplayTime' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "displayCount" in candidate &&
+    "lastDisplayTime" in candidate
   );
 }
 

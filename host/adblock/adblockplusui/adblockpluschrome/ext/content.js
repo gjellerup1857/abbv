@@ -29,15 +29,12 @@
   // As a workaround, listen for messages only if this isn't the devtools panel.
   // Note that Firefox processes API access lazily, so browser.devtools will
   // always exist but will have undefined as its value on other pages.
-  if (!browser.devtools)
-  {
+  if (!browser.devtools) {
     // Listen for messages from the background page.
-    browser.runtime.onMessage.addListener((message, sender) =>
-    {
+    browser.runtime.onMessage.addListener((message, sender) => {
       let responses = ext.onMessage._dispatch(message, {});
       let response = ext.getMessageResponse(responses);
-      if (!response)
-        return;
+      if (!response) return;
 
       return Promise.resolve(response);
     });

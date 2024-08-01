@@ -21,12 +21,11 @@ import * as info from "info";
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {port} from "./messaging/port.js";
-import {Prefs} from "./prefs.js";
+import { port } from "./messaging/port.js";
+import { Prefs } from "./prefs.js";
 
-function forward(type, message, sender)
-{
-  return port._onMessage(Object.assign({}, message, {type}), sender);
+function forward(type, message, sender) {
+  return port._onMessage(Object.assign({}, message, { type }), sender);
 }
 
 /**
@@ -34,18 +33,15 @@ function forward(type, message, sender)
  *
  * @event "types.get"
  */
-port.on("types.get",
-        (message, sender) => forward("filters.getTypes", message, sender));
+port.on("types.get", (message, sender) => forward("filters.getTypes", message, sender));
 
 /**
  * @deprecated Please send the "options.open" message instead.
  *
  * @event "app.open"
  */
-port.on("app.open", (message, sender) =>
-{
-  if (message.what == "options")
-    return forward("options.open", message, sender);
+port.on("app.open", (message, sender) => {
+  if (message.what == "options") return forward("options.open", message, sender);
 });
 
 /**
@@ -57,33 +53,28 @@ port.on("app.open", (message, sender) =>
  *
  * @event "app.get"
  */
-port.on("app.get", async(message, sender) =>
-{
-  if (message.what == "localeInfo")
-  {
+port.on("app.get", async (message, sender) => {
+  if (message.what == "localeInfo") {
     return {
       locale: browser.i18n.getUILanguage(),
-      bidiDir: browser.i18n.getMessage("@@bidi_dir")
+      bidiDir: browser.i18n.getMessage("@@bidi_dir"),
     };
   }
 
-  if (message.what == "acceptableAdsUrl")
-    return ewe.subscriptions.ACCEPTABLE_ADS_URL;
+  if (message.what == "acceptableAdsUrl") return ewe.subscriptions.ACCEPTABLE_ADS_URL;
 
   if (message.what == "acceptableAdsPrivacyUrl")
     return ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL;
 
-  if (message.what == "senderId")
-    return sender.page.id;
+  if (message.what == "senderId") return sender.page.id;
 
-  if (message.what == "ctalink")
-  {
+  if (message.what == "ctalink") {
     const ctaLinkNameToPrefsMap = new Map([
       ["premium-manage", "premium_manage_page_url"],
-      ["premium-upgrade", "premium_upgrade_page_url"]
+      ["premium-upgrade", "premium_upgrade_page_url"],
     ]);
 
-    const {link: ctaLinkName, queryParams} = message;
+    const { link: ctaLinkName, queryParams } = message;
     const prefsUrlKey = ctaLinkNameToPrefsMap.get(ctaLinkName);
     let url = Prefs[prefsUrlKey];
 
@@ -96,7 +87,7 @@ port.on("app.get", async(message, sender) =>
       ["PLATFORM_NAME", () => info.platform],
       ["PLATFORM_VERSION", () => info.platformVersion],
       ["LICENSE_CODE", () => Prefs.get("premium_license").code],
-      ["SOURCE", () => queryParams.source]
+      ["SOURCE", () => queryParams.source],
     ];
 
     for (const [key, getValue] of linkPlaceholders)
@@ -105,20 +96,17 @@ port.on("app.get", async(message, sender) =>
     return url;
   }
 
-  if (message.what == "doclink")
-    return forward("prefs.getDocLink", message, sender);
+  if (message.what == "doclink") return forward("prefs.getDocLink", message, sender);
 
   if (message.what == "recommendations")
     return forward("subscriptions.getRecommendations", message, sender);
 
-  if (message.what == "features")
-  {
+  if (message.what == "features") {
     let devToolsPanel = await forward("devtools.supported", message, sender);
-    return {devToolsPanel};
+    return { devToolsPanel };
   }
 
-  if (message.what == "os")
-  {
+  if (message.what == "os") {
     let platformInfo = await browser.runtime.getPlatformInfo();
     return platformInfo.os;
   }

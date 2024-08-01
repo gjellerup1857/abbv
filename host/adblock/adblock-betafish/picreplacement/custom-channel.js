@@ -21,14 +21,14 @@
 // Channel containing user imported images
 // Subclass of Channel.
 
-import Listing from './listing';
-import Channel from './channel';
+import Listing from "./listing";
+import Channel from "./channel";
 
 class CustomChannel extends Channel {
   constructor() {
     super();
     this.listings = [];
-    this.CUSTOM_META_KEY = 'customMetaData';
+    this.CUSTOM_META_KEY = "customMetaData";
     const that = this;
 
     // load the meta data Array from storage
@@ -41,14 +41,18 @@ class CustomChannel extends Channel {
       for (let inx = 0; inx < customMetaData.length; inx++) {
         const listingData = customMetaData[inx];
         if (
-          listingData
-          && listingData.url
-          && listingData.width
-          && listingData.height
-          && listingData.title
+          listingData &&
+          listingData.url &&
+          listingData.width &&
+          listingData.height &&
+          listingData.title
         ) {
-          const theNewListing = CustomChannel.createListing(listingData.width,
-            listingData.height, listingData.url, listingData.title);
+          const theNewListing = CustomChannel.createListing(
+            listingData.width,
+            listingData.height,
+            listingData.url,
+            listingData.title,
+          );
           that.listings.push(theNewListing);
         }
       }
@@ -61,10 +65,10 @@ class CustomChannel extends Channel {
     const url = theURL;
     const type = Channel.calculateType(width, height);
 
-    if (typeof width === 'number') {
+    if (typeof width === "number") {
       width = `${width}`;
     }
-    if (typeof height === 'number') {
+    if (typeof height === "number") {
       height = `${height}`;
     }
     return new Listing({
@@ -75,7 +79,7 @@ class CustomChannel extends Channel {
       type,
       ratio: Math.max(width, height) / Math.min(width, height),
       title: `This is an image from your PC! : ${theName}`,
-      channelName: 'custom_channel_name', // message.json key for channel name
+      channelName: "custom_channel_name", // message.json key for channel name
       customImage: true,
     });
   }
@@ -98,7 +102,7 @@ class CustomChannel extends Channel {
   }
 
   isMaximumAllowedImages() {
-    return (this.listings.length >= 9);
+    return this.listings.length >= 9;
   }
 
   saveListings() {
@@ -140,8 +144,12 @@ class CustomChannel extends Channel {
   }
 
   async addCustomImage(imageInfo) {
-    const theNewListing = CustomChannel.createListing(imageInfo.width,
-      imageInfo.height, imageInfo.listingURL, imageInfo.name);
+    const theNewListing = CustomChannel.createListing(
+      imageInfo.width,
+      imageInfo.height,
+      imageInfo.listingURL,
+      imageInfo.name,
+    );
     this.listings.push(theNewListing);
     const response = await this.saveListings().catch(() => Promise.reject());
     if (response) {
@@ -151,7 +159,7 @@ class CustomChannel extends Channel {
   }
 
   getBytesInUseForEachImage() {
-    if (typeof browser.storage.local.getBytesInUse !== 'function') {
+    if (typeof browser.storage.local.getBytesInUse !== "function") {
       return Promise.resolve(0);
     }
     const customImagesArray = this.getListings();
@@ -170,7 +178,7 @@ class CustomChannel extends Channel {
   }
 
   getTotalBytesInUse() {
-    if (typeof browser.storage.local.getBytesInUse !== 'function') {
+    if (typeof browser.storage.local.getBytesInUse !== "function") {
       return Promise.resolve(0);
     }
     return new Promise((resolve) => {

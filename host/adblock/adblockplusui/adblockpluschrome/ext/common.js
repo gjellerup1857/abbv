@@ -19,40 +19,31 @@
 
 self.ext = {};
 
-ext._EventTarget = class EventTarget
-{
-  constructor()
-  {
+ext._EventTarget = class EventTarget {
+  constructor() {
     this._listeners = new Set();
   }
 
-  addListener(listener)
-  {
+  addListener(listener) {
     this._listeners.add(listener);
   }
 
-  removeListener(listener)
-  {
+  removeListener(listener) {
     this._listeners.delete(listener);
   }
 
-  _dispatch(...args)
-  {
+  _dispatch(...args) {
     let results = [];
-    for (let listener of this._listeners)
-      results.push(listener(...args));
+    for (let listener of this._listeners) results.push(listener(...args));
     return results;
   }
 };
 
 // We only support a single response for message listeners. Therefore we need to
 // identify the first valid one, so that we can then return it.
-ext.getMessageResponse = responses =>
-{
-  for (let response of responses)
-  {
-    if (typeof response !== "undefined")
-      return response;
+ext.getMessageResponse = (responses) => {
+  for (let response of responses) {
+    if (typeof response !== "undefined") return response;
   }
 };
 

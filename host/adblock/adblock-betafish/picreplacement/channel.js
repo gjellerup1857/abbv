@@ -18,10 +18,8 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global  */
 
-import {
-  imageSizesMap,
-} from './image-sizes-map';
-import Listing from './listing';
+import { imageSizesMap } from "./image-sizes-map";
+import Listing from "./listing";
 
 // Base class representing a channel of photos.
 // Concrete constructors must accept a single argument, because Channels.add()
@@ -40,10 +38,10 @@ class Channel {
     let height = heightParam;
     const type = Channel.calculateType(width, height);
 
-    if (typeof width === 'number') {
+    if (typeof width === "number") {
       width = `${width}`;
     }
-    if (typeof height === 'number') {
+    if (typeof height === "number") {
       height = `${height}`;
     }
     return new Listing({
@@ -72,27 +70,27 @@ class Channel {
   }
 
   static getLatestListings() {
-    throw new Error('Implemented by subclass. Call callback with up-to-date listings.');
+    throw new Error("Implemented by subclass. Call callback with up-to-date listings.");
   }
 
   static calculateType(w, h) {
     let width = w;
     let height = h;
 
-    if (typeof width === 'string') {
+    if (typeof width === "string") {
       width = parseInt(width, 10);
     }
-    if (typeof height === 'string') {
+    if (typeof height === "string") {
       height = parseInt(height, 10);
     }
-    let type = '';
+    let type = "";
     const ratio = Math.max(width, height) / Math.min(width, height);
     if (ratio >= 1.5 && ratio < 7) {
-      type = (width > height ? imageSizesMap.get('wide') : imageSizesMap.get('tall'));
+      type = width > height ? imageSizesMap.get("wide") : imageSizesMap.get("tall");
     } else if (ratio > 7) {
-      type = (width > height ? imageSizesMap.get('skinnywide') : imageSizesMap.get('skinnytall'));
+      type = width > height ? imageSizesMap.get("skinnywide") : imageSizesMap.get("skinnytall");
     } else {
-      type = ((width > 125 || height > 125) ? imageSizesMap.get('big') : imageSizesMap.get('small'));
+      type = width > 125 || height > 125 ? imageSizesMap.get("big") : imageSizesMap.get("small");
     }
     return type;
   }

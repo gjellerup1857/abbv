@@ -28,7 +28,7 @@ ElementChain.prototype.current = function current() {
 };
 
 ElementChain.prototype.moveUp = function moveUp() {
-  if (this.current().parent().length > 0 && this.current().parent()[0].nodeName !== 'BODY') {
+  if (this.current().parent().length > 0 && this.current().parent()[0].nodeName !== "BODY") {
     this.stack.push(this.current().parent());
     this.change();
     return true;
@@ -73,6 +73,6 @@ ElementChain.prototype.change = function change(listener, callback) {
 
 // required return value for tabs.executeScript
 /* eslint-disable-next-line no-unused-expressions */
-'';
+("");
 
 //# sourceURL=/uiscripts/blacklisting/elementchain.js

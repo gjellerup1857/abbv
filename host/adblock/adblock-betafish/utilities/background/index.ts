@@ -15,8 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './logger';
-export * from './logger.types';
-export * from './bg-functions';
-export * from './user-agent-info';
-export * from './user-agent-info.types';
+export * from "./logger";
+export * from "./logger.types";
+export * from "./bg-functions";
+export * from "./user-agent-info";
+export * from "./user-agent-info.types";

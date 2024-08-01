@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from '../../alias/prefs';
+import { Prefs } from "../../alias/prefs";
 
 /**
  * Constructs a URL based on the given URL and a trusted origin. If `url` is
@@ -29,8 +29,8 @@ import { Prefs } from '../../alias/prefs';
  *   safe origin URL was not possible, or if origins did not match.
  */
 export function createSafeOriginUrl(url: string): string | null {
-  const defaultOrigin: string = Prefs.get('ipm_default_origin');
-  const safeOrigins: string[] = Prefs.get('ipm_safe_origins');
+  const defaultOrigin: string = Prefs.get("ipm_default_origin");
+  const safeOrigins: string[] = Prefs.get("ipm_safe_origins");
   let safeOriginUrl: URL;
 
   try {

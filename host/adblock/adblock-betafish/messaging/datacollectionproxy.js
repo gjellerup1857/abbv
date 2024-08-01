@@ -24,7 +24,7 @@
  */
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class DataCollectionV2 {
-  static start = () => send('DataCollectionV2.start');
+  static start = () => send("DataCollectionV2.start");
 
-  static end = () => send('DataCollectionV2.end');
+  static end = () => send("DataCollectionV2.end");
 }

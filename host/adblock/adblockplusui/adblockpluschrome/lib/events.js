@@ -20,10 +20,8 @@
 /**
  * Registers and emits named events.
  */
-export class EventEmitter
-{
-  constructor()
-  {
+export class EventEmitter {
+  constructor() {
     this._listeners = new Map();
   }
 
@@ -33,13 +31,10 @@ export class EventEmitter
    * @param {string}   name
    * @param {function} listener
    */
-  on(name, listener)
-  {
+  on(name, listener) {
     let listeners = this._listeners.get(name);
-    if (listeners)
-      listeners.push(listener);
-    else
-      this._listeners.set(name, [listener]);
+    if (listeners) listeners.push(listener);
+    else this._listeners.set(name, [listener]);
   }
 
   /**
@@ -48,19 +43,13 @@ export class EventEmitter
    * @param {string}   name
    * @param {function} listener
    */
-  off(name, listener)
-  {
+  off(name, listener) {
     let listeners = this._listeners.get(name);
-    if (listeners)
-    {
-      if (listeners.length > 1)
-      {
+    if (listeners) {
+      if (listeners.length > 1) {
         let idx = listeners.indexOf(listener);
-        if (idx != -1)
-          listeners.splice(idx, 1);
-      }
-      else if (listeners[0] === listener)
-      {
+        if (idx != -1) listeners.splice(idx, 1);
+      } else if (listeners[0] === listener) {
         // We must use strict equality above for compatibility with
         // Array.prototype.indexOf
         this._listeners.delete(name);
@@ -75,8 +64,7 @@ export class EventEmitter
    *
    * @returns {Array.<function>}
    */
-  listeners(name)
-  {
+  listeners(name) {
     let listeners = this._listeners.size > 0 ? this._listeners.get(name) : null;
     return listeners ? listeners.slice() : [];
   }
@@ -89,10 +77,8 @@ export class EventEmitter
    *
    * @returns {boolean}
    */
-  hasListeners(name)
-  {
-    return this._listeners.size > 0 &&
-           (typeof name == "undefined" || this._listeners.has(name));
+  hasListeners(name) {
+    return this._listeners.size > 0 && (typeof name == "undefined" || this._listeners.has(name));
   }
 
   /**
@@ -101,13 +87,10 @@ export class EventEmitter
    * @param {string} name
    * @param {...*}   [args]
    */
-  emit(name, ...args)
-  {
+  emit(name, ...args) {
     let listeners = this._listeners.size > 0 ? this._listeners.get(name) : null;
-    if (listeners)
-    {
-      for (let listener of listeners.slice())
-        listener(...args);
+    if (listeners) {
+      for (let listener of listeners.slice()) listener(...args);
     }
   }
 }

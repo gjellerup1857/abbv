@@ -24,11 +24,11 @@
  */
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class SubscriptionAdapter {
-  static getIdFromURL = url => send('getIdFromURL', { url });
+  static getIdFromURL = (url) => send("getIdFromURL", { url });
 
-  static getAllSubscriptionsMinusText = () => send('getAllSubscriptionsMinusText');
+  static getAllSubscriptionsMinusText = () => send("getAllSubscriptionsMinusText");
 
-  static isLanguageSpecific = adblockId => send('isLanguageSpecific', { adblockId });
+  static isLanguageSpecific = (adblockId) => send("isLanguageSpecific", { adblockId });
 
-  static getSubscriptionsMinusText = () => send('getSubscriptionsMinusText');
+  static getSubscriptionsMinusText = () => send("getSubscriptionsMinusText");
 }

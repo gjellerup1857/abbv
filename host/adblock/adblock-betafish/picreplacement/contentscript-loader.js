@@ -15,4 +15,4 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-void modulesAsGlobal.messaging.send('adblock:load_my_adblock');
+void modulesAsGlobal.messaging.send("adblock:load_my_adblock");

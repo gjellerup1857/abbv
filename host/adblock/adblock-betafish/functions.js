@@ -27,26 +27,25 @@ const THIRTY_MINUTES_IN_MILLISECONDS = 1800000;
 const logging = function (enabled) {
   if (enabled) {
     window.log = function log(...args) {
-      if (VERBOSE_DEBUG || args[0] !== '[DEBUG]') { // comment out for verbosity
+      if (VERBOSE_DEBUG || args[0] !== "[DEBUG]") {
+        // comment out for verbosity
         // eslint-disable-next-line no-console
         console.log(...args);
       }
     };
   } else {
-    window.log = function log() {
-    };
+    window.log = function log() {};
   }
 };
 
 logging(false); // disabled by default
 
-
 // Behaves very similarly to $.ready() but does not require jQuery.
 const onReady = function (callback) {
-  if (document.readyState === 'complete') {
+  if (document.readyState === "complete") {
     window.setTimeout(callback, 0);
   } else {
-    window.addEventListener('load', callback, false);
+    window.addEventListener("load", callback, false);
   }
 };
 
@@ -54,20 +53,20 @@ const onReady = function (callback) {
 //   - messageName : Str
 //   - substitutions : Array of Str or a String
 const translate = function (messageName, substitutions) {
-  if (!messageName || typeof messageName !== 'string') {
+  if (!messageName || typeof messageName !== "string") {
     // eslint-disable-next-line no-console
-    console.trace('missing messageName');
-    return '';
+    console.trace("missing messageName");
+    return "";
   }
 
   let parts = substitutions;
   if (Array.isArray(parts)) {
     for (let i = 0; i < parts.length; i++) {
-      if (typeof parts[i] !== 'string') {
+      if (typeof parts[i] !== "string") {
         parts[i] = parts[i].toString();
       }
     }
-  } else if (parts && typeof parts !== 'string') {
+  } else if (parts && typeof parts !== "string") {
     parts = parts.toString();
   }
 
@@ -81,12 +80,12 @@ const translate = function (messageName, substitutions) {
 };
 
 const splitMessageWithReplacementText = function (rawMessageText, messageID) {
-  const anchorStartPos = rawMessageText.indexOf('[[');
-  const anchorEndPos = rawMessageText.indexOf(']]');
+  const anchorStartPos = rawMessageText.indexOf("[[");
+  const anchorEndPos = rawMessageText.indexOf("]]");
 
   if (anchorStartPos === -1 || anchorEndPos === -1) {
-    log('replacement tag not found', messageID, rawMessageText, anchorStartPos, anchorEndPos);
-    return { error: 'no brackets found' };
+    log("replacement tag not found", messageID, rawMessageText, anchorStartPos, anchorEndPos);
+    return { error: "no brackets found" };
   }
   const returnObj = {};
   returnObj.anchorPrefixText = rawMessageText.substring(0, anchorStartPos);
@@ -99,37 +98,40 @@ const processReplacementChildren = function ($el, replacementText, messageId) {
   // Replace a dummy <a/> inside of localized text with a real element.
   // Give the real element the same text as the dummy link.
   const $element = $el;
-  const messageID = $element.attr('i18n') || messageId;
-  if (!messageID || typeof messageID !== 'string') {
-    $(this).addClass('i18n-replaced');
+  const messageID = $element.attr("i18n") || messageId;
+  if (!messageID || typeof messageID !== "string") {
+    $(this).addClass("i18n-replaced");
     return;
   }
   if (!$element.get(0).firstChild) {
-    log('returning, no first child found', $element.attr('i18n'));
+    log("returning, no first child found", $element.attr("i18n"));
     return;
   }
   if (!$element.get(0).lastChild) {
-    log('returning, no last child found', $element.attr('i18n'));
+    log("returning, no last child found", $element.attr("i18n"));
     return;
   }
-  const replaceElId = `#${$element.attr('i18n_replacement_el')}`;
+  const replaceElId = `#${$element.attr("i18n_replacement_el")}`;
   if ($(replaceElId).length === 0) {
-    log('returning, no child element found', $element.attr('i18n'), replaceElId);
+    log("returning, no child element found", $element.attr("i18n"), replaceElId);
     return;
   }
-  const rawMessageText = browser.i18n.getMessage(messageID) || '';
+  const rawMessageText = browser.i18n.getMessage(messageID) || "";
   const messageSplit = splitMessageWithReplacementText(rawMessageText, messageID);
   $element.get(0).firstChild.nodeValue = messageSplit.anchorPrefixText;
   $element.get(0).lastChild.nodeValue = messageSplit.anchorPostfixText;
-  if ($(replaceElId).get(0).tagName === 'INPUT') {
-    $(`#${$element.attr('i18n_replacement_el')}`).prop('value', replacementText || messageSplit.anchorText);
+  if ($(replaceElId).get(0).tagName === "INPUT") {
+    $(`#${$element.attr("i18n_replacement_el")}`).prop(
+      "value",
+      replacementText || messageSplit.anchorText,
+    );
   } else {
-    $(`#${$element.attr('i18n_replacement_el')}`).text(replacementText || messageSplit.anchorText);
+    $(`#${$element.attr("i18n_replacement_el")}`).text(replacementText || messageSplit.anchorText);
   }
 
   // If localizePage is run again, don't let the [i18n] code above
   // clobber our work
-  $element.addClass('i18n-replaced');
+  $element.addClass("i18n-replaced");
 };
 
 // Processes any replacement children in the passed-in element. Unlike the
@@ -140,20 +142,25 @@ const processReplacementChildrenInContent = function ($el) {
   // Give the real element the same text as the dummy link.
   const $element = $el;
   const message = $element.get(0).textContent;
-  if (!message || typeof message !== 'string' || !$element.get(0).firstChild || !$element.get(0).lastChild) {
+  if (
+    !message ||
+    typeof message !== "string" ||
+    !$element.get(0).firstChild ||
+    !$element.get(0).lastChild
+  ) {
     return;
   }
-  const replaceElId = `#${$element.attr('i18n_replacement_el')}`;
+  const replaceElId = `#${$element.attr("i18n_replacement_el")}`;
   const replaceEl = $element.find(replaceElId);
   if (replaceEl.length === 0) {
-    log('returning, no child element found', replaceElId);
+    log("returning, no child element found", replaceElId);
     return;
   }
   const messageSplit = splitMessageWithReplacementText(message);
   $element.get(0).firstChild.nodeValue = messageSplit.anchorPrefixText;
   $element.get(0).lastChild.nodeValue = messageSplit.anchorPostfixText;
-  if (replaceEl.get(0).tagName === 'INPUT') {
-    replaceEl.prop('value', messageSplit.anchorText);
+  if (replaceEl.get(0).tagName === "INPUT") {
+    replaceEl.prop("value", messageSplit.anchorText);
   } else {
     replaceEl.text(messageSplit.anchorText);
   }
@@ -172,9 +179,10 @@ const setLangAndDirAttributes = function (el) {
   // (AdBlock Menu, Options) to prevent AdBlock for incorrectly setting it on webpages where
   // this file is injected.
   if (
-    browser.i18n.getMessage('@@bidi_dir') === 'rtl'
-    && (window.location.protocol.startsWith('moz-extension:')
-      || window.location.protocol.startsWith('chrome-extension:'))) {
+    browser.i18n.getMessage("@@bidi_dir") === "rtl" &&
+    (window.location.protocol.startsWith("moz-extension:") ||
+      window.location.protocol.startsWith("chrome-extension:"))
+  ) {
     let lang = determineUserLanguage();
     // For RTL languages, only update the directionality of the page if
     // an appropriate locale message file is bundled with the extension
@@ -182,47 +190,49 @@ const setLangAndDirAttributes = function (el) {
     // for any RTL languages (just 'ar'), and not any country
     // specific RTL locale files like 'en-US'
     lang = lang.substring(0, 2);
-    fetch(`_locales/${lang}/messages.json`).then(() => {
-      element.dir = browser.i18n.getMessage('@@bidi_dir');
-    }).catch(() => {
-      element.dir = 'ltr';
-    });
+    fetch(`_locales/${lang}/messages.json`)
+      .then(() => {
+        element.dir = browser.i18n.getMessage("@@bidi_dir");
+      })
+      .catch(() => {
+        element.dir = "ltr";
+      });
   }
 };
 
 const isLangRTL = function (language) {
   const lang = language || determineUserLanguage();
-  return (lang.startsWith('ar') || lang.startsWith('he') || lang.startsWith('fa'));
+  return lang.startsWith("ar") || lang.startsWith("he") || lang.startsWith("fa");
 };
 
 const localizePage = function () {
   // translate a page into the users language
-  $('[i18n]:not(.i18n-replaced, [i18n_replacement_el])').each(function i18n() {
-    $(this).text(translate($(this).attr('i18n')));
+  $("[i18n]:not(.i18n-replaced, [i18n_replacement_el])").each(function i18n() {
+    $(this).text(translate($(this).attr("i18n")));
   });
 
-  $('[i18n_value]:not(.i18n-replaced)').each(function i18nValue() {
-    $(this).val(translate($(this).attr('i18n_value')));
+  $("[i18n_value]:not(.i18n-replaced)").each(function i18nValue() {
+    $(this).val(translate($(this).attr("i18n_value")));
   });
 
-  $('[i18n_title]:not(.i18n-replaced)').each(function i18nTitle() {
-    $(this).attr('title', translate($(this).attr('i18n_title')));
+  $("[i18n_title]:not(.i18n-replaced)").each(function i18nTitle() {
+    $(this).attr("title", translate($(this).attr("i18n_title")));
   });
 
-  $('[i18n_placeholder]:not(.i18n-replaced)').each(function i18nPlaceholder() {
-    $(this).attr('placeholder', translate($(this).attr('i18n_placeholder')));
+  $("[i18n_placeholder]:not(.i18n-replaced)").each(function i18nPlaceholder() {
+    $(this).attr("placeholder", translate($(this).attr("i18n_placeholder")));
   });
 
-  $('[i18n_replacement_el]:not(.i18n-replaced)').each(function i18nReplacementEl() {
+  $("[i18n_replacement_el]:not(.i18n-replaced)").each(function i18nReplacementEl() {
     processReplacementChildren($(this));
   });
 
-  $('[i18n-alt]').each(function i18nImgAlt() {
-    $(this).attr('alt', translate($(this).attr('i18n-alt')));
+  $("[i18n-alt]").each(function i18nImgAlt() {
+    $(this).attr("alt", translate($(this).attr("i18n-alt")));
   });
 
-  $('[i18n-aria-label]').each(function i18nAriaLabel() {
-    $(this).attr('aria-label', translate($(this).attr('i18n-aria-label')));
+  $("[i18n-aria-label]").each(function i18nAriaLabel() {
+    $(this).attr("aria-label", translate($(this).attr("i18n-aria-label")));
   });
 }; // end of localizePage
 
@@ -230,16 +240,26 @@ const localizePage = function () {
 // parseUri 1.2.2, (c) Steven Levithan <stevenlevithan.com>, MIT License
 // Inputs: url: the URL you want to parse
 // Outputs: object containing all parts of |url| as attributes
-const parseUriRegEx = /^(([^:]+(?::|$))(?:(?:\w+:)?\/\/)?(?:[^:@/]*(?::[^:@/]*)?@)?(([^:/?#]*)(?::(\d*))?))((?:[^?#/]*\/)*[^?#]*)(\?[^#]*)?(#.*)?/;
+const parseUriRegEx =
+  /^(([^:]+(?::|$))(?:(?:\w+:)?\/\/)?(?:[^:@/]*(?::[^:@/]*)?@)?(([^:/?#]*)(?::(\d*))?))((?:[^?#/]*\/)*[^?#]*)(\?[^#]*)?(#.*)?/;
 const parseUri = function (url) {
   const matches = parseUriRegEx.exec(url);
 
   // The key values are identical to the JS location object values for that key
-  const keys = ['href', 'origin', 'protocol', 'host', 'hostname', 'port',
-    'pathname', 'search', 'hash'];
+  const keys = [
+    "href",
+    "origin",
+    "protocol",
+    "host",
+    "hostname",
+    "port",
+    "pathname",
+    "search",
+    "hash",
+  ];
   const uri = {};
-  for (let i = 0; (matches && i < keys.length); i++) {
-    uri[keys[i]] = matches[i] || '';
+  for (let i = 0; matches && i < keys.length; i++) {
+    uri[keys[i]] = matches[i] || "";
   }
   return uri;
 };
@@ -253,16 +273,16 @@ parseUri.parseSearch = function parseSearch(searchQuery) {
   let pair;
 
   // Fails if a key exists twice (e.g., ?a=foo&a=bar would return {a:"bar"}
-  search = search.substring(search.indexOf('?') + 1).split('&');
+  search = search.substring(search.indexOf("?") + 1).split("&");
 
   for (let i = 0; i < search.length; i++) {
-    pair = search[i].split('=');
+    pair = search[i].split("=");
     if (pair[0] && !pair[1]) {
-      pair[1] = '';
+      pair[1] = "";
     }
     const pairKey = decodeURIComponent(pair[0]);
     const pairValue = decodeURIComponent(pair[1]);
-    if (pairKey && pairValue !== 'undefined') {
+    if (pairKey && pairValue !== "undefined") {
       params[pairKey] = pairValue;
     }
   }
@@ -300,7 +320,6 @@ const sessionStorageSet = function (key, value) {
   sessionStorageMap.set(key, value);
 };
 
-
 // Inputs: key:string.
 // Returns object from localStorage.
 // The following two functions should only be used when
@@ -308,7 +327,7 @@ const sessionStorageSet = function (key, value) {
 // browser.storage.local.get & set instead
 // deprecated on background / service worker pages
 const storageGet = function (key) {
-  if (typeof localStorage === 'undefined') {
+  if (typeof localStorage === "undefined") {
     return undefined;
   }
   const store = localStorage;
@@ -329,7 +348,7 @@ const storageGet = function (key) {
 // Returns undefined.
 // deprecated on background / service worker pages
 const storageSet = function (key, value) {
-  if (typeof localStorage === 'undefined') {
+  if (typeof localStorage === "undefined") {
     return;
   }
   const store = localStorage;
@@ -348,27 +367,33 @@ const storageSet = function (key, value) {
 const chromeStorageSetHelper = function (key, value, callback) {
   const items = {};
   items[key] = value;
-  browser.storage.local.set(items).then(() => {
-    if (typeof callback === 'function') {
-      callback();
-    }
-  }).catch((error) => {
-    if (typeof callback === 'function') {
-      callback(error);
-    }
-  });
+  browser.storage.local
+    .set(items)
+    .then(() => {
+      if (typeof callback === "function") {
+        callback();
+      }
+    })
+    .catch((error) => {
+      if (typeof callback === "function") {
+        callback(error);
+      }
+    });
 };
 
 const chromeStorageGetHelper = function (storageKey) {
-  return new Promise(((resolve, reject) => {
-    browser.storage.local.get(storageKey).then((items) => {
-      resolve(items[storageKey]);
-    }).catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      reject(error);
-    });
-  }));
+  return new Promise((resolve, reject) => {
+    browser.storage.local
+      .get(storageKey)
+      .then((items) => {
+        resolve(items[storageKey]);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        reject(error);
+      });
+  });
 };
 
 const chromeStorageDeleteHelper = function (key) {
@@ -381,21 +406,21 @@ const chromeStorageDeleteHelper = function (key) {
 // Returns a reference to the keydown handler for future removal.
 const selected = function (selector, handler) {
   const $matched = $(selector);
-  $matched.on('click', handler);
+  $matched.on("click", handler);
   function keydownHandler(event) {
     if (event.which === 13 || event.which === 32) {
       handler(event);
     }
   }
-  $matched.on('keydown', keydownHandler);
+  $matched.on("keydown", keydownHandler);
   return keydownHandler;
 };
 
 // selectedOff removes a click and keydown event handler from the matching selector.
 const selectedOff = function (selector, clickHandler, keydownHandler) {
   const $matched = $(selector);
-  $matched.off('click', clickHandler);
-  $matched.off('keydown', keydownHandler);
+  $matched.off("click", clickHandler);
+  $matched.off("keydown", keydownHandler);
 };
 
 // selectedOnce adds event listeners to the given element for mouse click or keydown CR or space
@@ -405,24 +430,24 @@ const selectedOnce = function (element, handler) {
     return;
   }
   const clickHandler = function () {
-    element.removeEventListener('click', clickHandler);
+    element.removeEventListener("click", clickHandler);
     handler();
   };
-  element.addEventListener('click', clickHandler);
+  element.addEventListener("click", clickHandler);
 
   const keydownHandler = function (event) {
     if (event.keyCode === 13 || event.keyCode === 32) {
-      element.removeEventListener('keydown', keydownHandler);
+      element.removeEventListener("keydown", keydownHandler);
       handler();
     }
   };
-  element.addEventListener('keydown', keydownHandler);
+  element.addEventListener("keydown", keydownHandler);
 };
 
 // Join 2 or more sentences once translated.
 // Inputs: arg:str -- Each arg is the string of a full sentence in message.json
 const i18nJoin = function (...args) {
-  let joined = '';
+  let joined = "";
   for (let i = 0; i < args.length; i++) {
     const isLastSentence = i + 1 === args.length;
     if (!isLastSentence) {
@@ -434,7 +459,8 @@ const i18nJoin = function (...args) {
   return joined;
 };
 
-const isEmptyObject = obj => !!(obj && Object.keys(obj).length === 0 && obj.constructor === Object);
+const isEmptyObject = (obj) =>
+  !!(obj && Object.keys(obj).length === 0 && obj.constructor === Object);
 
 // Sets expirable object in storage to be used in place of a cookie
 // Inputs:
@@ -452,7 +478,7 @@ const setStorageCookie = function (name, value, millisecondsUntilExpire) {
 //  name: string
 const getStorageCookie = function (name) {
   const storedCookie = storageGet(name);
-  if (storedCookie && (storedCookie.expires > Date.now())) {
+  if (storedCookie && storedCookie.expires > Date.now()) {
     return storedCookie.value;
   }
 
@@ -465,10 +491,10 @@ const getStorageCookie = function (name) {
 // Althought 'webp' is a preferred for Custom Image Swap
 // because it is generally a smaller, more efficient image format,
 // Firefox doesn't like working with 'webp' as much as 'png' in Blobs and Data URLs.
-let customImageSwapMimeType = 'image/webp';
+let customImageSwapMimeType = "image/webp";
 const firefoxMatch = navigator.userAgent.match(/(?:Firefox)\/([\d.]+)/);
 if (firefoxMatch) {
-  customImageSwapMimeType = 'image/png';
+  customImageSwapMimeType = "image/png";
 }
 
 // converts a Base64 encoded string to
@@ -480,8 +506,8 @@ if (firefoxMatch) {
 //   a Blob
 const base64toBlob = function (base64Data) {
   let updatedBase64Data = base64Data;
-  if (updatedBase64Data.startsWith('data:image/')) {
-    [, updatedBase64Data] = updatedBase64Data.split(',');
+  if (updatedBase64Data.startsWith("data:image/")) {
+    [, updatedBase64Data] = updatedBase64Data.split(",");
   }
   const sliceSize = 512;
   const byteChars = atob(updatedBase64Data);
@@ -544,7 +570,7 @@ const ellipsis = function ellipsis(valueToTruncate, maxSize) {
 
   const half = size / 2 - 2; // With ellipsis, the total length will be ~= size
   if (value.length > size) {
-    value = (`${value.substring(0, half)}...${value.substring(value.length - half)}`);
+    value = `${value.substring(0, half)}...${value.substring(value.length - half)}`;
   }
 
   return value;
@@ -561,19 +587,19 @@ const connectUIPort = (callback) => {
       port.disconnect();
     };
 
-    const addUIListener = listenerCallback => port.onMessage.addListener(listenerCallback);
+    const addUIListener = (listenerCallback) => port.onMessage.addListener(listenerCallback);
 
-    const postUIMessage = message => port.postMessage(message);
+    const postUIMessage = (message) => port.postMessage(message);
 
     // We're only establishing one connection per page, for which we need to
     // ignoresubsequent connection attempts
-    if (port && typeof callback === 'function') {
+    if (port && typeof callback === "function") {
       callback({ addUIListener, postUIMessage, disconnectUI });
       return;
     }
 
     try {
-      port = browser.runtime.connect({ name: 'ui' });
+      port = browser.runtime.connect({ name: "ui" });
     } catch (ex) {
       // We are no longer able to connect to the service worker, so we give up
       // and assume that the extension is gone
@@ -596,7 +622,7 @@ const connectUIPort = (callback) => {
       // https://bugs.chromium.org/p/chromium/issues/detail?id=1312478
       setTimeout(() => keepPortAlive(), 100);
     });
-    if (typeof callback === 'function') {
+    if (typeof callback === "function") {
       callback({ addUIListener, postUIMessage, disconnectUI });
     }
   };

@@ -21,11 +21,11 @@
 // Module for removing individual filters from filter lists
 // An 'advance' feature, used on the Customize tab, titled "disabled filters"
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { chromeStorageSetHelper } from './utilities/background/bg-functions';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { chromeStorageSetHelper } from "./utilities/background/bg-functions";
 
 const ExcludeFilter = (function excludeFilter() {
-  const excludeFiltersKey = 'exclude_filters';
+  const excludeFiltersKey = "exclude_filters";
   // Removes the valid filters from any / all filter lists and
   // saves the valid entries
   // Note:  any invalid filters are ignored
@@ -35,7 +35,7 @@ const ExcludeFilter = (function excludeFilter() {
     const currentExcludeFilters = response[excludeFiltersKey];
     let promises = [];
     if (currentExcludeFilters) {
-      const currentExcludeArr = currentExcludeFilters.split('\n');
+      const currentExcludeArr = currentExcludeFilters.split("\n");
       for (let i = 0; i < currentExcludeArr.length; i++) {
         const filter = currentExcludeArr[i];
         if (filter.length > 0) {
@@ -49,7 +49,7 @@ const ExcludeFilter = (function excludeFilter() {
     await Promise.all(promises);
     promises = [];
     const excludeFilters = filtersToExclude.trim();
-    const excludeFiltersArray = excludeFilters.split('\n');
+    const excludeFiltersArray = excludeFilters.split("\n");
     const validExcludeFiltersArray = [];
     for (let i = 0; i < excludeFiltersArray.length; i++) {
       let filter = excludeFiltersArray[i];
@@ -64,7 +64,7 @@ const ExcludeFilter = (function excludeFilter() {
     }
     await Promise.all(promises);
     if (validExcludeFiltersArray.length) {
-      chromeStorageSetHelper(excludeFiltersKey, validExcludeFiltersArray.join('\n'));
+      chromeStorageSetHelper(excludeFiltersKey, validExcludeFiltersArray.join("\n"));
     } else {
       browser.storage.local.remove(excludeFiltersKey);
     }
@@ -87,5 +87,5 @@ const ExcludeFilter = (function excludeFilter() {
   return {
     setExcludeFilters,
   };
-}());
+})();
 export default ExcludeFilter;

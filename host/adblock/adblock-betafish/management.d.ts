@@ -20,9 +20,4 @@
  * so we have to provide our own type.
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/management/ExtensionInfo
  */
-export type ExtendedInstallType =
-  | 'development'
-  | 'normal'
-  | 'sideload'
-  | 'other'
-  | 'admin';
+export type ExtendedInstallType = "development" | "normal" | "sideload" | "other" | "admin";

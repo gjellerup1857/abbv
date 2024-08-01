@@ -20,12 +20,12 @@
 
 export default class CancelActionButton extends HTMLElement {
   connectedCallback() {
-    const backButton = document.createElement('button');
-    const buttonLabel = translate('no_thanks_label');
+    const backButton = document.createElement("button");
+    const buttonLabel = translate("no_thanks_label");
 
     backButton.ariaLabel = buttonLabel;
-    backButton.innerText = translate('no_thanks');
-    backButton.addEventListener('click', () => {
+    backButton.innerText = translate("no_thanks");
+    backButton.addEventListener("click", () => {
       window.history.back();
     });
 

@@ -22,10 +22,10 @@
 let rightClickedItem = null;
 
 if (document.body) {
-  document.body.addEventListener('contextmenu', (e) => {
+  document.body.addEventListener("contextmenu", (e) => {
     rightClickedItem = e.srcElement;
   });
-  document.body.addEventListener('click', () => {
+  document.body.addEventListener("click", () => {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     rightClickedItem = null;
   });

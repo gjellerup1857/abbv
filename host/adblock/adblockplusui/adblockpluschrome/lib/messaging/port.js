@@ -15,33 +15,27 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {EventEmitter} from "../events.js";
+import { EventEmitter } from "../events.js";
 
 /**
  * Communication port wrapping ext.onMessage to receive messages.
  *
  * @constructor
  */
-class Port
-{
-  constructor()
-  {
+class Port {
+  constructor() {
     this._eventEmitter = new EventEmitter();
     this._onMessage = this._onMessage.bind(this);
     ext.onMessage.addListener(this._onMessage);
   }
 
-  async _onMessage(message, sender)
-  {
+  async _onMessage(message, sender) {
     let callbacks = this._eventEmitter.listeners(message.type);
 
-    try
-    {
-      let responses = callbacks.map(callback => callback(message, sender));
+    try {
+      let responses = callbacks.map((callback) => callback(message, sender));
       return ext.getMessageResponse(responses);
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error(err);
     }
   }
@@ -64,8 +58,7 @@ class Port
    * @param {string}   name
    * @param {Port~messageCallback} callback
    */
-  on(name, callback)
-  {
+  on(name, callback) {
     this._eventEmitter.on(name, callback);
   }
 
@@ -75,16 +68,14 @@ class Port
    * @param {string}   name
    * @param {Port~messageCallback} callback
    */
-  off(name, callback)
-  {
+  off(name, callback) {
     this._eventEmitter.off(name, callback);
   }
 
   /**
    * Disables the port and makes it stop listening to incoming messages.
    */
-  disconnect()
-  {
+  disconnect() {
     ext.onMessage.removeListener(this._onMessage);
   }
 }

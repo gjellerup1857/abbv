@@ -16,23 +16,20 @@
  */
 
 /* eslint-disable import/extensions */
-import {
-  closePopup,
-  sendMessageWithNoResponse,
-} from '../utils.js';
+import { closePopup, sendMessageWithNoResponse } from "../utils.js";
 
 async function openURL(url) {
-  sendMessageWithNoResponse({ command: 'openTab', urlToOpen: url });
+  sendMessageWithNoResponse({ command: "openTab", urlToOpen: url });
   closePopup();
 }
 
 export default class InlineLinkButton extends HTMLElement {
   async connectedCallback() {
     const { url } = this.dataset;
-    const actionButton = document.createElement('button');
+    const actionButton = document.createElement("button");
 
     actionButton.innerText = this.innerText;
-    actionButton.addEventListener('click', openURL.bind(null, url));
+    actionButton.addEventListener("click", openURL.bind(null, url));
 
     this.firstChild.replaceWith(actionButton);
   }

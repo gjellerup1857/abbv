@@ -24,9 +24,6 @@ import browser from "webextension-polyfill";
  * @param args - Message arguments
  * @returns message response
  */
-export async function send<T = unknown>(
-  type: string,
-  args = {}
-): Promise<T> {
+export async function send<T = unknown>(type: string, args = {}): Promise<T> {
   return await browser.runtime.sendMessage({ ...args, type });
 }

@@ -21,13 +21,15 @@
 
 /** @module subscriptionInit */
 
-import { Prefs } from './prefs';
-import * as info from 'info';
+import { Prefs } from "./prefs";
+import * as info from "info";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import rulesIndex from "@adblockinc/rules/adblock";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
-import { setReadyState, ReadyState } from "../../adblock-betafish/testing/ready-state/background/index.ts";
-
+import {
+  setReadyState,
+  ReadyState,
+} from "../../adblock-betafish/testing/ready-state/background/index.ts";
 
 let firstRun;
 let reinitialized = false;
@@ -47,8 +49,7 @@ async function detectFirstRun(foundSubscriptions, foundStorage) {
   let userFilters = await ewe.filters.getUserFilters();
   firstRun = !foundSubscriptions && !userFilters.length;
 
-  if (firstRun && (foundStorage || Prefs.currentVersion))
-    reinitialized = true;
+  if (firstRun && (foundStorage || Prefs.currentVersion)) reinitialized = true;
 
   Prefs.currentVersion = info.addonVersion;
 }
@@ -91,14 +92,13 @@ function removeSubscriptions() {
         // removing the API, it gives an asynchronous error which we ignore here.
         () => {
           resolve();
-        }
+        },
       );
     } else {
       resolve();
     }
   });
 }
-
 
 async function addSubscriptions() {
   if (firstRun || reinitialized) {
@@ -109,16 +109,14 @@ async function addSubscriptions() {
     for (let url of Prefs.additional_subscriptions) {
       try {
         await ewe.subscriptions.add(url);
-      }
-      catch (ex) {
+      } catch (ex) {
         console.error(`Failed to add additional subscription: ${url}`);
       }
     }
     if (info.platform === "gecko") {
       try {
         await ewe.subscriptions.remove(ewe.subscriptions.ACCEPTABLE_ADS_URL);
-      }
-      catch (ex) {
+      } catch (ex) {
         console.error(`Failed to remove AA subscription`);
       }
     }
@@ -144,7 +142,6 @@ async function testStorage() {
 }
 
 const start = async function () {
-
   let addonInfo = {
     bundledSubscriptions: rulesIndex,
     bundledSubscriptionsPath: "/data/rules/abp",
@@ -156,7 +153,7 @@ const start = async function () {
   let cdp = {
     pingUrl: webpackDotenvPlugin.ADBLOCK_CDP_PING_URL,
     aggregateUrl: webpackDotenvPlugin.ADBLOCK_CDP_AGGREGATE_URL,
-    bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER
+    bearer: webpackDotenvPlugin.ADBLOCK_CDP_BEARER,
   };
 
   if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) {
@@ -164,23 +161,24 @@ const start = async function () {
   }
   let telemetry = {
     url: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_URL,
-    bearer: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_BEARER
-  }
+    bearer: webpackDotenvPlugin.ADBLOCK_EYEOMETRY_BEARER,
+  };
 
   if (telemetry.url && telemetry.bearer) {
     addonInfo.telemetry = telemetry;
   }
 
   return ewe.start(addonInfo).then(async (eweFirstRun) => {
-    await detectFirstRun(
-      eweFirstRun.foundSubscriptions,
-      eweFirstRun.foundStorage
-    );
+    await detectFirstRun(eweFirstRun.foundSubscriptions, eweFirstRun.foundStorage);
     (await ewe.filters.getMigrationErrors()).forEach(console.error);
     (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
     eweFirstRun.warnings.forEach(console.warn);
-    await Prefs.untilLoaded.catch(() => { setDataCorrupted(true); });
-    await testStorage().catch(() => { setDataCorrupted(true); })
+    await Prefs.untilLoaded.catch(() => {
+      setDataCorrupted(true);
+    });
+    await testStorage().catch(() => {
+      setDataCorrupted(true);
+    });
     // adding default filter lists
     await addSubscriptions();
     await removeSubscriptions();
@@ -200,7 +198,6 @@ function isDataCorrupted() {
 }
 
 export { initialize, isDataCorrupted };
-
 
 /**
  * @typedef {object} subscriptionsGetInitIssuesResult

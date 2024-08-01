@@ -27,12 +27,12 @@ import {
   closePopup,
   navigateTo,
   sendMessageWithNoResponse,
-} from '../utils.js';
+} from "../utils.js";
 
-import BlockIcon from './icons/block-distractions.js';
-import CookieIcon from './icons/cookie-icon.js';
-import LockIcon from './icons/lock-icon.js';
-import LogoIcon from './icons/adblock-logo.js';
+import BlockIcon from "./icons/block-distractions.js";
+import CookieIcon from "./icons/cookie-icon.js";
+import LockIcon from "./icons/lock-icon.js";
+import LogoIcon from "./icons/adblock-logo.js";
 
 const blockIconTemplate = `
   <div aria-hidden="true" class="popup-icon">${BlockIcon}</div>
@@ -63,8 +63,8 @@ const namesToKeys = {
 };
 
 const urls = {
-  [COOKIE_FILTER_KEY]: 'adblock-button-cookie-confirm.html',
-  [DISTRACTIONS_KEY]: 'adblock-button-distractions-confirm.html',
+  [COOKIE_FILTER_KEY]: "adblock-button-cookie-confirm.html",
+  [DISTRACTIONS_KEY]: "adblock-button-distractions-confirm.html",
 };
 
 const toggleSubscription = async (key, evt) => {
@@ -73,11 +73,11 @@ const toggleSubscription = async (key, evt) => {
     return;
   }
 
-  await browser.runtime.sendMessage({ command: 'unsubscribe', adblockId: key });
+  await browser.runtime.sendMessage({ command: "unsubscribe", adblockId: key });
 };
 
 const generateToggle = function (key) {
-  const toggle = document.createElement('toggle-button');
+  const toggle = document.createElement("toggle-button");
   toggle.dataset.name = key;
 
   const subscriptionActive = Boolean(this.pageInfo.subscriptions[key]);
@@ -85,18 +85,18 @@ const generateToggle = function (key) {
     toggle.dataset.isChecked = true;
   }
 
-  toggle.addEventListener('change', toggleSubscription.bind(this, key));
+  toggle.addEventListener("change", toggleSubscription.bind(this, key));
   return toggle;
 };
 
 const generateLearnMore = async function (name) {
-  const urlToOpen = await addUserIdToUrl('https://getadblock.com/premium/enrollment/');
+  const urlToOpen = await addUserIdToUrl("https://getadblock.com/premium/enrollment/");
 
-  const button = document.createElement('button');
-  button.innerText = translate('learn_more_without_period');
-  button.addEventListener('click', () => {
-    sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: `${name}_learn_clicked` });
-    sendMessageWithNoResponse({ command: 'openTab', urlToOpen });
+  const button = document.createElement("button");
+  button.innerText = translate("learn_more_without_period");
+  button.addEventListener("click", () => {
+    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: `${name}_learn_clicked` });
+    sendMessageWithNoResponse({ command: "openTab", urlToOpen });
     closePopup();
   });
 
@@ -105,7 +105,7 @@ const generateLearnMore = async function (name) {
 
 const actionSectionGenerators = {
   blockedStats() {
-    return document.createElement('span');
+    return document.createElement("span");
   },
   cookieWalls() {
     return generateToggle.call(this, COOKIE_FILTER_KEY);
@@ -117,21 +117,21 @@ const actionSectionGenerators = {
 
 const generateTitle = (isActiveSection, { name, title }) => {
   const icon = isActiveSection ? icons[name] : icons.locked;
-  const iconSpan = document.createElement('div');
+  const iconSpan = document.createElement("div");
   iconSpan.innerHTML = DOMPurify.sanitize(icon);
 
   const translatedTitle = translate(title);
-  const titleSpan = document.createElement('div');
+  const titleSpan = document.createElement("div");
   titleSpan.textContent = translatedTitle;
-  titleSpan.classList.add('title');
+  titleSpan.classList.add("title");
 
-  const titleWrapper = document.createElement('div');
+  const titleWrapper = document.createElement("div");
   titleWrapper.appendChild(iconSpan);
   titleWrapper.appendChild(titleSpan);
-  titleWrapper.classList.add('title-wrapper');
+  titleWrapper.classList.add("title-wrapper");
 
   if (namesToKeys[name]) {
-    const titleLabel = document.createElement('label');
+    const titleLabel = document.createElement("label");
     titleLabel.htmlFor = namesToKeys[name];
     titleLabel.appendChild(titleWrapper);
 
@@ -142,8 +142,8 @@ const generateTitle = (isActiveSection, { name, title }) => {
 };
 
 const generateSeparator = () => {
-  const separator = document.createElement('div');
-  separator.classList.add('inner-separator');
+  const separator = document.createElement("div");
+  separator.classList.add("inner-separator");
   return separator;
 };
 
@@ -151,10 +151,10 @@ export default class PopupSection extends HTMLElement {
   async connectedCallback() {
     this.pageInfo = sessionStorageGet(PAGE_INFO_KEY);
     const { name } = this.dataset;
-    const isBlockedStats = name === 'blockedStats';
+    const isBlockedStats = name === "blockedStats";
 
     if (!this.pageInfo.settings.display_menu_stats && isBlockedStats) {
-      this.outerHTML = '';
+      this.outerHTML = "";
       return;
     }
 
@@ -169,10 +169,10 @@ export default class PopupSection extends HTMLElement {
     const separator = generateSeparator();
 
     if (!isActiveSection) {
-      this.classList.add('inactive-block');
+      this.classList.add("inactive-block");
     }
 
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
     wrapper.appendChild(titleSection);
     wrapper.appendChild(actionSection);
     this.prepend(separator);

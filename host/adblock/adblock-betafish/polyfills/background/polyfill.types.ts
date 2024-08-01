@@ -27,14 +27,14 @@ export type EventEmitterCallback<T> = (arg: T) => void;
  * Temporary interface for metadata object that we attach to custom filters
  */
 export interface FilterMetadata {
-    /**
-     * Filter creation date
-     */
-    created: number;
-    /**
-     * Filter origin
-     */
-    origin: string;
+  /**
+   * Filter creation date
+   */
+  created: number;
+  /**
+   * Filter origin
+   */
+  origin: string;
 }
 
 /**
@@ -42,31 +42,31 @@ export interface FilterMetadata {
  * browser.runtime.sendMessage()
  */
 export interface MessageSender {
+  /**
+   * Information about sender page
+   */
+  page: {
     /**
-     * Information about sender page
+     * Sender page ID (same as tab ID)
      */
-    page: {
-        /**
-         * Sender page ID (same as tab ID)
-         */
-        id: number;
-        /**
-         * Sender page URL
-         */
-        url: URL;
-    };
+    id: number;
+    /**
+     * Sender page URL
+     */
+    url: URL;
+  };
 }
 
 /**
  * Temporary interface for "tab-removed" event data from TabSessionStorage
  */
 export interface TabRemovedEventData {
-    /**
-     * Tab ID of removed tab
-     */
-    tabId: number;
-    /**
-     * Stored session data for removed tab
-     */
-    value: any;
+  /**
+   * Tab ID of removed tab
+   */
+  tabId: number;
+  /**
+   * Stored session data for removed tab
+   */
+  value: any;
 }

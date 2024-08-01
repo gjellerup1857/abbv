@@ -25,19 +25,19 @@ class ListenerSupport {
   }
 
   /**
-     * Adds a listener.
-     *
-     * @param {function} listener
-     */
+   * Adds a listener.
+   *
+   * @param {function} listener
+   */
   addListener(listener) {
     this.listeners.push(listener);
   }
 
   /**
-     * Removes a listener
-     *
-     * @param {function} listener
-     */
+   * Removes a listener
+   *
+   * @param {function} listener
+   */
   removeListener(listener) {
     const index = this.listeners.indexOf(listener);
     if (index > -1) {
@@ -46,11 +46,11 @@ class ListenerSupport {
   }
 
   /**
-     * Calls all previously added listeners with the provided data.
-     *
-     * @param {...*}   [args]
-     */
+   * Calls all previously added listeners with the provided data.
+   *
+   * @param {...*}   [args]
+   */
   emit(...args) {
-    this.listeners.forEach(listener => listener(...args));
+    this.listeners.forEach((listener) => listener(...args));
   }
 }

@@ -15,25 +15,26 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import fs from 'fs';
-import gulp from 'gulp';
-import tar from 'gulp-tar';
-import gzip from 'gulp-gzip';
-import { lsFiles } from '../utils/git.mjs';
+import fs from "fs";
+import gulp from "gulp";
+import tar from "gulp-tar";
+import gzip from "gulp-gzip";
+import { lsFiles } from "../utils/git.mjs";
 
 // Manually add any files to the be included
 // in the source tar file
 // i.e. files that are not in the repository
 function addFilesToList(sourceFiles) {
-  if (fs.existsSync('.env')) {
-    sourceFiles.push('.env');
+  if (fs.existsSync(".env")) {
+    sourceFiles.push(".env");
   }
 }
 
 export default async function sourceDistribution(filename) {
   const sourceFiles = await lsFiles();
   addFilesToList(sourceFiles);
-  return gulp.src(sourceFiles, { base: '.', cwd: '.' })
+  return gulp
+    .src(sourceFiles, { base: ".", cwd: "." })
     .pipe(tar(`${filename}.tar`))
     .pipe(gzip())
     .pipe(gulp.dest(process.cwd()));

@@ -31,26 +31,26 @@ It performs the following actions:
 */
 const parseChannelName = function (channelNameToParse) {
   // used to decode all encoded HTML (convert '&' to &amp;)
-  const parseElem = document.createElement('textarea');
+  const parseElem = document.createElement("textarea");
 
   function fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, c => `%${c.charCodeAt(0).toString(16)}`);
+    return encodeURIComponent(str).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16)}`);
   }
 
   parseElem.innerHTML = DOMPurify.sanitize(channelNameToParse);
   const channelName = parseElem.innerText;
   // Remove whitespace, and encode
-  return fixedEncodeURIComponent(channelName.replace(/\s/g, ''));
+  return fixedEncodeURIComponent(channelName.replace(/\s/g, ""));
 };
 
 const updateURLWrapped = function (channelName) {
-  if (window.location.pathname !== '/') {
+  if (window.location.pathname !== "/") {
     const parsedChannelName = parseChannelName(channelName);
     const currentLocation = new URL(window.location.href);
     let updatedUrl;
 
-    let [baseUrl] = window.location.href.split('&ab_channel');
-    [baseUrl] = baseUrl.split('?ab_channel');
+    let [baseUrl] = window.location.href.split("&ab_channel");
+    [baseUrl] = baseUrl.split("?ab_channel");
 
     if (currentLocation.search) {
       updatedUrl = `${baseUrl}&ab_channel=${parsedChannelName}`;
@@ -64,32 +64,36 @@ const updateURLWrapped = function (channelName) {
 };
 
 const sendMessageToCS = function (toContentScriptEventName, channelName) {
-  window.postMessage({
-    eventName: toContentScriptEventName,
-    channelName: String(channelName),
-  }, '*');
+  window.postMessage(
+    {
+      eventName: toContentScriptEventName,
+      channelName: String(channelName),
+    },
+    "*",
+  );
 };
 
 const preProcessCheck = function (input, params, toContentScriptEventName) {
-  if (params.length >= 2
-    && typeof input === 'string'
-    && input.includes('https://gql.twitch.tv/gql')
+  if (
+    params.length >= 2 &&
+    typeof input === "string" &&
+    input.includes("https://gql.twitch.tv/gql")
   ) {
     let body = {};
     try {
       body = JSON.parse(params[1].body);
     } catch (ex) {
       // eslint-disable-next-line no-console
-      console.log('ex', ex);
+      console.log("ex", ex);
     }
     // the following is invoked from a /team/ page or the home page
-    if (body
-      && Array.isArray(body)
-      && body.length > 0
-      && body[0].variables
-      && body[0].variables.channel
-      && (window.location.pathname.startsWith('/team/')
-        || window.location.pathname.startsWith('/'))
+    if (
+      body &&
+      Array.isArray(body) &&
+      body.length > 0 &&
+      body[0].variables &&
+      body[0].variables.channel &&
+      (window.location.pathname.startsWith("/team/") || window.location.pathname.startsWith("/"))
     ) {
       updateURLWrapped(body[0].variables.channel);
       sendMessageToCS(toContentScriptEventName, body[0].variables.channel);
@@ -98,39 +102,70 @@ const preProcessCheck = function (input, params, toContentScriptEventName) {
 };
 
 const postRequestCheck = function (response, toContentScriptEventName) {
-  if (response && response.url === 'https://gql.twitch.tv/gql') {
-    response.clone().json().then((respObj) => {
-      if (Array.isArray(respObj) && respObj.length > 0) {
-        let nameFound = false;
-        for (let inx = 0; (inx < respObj.length && nameFound === false); inx++) {
-          const entry = respObj[inx];
-          // capture channel name when loading a video with the URL https://www.twitch.tv/videos/...
-          if (entry && entry.data && entry.data.video && entry.data.video.owner && entry.data.video.owner.displayName && window.location.pathname.startsWith('/videos/')) {
-            nameFound = true;
-            updateURLWrapped(entry.data.video.owner.displayName);
-            sendMessageToCS(toContentScriptEventName, entry.data.video.owner.displayName);
-          }
-          // capture channel name when loading a video with the URL https://www.twitch.tv/clips/...
-          if (entry && entry.data && entry.data.clip && entry.data.clip.broadcaster && entry.data.clip.broadcaster.displayName && window.location.pathname.indexOf('/clip/')) {
-            nameFound = true;
-            updateURLWrapped(entry.data.clip.broadcaster.displayName);
-            sendMessageToCS(toContentScriptEventName, entry.data.clip.broadcaster.displayName);
-          }
-          if (entry && entry.data && entry.data.user && entry.data.user.displayName && (entry.data.user.channel || entry.data.user.stream) && !window.location.pathname.startsWith('/directory/')) {
-            nameFound = true;
-            updateURLWrapped(entry.data.user.displayName);
-            sendMessageToCS(toContentScriptEventName, entry.data.user.displayName);
-          }
-          // capture channel name when clicking on the same channels multiple times
-          // in the 'followed channels' panel on the left on the home page
-          if (!nameFound && entry && entry.data && entry.data.community && entry.data.community.displayName && !window.location.pathname.startsWith('/directory/')) {
-            nameFound = true;
-            updateURLWrapped(entry.data.community.displayName);
-            sendMessageToCS(toContentScriptEventName, entry.data.community.displayName);
+  if (response && response.url === "https://gql.twitch.tv/gql") {
+    response
+      .clone()
+      .json()
+      .then((respObj) => {
+        if (Array.isArray(respObj) && respObj.length > 0) {
+          let nameFound = false;
+          for (let inx = 0; inx < respObj.length && nameFound === false; inx++) {
+            const entry = respObj[inx];
+            // capture channel name when loading a video with the URL https://www.twitch.tv/videos/...
+            if (
+              entry &&
+              entry.data &&
+              entry.data.video &&
+              entry.data.video.owner &&
+              entry.data.video.owner.displayName &&
+              window.location.pathname.startsWith("/videos/")
+            ) {
+              nameFound = true;
+              updateURLWrapped(entry.data.video.owner.displayName);
+              sendMessageToCS(toContentScriptEventName, entry.data.video.owner.displayName);
+            }
+            // capture channel name when loading a video with the URL https://www.twitch.tv/clips/...
+            if (
+              entry &&
+              entry.data &&
+              entry.data.clip &&
+              entry.data.clip.broadcaster &&
+              entry.data.clip.broadcaster.displayName &&
+              window.location.pathname.indexOf("/clip/")
+            ) {
+              nameFound = true;
+              updateURLWrapped(entry.data.clip.broadcaster.displayName);
+              sendMessageToCS(toContentScriptEventName, entry.data.clip.broadcaster.displayName);
+            }
+            if (
+              entry &&
+              entry.data &&
+              entry.data.user &&
+              entry.data.user.displayName &&
+              (entry.data.user.channel || entry.data.user.stream) &&
+              !window.location.pathname.startsWith("/directory/")
+            ) {
+              nameFound = true;
+              updateURLWrapped(entry.data.user.displayName);
+              sendMessageToCS(toContentScriptEventName, entry.data.user.displayName);
+            }
+            // capture channel name when clicking on the same channels multiple times
+            // in the 'followed channels' panel on the left on the home page
+            if (
+              !nameFound &&
+              entry &&
+              entry.data &&
+              entry.data.community &&
+              entry.data.community.displayName &&
+              !window.location.pathname.startsWith("/directory/")
+            ) {
+              nameFound = true;
+              updateURLWrapped(entry.data.community.displayName);
+              sendMessageToCS(toContentScriptEventName, entry.data.community.displayName);
+            }
           }
         }
-      }
-    });
+      });
   }
 };
 
@@ -138,13 +173,14 @@ const wrapFetch = function ({ toContentScriptEventName }) {
   const myFetch = window.fetch;
   window.fetch = function theFetch(...args) {
     const params = args;
-    let input = '';
+    let input = "";
     if (params.length >= 1) {
       [input] = params;
     }
     preProcessCheck(input, params, toContentScriptEventName);
     return new Promise((resolve, reject) => {
-      myFetch.apply(this, args)
+      myFetch
+        .apply(this, args)
         .then((response) => {
           postRequestCheck(response, toContentScriptEventName);
           resolve(response);

@@ -26,32 +26,32 @@ const cssRules = [];
 const minDimension = 60;
 
 const typeMap = new Map([
-  ['img', 'IMAGE'],
-  ['input', 'IMAGE'],
-  ['picture', 'IMAGE'],
-  ['audio', 'MEDIA'],
-  ['video', 'MEDIA'],
-  ['frame', 'SUBDOCUMENT'],
-  ['iframe', 'SUBDOCUMENT'],
-  ['object', 'OBJECT'],
-  ['embed', 'OBJECT'],
+  ["img", "IMAGE"],
+  ["input", "IMAGE"],
+  ["picture", "IMAGE"],
+  ["audio", "MEDIA"],
+  ["video", "MEDIA"],
+  ["frame", "SUBDOCUMENT"],
+  ["iframe", "SUBDOCUMENT"],
+  ["object", "OBJECT"],
+  ["embed", "OBJECT"],
 ]);
 
 const imageSizesMap = new Map([
-  ['NONE', 0],
-  ['wide', 1],
-  ['tall', 2],
-  ['skinnywide', 4],
-  ['skinnytall', 8],
-  ['big', 16],
-  ['small', 32],
+  ["NONE", 0],
+  ["wide", 1],
+  ["tall", 2],
+  ["skinnywide", 4],
+  ["skinnytall", 8],
+  ["big", 16],
+  ["small", 32],
 ]);
 
 const deferred = new Map();
 let urls;
 
 function getURLFromElement(element) {
-  if (element.localName !== 'object') {
+  if (element.localName !== "object") {
     return element.currentSrc || element.src;
   }
 
@@ -60,7 +60,7 @@ function getURLFromElement(element) {
   }
 
   for (const child of element.children) {
-    if (child.localName === 'param' && child.name === 'movie' && child.value) {
+    if (child.localName === "param" && child.name === "movie" && child.value) {
       return new URL(child.value, document.baseURI).href;
     }
   }
@@ -74,15 +74,15 @@ function getURLFromElement(element) {
 //       - or a NodeList of elements
 //       - or an Array with 1 element
 const queryDOM = function (selectorText) {
-  if (selectorText.startsWith('#')) {
+  if (selectorText.startsWith("#")) {
     const element = document.getElementById(selectorText.substr(1));
     if (element) {
       return [element];
     }
     return [];
   }
-  if (selectorText.startsWith('.')) {
-    const classes = selectorText.substr(1).replace(/\./g, ' ');
+  if (selectorText.startsWith(".")) {
+    const classes = selectorText.substr(1).replace(/\./g, " ");
     return document.getElementsByClassName(classes);
   }
   // Default to `querySelectorAll`
@@ -91,29 +91,29 @@ const queryDOM = function (selectorText) {
 
 const imageSwap = {
   /**
-  * @param {Object} data Information about the element
-  *   @param {Node} data.el
-  *   @param {Boolean} [data.blocked]
-  *   @param {Object} [data.size]
-  *   @param {Number} [data.dimension]
-  *   @param {CSSStyleDeclaration} [data.computedStyle]
-  * @param {Function} callback Called when replacement was done
-  * */
+   * @param {Object} data Information about the element
+   *   @param {Node} data.el
+   *   @param {Boolean} [data.blocked]
+   *   @param {Object} [data.size]
+   *   @param {Number} [data.dimension]
+   *   @param {CSSStyleDeclaration} [data.computedStyle]
+   * @param {Function} callback Called when replacement was done
+   * */
   replaceSection(data, callback) {
     const { el } = data;
     // We may have already replaced this section...
-    if (el.getAttribute('picreplacementreplaced')) {
+    if (el.getAttribute("picreplacementreplaced")) {
       return;
     }
-    el.setAttribute('picreplacementreplaced', true);
+    el.setAttribute("picreplacementreplaced", true);
 
     if (data.blocked) {
-      const size = this.getStyle(data, 'backgroundPosition').match(/^(\w+) (\w+)$/);
+      const size = this.getStyle(data, "backgroundPosition").match(/^(\w+) (\w+)$/);
       if (size) {
         // Restore el.width & el.height to whatever they were before AdBlock.
         const dims = { width: size[1], height: size[2] };
         for (const dim in dims) {
-          if (dims[dim] === '-1px') {
+          if (dims[dim] === "-1px") {
             el.removeAttribute(dim);
           } else {
             el.setAttribute(dim, dims[dim]);
@@ -123,8 +123,8 @@ const imageSwap = {
     }
 
     const oldCssText = el.style.cssText;
-    el.style.setProperty('visibility', 'hidden', 'important');
-    el.style.setProperty('display', 'block', 'important');
+    el.style.setProperty("visibility", "hidden", "important");
+    el.style.setProperty("display", "block", "important");
 
     this.replace(data, callback);
 
@@ -244,13 +244,20 @@ const imageSwap = {
   // Rotate a picture/target about its NW<->SE axis.
   rotate(objectToRotate) {
     const o = objectToRotate;
-    const pairs = [['x', 'y'], ['top', 'left'], ['bot', 'right'],
-      ['offsettop', 'offsetleft'], ['width', 'height']];
+    const pairs = [
+      ["x", "y"],
+      ["top", "left"],
+      ["bot", "right"],
+      ["offsettop", "offsetleft"],
+      ["width", "height"],
+    ];
     pairs.forEach((pair) => {
       const [a, b] = pair;
       let tmp;
       if (o[a] || o[b]) {
-        tmp = o[b]; o[b] = o[a]; o[a] = tmp; // swap
+        tmp = o[b];
+        o[b] = o[a];
+        o[a] = tmp; // swap
       }
     });
   },
@@ -259,7 +266,7 @@ const imageSwap = {
     function intFor(val) {
       // Match two or more digits; treat < 10 as missing.  This lets us set
       // dims that look good for e.g. 1px tall ad holders (cnn.com footer.)
-      const match = (val || '').match(/^([1-9][0-9]+)(px)?$/);
+      const match = (val || "").match(/^([1-9][0-9]+)(px)?$/);
       if (!match) {
         return undefined;
       }
@@ -270,7 +277,7 @@ const imageSwap = {
 
   parentDim(data, prop) {
     let { el } = data;
-    if (hostname === 'www.facebook.com') {
+    if (hostname === "www.facebook.com") {
       return undefined;
     }
     let result;
@@ -285,9 +292,9 @@ const imageSwap = {
   getSize(data) {
     const { el } = data;
     let t = {
-      x: this.dim(data, 'width'),
-      y: this.dim(data, 'height'),
-      position: this.getStyle(data, 'position'),
+      x: this.dim(data, "width"),
+      y: this.dim(data, "height"),
+      position: this.getStyle(data, "position"),
     };
 
     if (!t.x && !t.y && !typeMap.get(el.localName) && el.hasChildNodes()) {
@@ -306,20 +313,23 @@ const imageSwap = {
     // Make it rectangular if ratio is appropriate, or if we only know one dim
     // and it's so big that the 180k pixel max will force the pic to be skinny.
     if (t.x && !t.y && t.x > 400) {
-      t.type = imageSizesMap.get('wide');
+      t.type = imageSizesMap.get("wide");
     } else if (t.y && !t.x && t.y > 400) {
-      t.type = imageSizesMap.get('tall');
-    } else if ( // false unless (t.x && t.y)
-      (Math.max(t.x, t.y) / Math.min(t.x, t.y) >= 1.5)
-      && (Math.max(t.x, t.y) / Math.min(t.x, t.y) < 7)
+      t.type = imageSizesMap.get("tall");
+    } else if (
+      // false unless (t.x && t.y)
+      Math.max(t.x, t.y) / Math.min(t.x, t.y) >= 1.5 &&
+      Math.max(t.x, t.y) / Math.min(t.x, t.y) < 7
     ) {
-      t.type = (t.x > t.y ? imageSizesMap.get('wide') : imageSizesMap.get('tall'));
-    } else if (Math.max(t.x, t.y) / Math.min(t.x, t.y) > 7) { // false unless (t.x && t.y)
-      t.type = (t.x > t.y ? imageSizesMap.get('skinnywide') : imageSizesMap.get('skinnytall'));
+      t.type = t.x > t.y ? imageSizesMap.get("wide") : imageSizesMap.get("tall");
+    } else if (Math.max(t.x, t.y) / Math.min(t.x, t.y) > 7) {
+      // false unless (t.x && t.y)
+      t.type = t.x > t.y ? imageSizesMap.get("skinnywide") : imageSizesMap.get("skinnytall");
     }
 
-    if (!t.type) { // we didn't choose wide/tall
-      t.type = ((t.x || t.y) > 125 ? imageSizesMap.get('big') : imageSizesMap.get('small'));
+    if (!t.type) {
+      // we didn't choose wide/tall
+      t.type = (t.x || t.y) > 125 ? imageSizesMap.get("big") : imageSizesMap.get("small");
     }
 
     return t;
@@ -349,116 +359,118 @@ const imageSwap = {
       callback(false);
       return false;
     }
-    void modulesAsGlobal.messaging.send('adblock:channels.getrandomlisting', {
-      opts: {
-        width: t.x,
-        height: t.y,
-        type: t.type,
-        position: t.position,
-      },
-    }).then((picture) => {
-      const pic = picture;
-      if (!pic || pic.disabledOnPage) {
-        callback(false);
-        return false;
-      }
-      if (typeof pic.height === 'string') {
-        pic.height = Number(pic.height);
-      }
-      if (typeof pic.width === 'string') {
-        pic.width = Number(pic.width);
-      }
+    void modulesAsGlobal.messaging
+      .send("adblock:channels.getrandomlisting", {
+        opts: {
+          width: t.x,
+          height: t.y,
+          type: t.type,
+          position: t.position,
+        },
+      })
+      .then((picture) => {
+        const pic = picture;
+        if (!pic || pic.disabledOnPage) {
+          callback(false);
+          return false;
+        }
+        if (typeof pic.height === "string") {
+          pic.height = Number(pic.height);
+        }
+        if (typeof pic.width === "string") {
+          pic.width = Number(pic.width);
+        }
 
-      // If we only have one dimension, we may choose to use the picture's ratio;
-      // but don't go over 180k pixels (so e.g. 1000x__ doesn't insert a 1000x1000
-      // picture (cnn.com)).  And if an ancestor has a size, don't exceed that.
-      const max = 180000;
-      if (t.x && !t.y) {
-        const newY = Math.round(Math.min(pic.height * t.x / pic.width, max / t.x));
-        const parentY = that.parentDim(data, 'height');
-        t.y = (parentY ? Math.min(newY, parentY) : newY);
-      }
-      if (t.y && !t.x) {
-        const newX = Math.round(Math.min(pic.width * t.y / pic.height, max / t.y));
-        const parentX = that.parentDim(data, 'width');
-        t.x = (parentX ? Math.min(newX, parentX) : newX);
-      }
+        // If we only have one dimension, we may choose to use the picture's ratio;
+        // but don't go over 180k pixels (so e.g. 1000x__ doesn't insert a 1000x1000
+        // picture (cnn.com)).  And if an ancestor has a size, don't exceed that.
+        const max = 180000;
+        if (t.x && !t.y) {
+          const newY = Math.round(Math.min((pic.height * t.x) / pic.width, max / t.x));
+          const parentY = that.parentDim(data, "height");
+          t.y = parentY ? Math.min(newY, parentY) : newY;
+        }
+        if (t.y && !t.x) {
+          const newX = Math.round(Math.min((pic.width * t.y) / pic.height, max / t.y));
+          const parentX = that.parentDim(data, "width");
+          t.x = parentX ? Math.min(newX, parentX) : newX;
+        }
 
-      const result = that.fit(pic, t);
+        const result = that.fit(pic, t);
 
-      result.url = pic.url;
-      result.attributionUrl = pic.attributionUrl;
-      result.photoTitle = pic.title;
-      result.infoUrl = pic.attributionUrl;
-      result.type = t.type;
-      result.t = t;
-      result.listingHeight = pic.listingHeight;
-      result.listingWidth = pic.listingWidth;
-      result.channelName = pic.channelName;
-      result.customImage = pic.customImage;
-      callback(result);
-      return true;
-    });
+        result.url = pic.url;
+        result.attributionUrl = pic.attributionUrl;
+        result.photoTitle = pic.title;
+        result.infoUrl = pic.attributionUrl;
+        result.type = t.type;
+        result.t = t;
+        result.listingHeight = pic.listingHeight;
+        result.listingWidth = pic.listingWidth;
+        result.channelName = pic.channelName;
+        result.customImage = pic.customImage;
+        callback(result);
+        return true;
+      });
     return undefined;
   },
   // Create a container with the new image and overlay
   // Return an object with the container and its children nodes
   createNewPicContainer(placement) {
     // Container, inherit some CSS from replaced element
-    const imageSwapContainer = document.createElement('div');
+    const imageSwapContainer = document.createElement("div");
     imageSwapContainer.id = `ab-image-swap-container-${new Date().getTime()}`;
 
     // Wrapper, necessary to set postition: relative
-    const imageSwapWrapper = document.createElement('div');
-    imageSwapWrapper.classList.add('ab-image-swap-wrapper');
+    const imageSwapWrapper = document.createElement("div");
+    imageSwapWrapper.classList.add("ab-image-swap-wrapper");
 
     // New image
     let newPic;
     if (placement.customImage === true) {
-      newPic = document.createElement('div');
+      newPic = document.createElement("div");
       browser.storage.local.get(placement.url).then((savedCustomImageData) => {
-        const base = newPic.attachShadow({ mode: 'closed' });
+        const base = newPic.attachShadow({ mode: "closed" });
         // a closed shadow root is utilized to protect users images
         // from being accessed by websites where the images are injected
         const innerHTMLText = `:host {
                                content: url("${savedCustomImageData[placement.url].src}");
                              }`;
-        const styleTag = document.createElement('style');
-        styleTag.type = 'text/css';
+        const styleTag = document.createElement("style");
+        styleTag.type = "text/css";
         styleTag.textContent = innerHTMLText;
         base.appendChild(styleTag);
       });
     } else {
-      newPic = document.createElement('img');
+      newPic = document.createElement("img");
       newPic.src = placement.url;
-      newPic.alt = translate('image_of_channel', translate(placement.channelName));
-      newPic.setAttribute('referrerpolicy', 'no-referrer');
+      newPic.alt = translate("image_of_channel", translate(placement.channelName));
+      newPic.setAttribute("referrerpolicy", "no-referrer");
     }
-    newPic.classList.add('picreplacement-image');
+    newPic.classList.add("picreplacement-image");
 
     // Overlay info card
-    const infoCardOverlay = document.createElement('div');
-    infoCardOverlay.classList.add('picinjection-infocard');
+    const infoCardOverlay = document.createElement("div");
+    infoCardOverlay.classList.add("picinjection-infocard");
 
-    const overlayLogo = document.createElement('img');
-    overlayLogo.classList.add('ab-logo-header');
-    overlayLogo.src = browser.runtime.getURL('icons/dark_theme/logo.svg');
-    overlayLogo.alt = translate('adblock_logo');
+    const overlayLogo = document.createElement("img");
+    overlayLogo.classList.add("ab-logo-header");
+    overlayLogo.src = browser.runtime.getURL("icons/dark_theme/logo.svg");
+    overlayLogo.alt = translate("adblock_logo");
 
-    const overlayIcons = document.createElement('div');
-    overlayIcons.classList.add('ab-icons-header');
+    const overlayIcons = document.createElement("div");
+    overlayIcons.classList.add("ab-icons-header");
 
-    const seeIcon = document.createElement('i');
-    seeIcon.innerText = 'remove_red_eye';
-    seeIcon.classList.add('ab-material-icons');
+    const seeIcon = document.createElement("i");
+    seeIcon.innerText = "remove_red_eye";
+    seeIcon.classList.add("ab-material-icons");
 
-    const settingsIcon = document.createElement('i');
-    settingsIcon.innerText = 'settings';
-    settingsIcon.classList.add('ab-material-icons');
+    const settingsIcon = document.createElement("i");
+    settingsIcon.innerText = "settings";
+    settingsIcon.classList.add("ab-material-icons");
 
-    const closeIcon = document.createElement('i');
-    closeIcon.innerText = 'close';
-    closeIcon.classList.add('ab-material-icons');
+    const closeIcon = document.createElement("i");
+    closeIcon.innerText = "close";
+    closeIcon.classList.add("ab-material-icons");
 
     overlayIcons.appendChild(seeIcon);
     overlayIcons.appendChild(settingsIcon);
@@ -484,25 +496,25 @@ const imageSwap = {
   // Add a <style> tag into the host page's header to style all the HTML we use to replace the ad
   // including the container, the image, the overlay, the logo and the icons
   injectCSS(data, placement, containerID) {
-    const adblockLogoWidth = placement.type === imageSizesMap.get('skinnywide') ? '81px' : '114px';
-    const adblockLogoHeight = placement.type === imageSizesMap.get('skinnywide') ? '20px' : '29px';
-    const materialIconsURL = browser.runtime.getURL('/icons/MaterialIcons-Regular.woff2');
-    const styleTag = document.createElement('style');
-    styleTag.type = 'text/css';
+    const adblockLogoWidth = placement.type === imageSizesMap.get("skinnywide") ? "81px" : "114px";
+    const adblockLogoHeight = placement.type === imageSizesMap.get("skinnywide") ? "20px" : "29px";
+    const materialIconsURL = browser.runtime.getURL("/icons/MaterialIcons-Regular.woff2");
+    const styleTag = document.createElement("style");
+    styleTag.type = "text/css";
     styleTag.textContent = `
       div#${containerID} {
-        position: ${this.getStyle(data, 'position')};
+        position: ${this.getStyle(data, "position")};
         width: fit-content;
         height: fit-content;
         font-family: 'Lato', Arial, sans-serif;
         line-height: normal;
         box-sizing: initial;
-        top: ${this.getStyle(data, 'top')};
-        left: ${this.getStyle(data, 'left')};
-        right: ${this.getStyle(data, 'right')};
-        bottom: ${this.getStyle(data, 'bottom')};
+        top: ${this.getStyle(data, "top")};
+        left: ${this.getStyle(data, "left")};
+        right: ${this.getStyle(data, "right")};
+        bottom: ${this.getStyle(data, "bottom")};
         /* nytimes.com float:right ad at top is on the left without this */
-        float: ${this.getStyle(data, 'float')};
+        float: ${this.getStyle(data, "float")};
       }
       div#${containerID} > .ab-image-swap-wrapper {
         position: relative;
@@ -596,31 +608,49 @@ const imageSwap = {
     document.head.appendChild(styleTag);
   },
   setupEventHandlers(placement, containerNodes) {
-    containerNodes.image.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    }, false);
-    containerNodes.image.addEventListener('error', () => {
-      containerNodes.container.parentNode.removeChild(containerNodes.container);
-      return false;
-    }, false);
-    containerNodes.image.addEventListener('abort', () => {
-      containerNodes.container.parentNode.removeChild(containerNodes.container);
-      return false;
-    }, false);
-    containerNodes.seeIcon.addEventListener('click', () => {
+    containerNodes.image.addEventListener(
+      "click",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      },
+      false,
+    );
+    containerNodes.image.addEventListener(
+      "error",
+      () => {
+        containerNodes.container.parentNode.removeChild(containerNodes.container);
+        return false;
+      },
+      false,
+    );
+    containerNodes.image.addEventListener(
+      "abort",
+      () => {
+        containerNodes.container.parentNode.removeChild(containerNodes.container);
+        return false;
+      },
+      false,
+    );
+    containerNodes.seeIcon.addEventListener("click", () => {
       const url = encodeURIComponent(placement.attributionUrl);
       const width = placement.listingWidth;
       const height = placement.listingHeight;
       const channel = placement.channelName;
       const queryStrings = `url=${url}&width=${width}&height=${height}&channel=${channel}`;
-      browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL(`adblock-picreplacement-imageview.html?${queryStrings}`) });
+      browser.runtime.sendMessage({
+        command: "openTab",
+        urlToOpen: browser.runtime.getURL(`adblock-picreplacement-imageview.html?${queryStrings}`),
+      });
     });
-    containerNodes.settingsIcon.addEventListener('click', () => {
-      browser.runtime.sendMessage({ command: 'openTab', urlToOpen: browser.runtime.getURL('options.html#mab-image-swap') });
+    containerNodes.settingsIcon.addEventListener("click", () => {
+      browser.runtime.sendMessage({
+        command: "openTab",
+        urlToOpen: browser.runtime.getURL("options.html#mab-image-swap"),
+      });
     });
-    containerNodes.closeIcon.addEventListener('click', () => {
+    containerNodes.closeIcon.addEventListener("click", () => {
       containerNodes.container.parentNode.removeChild(containerNodes.container);
     });
   },
@@ -649,7 +679,7 @@ const imageSwap = {
       data.el.parentNode.insertBefore(containerNodes.container, data.el);
 
       // Force showing the image in case it was not showing
-      containerNodes.image.style.display = 'inline-block';
+      containerNodes.image.style.display = "inline-block";
       callback(true);
       return true;
     });
@@ -699,8 +729,8 @@ const imageSwap = {
       // the position of other elements is calculated before our pic replacement is injected.
       // a forced window resize event repaints the page to correctly lay it out
       totalSwaps += 1;
-      window.dispatchEvent(new Event('resize'));
-      void modulesAsGlobal.messaging.send('adblock:channels.recordOneAdReplaced');
+      window.dispatchEvent(new Event("resize"));
+      void modulesAsGlobal.messaging.send("adblock:channels.recordOneAdReplaced");
     }
   },
 }; // end imageSwap
@@ -714,8 +744,8 @@ const checkElement = function (element) {
     blocked: !!typeMap.get(element.localName),
   };
   if (
-    document.readyState === 'complete'
-    || (window.top === window && hostname === 'www.facebook.com')
+    document.readyState === "complete" ||
+    (window.top === window && hostname === "www.facebook.com")
   ) {
     imageSwap.replaceSection(data, imageSwap.done);
   } else {
@@ -733,7 +763,7 @@ const checkElement = function (element) {
 // 5) sort the array by size -- we want to replace the large elements first
 // 6) process the sorted array, attempting to do a pic replacment for each element
 onReady(async () => {
-  const settings = await browser.runtime.sendMessage({ command: 'getSettings' });
+  const settings = await browser.runtime.sendMessage({ command: "getSettings" });
   if (!settings || !settings.picreplacement) {
     return;
   }
@@ -766,7 +796,7 @@ onReady(async () => {
     const size = imageSwap.getSize(data);
     if (!imageSwap.isInvalidSize(size)) {
       data.size = size;
-      data.dimension = (size.x * size.y);
+      data.dimension = size.x * size.y;
       // Add element only if it is not nested in other
       // elements and it's not equal to other elements
       if (!imageSwap.isNested(data.el, allElements)) {
@@ -783,15 +813,15 @@ onReady(async () => {
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'addSelector') {
-    if (document.readyState === 'complete') {
+  if (request.command === "addSelector") {
+    if (document.readyState === "complete") {
       const elements = queryDOM(request.hidingSelector);
       for (let j = 0; j < elements.length; j++) {
         const data = { el: elements[j] };
         const size = imageSwap.getSize(data);
         if (!imageSwap.isInvalidSize(size)) {
           data.size = size;
-          data.dimension = (size.x * size.y);
+          data.dimension = size.x * size.y;
           imageSwap.replaceSection(data, imageSwap.done);
         }
       }
@@ -800,7 +830,7 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
     sendResponse({});
   }
-  if (request.command === 'addBlockingSelector') {
+  if (request.command === "addBlockingSelector") {
     urls = deferred.get(request.selector) || new Set();
     deferred.set(request.selector, urls);
     urls.add(request.url);

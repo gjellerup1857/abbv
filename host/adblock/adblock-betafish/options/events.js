@@ -17,7 +17,6 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-
 /** @module */
 
 /**
@@ -87,8 +86,7 @@ class EventEmitter {
    * @returns {boolean}
    */
   hasListeners(name) {
-    return this.listeners.size > 0
-           && (typeof name === 'undefined' || this.listeners.has(name));
+    return this.listeners.size > 0 && (typeof name === "undefined" || this.listeners.has(name));
   }
 
   /**
@@ -106,7 +104,6 @@ class EventEmitter {
     }
   }
 }
-
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 function send(command, args) {

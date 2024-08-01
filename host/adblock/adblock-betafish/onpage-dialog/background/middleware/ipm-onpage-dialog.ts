@@ -27,54 +27,55 @@ import {
   isValidLicenseStates,
   setCommandActor,
   validateParams,
-} from '../../../ipm/background';
-import * as logger from '../../../utilities/background';
+} from "../../../ipm/background";
+import * as logger from "../../../utilities/background";
 import {
   DialogBehavior,
   DialogCommand,
   DialogContent,
   DialogParams,
   Timing,
-} from './ipm-onpage-dialog.types';
+} from "./ipm-onpage-dialog.types";
 
 /**
  * List of on-page dialog parameter definitions
  */
 const paramDefinitionList: ParamDefinitionList<DialogParams> = [
   {
-    name: 'timing',
-    validate: (param): boolean => typeof param === 'undefined'
-            || param === Timing.afterWebAllowlisting
-            || param === Timing.revisitWebAllowlisted
-            || param === Timing.afterNavigation,
+    name: "timing",
+    validate: (param): boolean =>
+      typeof param === "undefined" ||
+      param === Timing.afterWebAllowlisting ||
+      param === Timing.revisitWebAllowlisted ||
+      param === Timing.afterNavigation,
   },
   {
-    name: 'display_duration',
-    validate: (param): boolean => typeof param === 'undefined'
-            || (typeof param === 'number' && param >= 0 && param <= 20),
+    name: "display_duration",
+    validate: (param): boolean =>
+      typeof param === "undefined" || (typeof param === "number" && param >= 0 && param <= 20),
   },
   {
-    name: 'sub_title',
+    name: "sub_title",
     validate: isNotEmpty,
   },
   {
-    name: 'upper_body',
+    name: "upper_body",
     validate: isNotEmpty,
   },
   {
-    name: 'button_label',
+    name: "button_label",
     validate: isNotEmpty,
   },
   {
-    name: 'button_target',
+    name: "button_target",
     validate: isSafeUrl,
   },
   {
-    name: 'domain_list',
+    name: "domain_list",
     validate: isValidDomainList,
   },
   {
-    name: 'license_state_list',
+    name: "license_state_list",
     validate: isValidLicenseStates,
   },
 ];
@@ -93,10 +94,7 @@ function isDialogCommand(command: Command): command is DialogCommand {
     return true;
   }
 
-  logger.error(
-    '[onpage-dialog]: Invalid parameters received:',
-    validationErrors.join(' '),
-  );
+  logger.error("[onpage-dialog]: Invalid parameters received:", validationErrors.join(" "));
   return false;
 }
 
@@ -113,10 +111,7 @@ function getBehavior(command: Command): DialogBehavior | null {
   }
 
   return {
-    displayDuration:
-            typeof command.display_duration === 'number'
-              ? command.display_duration
-              : 5,
+    displayDuration: typeof command.display_duration === "number" ? command.display_duration : 5,
     target: command.button_target,
     timing: command.timing,
     domain_list: command.domain_list,
@@ -137,9 +132,7 @@ function getContent(command: Command): DialogContent | null {
   }
 
   return {
-    body: command.lower_body
-      ? [command.upper_body, command.lower_body]
-      : [command.upper_body],
+    body: command.lower_body ? [command.upper_body, command.lower_body] : [command.upper_body],
     button: command.button_label,
     title: command.sub_title,
   };
@@ -152,15 +145,13 @@ function getContent(command: Command): DialogContent | null {
  *
  * @returns whether given candidate is on-page behavior
  */
-export function isDialogBehavior(
-  candidate: unknown,
-): candidate is DialogBehavior {
+export function isDialogBehavior(candidate: unknown): candidate is DialogBehavior {
   return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'displayDuration' in candidate
-        && 'target' in candidate
-        && 'timing' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "displayDuration" in candidate &&
+    "target" in candidate &&
+    "timing" in candidate
   );
 }
 
@@ -171,15 +162,13 @@ export function isDialogBehavior(
  *
  * @returns whether given candidate is on-page content
  */
-export function isDialogContent(
-  candidate: unknown,
-): candidate is DialogContent {
+export function isDialogContent(candidate: unknown): candidate is DialogContent {
   return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'body' in candidate
-        && 'button' in candidate
-        && 'title' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "body" in candidate &&
+    "button" in candidate &&
+    "title" in candidate
   );
 }
 
@@ -191,10 +180,7 @@ export function isDialogContent(
  * @returns whether given candidate is timing
  */
 export function isTiming(candidate: unknown): candidate is Timing {
-  return (
-    typeof candidate === 'string'
-        && Object.values(Timing).includes(candidate as Timing)
-  );
+  return typeof candidate === "string" && Object.values(Timing).includes(candidate as Timing);
 }
 
 /**

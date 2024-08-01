@@ -23,15 +23,15 @@
  *
  */
 class SubscriptionsProxy {
-  static add = (url, properties = {}) => sendTypeMessage('subscriptions.add', { url, properties });
+  static add = (url, properties = {}) => sendTypeMessage("subscriptions.add", { url, properties });
 
-  static getSubscriptions = () => sendTypeMessage('subscriptions.get');
+  static getSubscriptions = () => sendTypeMessage("subscriptions.get");
 
-  static sync = url => sendTypeMessage('subscriptions.sync', { url });
+  static sync = (url) => sendTypeMessage("subscriptions.sync", { url });
 
-  static remove = url => sendTypeMessage('subscriptions.remove', { url });
+  static remove = (url) => sendTypeMessage("subscriptions.remove", { url });
 
-  static has = url => send('subscriptions.has', { url });
+  static has = (url) => send("subscriptions.has", { url });
 
   static onAdded = new ListenerSupport();
 
@@ -41,19 +41,23 @@ class SubscriptionsProxy {
 }
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeSubscriptionsProxy() {
-  SubscriptionsProxy.ACCEPTABLE_ADS_URL = await sendTypeMessage('app.get', { what: 'acceptableAdsUrl' });
-  SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL = await sendTypeMessage('app.get', { what: 'acceptableAdsPrivacyUrl' });
+  SubscriptionsProxy.ACCEPTABLE_ADS_URL = await sendTypeMessage("app.get", {
+    what: "acceptableAdsUrl",
+  });
+  SubscriptionsProxy.ACCEPTABLE_ADS_PRIVACY_URL = await sendTypeMessage("app.get", {
+    what: "acceptableAdsPrivacyUrl",
+  });
 
   const processMessage = (message) => {
-    if (message && message.type === 'subscriptions.respond' && message.action) {
+    if (message && message.type === "subscriptions.respond" && message.action) {
       switch (message.action) {
-        case 'added':
+        case "added":
           SubscriptionsProxy.onAdded.emit(message.args);
           break;
-        case 'changed':
+        case "changed":
           SubscriptionsProxy.onChanged.emit(message.args);
           break;
-        case 'removed':
+        case "removed":
           SubscriptionsProxy.onRemoved.emit(message.args);
           break;
         default:
@@ -62,11 +66,11 @@ async function initializeSubscriptionsProxy() {
     }
   };
 
-  const port = browser.runtime.connect({ name: 'ui' });
+  const port = browser.runtime.connect({ name: "ui" });
   port.onMessage.addListener(processMessage);
 
   port.postMessage({
-    type: 'subscriptions.listen',
-    filter: ['added', 'changed', 'removed'],
+    type: "subscriptions.listen",
+    filter: ["added", "changed", "removed"],
   });
 }

@@ -23,17 +23,17 @@
  *
  */
 class LocalDataCollection {
-  static start = () => send('LocalDataCollection.start');
+  static start = () => send("LocalDataCollection.start");
 
-  static end = () => send('LocalDataCollection.end');
+  static end = () => send("LocalDataCollection.end");
 
-  static clearCache = () => send('LocalDataCollection.clearCache');
+  static clearCache = () => send("LocalDataCollection.clearCache");
 
-  static saveCacheData = () => send('LocalDataCollection.saveCacheData');
+  static saveCacheData = () => send("LocalDataCollection.saveCacheData");
 }
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializeLocalDataCollection() {
-  LocalDataCollection.EXT_STATS_KEY = await send('LocalDataCollection.EXT_STATS_KEY');
-  LocalDataCollection.easyPrivacyURL = await send('LocalDataCollection.easyPrivacyURL');
+  LocalDataCollection.EXT_STATS_KEY = await send("LocalDataCollection.EXT_STATS_KEY");
+  LocalDataCollection.easyPrivacyURL = await send("LocalDataCollection.easyPrivacyURL");
 }

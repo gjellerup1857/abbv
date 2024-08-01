@@ -94,7 +94,7 @@ const captureStartDate = function (): void {
     Prefs.set(ytAllowlistStartDate, Date.now());
     logger.debug(
       "[yt-detection]: set start date",
-      new Date(Prefs.get(ytAllowlistStartDate)).toLocaleDateString()
+      new Date(Prefs.get(ytAllowlistStartDate)).toLocaleDateString(),
     );
   }
 };
@@ -115,14 +115,14 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
  */
 const processYouTubeWallDetectedMessage = async (
   message: AdWallMessage,
-  sender: MessageSender
+  sender: MessageSender,
 ): Promise<void> => {
   const filters = await ewe.filters.getAllowingFilters(sender.page.id);
   const isAllowListed = !!filters.length;
   ServerMessages.recordAdWallMessage(
     youTubeWallDetected,
     message.userLoggedIn ? "1" : "0",
-    isAllowListed ? "1" : "0"
+    isAllowListed ? "1" : "0",
   );
   if (sender && sender.page && shouldAllowList()) {
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true);

@@ -24,14 +24,14 @@ export type ParamValidator = (param: unknown) => boolean;
  * A definition for a parameter.
  */
 export interface ParamDefinition<T> {
-    /**
-     * The name of the parameter.
-     */
-    name: keyof T;
-    /**
-     * A function to validate the parameter.
-     */
-    validate: ParamValidator;
+  /**
+   * The name of the parameter.
+   */
+  name: keyof T;
+  /**
+   * A function to validate the parameter.
+   */
+  validate: ParamValidator;
 }
 
 /**

@@ -17,18 +17,21 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import abRecommendationData from './data/betafish-subscriptions.json';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import abRecommendationData from "./data/betafish-subscriptions.json";
 
 const legacyDistractionControlIDs = {
-  'distraction-control-video': 'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
-  'distraction-control-survey': 'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
-  'distraction-control-newsletter': 'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
-  'distraction-control-push': 'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
+  "distraction-control-video": "https://cdn.adblockcdn.com/filters/distraction-control-video.txt",
+  "distraction-control-survey": "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt",
+  "distraction-control-newsletter":
+    "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt",
+  "distraction-control-push": "https://cdn.adblockcdn.com/filters/distraction-control-push.txt",
 };
 
-const v3URLCheck = (browser.runtime.getManifest().manifest_version === 2)
-  ? url => !url.includes('/v3/') : url => url.includes('/v3/');
+const v3URLCheck =
+  browser.runtime.getManifest().manifest_version === 2
+    ? (url) => !url.includes("/v3/")
+    : (url) => url.includes("/v3/");
 
 // Adapters & helpers to add the legacy AB 'id' to the ABP subscriptions
 // Also adds the 'language' and 'hidden' properties
@@ -38,11 +41,11 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     const { url } = subscription;
     if (abRecommendationData[url]) {
       subscription = Object.assign(subscription, abRecommendationData[url]);
-      if (Object.prototype.hasOwnProperty.call(sub, 'languages')) {
+      if (Object.prototype.hasOwnProperty.call(sub, "languages")) {
         subscription.languages = [].concat(sub.languages);
       }
-      if (!Object.prototype.hasOwnProperty.call(subscription, 'language')) {
-        subscription.language = (subscription.languages && subscription.languages.length > 0);
+      if (!Object.prototype.hasOwnProperty.call(subscription, "language")) {
+        subscription.language = subscription.languages && subscription.languages.length > 0;
       }
     }
     subscription.correctedURL = subscription.url;
@@ -58,7 +61,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
         return url;
       }
     }
-    return '';
+    return "";
   };
 
   // Get the ID for the corresponding URL
@@ -78,7 +81,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     for (const url in abRecommendationData) {
       const subscription = abRecommendationData[url];
       const { id } = subscription;
-      if (searchID === id && !url.includes('/v3/')) {
+      if (searchID === id && !url.includes("/v3/")) {
         return url;
       }
     }
@@ -103,14 +106,13 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     return Object.prototype.hasOwnProperty.call(legacyDistractionControlIDs, id);
   };
 
-
   // determine if the specified filter list is language specific
   // returns the boolean language attribue (if found)
   //         false otherwise
   const isLanguageSpecific = function (searchID) {
     // check for EasyList, as it is a language-specific list (en), but
     // shouldn't be treated as such by the AdBlock code
-    if (searchID === 'easylist') {
+    if (searchID === "easylist") {
       return false;
     }
 
@@ -139,7 +141,7 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   // Unsubcribe the user from the subscription specified in the argument
   const unsubscribe = async function (options) {
     const subscriptionUrl = getUrlFromId(options.adblockId);
-    if (subscriptionUrl !== '') {
+    if (subscriptionUrl !== "") {
       try {
         await ewe.subscriptions.remove(subscriptionUrl);
       } catch (e) {
@@ -168,11 +170,11 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
   };
 
   const rareFilterLists = {
-    'http://fanboy.co.nz/fanboy-turkish.txt': 56,
-    'https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&mimetype=plaintext': 57,
-    'https://adblock.gardar.net/is.abp.txt': 58,
-    'https://github.com/SlashArash/adblockfa': 59,
-    'https://adblock.ee/list.php': 60,
+    "http://fanboy.co.nz/fanboy-turkish.txt": 56,
+    "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&mimetype=plaintext": 57,
+    "https://adblock.gardar.net/is.abp.txt": 58,
+    "https://github.com/SlashArash/adblockfa": 59,
+    "https://adblock.ee/list.php": 60,
   };
 
   // Get a binary string representation of the users subscriptions
@@ -190,12 +192,12 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
       index = parseInt(index, 10);
       // We can only use 31 bits because the leftmost bit is the signed bit
       if (index < 31) {
-        resultA |= (2 ** index); // eslint-disable-line no-bitwise
+        resultA |= 2 ** index; // eslint-disable-line no-bitwise
       } else {
-        resultB |= (2 ** (index - 31)); // eslint-disable-line no-bitwise
+        resultB |= 2 ** (index - 31); // eslint-disable-line no-bitwise
       }
     });
-    return resultB.toString(2).padStart(32, '0') + resultA.toString(2).padStart(31, '0');
+    return resultB.toString(2).padStart(32, "0") + resultA.toString(2).padStart(31, "0");
   };
 
   // Get all subscriptions in the AB format
@@ -228,10 +230,8 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     const userSubs = await getAllSubscriptionsMinusText();
     const result = {};
     for (const adblockId in userSubs) {
-      const {
-        url, type, title, homepage, hidden, subscribed, index,
-      } = userSubs[adblockId];
-      if (url === 'https://easylist-downloads.adblockplus.org/adblock_premium.txt') {
+      const { url, type, title, homepage, hidden, subscribed, index } = userSubs[adblockId];
+      if (url === "https://easylist-downloads.adblockplus.org/adblock_premium.txt") {
         result[adblockId] = {};
         result[adblockId].subscribed = subscribed;
         result[adblockId].adblockId = adblockId;
@@ -246,7 +246,6 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     }
     return result;
   };
-
 
   // Subcribe the user to the subscription specified in the argument
   const subscribe = function (options) {
@@ -274,6 +273,6 @@ const SubscriptionAdapter = (function getSubscriptionAdapter() {
     getV2URLFromID,
     getV2URLFromURL,
   };
-}());
+})();
 
 export default SubscriptionAdapter;

@@ -30,8 +30,8 @@
 
 // Handle incoming clicks from content scripts on getadblock.com
 try {
-  if (parseUri.parseSearch(window.location.search).aadisabled === 'true') {
-    $('#acceptable_ads_info').show();
+  if (parseUri.parseSearch(window.location.search).aadisabled === "true") {
+    $("#acceptable_ads_info").show();
   }
 } catch (ex) {
   // do nothing
@@ -39,9 +39,9 @@ try {
 
 function setDataCollectionOptionsVisibility(visibility) {
   if (visibility) {
-    $('.data-collection-option-container').show(200);
+    $(".data-collection-option-container").show(200);
   } else {
-    $('.data-collection-option-container').hide(200);
+    $(".data-collection-option-container").hide(200);
   }
 }
 
@@ -54,27 +54,27 @@ const initialize = async function init() {
 
   // if the user is currently subscribed to AA
   // then 'check' the acceptable ads button.
-  if ('acceptable_ads' in subs && subs.acceptable_ads.subscribed) {
+  if ("acceptable_ads" in subs && subs.acceptable_ads.subscribed) {
     updateAcceptableAdsUIFN(true, false);
   }
 
-  if ('acceptable_ads_privacy' in subs && subs.acceptable_ads_privacy.subscribed) {
+  if ("acceptable_ads_privacy" in subs && subs.acceptable_ads_privacy.subscribed) {
     updateAcceptableAdsUIFN(true, true);
   }
 
   for (const name in settings) {
-    $(`#enable_${name}`).prop('checked', settings[name]);
+    $(`#enable_${name}`).prop("checked", settings[name]);
   }
 
   if (!settings.youtube_manage_subscribed) {
-    $('#youtube_manage_subscribed_link').removeClass('link-text-color');
-    $('#youtube_manage_subscribed_link').removeClass('pointer');
-    $('#youtube_manage_subscribed_link').addClass('disabled-link-text-color');
+    $("#youtube_manage_subscribed_link").removeClass("link-text-color");
+    $("#youtube_manage_subscribed_link").removeClass("pointer");
+    $("#youtube_manage_subscribed_link").addClass("disabled-link-text-color");
   }
 
   for (const inx in abpPrefPropertyNames) {
     const name = abpPrefPropertyNames[inx];
-    $(`#prefs__${name}`).prop('checked', Prefs[name]);
+    $(`#prefs__${name}`).prop("checked", Prefs[name]);
   }
 
   const acceptableAdsPrivacyClicked = async function (isEnabled) {
@@ -111,21 +111,21 @@ const initialize = async function init() {
     }
   };
 
-  $('input.feature[type=\'checkbox\']').on('change', async function onOptionSelectionChange() {
-    const isEnabled = $(this).is(':checked');
+  $("input.feature[type='checkbox']").on("change", async function onOptionSelectionChange() {
+    const isEnabled = $(this).is(":checked");
 
     // This change of settings causes the Options page to be automatically reloaded
     // so the CTA display logic is handled on the Options page unload/load time
-    if (this.id !== 'enable_show_advanced_options') {
+    if (this.id !== "enable_show_advanced_options") {
       MABPayment.displaySyncCTAs(true);
     }
 
-    if (this.id === 'acceptable_ads') {
+    if (this.id === "acceptable_ads") {
       acceptableAdsClicked(isEnabled);
       return;
     }
 
-    if (this.id === 'acceptable_ads_privacy') {
+    if (this.id === "acceptable_ads_privacy") {
       acceptableAdsPrivacyClicked(isEnabled);
       return;
     }
@@ -133,16 +133,16 @@ const initialize = async function init() {
     const name = this.id.substring(7); // TODO: hack
     // if the user enables/disables the context menu
     // update the pages
-    if (name === 'shouldShowBlockElementMenu') {
-      send('updateButtonUIAndContextMenus');
+    if (name === "shouldShowBlockElementMenu") {
+      send("updateButtonUIAndContextMenus");
     }
 
     // need to check for opt-out here before we set the pref
     // in order to send goodbye message before we shutdown channels
-    if (name === 'data_collection_opt_out') {
+    if (name === "data_collection_opt_out") {
       toggleDataCollectionOptPref(isEnabled);
       if (isEnabled) {
-        await send('dataCollectionOptOut');
+        await send("dataCollectionOptOut");
       }
     }
 
@@ -154,7 +154,7 @@ const initialize = async function init() {
 
     // if the user enables/disable data collection
     // start or end the data collection process
-    if (name === 'data_collection_v2') {
+    if (name === "data_collection_v2") {
       if (isEnabled) {
         DataCollectionV2.start();
       } else {
@@ -164,76 +164,76 @@ const initialize = async function init() {
 
     // if the user enables/disable YouTube Channel allowlisting
     // add or remove history state listners
-    if (name === 'youtube_channel_whitelist') {
+    if (name === "youtube_channel_whitelist") {
       if (isEnabled) {
-        send('addYTChannelListeners');
+        send("addYTChannelListeners");
       } else {
         window.setTimeout(() => {
           // toggle sub-setting as well
           settings.youtube_manage_subscribed = isEnabled;
-          $('#youtube_manage_subscribed_link').removeClass('link-text-color');
-          $('#youtube_manage_subscribed_link').removeClass('pointer');
-          $('#youtube_manage_subscribed_link').addClass('disabled-link-text-color');
+          $("#youtube_manage_subscribed_link").removeClass("link-text-color");
+          $("#youtube_manage_subscribed_link").removeClass("pointer");
+          $("#youtube_manage_subscribed_link").addClass("disabled-link-text-color");
         }, 250);
-        send('removeYTChannelListeners');
+        send("removeYTChannelListeners");
       }
     }
 
     // if the user enables/disable the Manage AdBlock settings from YouTube™ subscriptions page
     // also, wait a moment to allow the current 'set' to save,
     // then enable YouTube Channel allowlisting
-    if (name === 'youtube_manage_subscribed') {
+    if (name === "youtube_manage_subscribed") {
       if (isEnabled) {
         window.setTimeout(() => {
           // toggle parent setting as well
           settings.youtube_channel_whitelist = isEnabled;
-          send('addYTChannelListeners');
+          send("addYTChannelListeners");
         }, 250);
       }
       if (!isEnabled) {
-        $('#youtube_manage_subscribed_link').removeClass('link-text-color');
-        $('#youtube_manage_subscribed_link').removeClass('pointer');
-        $('#youtube_manage_subscribed_link').addClass('disabled-link-text-color');
+        $("#youtube_manage_subscribed_link").removeClass("link-text-color");
+        $("#youtube_manage_subscribed_link").removeClass("pointer");
+        $("#youtube_manage_subscribed_link").addClass("disabled-link-text-color");
       } else {
-        $('#youtube_manage_subscribed_link').addClass('link-text-color');
-        $('#youtube_manage_subscribed_link').addClass('pointer');
-        $('#youtube_manage_subscribed_link').removeClass('disabled-link-text-color');
+        $("#youtube_manage_subscribed_link").addClass("link-text-color");
+        $("#youtube_manage_subscribed_link").addClass("pointer");
+        $("#youtube_manage_subscribed_link").removeClass("disabled-link-text-color");
       }
     }
 
     // if the user enables/disable Twitch Channel allow listing
     // add or remove listners
-    if (name === 'twitch_channel_allowlist') {
+    if (name === "twitch_channel_allowlist") {
       if (isEnabled) {
-        send('addTwitchAllowlistListeners');
+        send("addTwitchAllowlistListeners");
       } else {
-        send('removeTwitchAllowlistListeners');
+        send("removeTwitchAllowlistListeners");
       }
     }
   });
 
-  $('#youtube_manage_subscribed_link').on('click', () => {
+  $("#youtube_manage_subscribed_link").on("click", () => {
     if (settings.youtube_manage_subscribed) {
-      send('openYTManagedSubPage');
+      send("openYTManagedSubPage");
     }
   });
 };
 
 const showSeparators = function () {
-  const $allGeneralOptions = $('#general-option-list li');
-  const $lastVisibleOption = $('#general-option-list li:visible:last');
-  $allGeneralOptions.addClass('bottom-line');
-  $lastVisibleOption.removeClass('bottom-line');
+  const $allGeneralOptions = $("#general-option-list li");
+  const $lastVisibleOption = $("#general-option-list li:visible:last");
+  $allGeneralOptions.addClass("bottom-line");
+  $lastVisibleOption.removeClass("bottom-line");
 };
 
 function addUIChangeListeners() {
-  $('#enable_show_advanced_options').on('change', function onAdvancedOptionsChange() {
-  // Reload the page to show or hide the advanced options on the
-  // options page -- after a moment so we have time to save the option.
-  // Also, disable all advanced options, so that non-advanced users will
-  // not end up with debug/beta/test options enabled.
+  $("#enable_show_advanced_options").on("change", function onAdvancedOptionsChange() {
+    // Reload the page to show or hide the advanced options on the
+    // options page -- after a moment so we have time to save the option.
+    // Also, disable all advanced options, so that non-advanced users will
+    // not end up with debug/beta/test options enabled.
     if (!this.checked) {
-      $('.advanced input[type=\'checkbox\']:checked').each(function forEachAdvancedOption() {
+      $(".advanced input[type='checkbox']:checked").each(function forEachAdvancedOption() {
         settings[this.id.substr(7)] = false;
       });
     }
@@ -244,7 +244,7 @@ function addUIChangeListeners() {
     }, 50);
   });
 
-  $('#prefs__data_collection_opt_out').on('change', function onDataCollectionOptionChange() {
+  $("#prefs__data_collection_opt_out").on("change", function onDataCollectionOptionChange() {
     setDataCollectionOptionsVisibility(!this.checked);
   });
 }
@@ -258,7 +258,7 @@ $(async () => {
   if (!License || $.isEmptyObject(License) || !MABPayment) {
     return;
   }
-  const payInfo = MABPayment.initialize('general');
+  const payInfo = MABPayment.initialize("general");
   if (License.shouldShowMyAdBlockEnrollment()) {
     MABPayment.freeUserLogic(payInfo);
   } else if (License.isActiveLicense()) {
@@ -266,24 +266,24 @@ $(async () => {
   }
 
   MABPayment.displaySyncCTAs();
-  $('.sync-cta #get-it-now-general').on('click', MABPayment.userClickedSyncCTA);
-  $('.sync-cta #close-sync-cta-general').on('click', MABPayment.userClosedSyncCTA);
-  $('a.link-to-tab').on('click', (event) => {
-    activateTab($(event.target).attr('href'));
+  $(".sync-cta #get-it-now-general").on("click", MABPayment.userClickedSyncCTA);
+  $(".sync-cta #close-sync-cta-general").on("click", MABPayment.userClosedSyncCTA);
+  $("a.link-to-tab").on("click", (event) => {
+    activateTab($(event.target).attr("href"));
   });
 });
 
 const onSettingsChanged = function (name, currentValue, previousValue) {
   const checkBoxElement = $(`#enable_${name}`);
-  if (checkBoxElement.length === 1 && checkBoxElement.is(':checked') === previousValue) {
-    $(`#enable_${name}`).prop('checked', currentValue);
-    if (name === 'show_advanced_options') {
-      $('.advanced').toggle(currentValue);
+  if (checkBoxElement.length === 1 && checkBoxElement.is(":checked") === previousValue) {
+    $(`#enable_${name}`).prop("checked", currentValue);
+    if (name === "show_advanced_options") {
+      $(".advanced").toggle(currentValue);
     }
   }
 };
 
-settingsNotifier.on('settings.changed', onSettingsChanged);
+settingsNotifier.on("settings.changed", onSettingsChanged);
 
 const toggleDataCollectionOptPref = function (value) {
   if (value) {
@@ -306,14 +306,14 @@ const toggleDataCollectionOptPref = function (value) {
 };
 
 const onPrefsChanged = function (name, currentValue) {
-  $(`#prefs__${name}`).prop('checked', currentValue);
+  $(`#prefs__${name}`).prop("checked", currentValue);
 
-  if (name === 'data_collection_opt_out') {
+  if (name === "data_collection_opt_out") {
     setDataCollectionOptionsVisibility(!currentValue);
   }
 };
 
-prefsNotifier.on('prefs.changed', onPrefsChanged);
+prefsNotifier.on("prefs.changed", onPrefsChanged);
 
 const onSubAdded = function (items) {
   let item = items;

@@ -18,63 +18,66 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, ext, twitchChannelNamePages, ytChannelNamePages */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import * as info from 'info';
-import { Prefs } from './alias/prefs';
+import * as info from "info";
+import { Prefs } from "./alias/prefs";
 
-import { getCustomFilterMetaData, getDebugInfo } from './debug/background';
-import { getUserFilters } from './filter-utils';
+import { getCustomFilterMetaData, getDebugInfo } from "./debug/background";
+import { getUserFilters } from "./filter-utils";
 import {
   adblockIsDomainPaused,
   adblockIsPaused,
   pausedFilterText1,
   pausedFilterText2,
   saveDomainPauses,
-} from './pause/background';
-import { start as startContentFiltering } from './alias/contentFiltering';
-import {
-  NEW_BADGE_REASONS,
-  getNewBadgeTextReason,
-  showIconBadgeCTA,
-} from './alias/icon';
+} from "./pause/background";
+import { start as startContentFiltering } from "./alias/contentFiltering";
+import { NEW_BADGE_REASONS, getNewBadgeTextReason, showIconBadgeCTA } from "./alias/icon";
 
-import { getUserId } from './id/background/index';
-import { initialize } from './alias/subscriptionInit';
+import { getUserId } from "./id/background/index";
+import { initialize } from "./alias/subscriptionInit";
 import {
   IPM as IPMTelemetry,
   TELEMETRY,
   startCdpOptOutListener,
   startTelemetryOptOutListener,
-} from './telemetry/background';
-import { getBlockedPerPage, Stats } from '../adblockplusui/adblockpluschrome/lib/stats';
-import { getSettings, settings } from './prefs/background';
-import { License, channels } from './picreplacement/check';
-import { revalidateAllowlistingStates } from '../adblockplusui/adblockpluschrome/lib/allowlisting';
-import { setUninstallURL } from './alias/uninstall';
+} from "./telemetry/background";
+import { getBlockedPerPage, Stats } from "../adblockplusui/adblockpluschrome/lib/stats";
+import { getSettings, settings } from "./prefs/background";
+import { License, channels } from "./picreplacement/check";
+import { revalidateAllowlistingStates } from "../adblockplusui/adblockpluschrome/lib/allowlisting";
+import { setUninstallURL } from "./alias/uninstall";
 
-import DataCollectionV2 from './datacollection.v2';
-import LocalDataCollection from './localdatacollection';
-import ServerMessages from './servermessages';
-import SubscriptionAdapter from './subscriptionadapter';
-import SyncService from './picreplacement/sync-service';
-import * as prefs from './prefs/background';
+import DataCollectionV2 from "./datacollection.v2";
+import LocalDataCollection from "./localdatacollection";
+import ServerMessages from "./servermessages";
+import SubscriptionAdapter from "./subscriptionadapter";
+import SyncService from "./picreplacement/sync-service";
+import * as prefs from "./prefs/background";
 
 import {
   createFilterMetaData,
   chromeStorageSetHelper,
   determineUserLanguage,
   parseUri,
-} from './utilities/background/bg-functions';
+} from "./utilities/background/bg-functions";
 
 // Message verification
-const trustedBaseUrl = browser.runtime.getURL('');
-const gabHostnames = ['https://getadblock.com', 'https://dev.getadblock.com', 'https://dev1.getadblock.com', 'https://dev2.getadblock.com', 'https://vpn.getadblock.com', 'https://help.getadblock.com'];
+const trustedBaseUrl = browser.runtime.getURL("");
+const gabHostnames = [
+  "https://getadblock.com",
+  "https://dev.getadblock.com",
+  "https://dev1.getadblock.com",
+  "https://dev2.getadblock.com",
+  "https://vpn.getadblock.com",
+  "https://help.getadblock.com",
+];
 
-const isTrustedSender = sender => sender.url.startsWith(trustedBaseUrl);
+const isTrustedSender = (sender) => sender.url.startsWith(trustedBaseUrl);
 
-const isTrustedTarget = url => (url.startsWith(trustedBaseUrl)
-  || gabHostnames.includes(new URL(url).origin));
+const isTrustedTarget = (url) =>
+  url.startsWith(trustedBaseUrl) || gabHostnames.includes(new URL(url).origin);
 
 const isTrustedSenderDomain = (sender) => {
   if (sender.origin) {
@@ -85,7 +88,7 @@ const isTrustedSenderDomain = (sender) => {
   }
   return false;
 };
-const adblocBetaID = 'pljaalgmajnlogcgiohkhdmgpomjcihk';
+const adblocBetaID = "pljaalgmajnlogcgiohkhdmgpomjcihk";
 
 // eslint-disable-next-line no-restricted-globals
 Object.assign(self, {
@@ -123,7 +126,7 @@ const countCache = (function countCache() {
 
   // Update custom filter count stored in storage
   const updateCustomFilterCount = function () {
-    chromeStorageSetHelper('custom_filter_count', cache);
+    chromeStorageSetHelper("custom_filter_count", cache);
   };
 
   return {
@@ -157,18 +160,18 @@ const countCache = (function countCache() {
     // Add 1 to custom filter count for the filters domain.
     // Inputs: filter:string - line of text to be added to custom filters.
     addCustomFilterCount(filter) {
-      const host = filter.split('##')[0];
+      const host = filter.split("##")[0];
       cache[host] = this.getCustomFilterCount(host) + 1;
       updateCustomFilterCount();
     },
 
     init() {
-      browser.storage.local.get('custom_filter_count').then((response) => {
+      browser.storage.local.get("custom_filter_count").then((response) => {
         cache = response.custom_filter_count || {};
       });
     },
   };
-}());
+})();
 countCache.init();
 
 // Add a new custom filter entry.
@@ -200,7 +203,7 @@ const addCustomFilter = async function (filterText, origin) {
 // Returns: null if successful, otherwise an exception
 const createDomainAllowlistFilter = async function (pageUrl, origin) {
   const theURL = new URL(pageUrl);
-  const host = theURL.hostname.replace(/^www\./, '');
+  const host = theURL.hostname.replace(/^www\./, "");
   const filter = `@@||${host}/*^$document`;
   return addCustomFilter(filter, origin);
 };
@@ -217,7 +220,7 @@ const isWhitelistFilter = function (text) {
 //         tabId: integer - tab id of the tab that may be allowlisted by a custom filter
 // Returns: true if a filter was found and removed; false otherwise.
 const tryToUnwhitelist = async function (pageUrl, tabId) {
-  const url = pageUrl.replace(/#.*$/, ''); // Whitelist ignores anchors
+  const url = pageUrl.replace(/#.*$/, ""); // Whitelist ignores anchors
   const customFilters = await getUserFilters();
   if (!customFilters || !customFilters.length === 0) {
     return false;
@@ -231,7 +234,7 @@ const tryToUnwhitelist = async function (pageUrl, tabId) {
     // filter
     if (whitelist > -1) {
       // Remove protocols
-      const [finalUrl] = url.replace(/((http|https):\/\/)?(www.)?/, '').split(/[/?#]/);
+      const [finalUrl] = url.replace(/((http|https):\/\/)?(www.)?/, "").split(/[/?#]/);
       await ewe.filters.remove([text]);
       await ewe.filters.remove([`${text}|~${finalUrl}`]);
       return true;
@@ -284,11 +287,14 @@ const removeCustomFilterForHost = function (host) {
 const confirmRemovalOfCustomFiltersOnHost = function (host, activeTabId) {
   if (!browser.tabs.executeScript) {
     /* eslint-disable-next-line no-console */
-    console.error('confirmRemovalOfCustomFiltersOnHost disable for MV3 extensions');
+    console.error("confirmRemovalOfCustomFiltersOnHost disable for MV3 extensions");
     return; // this function isn't supported under MV3, and shouldn't be invoked for MV3 extensions.
   }
   const customFilterCount = countCache.getCustomFilterCount(host);
-  const confirmationText = browser.i18n.getMessage('confirm_undo_custom_filters', [customFilterCount, host]);
+  const confirmationText = browser.i18n.getMessage("confirm_undo_custom_filters", [
+    customFilterCount,
+    host,
+  ]);
   const messageListenerFN = function (request) {
     browser.runtime.onMessage.removeListener(messageListenerFN);
     if (request === `remove_custom_filters_on_host${host}:true`) {
@@ -299,12 +305,21 @@ const confirmRemovalOfCustomFiltersOnHost = function (host, activeTabId) {
 
   browser.runtime.onMessage.addListener(messageListenerFN);
   /* eslint-disable prefer-template */
-  const codeToExecute = 'var host = "' + host + '"; var confirmResponse = confirm("' + confirmationText + '"); browser.runtime.sendMessage("remove_custom_filters_on_host" + host + ":" + confirmResponse); ';
+  const codeToExecute =
+    'var host = "' +
+    host +
+    '"; var confirmResponse = confirm("' +
+    confirmationText +
+    '"); browser.runtime.sendMessage("remove_custom_filters_on_host" + host + ":" + confirmResponse); ';
   const details = { allFrames: false, code: codeToExecute };
   browser.tabs.executeScript(activeTabId, details);
 };
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command !== 'confirmRemovalOfCustomFiltersOnHost' || !message.host || !message.activeTabId) {
+  if (
+    message.command !== "confirmRemovalOfCustomFiltersOnHost" ||
+    !message.host ||
+    !message.activeTabId
+  ) {
     return;
   }
   confirmRemovalOfCustomFiltersOnHost(message.host, message.activeTabId);
@@ -312,7 +327,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command !== 'removeCustomFilterForHost' || !message.host) {
+  if (message.command !== "removeCustomFilterForHost" || !message.host) {
     return;
   }
   removeCustomFilterForHost(message.host);
@@ -326,10 +341,10 @@ const reloadTab = function (id, callback) {
   let tabId = id;
   const localCallback = callback;
   const listener = function (updatedTabId, changeInfo, tab) {
-    if (changeInfo.status === 'complete' && tab.status === 'complete') {
+    if (changeInfo.status === "complete" && tab.status === "complete") {
       setTimeout(() => {
-        browser.tabs.sendMessage(updatedTabId, { command: 'reloadcomplete' });
-        if (typeof localCallback === 'function') {
+        browser.tabs.sendMessage(updatedTabId, { command: "reloadcomplete" });
+        if (typeof localCallback === "function") {
           localCallback(tab);
         }
         browser.tabs.onUpdated.removeListener(listener);
@@ -337,7 +352,7 @@ const reloadTab = function (id, callback) {
     }
   };
 
-  if (typeof tabId === 'string') {
+  if (typeof tabId === "string") {
     tabId = parseInt(tabId, 10);
   }
   browser.tabs.onUpdated.addListener(listener);
@@ -356,51 +371,52 @@ const getAdblockUserId = async function () {
 
 // Returns true if the url cannot be blocked
 const pageIsUnblockable = function (url) {
-  if (!url) { // Protect against empty URLs - e.g. Safari empty/bookmarks/top sites page
+  if (!url) {
+    // Protect against empty URLs - e.g. Safari empty/bookmarks/top sites page
     return true;
   }
-  let scheme = '';
+  let scheme = "";
   if (!url.protocol) {
     scheme = parseUri(url).protocol;
   } else {
     scheme = url.protocol;
   }
 
-  return (scheme !== 'http:' && scheme !== 'https:' && scheme !== 'feed:');
+  return scheme !== "http:" && scheme !== "https:" && scheme !== "feed:";
 };
 
 // Returns true if the page is whitelisted.
 // Called from a content script
 const pageIsWhitelisted = async function (page) {
-  const whitelisted = !!await ewe.filters.getAllowingFilters(page.id).length;
-  return (whitelisted !== undefined && whitelisted !== null);
+  const whitelisted = !!(await ewe.filters.getAllowingFilters(page.id).length);
+  return whitelisted !== undefined && whitelisted !== null;
 };
-
 
 const getTab = function (tabId) {
   return new Promise((resolve) => {
     if (tabId) {
       let id = tabId;
-      if (typeof id === 'string') {
+      if (typeof id === "string") {
         id = parseInt(id, 10);
       }
       browser.tabs.get(id).then((tab) => {
         resolve(tab);
       });
     } else {
-      browser.tabs.query({
-        active: true,
-        lastFocusedWindow: true,
-      }).then((tabs) => {
-        if (tabs.length === 0) {
-          resolve(); // For example: only the background devtools or a popup are opened
-        }
-        resolve(tabs[0]);
-      });
+      browser.tabs
+        .query({
+          active: true,
+          lastFocusedWindow: true,
+        })
+        .then((tabs) => {
+          if (tabs.length === 0) {
+            resolve(); // For example: only the background devtools or a popup are opened
+          }
+          resolve(tabs[0]);
+        });
     }
   });
 };
-
 
 // Get interesting information about the current tab.
 // Inputs:
@@ -471,9 +487,9 @@ const getCurrentTabInfo = function (secondTime, tabId) {
           result.subscriptions = await SubscriptionAdapter.getSubscriptionsMinusText();
         }
         if (
-          getSettings()
-          && getSettings().youtube_channel_whitelist
-          && parseUri(tab.url).hostname === 'www.youtube.com'
+          getSettings() &&
+          getSettings().youtube_channel_whitelist &&
+          parseUri(tab.url).hostname === "www.youtube.com"
         ) {
           result.youTubeChannelName = ytChannelNamePages.get(page.id);
           // handle the odd occurence of when the  YT Channel Name
@@ -488,10 +504,10 @@ const getCurrentTabInfo = function (secondTime, tabId) {
           }
         }
         if (
-          twitchChannelNamePages
-          && getSettings()
-          && getSettings().twitch_channel_allowlist
-          && parseUri(tab.url).hostname === 'www.twitch.tv'
+          twitchChannelNamePages &&
+          getSettings() &&
+          getSettings().twitch_channel_allowlist &&
+          parseUri(tab.url).hostname === "www.twitch.tv"
         ) {
           result.twitchChannelName = twitchChannelNamePages.get(page.id);
           if (result.twitchChannelName) {
@@ -506,8 +522,8 @@ const getCurrentTabInfo = function (secondTime, tabId) {
   });
 };
 
-const premiumCtaViewed = 'premium_cta_viewed';
-const versionStorageKey = 'last_known_version';
+const premiumCtaViewed = "premium_cta_viewed";
+const versionStorageKey = "last_known_version";
 const isUpdatePageEngaged = true;
 
 const showUpdatePage = async function (details) {
@@ -515,12 +531,12 @@ const showUpdatePage = async function (details) {
 
   const getUpdatedURL = async function () {
     const userID = await getUserId();
-    const updatedURL = new URL('https://getadblock.com/update/');
-    updatedURL.searchParams.append('f', TELEMETRY.flavor.toLowerCase());
-    updatedURL.searchParams.append('version', browser.runtime.getManifest().version);
-    updatedURL.searchParams.append('u', userID);
-    updatedURL.searchParams.append('bc', Prefs.blocked_total);
-    updatedURL.searchParams.append('rt', updateTabRetryCount);
+    const updatedURL = new URL("https://getadblock.com/update/");
+    updatedURL.searchParams.append("f", TELEMETRY.flavor.toLowerCase());
+    updatedURL.searchParams.append("version", browser.runtime.getManifest().version);
+    updatedURL.searchParams.append("u", userID);
+    updatedURL.searchParams.append("bc", Prefs.blocked_total);
+    updatedURL.searchParams.append("rt", updateTabRetryCount);
     return updatedURL.href;
   };
 
@@ -541,7 +557,7 @@ const showUpdatePage = async function (details) {
   const shouldShowUpdate = async function () {
     const checkQueryState = async function () {
       const state = await browser.idle.queryState(30);
-      if (state === 'active') {
+      if (state === "active") {
         openUpdatedPage();
       } else {
         browser.tabs.onCreated.removeListener(waitForUserAction);
@@ -556,7 +572,7 @@ const showUpdatePage = async function (details) {
     };
 
     const extensionInfo = await browser.management.getSelf();
-    if (extensionInfo.installType !== 'admin') {
+    if (extensionInfo.installType !== "admin") {
       await License.ready();
       checkLicense();
     }
@@ -564,17 +580,17 @@ const showUpdatePage = async function (details) {
 
   // only open the /update page for English, French, German, Spanish and Brazilian/Portugese users.
   const shouldShowUpdateForLocale = function () {
-    const slashUpdateLanguages = ['en', 'fr', 'de', 'es', 'nl'];
+    const slashUpdateLanguages = ["en", "fr", "de", "es", "nl"];
     const locale = determineUserLanguage();
     const language = locale.substring(0, 2);
     return slashUpdateLanguages.includes(language);
   };
 
   if (
-    details.reason === 'update'
-    && info.platform === 'gecko'
-    && shouldShowUpdateForLocale()
-    && browser.runtime.id !== adblocBetaID
+    details.reason === "update" &&
+    info.platform === "gecko" &&
+    shouldShowUpdateForLocale() &&
+    browser.runtime.id !== adblocBetaID
   ) {
     await settings.onload();
     if (!getSettings().suppress_update_page) {
@@ -597,20 +613,22 @@ const getValueOrFalse = async (key) => {
 
 browser.runtime.onInstalled.addListener(async (details) => {
   // Display beta page after each update for beta-users only
-  if ((details.reason === 'update' || details.reason === 'install')
-    && browser.runtime.id === adblocBetaID) {
-    browser.tabs.create({ url: 'https://getadblock.com/beta' });
+  if (
+    (details.reason === "update" || details.reason === "install") &&
+    browser.runtime.id === adblocBetaID
+  ) {
+    browser.tabs.create({ url: "https://getadblock.com/beta" });
   }
 
   // Show the new callout to everyone for the new premium popup until they click
   const alreadyViewedCta = await getValueOrFalse(premiumCtaViewed);
-  if (details.reason === 'update' && !alreadyViewedCta) {
+  if (details.reason === "update" && !alreadyViewedCta) {
     await showIconBadgeCTA(NEW_BADGE_REASONS.UPDATE_FOR_EVERYONE);
     void browser.storage.local.set({ [premiumCtaViewed]: true });
   }
 
   // We want to move away from localStorage, so remove item if it exists.
-  if (typeof localStorage !== 'undefined') {
+  if (typeof localStorage !== "undefined") {
     localStorage.removeItem(versionStorageKey);
   }
 
@@ -643,7 +661,7 @@ async function checkUpdateProgress() {
   subscriptions.forEach(async (subscription) => {
     if (subscription.downloading) {
       inProgress = true;
-    } else if (subscription.downloadStatus && subscription.downloadStatus !== 'synchronize_ok') {
+    } else if (subscription.downloadStatus && subscription.downloadStatus !== "synchronize_ok") {
       filterError = true;
     }
   });
@@ -665,14 +683,14 @@ initialize.then(async () => {
 
 // Create the "blockage stats" for the uninstall logic ...
 browser.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
-    browser.storage.local.get('blockage_stats').then((response) => {
+  if (details.reason === "install") {
+    browser.storage.local.get("blockage_stats").then((response) => {
       const { blockage_stats } = response;
       if (!blockage_stats) {
         const data = {};
         data.start = Date.now();
         data.version = 1;
-        chromeStorageSetHelper('blockage_stats', data);
+        chromeStorageSetHelper("blockage_stats", data);
       }
     });
   }

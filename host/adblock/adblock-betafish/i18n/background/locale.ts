@@ -17,7 +17,7 @@
 
 import { LocaleInfo } from "./locale.types";
 
-import * as browser from 'webextension-polyfill';
+import * as browser from "webextension-polyfill";
 
 /**
  * Retrieves user locale information
@@ -25,8 +25,8 @@ import * as browser from 'webextension-polyfill';
  * @returns locale information
  */
 export function getLocaleInfo(): LocaleInfo {
-    return {
-        locale: browser.i18n.getUILanguage(),
-        readingDirection: browser.i18n.getMessage("@@bidi_dir")
-    };
+  return {
+    locale: browser.i18n.getUILanguage(),
+    readingDirection: browser.i18n.getMessage("@@bidi_dir"),
+  };
 }

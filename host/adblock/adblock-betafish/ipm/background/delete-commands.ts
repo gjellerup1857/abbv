@@ -15,34 +15,23 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setCommandActor } from './command-library';
-import { commandStorageKey } from './command-library.types'
-import {
-  Command,
-  CommandHandler,
-  CommandName,
-  Content
-} from './command-library.types';
-import {
-  deleteAllKey,
-  DeleteBehavior,
-  DeleteCommand,
-  DeleteParams
-} from './delete-commands.types';
-import * as logger from '../../utilities/background';
-import { validateParams } from './param-validator';
-import { ParamDefinitionList } from './param-validator.types';
-import { Prefs } from '../../alias/prefs';
+import { setCommandActor } from "./command-library";
+import { commandStorageKey } from "./command-library.types";
+import { Command, CommandHandler, CommandName, Content } from "./command-library.types";
+import { deleteAllKey, DeleteBehavior, DeleteCommand, DeleteParams } from "./delete-commands.types";
+import * as logger from "../../utilities/background";
+import { validateParams } from "./param-validator";
+import { ParamDefinitionList } from "./param-validator.types";
+import { Prefs } from "../../alias/prefs";
 
 /**
  * List of delete-commands parameter definitions
  */
 const paramDefinitionList: ParamDefinitionList<DeleteParams> = [
   {
-    name: 'commands',
-    validate: (param): boolean =>
-      typeof param === 'string' && param.trim() !== ''
-  }
+    name: "commands",
+    validate: (param): boolean => typeof param === "string" && param.trim() !== "",
+  },
 ];
 
 /**
@@ -58,10 +47,7 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
     return true;
   }
 
-  logger.error(
-    '[delete-commands]: Invalid parameteres received:',
-    validationErrors.join(' ')
-  );
+  logger.error("[delete-commands]: Invalid parameteres received:", validationErrors.join(" "));
   return false;
 }
 
@@ -71,14 +57,8 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
  * @param candidate - Candidate
  * @returns whether given candidate is delete-commands behavior
  */
-export function isDeleteBehavior(
-  candidate: unknown
-): candidate is DeleteBehavior {
-  return (
-    candidate !== null &&
-    typeof candidate === 'object' &&
-    'commandIds' in candidate
-  );
+export function isDeleteBehavior(candidate: unknown): candidate is DeleteBehavior {
+  return candidate !== null && typeof candidate === "object" && "commandIds" in candidate;
 }
 
 /**
@@ -99,7 +79,7 @@ function getBehavior(command: Command): DeleteBehavior | null {
   if (commands === deleteAllKey) {
     commandIds = Object.keys(Prefs.get(commandStorageKey));
   } else {
-    commandIds = commands.split(',').map((id) => id.trim());
+    commandIds = commands.split(",").map((id) => id.trim());
   }
 
   return { commandIds };
@@ -128,6 +108,6 @@ export function setDeleteCommandHandler(handler: CommandHandler): void {
     getBehavior,
     getContent,
     handleCommand: handler,
-    isValidCommand: isDeleteCommand
+    isValidCommand: isDeleteCommand,
   });
 }

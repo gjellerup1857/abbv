@@ -19,14 +19,13 @@
 /* global translate, sessionStorageGet */
 
 /* eslint-disable import/extensions */
-import { PAGE_INFO_KEY } from '../utils.js';
+import { PAGE_INFO_KEY } from "../utils.js";
 
 const showConditions = {
   undoAllowlist() {
     const disabledOrallowlisted = this.pageInfo.disabledSite || !this.pageInfo.whitelisted;
-    const eligibleForUndo = !this.pageInfo.paused
-      && !this.pageInfo.domainPaused
-      && disabledOrallowlisted;
+    const eligibleForUndo =
+      !this.pageInfo.paused && !this.pageInfo.domainPaused && disabledOrallowlisted;
 
     return eligibleForUndo && this.pageInfo.customFilterCount;
   },
@@ -39,13 +38,13 @@ export default class MenuLink extends HTMLElement {
     const { i18n, name } = this.dataset;
 
     if (showConditions[name] && !showConditions[name].call(this)) {
-      this.outerHTML = '';
+      this.outerHTML = "";
       return;
     }
 
-    const actionLink = document.createElement('a');
+    const actionLink = document.createElement("a");
     actionLink.innerText = translate(i18n);
-    actionLink.href = this.getAttribute('href');
+    actionLink.href = this.getAttribute("href");
 
     this.appendChild(actionLink);
   }

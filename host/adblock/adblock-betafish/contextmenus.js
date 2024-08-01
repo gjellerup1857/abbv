@@ -19,27 +19,25 @@
 /* global browser, ext, adblockIsPaused, adblockIsDomainPaused
    License, reloadTab, getSettings, tryToUnwhitelist */
 
-import { Prefs } from 'prefs';
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { setBadge } from '../adblockplusui/adblockpluschrome/lib/browserAction';
-import ServerMessages from './servermessages';
-import { log } from './utilities/background/bg-functions';
+import { Prefs } from "prefs";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { setBadge } from "../adblockplusui/adblockpluschrome/lib/browserAction";
+import ServerMessages from "./servermessages";
+import { log } from "./utilities/background/bg-functions";
 
-import messageValidator from './messaging/messagevalidator';
+import messageValidator from "./messaging/messagevalidator";
 
 const updateBadge = async function (tabArg) {
   if (tabArg) {
     const tab = tabArg;
     tab.url = tab.url ? tab.url : tab.pendingUrl;
     if (
-      tab.active
-      && (
-        adblockIsPaused()
-        || adblockIsDomainPaused({ url: tab.url.href, id: tab.id })
-        || !!(await ewe.filters.getAllowingFilters(tab.id)).length
-      )
+      tab.active &&
+      (adblockIsPaused() ||
+        adblockIsDomainPaused({ url: tab.url.href, id: tab.id }) ||
+        !!(await ewe.filters.getAllowingFilters(tab.id)).length)
     ) {
-      setBadge(tab.id, { number: '' });
+      setBadge(tab.id, { number: "" });
     }
   }
 };
@@ -68,44 +66,40 @@ const updateButtonUIAndContextMenus = async function (tabArg) {
 // Bounce messages back to content scripts.
 const emitPageBroadcast = (function emitBroadcast() {
   const injectMap = {
-    topOpenWhitelistUI:
-    {
+    topOpenWhitelistUI: {
       allFrames: false,
       include: [
-        'jquery-3.5.1.min.js',
-        'adblock-uiscripts-load_wizard_resources.js',
-        'adblock-uiscripts-top_open_whitelist_ui.js',
+        "jquery-3.5.1.min.js",
+        "adblock-uiscripts-load_wizard_resources.js",
+        "adblock-uiscripts-top_open_whitelist_ui.js",
       ],
     },
-    topOpenWhitelistCompletionUI:
-    {
+    topOpenWhitelistCompletionUI: {
       allFrames: false,
       include: [
-        'jquery-3.5.1.min.js',
-        'globals-front.js',
-        'adblock-uiscripts-load_wizard_resources.js',
-        'adblock-uiscripts-top_open_whitelist_completion_ui.js',
+        "jquery-3.5.1.min.js",
+        "globals-front.js",
+        "adblock-uiscripts-load_wizard_resources.js",
+        "adblock-uiscripts-top_open_whitelist_completion_ui.js",
       ],
     },
-    topOpenBlacklistUI:
-    {
+    topOpenBlacklistUI: {
       allFrames: false,
       include: [
-        'jquery-3.5.1.min.js',
-        'purify.min.js',
-        'globals-front.js',
-        'adblock-uiscripts-load_wizard_resources.js',
-        'adblock-uiscripts-blacklisting-overlay.js',
-        'adblock-uiscripts-blacklisting-clickwatcher.js',
-        'adblock-uiscripts-blacklisting-elementchain.js',
-        'adblock-uiscripts-blacklisting-blacklistui.js',
-        'adblock-uiscripts-top_open_blacklist_ui.js',
+        "jquery-3.5.1.min.js",
+        "purify.min.js",
+        "globals-front.js",
+        "adblock-uiscripts-load_wizard_resources.js",
+        "adblock-uiscripts-blacklisting-overlay.js",
+        "adblock-uiscripts-blacklisting-clickwatcher.js",
+        "adblock-uiscripts-blacklisting-elementchain.js",
+        "adblock-uiscripts-blacklisting-blacklistui.js",
+        "adblock-uiscripts-top_open_blacklist_ui.js",
       ],
     },
-    sendContentToBack:
-    {
+    sendContentToBack: {
       allFrames: true,
-      include: ['adblock-uiscripts-send_content_to_back.js'],
+      include: ["adblock-uiscripts-send_content_to_back.js"],
     },
   };
 
@@ -122,34 +116,41 @@ const emitPageBroadcast = (function emitBroadcast() {
     const data = injectMap[fnName];
     const details = { allFrames: data.allFrames };
 
-    if ('scripting' in browser) {
-      await browser.scripting.executeScript({
-        target: { tabId: tabID, allFrames: data.allFrames },
-        files: data.include,
-      }).catch(log);
+    if ("scripting" in browser) {
+      await browser.scripting
+        .executeScript({
+          target: { tabId: tabID, allFrames: data.allFrames },
+          files: data.include,
+        })
+        .catch(log);
       const functionToExecute = (args) => {
-        if (typeof window[args.fnName] === 'function') {
+        if (typeof window[args.fnName] === "function") {
           window[args.fnName](args);
         }
       };
       const params = parameter;
       params.fnName = fnName;
-      await browser.scripting.executeScript({
-        target: { tabId: tabID, allFrames: data.allFrames },
-        args: [params],
-        function: functionToExecute,
-      }).catch(log);
+      await browser.scripting
+        .executeScript({
+          target: { tabId: tabID, allFrames: data.allFrames },
+          args: [params],
+          function: functionToExecute,
+        })
+        .catch(log);
       return;
     }
 
     // If there's anything to inject, inject the next item and recurse.
     if (data.include.length > injectedSoFar) {
       details.file = data.include[injectedSoFar];
-      browser.tabs.executeScript(tabID, details).then(() => {
-        executeOnTab(fnName, parameter, injectedSoFar + 1, tabID);
-      }).catch((error) => {
-        log(error);
-      });
+      browser.tabs
+        .executeScript(tabID, details)
+        .then(() => {
+          executeOnTab(fnName, parameter, injectedSoFar + 1, tabID);
+        })
+        .catch((error) => {
+          log(error);
+        });
     } else {
       // Nothing left to inject, so execute the function.
       const param = JSON.stringify(parameter);
@@ -164,40 +165,40 @@ const emitPageBroadcast = (function emitBroadcast() {
   };
 
   return theFunction;
-}());
+})();
 
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info && info.menuItemId) {
     const { menuItemId } = info;
     switch (menuItemId) {
-      case 'pause_adblock_everywhere':
-        ServerMessages.recordGeneralMessage('cm_pause_clicked');
+      case "pause_adblock_everywhere":
+        ServerMessages.recordGeneralMessage("cm_pause_clicked");
         adblockIsPaused(true);
         updateButtonUIAndContextMenus(tab);
         break;
-      case 'resume_blocking_ads':
-        ServerMessages.recordGeneralMessage('cm_unpause_clicked');
+      case "resume_blocking_ads":
+        ServerMessages.recordGeneralMessage("cm_unpause_clicked");
         adblockIsPaused(false);
         updateButtonUIAndContextMenus(tab);
         break;
-      case 'resume_blocking_ads_unallow':
-        ServerMessages.recordGeneralMessage('cm_unpause_clicked');
+      case "resume_blocking_ads_unallow":
+        ServerMessages.recordGeneralMessage("cm_unpause_clicked");
         await tryToUnwhitelist(info.pageUrl, tab.id);
         updateButtonUIAndContextMenus(tab);
         break;
-      case 'domain_pause_adblock':
-        ServerMessages.recordGeneralMessage('cm_domain_pause_clicked');
+      case "domain_pause_adblock":
+        ServerMessages.recordGeneralMessage("cm_domain_pause_clicked");
         adblockIsDomainPaused({ url: tab.url, id: tab.id }, true);
         updateButtonUIAndContextMenus(tab);
         break;
-      case 'resume_blocking_ads_domain':
-        ServerMessages.recordGeneralMessage('cm_domain_unpause_clicked');
+      case "resume_blocking_ads_domain":
+        ServerMessages.recordGeneralMessage("cm_domain_unpause_clicked");
         adblockIsDomainPaused({ url: tab.url, id: tab.id }, false);
         updateButtonUIAndContextMenus(tab);
         break;
-      case 'block_this_ad':
+      case "block_this_ad":
         emitPageBroadcast({
-          fn: 'topOpenBlacklistUI',
+          fn: "topOpenBlacklistUI",
           options: {
             info,
             showBlacklistCTA: License.shouldShowBlacklistCTA(),
@@ -208,9 +209,9 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
           tabID: tab.id,
         });
         break;
-      case 'block_an_ad_on_this_page':
+      case "block_an_ad_on_this_page":
         emitPageBroadcast({
-          fn: 'topOpenBlacklistUI',
+          fn: "topOpenBlacklistUI",
           options: {
             nothingClicked: true,
             showBlacklistCTA: License.shouldShowBlacklistCTA(),
@@ -227,50 +228,42 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
 });
 
 const contextMenuItem = (() => ({
-  pauseAll:
-  {
-    title: browser.i18n.getMessage('pause_adblock_everywhere'),
-    id: 'pause_adblock_everywhere',
-    contexts: ['all'],
+  pauseAll: {
+    title: browser.i18n.getMessage("pause_adblock_everywhere"),
+    id: "pause_adblock_everywhere",
+    contexts: ["all"],
   },
-  unpauseAll:
-  {
-    title: browser.i18n.getMessage('resume_blocking_ads'),
-    id: 'resume_blocking_ads',
-    contexts: ['all'],
+  unpauseAll: {
+    title: browser.i18n.getMessage("resume_blocking_ads"),
+    id: "resume_blocking_ads",
+    contexts: ["all"],
   },
-  unAllowList:
-  {
-    title: browser.i18n.getMessage('resume_blocking_ads'),
-    id: 'resume_blocking_ads_unallow',
-    contexts: ['all'],
+  unAllowList: {
+    title: browser.i18n.getMessage("resume_blocking_ads"),
+    id: "resume_blocking_ads_unallow",
+    contexts: ["all"],
   },
-  pauseDomain:
-  {
-    title: browser.i18n.getMessage('domain_pause_adblock'),
-    id: 'domain_pause_adblock',
-    contexts: ['all'],
+  pauseDomain: {
+    title: browser.i18n.getMessage("domain_pause_adblock"),
+    id: "domain_pause_adblock",
+    contexts: ["all"],
   },
-  unpauseDomain:
-  {
-    title: browser.i18n.getMessage('resume_blocking_ads'),
-    id: 'resume_blocking_ads_domain',
-    contexts: ['all'],
+  unpauseDomain: {
+    title: browser.i18n.getMessage("resume_blocking_ads"),
+    id: "resume_blocking_ads_domain",
+    contexts: ["all"],
   },
-  blockThisAd:
-  {
-    title: browser.i18n.getMessage('block_this_ad'),
-    id: 'block_this_ad',
-    contexts: ['all'],
+  blockThisAd: {
+    title: browser.i18n.getMessage("block_this_ad"),
+    id: "block_this_ad",
+    contexts: ["all"],
   },
-  blockAnAd:
-  {
-    title: browser.i18n.getMessage('block_an_ad_on_this_page'),
-    id: 'block_an_ad_on_this_page',
-    contexts: ['all'],
+  blockAnAd: {
+    title: browser.i18n.getMessage("block_an_ad_on_this_page"),
+    id: "block_an_ad_on_this_page",
+    contexts: ["all"],
   },
 }))();
-
 
 const checkLastError = function () {
   if (browser.runtime.lastError) {
@@ -326,18 +319,18 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
 });
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.command !== 'sendContentToBack') {
+  if (message.command !== "sendContentToBack") {
     return;
   } // not for us
-  emitPageBroadcast({ fn: 'sendContentToBack', options: {}, tabID: sender.tab.id });
+  emitPageBroadcast({ fn: "sendContentToBack", options: {}, tabID: sender.tab.id });
   sendResponse({});
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'reloadTabForWhitelist') {
+  if (request.command === "reloadTabForWhitelist") {
     reloadTab(sender.tab.id, () => {
       emitPageBroadcast({
-        fn: 'topOpenWhitelistCompletionUI',
+        fn: "topOpenWhitelistCompletionUI",
         options: {
           rule: request.rule,
           isActiveLicense: License.isActiveLicense(),
@@ -351,9 +344,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'showWhitelistCompletion') {
+  if (request.command === "showWhitelistCompletion") {
     emitPageBroadcast({
-      fn: 'topOpenWhitelistCompletionUI',
+      fn: "topOpenWhitelistCompletionUI",
       options: {
         rule: request.rule,
         isActiveLicense: License.isActiveLicense(),
@@ -366,9 +359,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'showBlacklist' && typeof request.nothingClicked === 'boolean') {
+  if (request.command === "showBlacklist" && typeof request.nothingClicked === "boolean") {
     emitPageBroadcast({
-      fn: 'topOpenBlacklistUI',
+      fn: "topOpenBlacklistUI",
       options: {
         nothingClicked: request.nothingClicked,
         isActiveLicense: License.isActiveLicense(),
@@ -383,9 +376,9 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.command === 'showWhitelist') {
+  if (request.command === "showWhitelist") {
     emitPageBroadcast({
-      fn: 'topOpenWhitelistUI',
+      fn: "topOpenWhitelistUI",
       options: {
         addCustomFilterRandomName: messageValidator.generateNewRandomText(),
       },

@@ -19,12 +19,12 @@
  * Locale information
  */
 export interface LocaleInfo {
-    /**
-     * Locale code
-     */
-    locale: string;
-    /**
-     * Reading direction
-     */
-    readingDirection: string;
+  /**
+   * Locale code
+   */
+  locale: string;
+  /**
+   * Reading direction
+   */
+  readingDirection: string;
 }
