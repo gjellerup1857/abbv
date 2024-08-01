@@ -458,8 +458,6 @@ unit:standard:
   before_script:
     - cd $[[ inputs.hostpath ]]
   script:
-    - echo $LT_USERNAME
-    - echo $LT_ACCESS_KEY
     - npm ci --cache .npm --prefer-offline
     - npm run test:$CONFIGURATION $SUITE 2>&1 | tee lambdatest_output.txt || true
     - apt-get update
