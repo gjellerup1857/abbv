@@ -285,8 +285,9 @@ async function getABPOptionsTabId()
 function getChromiumExtensionPath({isLambdatest} = {isLambdatest: true})
 {
   let chromeExtension;
-  if (isGitlab)
-  {
+  console.log("isGitlab?", isGitlab);
+  if (isGitlab) {
+    console.log(chromeCIBuild);
     chromeExtension = require("fs").
       readFileSync(chromeCIBuild).toString("base64");
   }
