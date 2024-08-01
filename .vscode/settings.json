@@ -1,0 +1,3 @@
+{
+  "prettier.prettierPath": "./host/adblock/node_modules/prettier"
+}
