@@ -7,6 +7,9 @@ stages:
 
 adblock:
   stage: hostpipeline
+  rules:
+    - changes:
+        - host/adblock/**/*
   trigger:
     include:
       - local: 'host/adblock/.gitlab-ci.yml'
@@ -18,6 +21,9 @@ adblock:
 
 adblockplus:
   stage: hostpipeline
+  rules:
+    - changes:
+        - host/adblockplus/**/*
   trigger:
     include:
       - local: 'host/adblockplus/.gitlab-ci.yml'
