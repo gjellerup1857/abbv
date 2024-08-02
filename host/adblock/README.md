@@ -39,7 +39,7 @@ Run one of the following commands in the project directory:
 
 `npx gulp build -t {chrome|firefox} -m {2|3}`
 
-`npm run build:release {chrome|firefox}`
+`npm run build:release:{chrome|firefox}`
 
 The second is a shorter version of the first, and it will build only a manifest v2 version.
 
@@ -55,7 +55,7 @@ development environment. For that run one of the following commands:
 
 `npx gulp devenv -t {chrome|firefox} -m {2|3}`
 
-`npm run build:dev {chrome|firefox}`
+`npm run build:dev:{chrome|firefox}`
 
 `npm run build:dev:all`
 
