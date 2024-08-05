@@ -281,6 +281,13 @@ defaults.yt_allowlist_start_date = 0;
 defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
 
 /**
+ * Milliseconds that the smart allowlist rule should be active for
+ *
+ * @type {number}
+ */
+defaults.smart_allowlist_duration_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
  * @namespace
  * @static
  */
