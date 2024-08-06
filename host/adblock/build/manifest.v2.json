@@ -62,6 +62,7 @@
     "purify.min.js",
     "adblock-yt-capture-requests.js",
     "adblock-yt-capture-events.js",
+    "adblock-deny-push-notifications-requests.js",
     "adblock-twitch-capture-requests.js"
   ]
 }

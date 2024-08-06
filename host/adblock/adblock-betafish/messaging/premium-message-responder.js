@@ -203,11 +203,7 @@ port.on("adblock:load_my_adblock", async (message, sender) => {
       ))) &&
     !(await ewe.filters.getAllowingFilters(sender.page.id)).length
   ) {
-    void injectScript(
-      "adblock-picreplacement-push-notification-wrapper-cs.js",
-      sender.page.id,
-      sender.frame.id,
-    );
+    void injectScript("adblock-push-notification-cs.js", sender.page.id, sender.frame.id);
   }
   return {};
 });

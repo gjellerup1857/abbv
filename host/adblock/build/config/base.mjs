@@ -72,6 +72,14 @@ export default {
         dest: "info-injector.preload.js",
         src: ["src/info-injector/content/index.ts"],
       },
+      {
+        dest: "adblock-push-notification-cs.js",
+        src: ["src/premium-push-notification/content/push-notification-cs.ts"],
+      },
+      {
+        dest: "adblock-deny-push-notifications-requests.js",
+        src: ["src/premium-push-notification/content/deny-notifications-requests.ts"],
+      },
     ],
   },
   mapping: {
@@ -425,10 +433,6 @@ export default {
       {
         dest: "adblock-picreplacement-image-sizes-map.js",
         src: "adblock-betafish/picreplacement/image-sizes-map.js",
-      },
-      {
-        dest: "adblock-picreplacement-push-notification-wrapper-cs.js",
-        src: "adblock-betafish/picreplacement/push-notification-wrapper-cs.js",
       },
       {
         dest: "adblock-options-mab.html",
