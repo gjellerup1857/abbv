@@ -20,7 +20,7 @@ import * as browser from "webextension-polyfill";
 
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { TabSessionStorage } from "../../../adblockplusui/adblockpluschrome/lib/storage/tab-session";
-
+import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
 import { getLocaleInfo } from "../../i18n/background";
 import {
   CommandName,
@@ -176,16 +176,16 @@ async function handleDialogCommand(ipmId: string): Promise<void> {
  * @param sender - Message sender
  */
 async function handleCloseMessage(message: Message, sender: MessageSender): Promise<void> {
-  if (typeof sender.tab?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined") {
     return;
   }
 
-  const dialog = await assignedDialogs.get(sender.tab.id);
+  const dialog = await assignedDialogs.get(sender.page.id);
   if (!isDialog(dialog)) {
     return;
   }
 
-  void removeDialog(sender.tab.id);
+  void removeDialog(sender.page.id);
   recordDialogEvent(dialog, DialogEventType.closed);
 }
 
@@ -196,11 +196,11 @@ async function handleCloseMessage(message: Message, sender: MessageSender): Prom
  * @param sender - Message sender
  */
 async function handleContinueMessage(message: Message, sender: MessageSender): Promise<void> {
-  if (typeof sender.tab?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined") {
     return;
   }
 
-  const dialog = await assignedDialogs.get(sender.tab.id);
+  const dialog = await assignedDialogs.get(sender.page.id);
   if (!isDialog(dialog)) {
     return;
   }
@@ -212,7 +212,7 @@ async function handleContinueMessage(message: Message, sender: MessageSender): P
 
   void browser.tabs.create({ url: safeTargetUrl });
 
-  void removeDialog(sender.tab.id);
+  void removeDialog(sender.page.id);
   recordDialogEvent(dialog, DialogEventType.buttonClicked);
 }
 
@@ -229,11 +229,11 @@ async function handleGetMessage(
   sender: MessageSender,
 ): Promise<StartInfo | null> {
   logger.debug("[onpage-dialog]: get");
-  if (typeof sender.tab?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined") {
     return null;
   }
 
-  const dialog = await assignedDialogs.get(sender.tab.id);
+  const dialog = await assignedDialogs.get(sender.page.id);
   if (!isDialog(dialog)) {
     logger.debug("[onpage-dialog]: get, no dialog");
     recordDialogErrorEvent(DialogErrorEventType.get_no_dialog_found);
@@ -253,11 +253,11 @@ async function handleGetMessage(
  * @param  sender - Message sender
  */
 async function handlePingMessage(message: Message, sender: MessageSender): Promise<void> {
-  if (!isPingMessage(message) || typeof sender.tab?.id === "undefined") {
+  if (!isPingMessage(message) || typeof sender.page?.id === "undefined") {
     return;
   }
 
-  const dialog = await assignedDialogs.get(sender.tab.id);
+  const dialog = await assignedDialogs.get(sender.page.id);
   if (!isDialog(dialog)) {
     logger.debug("[onpage-dialog]: ping message, no dialog");
     recordDialogErrorEvent(DialogErrorEventType.ping_no_dialog_found);
@@ -273,7 +273,7 @@ async function handlePingMessage(message: Message, sender: MessageSender): Promi
     return;
   }
 
-  void removeDialog(sender.tab.id);
+  void removeDialog(sender.page.id);
   recordDialogEvent(dialog, DialogEventType.ignored);
 }
 
@@ -286,10 +286,10 @@ async function handlePingMessage(message: Message, sender: MessageSender): Promi
  * @returns on-page dialog initialization information
  */
 async function handleErrorMessage(message: ErrorMessage, sender: MessageSender): Promise<void> {
-  if (typeof sender.tab?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined") {
     return;
   }
-  const dialog = await assignedDialogs.get(sender.tab.id);
+  const dialog = await assignedDialogs.get(sender.page.id);
 
   if (!dialog) {
     recordEvent(null, CommandName.createOnPageDialog, DialogErrorEventType.error_no_dialog_found);
@@ -422,7 +422,8 @@ export async function showOnpageDialog(
   }
 
   const stats = getStats(dialog.id);
-
+  console.log("dialog", dialog);
+  console.log("stats", stats);
   // Ignore if on-page dialog should not be shown for this tab
   if (!(await shouldBeShown(tab, dialog, stats))) {
     logger.debug("[onpage-dialog]: Don't show");

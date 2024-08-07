@@ -207,18 +207,25 @@ defaults.logger_log_level = 3;
  *
  * @type {Object}
  */
-defaults[statsStorageKey] = {};
+defaults.onpage_dialog_command_stats = {};
 
 /**
  * Map of on-page dialog timing configurations
  *
+ * @see onpage-dialog/background/middleware/ipm-onpage-dialog.types.ts
+ * @see onpage-dialog/background/timing.types.ts
+ *
  * @type {Object}
  */
-defaults[configsStorageKey] = {
+defaults.onpage_dialog_timing_configurations = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,
     maxDisplayCount: 3,
+  },
+  immediate: {
+    cooldownDuration: 0,
+    maxDisplayCount: 0,
   },
   revisit_web_allowlisted_site: {
     cooldownDuration: 48,
@@ -286,6 +293,13 @@ defaults.yt_allowlist_start_date = 0;
  * @type {Number}
  */
 defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
+
+/**
+ * Where the dialog for the YouTube wall should link users to
+ *
+ * @type {string}
+ */
+defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube";
 
 /**
  * Milliseconds that the smart allowlist rule should be active for

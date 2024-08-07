@@ -34,10 +34,15 @@ import { MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
-import { showDialogForConfig } from "~/onpage-dialog/background";
+import { Timing, showOnpageDialog } from "~/onpage-dialog/background";
 import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "../shared/index";
 
 let pageLoadedHandler: (tab: browser.Tabs.Tab) => void;
+
+/**
+ * Dialog ID
+ */
+const dialogId = "yt-wall-detection";
 
 /**
  * Should the extension allowlist YT users in a specific locale/language
@@ -130,13 +135,21 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
  */
 const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
   if (tabId === tab.id) {
-    void showDialogForConfig(tabId, "https://getadblock.com/youtube", {
-      body: [
-        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
-        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
-      ],
-      button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
-      title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
+    void showOnpageDialog(tabId, tab, {
+      behavior: {
+        displayDuration: 0,
+        target: Prefs.get("yt_auto_allow_dialog_url"),
+        timing: Timing.immediate,
+      },
+      content: {
+        body: [
+          browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
+          browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
+        ],
+        button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
+        title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
+      },
+      id: dialogId,
     });
     ext.pages.onLoaded.removeListener(pageLoadedHandler);
   }
@@ -150,25 +163,25 @@ const processYouTubeWallDetectedMessage = async (
   message: AdWallMessage,
   sender: MessageSender,
 ): Promise<void> => {
-  if (typeof sender.tab?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined") {
     return;
   }
-  const filters = await ewe.filters.getAllowingFilters(sender.tab.id);
+  const filters = await ewe.filters.getAllowingFilters(sender.page.id);
   const isAllowListed = !!filters.length;
   ServerMessages.recordAdWallMessage(
     youTubeWallDetected,
     message.userLoggedIn ? "1" : "0",
     isAllowListed ? "1" : "0",
   );
-  if (sender && sender.tab && shouldAllowList()) {
-    adblockIsDomainPaused({ url: sender.tab.url, id: sender.tab.id }, true, true);
-    browser.tabs.reload(sender.tab.id);
+  if (sender && sender.page && shouldAllowList()) {
+    adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true);
+    browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
     if (shouldShowOPDForLanguages()) {
-      pageLoadedHandler = onLoaded.bind(null, sender.tab.id);
+      pageLoadedHandler = onLoaded.bind(null, sender.page.id);
       ext.pages.onLoaded.addListener(pageLoadedHandler);
     }
-    browser.tabs.reload(sender.tab.id);
+    browser.tabs.reload(sender.page.id);
   }
 };
 

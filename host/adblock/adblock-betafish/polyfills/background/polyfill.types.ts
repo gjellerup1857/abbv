@@ -42,13 +42,18 @@ export interface FilterMetadata {
  */
 export interface MessageSender {
   /**
-   * Sender frame ID
+   * Information about sender page
    */
-  frameId: browser.Runtime.MessageSender["frameId"];
-  /**
-   * Sender tab information
-   */
-  tab: browser.Runtime.MessageSender["tab"];
+  page: {
+    /**
+     * Sender page ID (same as tab ID)
+     */
+    id: number;
+    /**
+     * Sender page URL
+     */
+    url: URL;
+  };
 }
 
 /**

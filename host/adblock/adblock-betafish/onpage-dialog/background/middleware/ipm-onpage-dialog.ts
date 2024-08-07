@@ -28,7 +28,7 @@ import {
   setCommandActor,
   validateParams,
 } from "../../../ipm/background";
-import * as logger from "../../../logger/background";
+import * as logger from "../../../utilities/background";
 import { type DialogContent } from "../../shared";
 import { type DialogBehavior } from "../dialog.types";
 import { Timing } from "../timing.types";

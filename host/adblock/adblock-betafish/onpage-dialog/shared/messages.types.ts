@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { LocaleInfo } from "../../i18n/background";
-import { Message } from "../../polyfills/shared";
-import { Content } from "../../ipm/background";
+import { type LocaleInfo } from "../../i18n/background";
+import { type Message } from "../../polyfills/shared";
+import { type DialogContent } from "./dialog.types";
 
 /**
  * Message for hiding the on-page dialog
@@ -71,22 +71,4 @@ export interface StartInfo {
    * Locale information
    */
   localeInfo: LocaleInfo;
-}
-
-/**
- * On-page dialog content
- */
-export interface DialogContent extends Content {
-  /**
-   * Paragraph text for body
-   */
-  body: string[];
-  /**
-   * Button text
-   */
-  button: string;
-  /**
-   * Title text
-   */
-  title: string;
 }
