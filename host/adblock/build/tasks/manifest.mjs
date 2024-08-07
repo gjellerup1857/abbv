@@ -15,11 +15,11 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { resolve } from 'path';
-import fs from 'fs';
-import { Readable } from 'stream';
+import { resolve } from "path";
+import fs from "fs";
+import { Readable } from "stream";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import Vinyl from 'vinyl';
+import Vinyl from "vinyl";
 
 let manifest;
 
@@ -28,17 +28,16 @@ async function getJSON(path) {
   return JSON.parse(content);
 }
 
-
 async function editManifest(dataParam, version, channel, target, extensionId) {
   const data = dataParam;
   data.version = version;
 
-  if (target === 'chrome') {
+  if (target === "chrome") {
     delete data.applications;
     delete data.content_security_policy;
   }
 
-  if (target === 'firefox') {
+  if (target === "firefox") {
     const gecko = {};
     gecko.strict_min_version = data.applications.gecko.strict_min_version;
     gecko.id = extensionId || data.applications.gecko.id;
@@ -69,13 +68,13 @@ export function createManifest(contents) {
     new Vinyl({
       // eslint-disable-next-line no-undef
       contents: Buffer.from(JSON.stringify(contents, null, 2)),
-      path: 'manifest.json',
+      path: "manifest.json",
     }),
   ]);
 }
 
 export async function getManifestContent(options) {
-  const {target, version, channel, manifestPath, manifestVersion, extensionId } = options;
+  const { target, version, channel, manifestPath, manifestVersion, extensionId } = options;
   if (manifest) {
     return manifest;
   }

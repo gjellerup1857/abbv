@@ -15,4 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './messages.types';
+export * from "./dialog.types";
+export * from "./messages";
+export * from "./messages.types";

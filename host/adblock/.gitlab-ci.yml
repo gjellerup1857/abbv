@@ -21,10 +21,9 @@ spec:
       default: "."
 
 ---
-
 default:
   image: node:18.17.1
-  cache:  # Cache modules using lock file
+  cache: # Cache modules using lock file
     key:
       files:
         - $[[ inputs.hostpath ]]/package-lock.json
@@ -91,16 +90,16 @@ lint:
   before_script:
     - cd $[[ inputs.hostpath ]]
   script:
-   - unzip -d unpacked-extension/ $EXTENSION
-   - cd unpacked-extension/
-   - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
-       echo 'Some extension files are bigger than 4 MB:' &&
-       find . -type f -name '*.js' -size +4000k -exec ls -lh {} \; &&
-       exit 1;
-     else
-       echo 'All extension files are smaller than 4 MB' &&
-       exit 0;
-     fi
+    - unzip -d unpacked-extension/ $EXTENSION
+    - cd unpacked-extension/
+    - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
+      echo 'Some extension files are bigger than 4 MB:' &&
+      find . -type f -name '*.js' -size +4000k -exec ls -lh {} \; &&
+      exit 1;
+      else
+      echo 'All extension files are smaller than 4 MB' &&
+      exit 0;
+      fi
 
 check_filesizes:chrome_mv2:
   extends: .check_filesizes
@@ -111,7 +110,6 @@ check_filesizes:chrome_mv3:
   extends: .check_filesizes
   variables:
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-
 
 check_filesizes:firefox_mv2:
   extends: .check_filesizes
@@ -183,7 +181,6 @@ comp:MV2:chromium:oldest:
   variables:
     BROWSER: chromium 77.0.3865.0
     EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-
 # https://eyeo.atlassian.net/browse/EE-542
 # comp:MV2:firefox:oldest:
 #   extends: .compliance

@@ -56,12 +56,7 @@ interface AppReference {
 /**
  * Available display methods.
  */
-export type DisplayMethod =
-  | "critical"
-  | "information"
-  | "newtab"
-  | "normal"
-  | "relentless";
+export type DisplayMethod = "critical" | "information" | "newtab" | "normal" | "relentless";
 
 /**
  * Options for retrieving items blocked per page.

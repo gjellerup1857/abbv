@@ -30,21 +30,26 @@ import * as info from "info";
 
 import { TabSessionStorage } from "../../adblockplusui/adblockpluschrome/lib/storage/tab-session.js";
 import { allowlistingState } from "../../adblockplusui/adblockpluschrome/lib/allowlisting";
-import { setIconPath, setIconImageData, toggleBadge, setBadge } from "../../adblockplusui/adblockpluschrome/lib/browserAction";
+import {
+  setIconPath,
+  setIconImageData,
+  toggleBadge,
+  setBadge,
+} from "../../adblockplusui/adblockpluschrome/lib/browserAction";
 
 import {
   chromeStorageSetHelper,
   chromeStorageGetHelper,
-  chromeStorageDeleteHelper
-} from '../utilities/background/bg-functions.js'
+  chromeStorageDeleteHelper,
+} from "../utilities/background/bg-functions.js";
 
-import { FlavorType } from '~/utilities/background/user-agent-info.types';
-import { getUserAgentInfo } from '~/utilities/background/index';
+import { FlavorType } from "~/utilities/background/user-agent-info.types";
+import { getUserAgentInfo } from "~/utilities/background/index";
 
 const ANIMATION_LOOPS = 3;
 const FRAME_IN_MS = 100;
 
-export const statsInIconKey = 'current_show_statsinicon';
+export const statsInIconKey = "current_show_statsinicon";
 
 let frameOpacities = calculateFrameOpacities(9, 7);
 let frameOpacitiesCritical = calculateFrameOpacities(5, 3);
@@ -67,21 +72,18 @@ function calculateFrameOpacities(keyframeFrames, transitionFrames) {
 
   // Show second half of first keyframe
   // Omit first frame because it's only shown after the first timeout
-  for (let i = 0; i < keyframeFrames / 2 - 1; i++)
-    opacities.push(0);
+  for (let i = 0; i < keyframeFrames / 2 - 1; i++) opacities.push(0);
   // Transition from first to second keyframe
   for (let i = 0; i < transitionFrames; i++)
     opacities.push(easeOut((i + 1) / (transitionFrames + 1)));
   // Show second keyframe
-  for (let i = 0; i < keyframeFrames; i++)
-    opacities.push(1);
+  for (let i = 0; i < keyframeFrames; i++) opacities.push(1);
   // Transition from second to first keyframe
   for (let i = 0; i < transitionFrames; i++)
     opacities.push(easeOut((transitionFrames - i) / (transitionFrames + 1)));
   // Show first half of first keyframe
   // Omit last frame due to an additional timeout that resets the icon
-  for (let i = 0; i < keyframeFrames / 2 - 1; i++)
-    opacities.push(0);
+  for (let i = 0; i < keyframeFrames / 2 - 1; i++) opacities.push(0);
 
   return opacities;
 }
@@ -94,8 +96,10 @@ async function loadImage(url) {
 
 async function renderIcons() {
   let paths = [
-    "icons/ab-16.png", "icons/ab-16-whitelisted.png",
-    "icons/ab-32.png", "icons/ab-32-whitelisted.png"
+    "icons/ab-16.png",
+    "icons/ab-16-whitelisted.png",
+    "icons/ab-32.png",
+    "icons/ab-32-whitelisted.png",
   ];
 
   for (let path of paths) {
@@ -120,40 +124,27 @@ async function setIcon(page, opacity, frames) {
 
   if (!frames) {
     if (opacity > 0.5) {
-      setIconPath(
-        page.id,
-        "/icons/ab-$size-notification.png"
-      );
-    }
-    else if (icons[allowlisted | 0]) {
+      setIconPath(page.id, "/icons/ab-$size-notification.png");
+    } else if (icons[allowlisted | 0]) {
       setIconImageData(page.id, icons[allowlisted | 0]);
+    } else {
+      setIconPath(page.id, "/icons/ab-$size" + (allowlisted ? "-allowlisted" : "") + ".png");
     }
-    else {
-      setIconPath(
-        page.id,
-        "/icons/ab-$size" + (allowlisted ? "-allowlisted" : "") + ".png"
-      );
-    }
-  }
-  else {
+  } else {
     browser.action.setIcon({
       tabId: page.id,
-      imageData: frames["" + opacity + allowlisted]
+      imageData: frames["" + opacity + allowlisted],
     });
   }
 }
 
-allowlistingState.addListener("changed", (page, isAllowlisted) =>
-{
-  void allowlistedState.transaction(async() =>
-  {
+allowlistingState.addListener("changed", (page, isAllowlisted) => {
+  void allowlistedState.transaction(async () => {
     const wasAllowlisted = await allowlistedState.get(page.id);
-    if (wasAllowlisted === isAllowlisted)
-      return;
+    if (wasAllowlisted === isAllowlisted) return;
 
     await allowlistedState.set(page.id, isAllowlisted);
-    if (canUpdateIcon)
-      await setIcon(page);
+    if (canUpdateIcon) await setIcon(page);
   });
 });
 
@@ -177,7 +168,7 @@ async function renderFrames(opacities) {
     16: { base: [images[0], images[1]], overlay: images[2] },
     20: { base: [images[3], images[4]], overlay: images[5] },
     32: { base: [images[6], images[7]], overlay: images[8] },
-    40: { base: [images[9], images[10]], overlay: images[11] }
+    40: { base: [images[9], images[10]], overlay: images[11] },
   };
 
   let frames = {};
@@ -206,14 +197,14 @@ async function renderFrames(opacities) {
 
 async function animateIcon(opacities, frames) {
   let tabs = await browser.tabs.query({ active: true });
-  let pages = tabs.map(tab => new ext.Page(tab));
+  let pages = tabs.map((tab) => new ext.Page(tab));
 
   let animationLoop = 0;
   let animationStep = 0;
   let numberOfFrames = opacities.length;
   let opacity = 0;
 
-  let onActivated = async page => {
+  let onActivated = async (page) => {
     pages.push(page);
     await setIcon(page, opacity, frames);
     toggleBadge(page.id, true);
@@ -221,8 +212,7 @@ async function animateIcon(opacities, frames) {
   ext.pages.onActivated.addListener(onActivated);
 
   canUpdateIcon = false;
-  for (let page of pages)
-    toggleBadge(page.id, true);
+  for (let page of pages) toggleBadge(page.id, true);
   return new Promise((resolve, reject) => {
     let interval = setInterval(async () => {
       let oldOpacity = opacity;
@@ -230,8 +220,7 @@ async function animateIcon(opacities, frames) {
 
       if (opacity != oldOpacity) {
         for (let page of pages) {
-          if (await allowlistedState.has(page.id))
-            await setIcon(page, opacity, frames);
+          if (await allowlistedState.has(page.id)) await setIcon(page, opacity, frames);
         }
       }
 
@@ -239,12 +228,10 @@ async function animateIcon(opacities, frames) {
         if (++animationLoop > ANIMATION_LOOPS - 1 || stopRequested) {
           clearInterval(interval);
           ext.pages.onActivated.removeListener(onActivated);
-          for (let page of pages)
-            toggleBadge(page.id, false);
+          for (let page of pages) toggleBadge(page.id, false);
           canUpdateIcon = true;
           resolve();
-        }
-        else {
+        } else {
           animationStep = 0;
         }
       }
@@ -275,17 +262,14 @@ export async function stopIconAnimation() {
  */
 export function startIconAnimation(type) {
   let opacities = frameOpacities;
-  if (type == "critical")
-    opacities = frameOpacitiesCritical;
+  if (type == "critical") opacities = frameOpacitiesCritical;
 
-  notRunning = Promise.all([renderFrames(opacities), stopIconAnimation()])
-    .then(results => {
-      if (stopRequested)
-        return;
+  notRunning = Promise.all([renderFrames(opacities), stopIconAnimation()]).then((results) => {
+    if (stopRequested) return;
 
-      let frames = results[0];
-      return animateIcon(opacities, frames);
-    });
+    let frames = results[0];
+    return animateIcon(opacities, frames);
+  });
 }
 
 renderIcons();
@@ -295,11 +279,11 @@ renderIcons();
  *
  */
 export const NEW_BADGE_REASONS = {
-  FREE_DC_UPDATE: 'free dc update',
-  SEVEN_DAY: 'seven day',
-  UPDATE: 'update',
-  UPDATE_FOR_EVERYONE: 'update including premium',
-  VPN_CTA: 'vpn cta',
+  FREE_DC_UPDATE: "free dc update",
+  SEVEN_DAY: "seven day",
+  UPDATE: "update",
+  UPDATE_FOR_EVERYONE: "update including premium",
+  VPN_CTA: "vpn cta",
 };
 
 /**
@@ -309,11 +293,11 @@ export const NEW_BADGE_REASONS = {
 
 let newBadgeTextReason = "";
 
-function setNewText(badgeTextDetails, reason = '') {
+function setNewText(badgeTextDetails, reason = "") {
   // process all currently opened tabs
   browser.tabs.query({}).then((tabs) => {
     for (const tab of tabs) {
-      if (tab.url && tab.url.startsWith('http')) {
+      if (tab.url && tab.url.startsWith("http")) {
         setBadge(tab.id, badgeTextDetails);
         newBadgeTextReason = reason;
       }
@@ -325,26 +309,26 @@ export async function resetBadgeText() {
   // Restore show_statsinicon if we previously stored its value
   const storedValue = await chromeStorageGetHelper(statsInIconKey);
 
-  if (typeof storedValue === 'boolean') {
+  if (typeof storedValue === "boolean") {
     Prefs.show_statsinicon = storedValue;
     chromeStorageDeleteHelper(statsInIconKey); // remove the data, since we no longer need it
-    setNewText({ number: '' });
+    setNewText({ number: "" });
   }
 }
 
-function getBadgeText (userAgent) {
+function getBadgeText(userAgent) {
   // Firefox badge cutting off at 2.5 chars, so let's use an emoji
   if (userAgent === FlavorType.firefox) {
     return "💥";
   }
 
-  const text = browser.i18n.getMessage('new_badge');
+  const text = browser.i18n.getMessage("new_badge");
 
   if (text.length < 5) {
     return text.toUpperCase();
   }
 
-  return 'New'.toUpperCase();
+  return "New".toUpperCase();
 }
 
 async function checkLicenseCTA() {
@@ -353,14 +337,15 @@ async function checkLicenseCTA() {
 }
 
 export async function showIconBadgeCTA(reason) {
-  const showCTA = reason === NEW_BADGE_REASONS.UPDATE_FOR_EVERYONE || await checkLicenseCTA();
+  const showCTA = reason === NEW_BADGE_REASONS.UPDATE_FOR_EVERYONE || (await checkLicenseCTA());
 
   if (!showCTA) {
     return;
   }
 
   const storedValue = await chromeStorageGetHelper(statsInIconKey);
-  if (!storedValue) {  // don't overwrite the original, saved value
+  if (!storedValue) {
+    // don't overwrite the original, saved value
     chromeStorageSetHelper(statsInIconKey, Prefs.show_statsinicon);
   }
 
@@ -368,13 +353,13 @@ export async function showIconBadgeCTA(reason) {
 
   const { flavor } = getUserAgentInfo();
   const badgeTextDetails = {
-    color: '#093aec',
+    color: "#093aec",
     number: getBadgeText(flavor),
   };
 
   // wait 10 seconds to allow any other tasks to finish
   setTimeout(setNewText.bind(this, badgeTextDetails), 10_000);
-};
+}
 
 /**
  * Returns the String reason the text on the toolbar icon / badge is 'new'
@@ -382,4 +367,4 @@ export async function showIconBadgeCTA(reason) {
  */
 export function getNewBadgeTextReason() {
   return newBadgeTextReason;
-};
+}

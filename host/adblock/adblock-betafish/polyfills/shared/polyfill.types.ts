@@ -19,7 +19,7 @@
  * Temporary interface for message object, as passed from/to background page
  */
 export interface Message {
-    type: string;
+  type: string;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface Message {
  * as passed from the content script to background page
  */
 export interface ErrorMessage extends Message {
-  error: string,
+  error: string;
 }
 
 /**
@@ -35,5 +35,5 @@ export interface ErrorMessage extends Message {
  * as passed from the content script to background page
  */
 export interface AdWallMessage extends Message {
-  userLoggedIn: string,
+  userLoggedIn: string;
 }

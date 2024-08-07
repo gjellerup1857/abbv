@@ -17,24 +17,19 @@
 /* global browser, sessionStorageSet */
 
 /* eslint-disable import/extensions */
-import MenuLink from './components/MenuLink.js';
-import MenuLinkButton from './components/MenuLinkButton.js';
-import SubNav from './components/SubNav.js';
+import MenuLink from "./components/MenuLink.js";
+import MenuLinkButton from "./components/MenuLinkButton.js";
+import SubNav from "./components/SubNav.js";
 
-import {
-  PAGE_INFO_KEY,
-  getTabId,
-  setupBehaviorListeners,
-  translatePageTitle,
-} from './utils.js';
+import { PAGE_INFO_KEY, getTabId, setupBehaviorListeners, translatePageTitle } from "./utils.js";
 
 const initializeAndAddElements = () => {
   const tabId = getTabId();
-  browser.runtime.sendMessage({ command: 'getCurrentTabInfo', tabId }).then((pageInfo) => {
+  browser.runtime.sendMessage({ command: "getCurrentTabInfo", tabId }).then((pageInfo) => {
     sessionStorageSet(PAGE_INFO_KEY, pageInfo);
-    customElements.define('menu-link-button', MenuLinkButton);
-    customElements.define('menu-link', MenuLink);
-    customElements.define('subsection-navigation', SubNav);
+    customElements.define("menu-link-button", MenuLinkButton);
+    customElements.define("menu-link", MenuLink);
+    customElements.define("subsection-navigation", SubNav);
   });
 };
 

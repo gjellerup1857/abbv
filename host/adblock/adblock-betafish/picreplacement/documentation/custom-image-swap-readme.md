@@ -98,4 +98,3 @@ customChannel.addCustomImage = function() {
 Then attempt to add a custom image.  Once the 'Done' button is clicked on the modal, an error will be returned, and the error message dialog box should be shown.
 
 Reload the extension to reset and remove the test code.
-

@@ -21,11 +21,14 @@
 */
 
 const captureYTEvents = function ({ toContentScriptEventName }) {
-  document.addEventListener('yt-action', (event) => {
+  document.addEventListener("yt-action", (event) => {
     // Event emitted when more that 100 subscriptions are added
-    if (event.detail && event.detail.actionName === 'yt-append-continuation-items-action') {
-      document.dispatchEvent(new CustomEvent(toContentScriptEventName,
-        { detail: { actionName: 'yt-append-continuation-items-action' } }));
+    if (event.detail && event.detail.actionName === "yt-append-continuation-items-action") {
+      document.dispatchEvent(
+        new CustomEvent(toContentScriptEventName, {
+          detail: { actionName: "yt-append-continuation-items-action" },
+        }),
+      );
     }
   });
 };

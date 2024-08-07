@@ -26,8 +26,8 @@ export type LogFunction = (...data: any[]) => void;
  * Minimum log level
  */
 export enum LogLevel {
-    debug = 1,
-    info = 2,
-    warn = 3,
-    error = 4
+  debug = 1,
+  info = 2,
+  warn = 3,
+  error = 4,
 }

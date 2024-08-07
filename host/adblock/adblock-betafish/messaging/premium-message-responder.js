@@ -16,27 +16,34 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender, isTrustedSenderDomain, openTab,
+/* global browser, ext, isTrustedSender, openTab,
  */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { License, replacedCounts, channels } from '../picreplacement/check';
-import { channelsNotifier } from '../picreplacement/channels';
-import SyncService from '../picreplacement/sync-service';
-import { processMessageResponse } from './message-responder';
+import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port";
 
+import { License, replacedCounts, channels } from "../picreplacement/check";
+import { channelsNotifier } from "../picreplacement/channels";
+import SyncService from "../picreplacement/sync-service";
+
+const gabHostnames = [
+  "https://getadblock.com",
+  "https://dev.getadblock.com",
+  "https://dev1.getadblock.com",
+  "https://dev2.getadblock.com",
+  "https://getadblockpremium.com",
+];
 /**
  * Process events related to the Premium object - License, Channels, and Sync-Service
  *
  */
 const uiPorts = new Map();
 const messageTypes = new Map([
-  ['license', 'license.respond'],
-  ['channels', 'channels.respond'],
-  ['sync', 'sync.respond'],
+  ["license", "license.respond"],
+  ["channels", "channels.respond"],
+  ["sync", "sync.respond"],
 ]);
-
 
 function sendMessage(type, action, ...args) {
   if (uiPorts.size === 0) {
@@ -62,14 +69,14 @@ function getListener(type, action) {
 
 function listen(type, filters, newFilter) {
   switch (type) {
-    case 'license':
-      filters.set('license', newFilter);
+    case "license":
+      filters.set("license", newFilter);
       break;
-    case 'channels':
-      filters.set('channels', newFilter);
+    case "channels":
+      filters.set("channels", newFilter);
       break;
-    case 'sync':
-      filters.set('sync', newFilter);
+    case "sync":
+      filters.set("sync", newFilter);
       break;
     default:
     // do nothing
@@ -81,7 +88,7 @@ function onConnect(uiPort) {
     return;
   }
 
-  if (uiPort.name !== 'premium') {
+  if (uiPort.name !== "premium") {
     return;
   }
 
@@ -93,10 +100,15 @@ function onConnect(uiPort) {
   });
 
   uiPort.onMessage.addListener((message) => {
-    const [type, action] = message.type.split('.', 2);
-    if (action === 'listen') {
-      listen(type, filters, message.filter, message,
-        uiPort.sender && uiPort.sender.tab && uiPort.sender.tab.id);
+    const [type, action] = message.type.split(".", 2);
+    if (action === "listen") {
+      listen(
+        type,
+        filters,
+        message.filter,
+        message,
+        uiPort.sender && uiPort.sender.tab && uiPort.sender.tab.id,
+      );
     }
   });
 }
@@ -110,7 +122,11 @@ const injectScript = async function (scriptFileName, tabId, frameId) {
         files: [scriptFileName],
       });
     } else {
-      await browser.tabs.executeScript(tabId, { file: scriptFileName, frameId, runAt: 'document_start' });
+      await browser.tabs.executeScript(tabId, {
+        file: scriptFileName,
+        frameId,
+        runAt: "document_start",
+      });
     }
   } catch (error) {
     /* eslint-disable-next-line no-console */
@@ -144,12 +160,9 @@ function getPremiumAssociatedObject() {
  *
  * @returns a Promise containing a boolean to indicate License state
  */
-const processIsActiveLicense = function (sendResponse) {
-  sendResponse({});
-  return new Promise(async (resolve) => {
-    await License.ready();
-    resolve(License.isActiveLicense());
-  });
+const processIsActiveLicense = async () => {
+  await License.ready();
+  return License.isActiveLicense();
 };
 
 /**
@@ -157,44 +170,44 @@ const processIsActiveLicense = function (sendResponse) {
  *
  * @returns a Promise containing a clone of some the methods and data of the License object
  */
-const processLicenseConfig = function (sendResponse) {
-  sendResponse({});
-  return new Promise(async (resolve) => {
-    try {
-      await License.ready();
-      const response = getPremiumAssociatedObject();
-      Object.assign(response, License.get());
-      resolve(response);
-    } catch (e) {
-      /* eslint-disable-next-line no-console */
-      console.error('error occurred during getLicenseConfig message handling');
-      /* eslint-disable-next-line no-console */
-      console.error(e);
-    }
-  });
+const processLicenseConfig = async () => {
+  try {
+    await License.ready();
+    const response = getPremiumAssociatedObject();
+    Object.assign(response, License.get());
+    return response;
+  } catch (e) {
+    /* eslint-disable-next-line no-console */
+    console.error("error occurred during adblock:getLicenseConfig message handling");
+    /* eslint-disable-next-line no-console */
+    console.error(e);
+  }
+  return {};
 };
 
 /**
  * Process the 'load_my_adblock' messages when the user is subscribed to
  * the Distraction Control filter list
  */
-function processLoadMyAdblockMessages(request, sender, sendResponse) {
-  if (request.message === 'load_my_adblock') {
-    License.ready().then(async () => {
-      if (
-        License.isActiveLicense()
-        && sender.url
-        && sender.url.startsWith('http')
-        && (await ewe.subscriptions.has('https://cdn.adblockcdn.com/filters/distraction-control.txt')
-          || await ewe.subscriptions.has('https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt'))
-        && !(await ewe.filters.getAllowingFilters(sender.tab.id)).length
-      ) {
-        void injectScript('adblock-picreplacement-push-notification-wrapper-cs.js', sender.tab.id, sender.frameId);
-      }
-      sendResponse({});
-    });
+port.on("adblock:load_my_adblock", async (message, sender) => {
+  await License.ready();
+  if (
+    License.isActiveLicense() &&
+    sender.page &&
+    sender.page.url &&
+    sender.page.url.href &&
+    sender.page.url.href.startsWith("http") &&
+    ((await ewe.subscriptions.has("https://cdn.adblockcdn.com/filters/distraction-control.txt")) ||
+      (await ewe.subscriptions.has(
+        "https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt",
+      ))) &&
+    !(await ewe.filters.getAllowingFilters(sender.page.id)).length
+  ) {
+    void injectScript("adblock-push-notification-cs.js", sender.page.id, sender.frame.id);
   }
-}
+  return {};
+});
+ext.addTrustedMessageTypes(null, ["adblock:load_my_adblock"]);
 
 /**
  * Process general messages related to the 'License' object,
@@ -202,35 +215,21 @@ function processLoadMyAdblockMessages(request, sender, sendResponse) {
  * where the sender URL starts with the extension URL)
  *
  */
-/* eslint-disable consistent-return */
-function processTrustedMessages(message, sender, sendResponse) {
-  if (!isTrustedSender(sender)) {
-    return;
-  }
-  const { command } = message;
-  switch (command) {
-    case 'activate':
-      License.ready().then(() => {
-        License.activate();
-      });
-      break;
-    case 'getLicenseConfig':
-      return processLicenseConfig(sendResponse);
-    case 'cleanUpSevenDayAlarm':
-      License.ready().then(() => {
-        License.cleanUpSevenDayAlarm();
-      });
-      sendResponse({});
-      break;
-    case 'updatePeriodically':
-      License.ready().then(() => {
-        License.updatePeriodically();
-      });
-      sendResponse({});
-      break;
-    default:
-  }
-}
+port.on("adblock:activate", async () => {
+  await License.ready();
+  License.activate();
+});
+port.on("adblock:cleanUpSevenDayAlarm", async () => {
+  await License.ready();
+  License.cleanUpSevenDayAlarm();
+  return {};
+});
+port.on("adblock:getLicenseConfig", () => processLicenseConfig());
+port.on("adblock:updatePeriodically", async () => {
+  await License.ready();
+  License.updatePeriodically();
+  return {};
+});
 
 /**
  * Process messages related to the 'License' object
@@ -238,31 +237,22 @@ function processTrustedMessages(message, sender, sendResponse) {
  * the messages come from content scripts on the getadblock.com domain
  *
  */
-/* eslint-disable consistent-return */
-function processGeneralMessages(message, sender, sendResponse) {
-  if (!isTrustedSenderDomain(sender)) {
-    return;
+port.on("adblock:isActiveLicense", () => processIsActiveLicense());
+port.on("adblock:payment_success", async () => {
+  await License.ready();
+  try {
+    License.activate();
+    return { ack: true };
+  } catch (e) {
+    /* eslint-disable-next-line no-console */
+    console.error("error occurred during payment_success message handling");
+    /* eslint-disable-next-line no-console */
+    console.error(e);
+    return { ack: false };
   }
-  const { command } = message;
-  switch (command) {
-    case 'payment_success':
-      License.ready().then(() => {
-        try {
-          License.activate();
-          sendResponse({ ack: true });
-        } catch (e) {
-          /* eslint-disable-next-line no-console */
-          console.error('error occurred during payment_success message handling');
-          /* eslint-disable-next-line no-console */
-          console.error(e);
-          sendResponse({ ack: false });
-        }
-      });
-      return true;
-    case 'isActiveLicense':
-      return processIsActiveLicense(sendResponse);
-    default:
-  }
+});
+for (const hostname of gabHostnames) {
+  ext.addTrustedMessageTypes(hostname, ["adblock:isActiveLicense", "adblock:payment_success"]);
 }
 
 /**
@@ -270,61 +260,40 @@ function processGeneralMessages(message, sender, sendResponse) {
  * which do not require sender validation (they typically come from content scripts)
  *
  */
-/* eslint-disable consistent-return */
-function processCSMessages(message, sender, sendResponse) {
-  const { command } = message;
-  switch (command) {
-    case 'openPremiumPayURL':
-      License.ready().then(() => {
-        openTab(License.MAB_CONFIG.payURL);
-      });
-      sendResponse({});
-      break;
-    case 'setBlacklistCTAStatus':
-      License.ready().then(() => {
-        License.shouldShowBlacklistCTA(message.isEnabled);
-      });
-      sendResponse({});
-      break;
-    case 'setWhitelistCTAStatus':
-      License.ready().then(() => {
-        License.shouldShowWhitelistCTA(message.isEnabled);
-      });
-      sendResponse({});
-      break;
-    default:
-  }
-}
+port.on("adblock:openPremiumPayURL", async () => {
+  await License.ready();
+  openTab(License.MAB_CONFIG.payURL);
+  return {};
+});
+port.on("adblock:setBlacklistCTAStatus", async (message) => {
+  await License.ready();
+  License.shouldShowBlacklistCTA(message.isEnabled);
+  return {};
+});
+port.on("adblock:setWhitelistCTAStatus", async (message) => {
+  await License.ready();
+  License.shouldShowWhitelistCTA(message.isEnabled);
+  return {};
+});
+ext.addTrustedMessageTypes(null, [
+  "adblock:openPremiumPayURL",
+  "adblock:setBlacklistCTAStatus",
+  "adblock:setWhitelistCTAStatus",
+]);
 
 /**
  * Process the messages related to Channels object
  *
  */
-/* eslint-disable consistent-return */
-function processChannelsMessages(message, sender, sendResponse) {
-  if (!isTrustedSender(sender)) {
-    return;
-  }
-  const { command } = message;
-  switch (command) {
-    case 'channels.getGuide':
-      return processMessageResponse(sendResponse, channels.getGuide());
-    case 'channels.isAnyEnabled':
-      return processMessageResponse(sendResponse, channels.isAnyEnabled());
-    case 'channels.isCustomChannelEnabled':
-      return processMessageResponse(sendResponse, channels.isCustomChannelEnabled());
-    case 'channels.initializeListeners':
-      return processMessageResponse(sendResponse, channels.initializeListeners());
-    case 'channels.setEnabled':
-      return processMessageResponse(sendResponse,
-        channels.setEnabled(message.channelId, message.enabled));
-    case 'channels.getIdByName':
-      return processMessageResponse(sendResponse, channels.getIdByName(message.name));
-    case 'channels.disableAllChannels':
-      return processMessageResponse(sendResponse, channels.disableAllChannels());
-    default:
-  }
-}
+port.on("adblock:channels.disableAllChannels", () => channels.disableAllChannels());
+port.on("adblock:channels.getGuide", () => channels.getGuide());
+port.on("adblock:channels.getIdByName", (message) => channels.getIdByName(message.name));
+port.on("adblock:channels.initializeListeners", () => channels.initializeListeners());
+port.on("adblock:channels.isAnyEnabled", () => channels.isAnyEnabled());
+port.on("adblock:channels.isCustomChannelEnabled", () => channels.isCustomChannelEnabled());
+port.on("adblock:channels.setEnabled", (message) =>
+  channels.setEnabled(message.channelId, message.enabled),
+);
 
 /**
  * Return a Promise containing an object
@@ -333,169 +302,123 @@ function processChannelsMessages(message, sender, sendResponse) {
  *
  * @returns a Promise containing a boolean to indicate License state
  */
-const processGetRandomlisting = function (message, sender) {
-  return new Promise(async (resolve) => {
-    try {
-      if ((await ewe.filters.getAllowingFilters(sender.tab.id)).length) {
-        resolve({ disabledOnPage: true });
-        return;
-      }
-      await License.ready();
-      if (!License.isActiveLicense()) {
-        resolve({ disabledOnPage: true });
-        return;
-      }
-      const result = channels.randomListing(message.opts);
-      if (result) {
-        resolve(result);
-        return;
-      }
-      resolve({ disabledOnPage: true });
-    } catch (e) {
-      /* eslint-disable-next-line no-console */
-      console.error('error occurred during getrandomlisting message handling');
-      /* eslint-disable-next-line no-console */
-      console.error(e);
-      resolve({ disabledOnPage: true });
+const processGetRandomlisting = async function (message, sender) {
+  try {
+    if ((await ewe.filters.getAllowingFilters(sender.page.id)).length) {
+      return { disabledOnPage: true };
     }
-  });
+    await License.ready();
+    if (!License.isActiveLicense()) {
+      return { disabledOnPage: true };
+    }
+    const result = channels.randomListing(message.opts);
+    if (result) {
+      return result;
+    }
+    return { disabledOnPage: true };
+  } catch (e) {
+    /* eslint-disable-next-line no-console */
+    console.error("error occurred during getrandomlisting message handling");
+    /* eslint-disable-next-line no-console */
+    console.error(e);
+    return { disabledOnPage: true };
+  }
 };
-
 
 /**
  * Process the `getrandomlisting` &
  * 'channels.recordOneAdReplaced' message from the Image Swap content script
  *
  */
-function processImageMessages(message, sender, sendResponse) {
-  if (message.command === 'channels.getrandomlisting') {
-    return processGetRandomlisting(message, sender);
+port.on("adblock:channels.getrandomlisting", (message, sender) =>
+  processGetRandomlisting(message, sender),
+);
+port.on("adblock:channels.recordOneAdReplaced", async (message, sender) => {
+  await License.ready();
+  if (License.isActiveLicense()) {
+    replacedCounts.recordOneAdReplaced(sender.page.id);
   }
-  if (message.command === 'channels.recordOneAdReplaced') {
-    License.ready().then(() => {
-      if (License.isActiveLicense()) {
-        replacedCounts.recordOneAdReplaced(sender.tab.id);
-      }
-    });
-    sendResponse({});
-  }
-}
+});
+ext.addTrustedMessageTypes(null, [
+  "adblock:channels.getrandomlisting",
+  "adblock:channels.recordOneAdReplaced",
+]);
 
 /**
  * Process the messages related to Custom channel object
  *
  */
-/* eslint-disable consistent-return */
-function processCustomChannelMessages(message, sender, sendResponse) {
-  if (!isTrustedSender(sender)) {
-    return;
-  }
-  const { command } = message;
-  switch (command) {
-    case 'customchannel.isMaximumAllowedImages': {
-      const customChannelId = channels.getIdByName('CustomChannel');
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      return processMessageResponse(sendResponse, customChannel.isMaximumAllowedImages());
-    }
-    case 'customchannel.getListings': {
-      const customChannelId = channels.getIdByName('CustomChannel');
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      return processMessageResponse(sendResponse, customChannel.getListings());
-    }
-    case 'customchannel.addCustomImage': {
-      const customChannelId = channels.getIdByName('CustomChannel');
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      return processMessageResponse(sendResponse,
-        customChannel.addCustomImage(message.imageInfo));
-    }
-    case 'customchannel.removeListingByURL': {
-      const customChannelId = channels.getIdByName('CustomChannel');
-      const customChannel = channels.channelGuide[customChannelId].channel;
-      return processMessageResponse(sendResponse,
-        customChannel.removeListingByURL(message.url));
-    }
-    default:
-  }
-}
+port.on("adblock:customchannel.isMaximumAllowedImages", () => {
+  const customChannelId = channels.getIdByName("CustomChannel");
+  const customChannel = channels.channelGuide[customChannelId].channel;
+  return customChannel.isMaximumAllowedImages();
+});
+port.on("adblock:customchannel.getListings", () => {
+  const customChannelId = channels.getIdByName("CustomChannel");
+  const customChannel = channels.channelGuide[customChannelId].channel;
+  return customChannel.getListings();
+});
+port.on("adblock:customchannel.addCustomImage", (message) => {
+  const customChannelId = channels.getIdByName("CustomChannel");
+  const customChannel = channels.channelGuide[customChannelId].channel;
+  return customChannel.addCustomImage(message.imageInfo);
+});
+port.on("adblock:customchannel.removeListingByURL", (message) => {
+  const customChannelId = channels.getIdByName("CustomChannel");
+  const customChannel = channels.channelGuide[customChannelId].channel;
+  return customChannel.removeListingByURL(message.url);
+});
 
 /**
  * Process the messages related to Sync Service object
  *
  */
-/* eslint-disable consistent-return */
-function processSyncServiceMessages(message, sender, sendResponse) {
-  if (!isTrustedSender(sender)) {
-    return;
-  }
-  const { command } = message;
-  switch (command) {
-    case 'resetLastGetStatusCode':
-      SyncService.resetLastGetStatusCode();
-      sendResponse({});
-      break;
-    case 'resetLastGetErrorResponse':
-      SyncService.resetLastGetErrorResponse();
-      sendResponse({});
-      break;
-    case 'resetLastPostStatusCode':
-      SyncService.resetLastPostStatusCode();
-      sendResponse({});
-      break;
-    case 'resetAllSyncErrors':
-      SyncService.resetAllSyncErrors();
-      sendResponse({});
-      break;
-    case 'SyncService.enableSync':
-      SyncService.enableSync(message.initialGet);
-      sendResponse({});
-      break;
-    case 'SyncService.disableSync':
-      SyncService.disableSync(message.removeName);
-      sendResponse({});
-      break;
-    case 'SyncService.getLastPostStatusCode':
-      return processMessageResponse(sendResponse, SyncService.getLastPostStatusCode());
-    case 'SyncService.getLastGetStatusCode':
-      return processMessageResponse(sendResponse, SyncService.getLastGetStatusCode());
-    case 'SyncService.getAllExtensionNames':
-      return processMessageResponse(sendResponse, SyncService.getAllExtensionNames());
-    case 'SyncService.getCurrentExtensionName':
-      return processMessageResponse(sendResponse, SyncService.getCurrentExtensionName());
-    case 'SyncService.processUserSyncRequest':
-      SyncService.processUserSyncRequest();
-      sendResponse({});
-      break;
-    case 'SyncService.removeExtensionName':
-      SyncService.removeExtensionName(message.dataDeviceName, message.dataExtensionGUID);
-      sendResponse({});
-      break;
-    case 'SyncService.setCurrentExtensionName':
-      SyncService.setCurrentExtensionName(message.name);
-      sendResponse({});
-      break;
-    default:
-  }
-}
-
-/**
- * Add all of the onMessage handlers
- */
-function addOnMessageListeners() {
-  browser.runtime.onMessage.addListener(processLoadMyAdblockMessages);
-  browser.runtime.onMessage.addListener(processTrustedMessages);
-  browser.runtime.onMessage.addListener(processGeneralMessages);
-  browser.runtime.onMessage.addListener(processCSMessages);
-  browser.runtime.onMessage.addListener(processChannelsMessages);
-  browser.runtime.onMessage.addListener(processImageMessages);
-  browser.runtime.onMessage.addListener(processCustomChannelMessages);
-  browser.runtime.onMessage.addListener(processSyncServiceMessages);
-}
+port.on("adblock:resetLastGetErrorResponse", () => {
+  SyncService.resetLastGetErrorResponse();
+  return {};
+});
+port.on("adblock:resetLastGetStatusCode", () => {
+  SyncService.resetLastGetStatusCode();
+  return {};
+});
+port.on("adblock:resetLastPostStatusCode", () => {
+  SyncService.resetLastPostStatusCode();
+  return {};
+});
+port.on("adblock:SyncService.disableSync", (message) => {
+  SyncService.disableSync(message.removeName);
+  return {};
+});
+port.on("adblock:SyncService.enableSync", (message) => {
+  SyncService.enableSync(message.initialGet);
+  return {};
+});
+port.on("adblock:SyncService.getAllExtensionNames", () => SyncService.getAllExtensionNames());
+port.on("adblock:SyncService.getCurrentExtensionName", () => SyncService.getCurrentExtensionName());
+port.on("adblock:SyncService.getLastPostStatusCode", () => SyncService.getLastPostStatusCode());
+port.on("adblock:SyncService.getLastGetStatusCode", () => SyncService.getLastGetStatusCode());
+port.on("adblock:SyncService.processUserSyncRequest", () => {
+  SyncService.processUserSyncRequest();
+  return {};
+});
+port.on("adblock:SyncService.removeExtensionName", (message) => {
+  SyncService.removeExtensionName(message.dataDeviceName, message.dataExtensionGUID);
+  return {};
+});
+port.on("adblock:SyncService.resetAllErrors", () => {
+  SyncService.resetAllSyncErrors();
+  return {};
+});
+port.on("adblock:SyncService.setCurrentExtensionName", (message) => {
+  SyncService.setCurrentExtensionName(message.name);
+  return {};
+});
 
 /**
  * Add the listener related to the Channels notifier
  */
 function addChannelsNotifierListeners() {
-  channelsNotifier.on('channels.changed', getListener('channels', 'changed'));
+  channelsNotifier.on("channels.changed", getListener("channels", "changed"));
 }
 
 /**
@@ -503,10 +426,10 @@ function addChannelsNotifierListeners() {
  */
 function addLicenseNotifierListeners() {
   License.ready().then(() => {
-    License.licenseNotifier.on('license.updating', getListener('license', 'updating'));
-    License.licenseNotifier.on('license.updated', getListener('license', 'updated'));
-    License.licenseNotifier.on('license.updated.error', getListener('license', 'updated.error'));
-    License.licenseNotifier.on('license.expired', getListener('license', 'expired'));
+    License.licenseNotifier.on("license.updating", getListener("license", "updating"));
+    License.licenseNotifier.on("license.updated", getListener("license", "updated"));
+    License.licenseNotifier.on("license.updated.error", getListener("license", "updated.error"));
+    License.licenseNotifier.on("license.expired", getListener("license", "expired"));
   });
 }
 
@@ -514,27 +437,58 @@ function addLicenseNotifierListeners() {
  * Add the listener related to the Sync Service notifier
  */
 function addSyncNotifierListeners() {
-  SyncService.syncNotifier.on('sync.data.receieved', getListener('sync', 'sync.data.receieved'));
-  SyncService.syncNotifier.on('sync.data.getting', getListener('sync', 'sync.data.getting'));
-  SyncService.syncNotifier.on('sync.data.error.initial.fail', getListener('sync', 'sync.data.error.initial.fail'));
-  SyncService.syncNotifier.on('sync.data.getting.error', getListener('sync', 'sync.data.getting.error'));
-  SyncService.syncNotifier.on('extension.names.downloading', getListener('sync', 'extension.names.downloading'));
-  SyncService.syncNotifier.on('extension.names.downloaded', getListener('sync', 'extension.names.downloaded'));
-  SyncService.syncNotifier.on('extension.names.downloading.error', getListener('sync', 'extension.names.ownloading.error'));
-  SyncService.syncNotifier.on('extension.name.updating', getListener('sync', 'extension.name.updating'));
-  SyncService.syncNotifier.on('extension.name.updated', getListener('sync', 'extension.name.updated'));
-  SyncService.syncNotifier.on('extension.name.updated.error', getListener('sync', 'extension.name.updated.error'));
-  SyncService.syncNotifier.on('extension.name.remove', getListener('sync', 'extension.name.remove'));
-  SyncService.syncNotifier.on('extension.name.removed', getListener('sync', 'extension.name.removed'));
-  SyncService.syncNotifier.on('extension.name.remove.error', getListener('sync', 'extension.name.remove.error'));
-  SyncService.syncNotifier.on('post.data.sending', getListener('sync', 'post.data.sending'));
-  SyncService.syncNotifier.on('post.data.sent', getListener('sync', 'post.data.sent'));
-  SyncService.syncNotifier.on('post.data.sent.error', getListener('sync', 'post.data.sent.error'));
+  SyncService.syncNotifier.on("sync.data.receieved", getListener("sync", "sync.data.receieved"));
+  SyncService.syncNotifier.on("sync.data.getting", getListener("sync", "sync.data.getting"));
+  SyncService.syncNotifier.on(
+    "sync.data.error.initial.fail",
+    getListener("sync", "sync.data.error.initial.fail"),
+  );
+  SyncService.syncNotifier.on(
+    "sync.data.getting.error",
+    getListener("sync", "sync.data.getting.error"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.names.downloading",
+    getListener("sync", "extension.names.downloading"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.names.downloaded",
+    getListener("sync", "extension.names.downloaded"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.names.downloading.error",
+    getListener("sync", "extension.names.ownloading.error"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.updating",
+    getListener("sync", "extension.name.updating"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.updated",
+    getListener("sync", "extension.name.updated"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.updated.error",
+    getListener("sync", "extension.name.updated.error"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.remove",
+    getListener("sync", "extension.name.remove"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.removed",
+    getListener("sync", "extension.name.removed"),
+  );
+  SyncService.syncNotifier.on(
+    "extension.name.remove.error",
+    getListener("sync", "extension.name.remove.error"),
+  );
+  SyncService.syncNotifier.on("post.data.sending", getListener("sync", "post.data.sending"));
+  SyncService.syncNotifier.on("post.data.sent", getListener("sync", "post.data.sent"));
+  SyncService.syncNotifier.on("post.data.sent.error", getListener("sync", "post.data.sent.error"));
 }
 
-
 function start() {
-  addOnMessageListeners();
   addChannelsNotifierListeners();
   addLicenseNotifierListeners();
   addSyncNotifierListeners();

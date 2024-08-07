@@ -15,41 +15,33 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {port} from "./messaging/port.js";
+import { port } from "./messaging/port.js";
 
 let lastError = null;
 
-function safeToString(value)
-{
-  try
-  {
+function safeToString(value) {
+  try {
     return String(value);
-  }
-  catch (e)
-  {
+  } catch (e) {
     return "<string conversion error>";
   }
 }
 
-self.addEventListener("error", event =>
-{
+self.addEventListener("error", (event) => {
   lastError = safeToString(event.error);
 });
 
-self.addEventListener("unhandledrejection", event =>
-{
+self.addEventListener("unhandledrejection", (event) => {
   lastError = safeToString(event.reason);
 });
 
 let consoleError = console.error;
-console.error = function error(...args)
-{
+console.error = function error(...args) {
   lastError = args.map(safeToString).join(" ");
   consoleError.apply(this, args);
 };
 
-port.on("debug.getLastError", () =>
-{
+port.on("debug.getLastError", () => {
   let error = lastError;
   lastError = null;
   return error;

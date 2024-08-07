@@ -17,36 +17,36 @@ module.exports = {
     webextensions: true,
   },
   extends: [
-    'standard',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
+    "standard",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
   plugins: [],
   rules: {
     // The no-shadow rule must be used from @typescript-eslint instead of
     // eslint, because it triggers false positives for any enum declaration.
     // See https://typescript-eslint.io/rules/no-shadow/#how-to-use
-    'no-shadow': 'off',
+    "no-shadow": "off",
 
     // The no-unused-vars rule must be used from @typescript-eslint instead of
     // eslint, because it triggers false positives for globals in *.d.ts files.
     // See https://typescript-eslint.io/rules/no-unused-vars/#how-to-use
-    'no-unused-vars': 'off',
+    "no-unused-vars": "off",
 
     // We need this to support no-floating-promises, which we want to
     // eventually enforce.
     // See https://typescript-eslint.io/rules/no-floating-promises/#ignorevoid
-    'no-void': ['error', { allowAsStatement: true }],
+    "no-void": ["error", { allowAsStatement: true }],
   },
   overrides: [
     {
       // Let ESLint know that we use Jest for our specs.
-      files: ['*.spec.ts'],
+      files: ["*.spec.ts"],
       env: {
         jest: true,
       },

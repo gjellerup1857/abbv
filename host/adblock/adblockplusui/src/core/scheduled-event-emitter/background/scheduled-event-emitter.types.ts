@@ -17,7 +17,7 @@
 
 export enum ScheduleType {
   once = "once",
-  interval = "interval"
+  interval = "interval",
 }
 
 export interface Schedule {

@@ -18,87 +18,95 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global setLangAndDirAttributes */
 
-import * as browser from 'webextension-polyfill';
-import * as DOMPurify from 'dompurify';
-import latoRegular from '../../fonts/lato.woff';
-import latoExtRegular from '../../fonts/lato-ext-regular.woff';
-import latoExtItalic from '../../fonts/lato-ext-italic.woff';
-import latoItalic from '../../fonts/lato-italic.woff';
-import latoExtBoldItalic from '../../fonts/lato-ext-bolditalic.woff';
-import latoBoldItalic from '../../fonts/lato-bolditalic.woff';
-import latoExtBold from '../../fonts/lato-ext-bold.woff';
-import latoBold from '../../fonts/lato-bold.woff';
-import materialIconsRegular from '../../../icons/MaterialIcons-Regular.woff2';
+import * as browser from "webextension-polyfill";
+import * as DOMPurify from "dompurify";
+import latoRegular from "../../fonts/lato.woff";
+import latoExtRegular from "../../fonts/lato-ext-regular.woff";
+import latoExtItalic from "../../fonts/lato-ext-italic.woff";
+import latoItalic from "../../fonts/lato-italic.woff";
+import latoExtBoldItalic from "../../fonts/lato-ext-bolditalic.woff";
+import latoBoldItalic from "../../fonts/lato-bolditalic.woff";
+import latoExtBold from "../../fonts/lato-ext-bold.woff";
+import latoBold from "../../fonts/lato-bold.woff";
+import materialIconsRegular from "../../../icons/MaterialIcons-Regular.woff2";
 
-import dialogLogo from '../../../icons/adblock-20.svg';
+import dialogLogo from "../../../icons/adblock-20.svg";
 
-import dialogCss from './dialog.css';
-import dialogHtml from './dialog.html';
+import dialogCss from "./dialog.css";
+import dialogHtml from "./dialog.html";
 
-import { isMessage } from '../../polyfills/shared/index';
-import { StartInfo } from '../shared/index';
-import * as api from '../../../adblockplusui/js/api/index';
-
+import { isMessage } from "../../polyfills/shared/index";
+import { StartInfo } from "../shared/index";
+import * as api from "../../../adblockplusui/js/api/index";
 
 /**
  * List of bundled fonts to load into the web page
  *
  */
-const fontsToLoad = [{
-  src: latoRegular,
-  style: 'normal',
-  weight: 'normal',
-  unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
-},
-{
-  src: latoExtRegular,
-  style: 'normal',
-  weight: 'normal',
-  unicodeRange: 'U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF',
-},
-{
-  src: latoExtItalic,
-  style: 'italic',
-  weight: 'normal',
-  unicodeRange: 'U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF',
-},
-{
-  src: latoItalic,
-  style: 'italic',
-  weight: 'normal',
-  unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
-},
-{
-  src: latoExtBoldItalic,
-  style: 'italic',
-  weight: 'bold',
-  unicodeRange: 'U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF',
-},
-{
-  src: latoBoldItalic,
-  style: 'italic',
-  weight: 'bold',
-  unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
-},
-{
-  src: latoExtBold,
-  style: 'normal',
-  weight: 'bold',
-  unicodeRange: 'U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF',
-},
-{
-  src: latoBold,
-  style: 'normal',
-  weight: 'bold',
-  unicodeRange: 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD',
-},
+const fontsToLoad = [
+  {
+    src: latoRegular,
+    style: "normal",
+    weight: "normal",
+    unicodeRange:
+      "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  },
+  {
+    src: latoExtRegular,
+    style: "normal",
+    weight: "normal",
+    unicodeRange:
+      "U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF",
+  },
+  {
+    src: latoExtItalic,
+    style: "italic",
+    weight: "normal",
+    unicodeRange:
+      "U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF",
+  },
+  {
+    src: latoItalic,
+    style: "italic",
+    weight: "normal",
+    unicodeRange:
+      "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  },
+  {
+    src: latoExtBoldItalic,
+    style: "italic",
+    weight: "bold",
+    unicodeRange:
+      "U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF",
+  },
+  {
+    src: latoBoldItalic,
+    style: "italic",
+    weight: "bold",
+    unicodeRange:
+      "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  },
+  {
+    src: latoExtBold,
+    style: "normal",
+    weight: "bold",
+    unicodeRange:
+      "U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF",
+  },
+  {
+    src: latoBold,
+    style: "normal",
+    weight: "bold",
+    unicodeRange:
+      "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  },
 ];
 
 /**
  * The ID of the top most parent element of the dialog
  *
  */
-const divID = '__ABoverlay';
+const divID = "__ABoverlay";
 /**
  * The default top position of the dialog (in pixels)
  *
@@ -129,7 +137,7 @@ const removeDialog = function () {
  * @param base - The shadow DOM base element
  */
 function loadCss(base: ShadowRoot) {
-  const styleElement = document.createElement('style');
+  const styleElement = document.createElement("style");
   styleElement.textContent = dialogCss;
   base.appendChild(styleElement);
 }
@@ -143,7 +151,7 @@ function loadCss(base: ShadowRoot) {
  * @param unicodeRange - The specific range of characters to be used
  */
 function loadLatoFont(src: string, style: string, weight: string, unicodeRange: string) {
-  return new FontFace('Lato', `url("${src}")`, { style, weight, unicodeRange });
+  return new FontFace("Lato", `url("${src}")`, { style, weight, unicodeRange });
 }
 
 /**
@@ -158,12 +166,15 @@ function loadResources(base: ShadowRoot) {
   // Referencing the fonts in CSS do not load the fonts properly (reason unknown)
   // but programmatically loading them performs reliably.
   fontsToLoad.forEach((fontData) => {
-    const {
-      src, style, weight, unicodeRange,
-    } = fontData;
+    const { src, style, weight, unicodeRange } = fontData;
     document.fonts.add(loadLatoFont(src, style, weight, unicodeRange));
   });
-  document.fonts.add(new FontFace('Material Icons', `url("${materialIconsRegular}")`, { style: 'normal', weight: 'normal' }));
+  document.fonts.add(
+    new FontFace("Material Icons", `url("${materialIconsRegular}")`, {
+      style: "normal",
+      weight: "normal",
+    }),
+  );
 }
 
 /**
@@ -186,56 +197,52 @@ function sendMessage(message: unknown) {
 const showDialog = async function (message: StartInfo) {
   const mainBody = document.body;
   if (!mainBody) {
-    await sendMessage({ type: 'onpage-dialog.error', error: 'no_main' });
+    await sendMessage({ type: "onpage-dialog.error", error: "no_main" });
     return;
   }
   // if the DIV already exists, don't add another one, just return
   if (document.getElementById(divID)) {
-    await sendMessage({ type: 'onpage-dialog.error', error: 'div_exists' });
+    await sendMessage({ type: "onpage-dialog.error", error: "div_exists" });
     return;
   }
   const { content } = message;
-  const {
-    title,
-    body,
-    button,
-  } = content;
+  const { title, body, button } = content;
 
-  const dialogParentElement = document.createElement('div');
+  const dialogParentElement = document.createElement("div");
   dialogParentElement.id = divID;
   const dialogElement = DOMPurify.sanitize(dialogHtml, { RETURN_DOM_FRAGMENT: true });
   if (DOMPurify.removed && DOMPurify.removed.length > 0) {
-    await sendMessage({ type: 'onpage-dialog.error', error: 'purify_error' });
+    await sendMessage({ type: "onpage-dialog.error", error: "purify_error" });
     return;
   }
-  const closeIcon = dialogElement.querySelector('#closeIcon');
+  const closeIcon = dialogElement.querySelector("#closeIcon");
   if (closeIcon instanceof HTMLElement) {
     closeIcon.onclick = function closedClicked(event: Event) {
       if (!event.isTrusted) {
         return;
       }
-      sendMessage({ type: 'onpage-dialog.close' });
+      sendMessage({ type: "onpage-dialog.close" });
     };
   }
 
-  const adblockLogoElement = dialogElement.querySelector('#adblock-logo');
+  const adblockLogoElement = dialogElement.querySelector("#adblock-logo");
   if (adblockLogoElement instanceof HTMLImageElement) {
     adblockLogoElement.src = dialogLogo;
   }
-  const titleTextElement = dialogElement.querySelector('#titleRow')!;
+  const titleTextElement = dialogElement.querySelector("#titleRow")!;
   titleTextElement.textContent = DOMPurify.sanitize(title);
 
-  const bodyElement = dialogElement.querySelector<HTMLElement>('#bodySection');
+  const bodyElement = dialogElement.querySelector<HTMLElement>("#bodySection");
   if (bodyElement instanceof HTMLElement) {
     for (const bodyText of body) {
-      const paragraph = document.createElement('p');
-      paragraph.classList.add('msgText');
+      const paragraph = document.createElement("p");
+      paragraph.classList.add("msgText");
       paragraph.textContent = DOMPurify.sanitize(bodyText);
       bodyElement.appendChild(paragraph);
     }
   }
 
-  const btnContinue = dialogElement.querySelector('#continue');
+  const btnContinue = dialogElement.querySelector("#continue");
   if (btnContinue instanceof HTMLElement) {
     if (button) {
       btnContinue.textContent = DOMPurify.sanitize(button);
@@ -243,21 +250,21 @@ const showDialog = async function (message: StartInfo) {
         if (!event.isTrusted) {
           return;
         }
-        sendMessage({ type: 'onpage-dialog.continue' });
+        sendMessage({ type: "onpage-dialog.continue" });
       };
     } else {
-      btnContinue.style.display = 'none';
+      btnContinue.style.display = "none";
     }
   }
 
-  const baseShadow = dialogParentElement.attachShadow({ mode: 'closed' });
+  const baseShadow = dialogParentElement.attachShadow({ mode: "closed" });
 
   loadResources(baseShadow);
   setLangAndDirAttributes(dialogElement);
 
   const hostElement = baseShadow.host;
   if (hostElement instanceof HTMLElement) {
-    hostElement.style.setProperty('--dialog-top-position', `${defaultTopPosition}px`);
+    hostElement.style.setProperty("--dialog-top-position", `${defaultTopPosition}px`);
   }
 
   baseShadow.appendChild(dialogElement);
@@ -268,11 +275,11 @@ const showDialog = async function (message: StartInfo) {
   let displayDuration = 0;
   intervalId = window.setInterval(() => {
     displayDuration += 1;
-    sendMessage({ type: 'onpage-dialog.ping', displayDuration });
+    sendMessage({ type: "onpage-dialog.ping", displayDuration });
   }, 60 * 1000);
   // We're pinging the background page immediately, so that it is aware
   // that the OPD was rendered
-  sendMessage({ type: 'onpage-dialog.ping', displayDuration });
+  sendMessage({ type: "onpage-dialog.ping", displayDuration });
 };
 
 /**
@@ -286,7 +293,7 @@ function handleMessage(message: any) {
   }
 
   switch (message.type) {
-    case 'onpage-dialog.hide':
+    case "onpage-dialog.hide":
       removeDialog();
       break;
     default:
@@ -298,7 +305,7 @@ function handleMessage(message: any) {
  */
 async function start() {
   browser.runtime.onMessage.addListener(handleMessage);
-  const startInfo = await sendMessage({ type: 'onpage-dialog.get' });
+  const startInfo = await sendMessage({ type: "onpage-dialog.get" });
   if (startInfo && startInfo.content) {
     showDialog(startInfo);
   }

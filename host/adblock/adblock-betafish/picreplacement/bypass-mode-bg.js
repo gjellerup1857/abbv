@@ -18,16 +18,16 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, log */
 
-import { License } from './check';
+import { License } from "./check";
 
 /**
  * Algorithm used to verify authenticity of sender
  */
 const algorithm = {
-  name: 'RSASSA-PKCS1-v1_5',
+  name: "RSASSA-PKCS1-v1_5",
   modulusLength: 4096,
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-  hash: { name: 'SHA-512' },
+  hash: { name: "SHA-512" },
 };
 /**
  * Time (in milliseconds) from now for which we consider signatures to be valid
@@ -44,7 +44,7 @@ const signatureExpiration = 60 * 60 * 1000;
  */
 function base64ToArrayBuffer(str) {
   const decodedData = atob(str);
-  return Uint8Array.from(decodedData, c => c.charCodeAt(0));
+  return Uint8Array.from(decodedData, (c) => c.charCodeAt(0));
 }
 
 /**
@@ -69,13 +69,7 @@ function getAllowData(domain, timestamp) {
  */
 async function getKey(key) {
   const abKey = base64ToArrayBuffer(key);
-  const importedKey = await crypto.subtle.importKey(
-    'spki',
-    abKey,
-    algorithm,
-    false,
-    ['verify'],
-  );
+  const importedKey = await crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
   return importedKey;
 }
 
@@ -90,7 +84,7 @@ async function getKey(key) {
 async function handleUsersIsPayingMessage(message, sender) {
   // Check Premium state
   if (!License.isActiveLicense()) {
-    log('user not active');
+    log("user not active");
     return null;
   }
 
@@ -99,7 +93,7 @@ async function handleUsersIsPayingMessage(message, sender) {
   /* eslint-disable-next-line no-use-before-define */
   const validTimestamp = verifyTimestamp(timestamp);
   if (!validTimestamp) {
-    log('invalid Timestamp', timestamp);
+    log("invalid Timestamp", timestamp);
     return null;
   }
 
@@ -108,14 +102,14 @@ async function handleUsersIsPayingMessage(message, sender) {
   /* eslint-disable-next-line no-use-before-define */
   const validSignature = await verifySignature(domain, timestamp, signature);
   if (!validSignature) {
-    log('invalid signature');
+    log("invalid signature");
     return null;
   }
 
   // Retrieve payload
   const payload = License.getBypassPayload();
   if (!payload) {
-    log('no bypass mode payload');
+    log("no bypass mode payload");
     return null;
   }
 
@@ -133,7 +127,7 @@ async function handleUsersIsPayingMessage(message, sender) {
  * @returns {Promise<boolean>} whether signature matches data and any authorized public key
  */
 async function verifySignature(domain, timestamp, signature) {
-  if (typeof signature !== 'string') {
+  if (typeof signature !== "string") {
     return false;
   }
 
@@ -142,10 +136,10 @@ async function verifySignature(domain, timestamp, signature) {
 
   const promisedValidations = License.MAB_CONFIG.bypassAuthorizedKeys.map(
     /* eslint-disable-next-line no-use-before-define */
-    key => verifySignatureWithKey(data, abSignature, key),
+    (key) => verifySignatureWithKey(data, abSignature, key),
   );
   const validations = await Promise.all(promisedValidations);
-  return validations.some(isValid => isValid);
+  return validations.some((isValid) => isValid);
 }
 
 /**
@@ -158,12 +152,7 @@ async function verifySignature(domain, timestamp, signature) {
  * @returns {Promise<boolean>} whether signature matches data and public key
  */
 async function verifySignatureWithKey(data, signature, pubKey) {
-  return crypto.subtle.verify(
-    algorithm,
-    await getKey(pubKey),
-    signature,
-    data,
-  );
+  return crypto.subtle.verify(algorithm, await getKey(pubKey), signature, data);
 }
 
 /**
@@ -174,8 +163,8 @@ async function verifySignatureWithKey(data, signature, pubKey) {
  * @returns {boolean} whether timestamp is valid
  */
 function verifyTimestamp(timestamp) {
-  if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
-    log('timestamp is not number', timestamp);
+  if (typeof timestamp !== "number" || Number.isNaN(timestamp)) {
+    log("timestamp is not number", timestamp);
     return false;
   }
 
@@ -189,7 +178,7 @@ function verifyTimestamp(timestamp) {
 function start() {
   /* eslint-disable consistent-return */
   browser.runtime.onMessage.addListener((message, sender) => {
-    if (message.command !== 'users.isPaying') {
+    if (message.command !== "users.isPaying") {
       return;
     }
 

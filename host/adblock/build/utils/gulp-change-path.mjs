@@ -15,30 +15,20 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Transform} from "stream";
+import { Transform } from "stream";
 import path from "path";
 
-function changePath(destination, custom = {})
-{
-  if (custom.cwd)
-    destination = path.join(custom.cwd, destination);
+function changePath(destination, custom = {}) {
+  if (custom.cwd) destination = path.join(custom.cwd, destination);
 
-  let transform = new Transform({objectMode: true});
+  let transform = new Transform({ objectMode: true });
 
-  transform._transform = (file, encoding, cb) =>
-  {
-    if (custom.match && file.path.match(custom.match))
-    {
-      file.path = path.join(destination,
-                            file.relative.replace(custom.match, custom.replace)
-      );
-    }
-    else if (custom.rename)
-    {
+  transform._transform = (file, encoding, cb) => {
+    if (custom.match && file.path.match(custom.match)) {
+      file.path = path.join(destination, file.relative.replace(custom.match, custom.replace));
+    } else if (custom.rename) {
       file.path = destination;
-    }
-    else
-    {
+    } else {
       file.path = path.join(destination, file.relative);
     }
 

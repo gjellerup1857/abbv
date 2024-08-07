@@ -16,12 +16,13 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, updateButtonUIAndContextMenus  */
+/* global browser, updateButtonUIAndContextMenus, isWhitelistFilter */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { initialize } from '~/alias/subscriptionInit';
-import ServerMessages from '~/servermessages';
+import { Prefs } from "~/alias/prefs";
+import { initialize } from "~/alias/subscriptionInit";
+import ServerMessages from "~/servermessages";
 
 import {
   chromeStorageSetHelper,
@@ -29,13 +30,13 @@ import {
   parseUri,
   sessionStorageGet,
   sessionStorageSet,
-} from '~/utilities/background/bg-functions';
+} from "~/utilities/background/bg-functions";
 
-const pausedKey = 'paused';
+const pausedKey = "paused";
 // white-list all blocking requests regardless of frame / document, but still allows element hiding
-const pausedFilterText1 = '@@*';
+const pausedFilterText1 = "@@*";
 // white-list all documents, which prevents element hiding
-const pausedFilterText2 = '@@*$document';
+const pausedFilterText2 = "@@*$document";
 
 // Get or set if AdBlock is paused
 // Inputs: newValue (optional boolean): if true, AdBlock will be paused, if
@@ -44,7 +45,7 @@ const pausedFilterText2 = '@@*$document';
 // if paused, false otherwise.
 const adblockIsPaused = function (newValue) {
   if (newValue === undefined) {
-    return (sessionStorageGet(pausedKey) === true);
+    return sessionStorageGet(pausedKey) === true;
   }
 
   if (newValue === true) {
@@ -61,7 +62,7 @@ const adblockIsPaused = function (newValue) {
   return undefined;
 };
 
-const domainPausedKey = 'domainPaused';
+const domainPausedKey = "domainPaused";
 
 // Helper that saves the domain pauses
 // Inputs:  domainPauses (required object): domain pauses to save
@@ -124,12 +125,12 @@ const domainPauseClosedTabHandler = function (tabId) {
 // Get or set if AdBlock is domain paused for the domain of the specified tab
 // Inputs:  activeTab (optional object with url and id properties): the paused tab
 //          newValue (optional boolean): if true, AdBlock will be domain paused
+//          sessionOnly (optional boolean): if true, the domain pause will only last for the session
 // on the tab's domain, if false, AdBlock will not be domain paused on that domain.
 // Returns: undefined if activeTab and newValue were specified; otherwise if activeTab
 // is specified it returns true if domain paused, false otherwise; finally it returns
 // the complete storedDomainPauses if activeTab is not specified
-
-const adblockIsDomainPaused = function (activeTab, newValue) {
+const adblockIsDomainPaused = function (activeTab, newValue, sessionOnly = false) {
   // get stored domain pauses
   let storedDomainPauses = sessionStorageGet(domainPausedKey);
 
@@ -155,8 +156,19 @@ const adblockIsDomainPaused = function (activeTab, newValue) {
   // set or delete a domain pause
   if (newValue === true) {
     // add a domain pause
-    ewe.filters.add([`@@${activeDomain}$document`]);
-    storedDomainPauses[activeDomain] = activeTab.id;
+    const ruleDuration = Prefs.get("smart_allowlist_duration_ms");
+    ewe.filters.add([`@@${activeDomain}$document`], {
+      expiresAt: Date.now() + ruleDuration,
+      autoExtendMs: ruleDuration,
+    });
+
+    // Only keep a record of the paused tabs if it's session only, otherwise,
+    // the rule will expire automatically. This is to prevent the smart
+    // allowlist rule from being removed when the tab is closed.
+    if (sessionOnly) {
+      storedDomainPauses[activeDomain] = activeTab.id;
+    }
+
     browser.tabs.onUpdated.removeListener(domainPauseNavigationHandler);
     browser.tabs.onRemoved.removeListener(domainPauseClosedTabHandler);
     browser.tabs.onUpdated.addListener(domainPauseNavigationHandler);
@@ -184,6 +196,27 @@ browser.storage.local.get(pausedKey).then((response) => {
   }
 });
 
+// If Adblock was paused on the domain, and the allowlist filter expired,
+// refresh the paused domains map to reflect the change.
+ewe.filters.onRemoved.addListener((filter) => {
+  if (!isWhitelistFilter(filter.text)) {
+    return;
+  }
+
+  // get stored domain pauses
+  const domains = adblockIsDomainPaused();
+  if (!domains) {
+    return;
+  }
+
+  for (const domain in domains) {
+    if (`@@${domain}$document` === filter.text) {
+      delete domains[domain];
+      saveDomainPauses(domains);
+      return;
+    }
+  }
+});
 
 // If AdBlock was domain paused on shutdown, then unpause / remove
 // all domain pause white-list entries at startup.
@@ -200,9 +233,9 @@ browser.storage.local.get(domainPausedKey).then((response) => {
 });
 
 browser.commands.onCommand.addListener((command) => {
-  if (command === 'toggle_pause') {
+  if (command === "toggle_pause") {
     adblockIsPaused(!adblockIsPaused());
-    ServerMessages.recordGeneralMessage('pause_shortcut_used');
+    ServerMessages.recordGeneralMessage("pause_shortcut_used");
   }
 });
 

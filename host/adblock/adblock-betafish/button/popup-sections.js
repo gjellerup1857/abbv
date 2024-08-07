@@ -17,29 +17,26 @@
 /* global browser, sessionStorageSet */
 
 /* eslint-disable import/extensions */
-import ActionButton from './components/ActionButton.js';
-import PopupDetailStats from './components/PopupDetailStats.js';
-import PopupDetailText from './components/PopupDetailText.js';
-import PopupSection from './components/PopupSection.js';
-import Toggle from './components/Toggle.js';
+import ActionButton from "./components/ActionButton.js";
+import PopupDetailStats from "./components/PopupDetailStats.js";
+import PopupDetailText from "./components/PopupDetailText.js";
+import PopupSection from "./components/PopupSection.js";
+import Toggle from "./components/Toggle.js";
 
-import {
-  PAGE_INFO_KEY,
-  getTabId,
-} from './utils.js';
+import { PAGE_INFO_KEY, getTabId } from "./utils.js";
 
 const initializeAndAddElements = () => {
   const tabId = getTabId();
-  browser.runtime.sendMessage({ command: 'getCurrentTabInfo', tabId }).then((pageInfo) => {
+  browser.runtime.sendMessage({ command: "getCurrentTabInfo", tabId }).then((pageInfo) => {
     sessionStorageSet(PAGE_INFO_KEY, pageInfo);
     // Defined in page
-    customElements.define('action-button', ActionButton);
-    customElements.define('popup-detail-stats', PopupDetailStats);
-    customElements.define('popup-detail-text', PopupDetailText);
-    customElements.define('popup-section', PopupSection);
+    customElements.define("action-button", ActionButton);
+    customElements.define("popup-detail-stats", PopupDetailStats);
+    customElements.define("popup-detail-text", PopupDetailText);
+    customElements.define("popup-section", PopupSection);
 
     // Consumed by top-level components
-    customElements.define('toggle-button', Toggle);
+    customElements.define("toggle-button", Toggle);
   });
 };
 

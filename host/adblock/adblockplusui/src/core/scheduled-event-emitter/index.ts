@@ -19,11 +19,7 @@ export {
   setListener,
   removeListener,
   setSchedule,
-  removeSchedule
+  removeSchedule,
 } from "./background/scheduled-event-emitter";
 
-export {
-  Schedule,
-  Listener,
-  ScheduleType
-} from "./background/scheduled-event-emitter.types";
+export { Schedule, Listener, ScheduleType } from "./background/scheduled-event-emitter.types";

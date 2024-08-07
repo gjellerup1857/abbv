@@ -19,5 +19,5 @@ export const sevenDaysInMilliSeconds = 7 * 24 * 60 * 60 * 1000;
 
 export const ytAllowlistHardEndDate = "yt_allowlist_hard_end_date";
 export const ytAllowlistLanguageCodes = "yt_allowlist_language_codes";
-export const ytAllowlistOPDLanguageCodes = "yt_allowlist_plus_opd_language_codes";
+export const ytAllowlistDialogLanguageCodes = "yt_allowlist_with_dialog_language_codes";
 export const ytAllowlistStartDate = "yt_allowlist_start_date";

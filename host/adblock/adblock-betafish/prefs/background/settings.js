@@ -18,23 +18,37 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import { EventEmitter } from '../../../adblockplusui/adblockpluschrome/lib/events';
+import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
 
 import {
   chromeStorageSetHelper,
   extend,
   log,
   logging,
-} from '../../utilities/background/bg-functions';
+} from "../../utilities/background/bg-functions";
 
 export const settingsNotifier = new EventEmitter();
-const abpPrefPropertyNames = ['show_statsinicon', 'shouldShowBlockElementMenu', 'show_devtools_panel', 'send_ad_wall_messages', 'data_collection_opt_out'];
-const validThemes = ['default_theme', 'dark_theme', 'watermelon_theme', 'solarized_theme', 'solarized_light_theme', 'rebecca_purple_theme', 'ocean_theme', 'sunshine_theme'];
-
+const abpPrefPropertyNames = [
+  "show_statsinicon",
+  "shouldShowBlockElementMenu",
+  "show_devtools_panel",
+  "send_ad_wall_messages",
+  "data_collection_opt_out",
+];
+const validThemes = [
+  "default_theme",
+  "dark_theme",
+  "watermelon_theme",
+  "solarized_theme",
+  "solarized_light_theme",
+  "rebecca_purple_theme",
+  "ocean_theme",
+  "sunshine_theme",
+];
 
 // OPTIONAL SETTINGS
 function Settings() {
-  this.settingsKey = 'settings';
+  this.settingsKey = "settings";
   this.defaults = {
     debug_logging: false,
     youtube_channel_whitelist: true,
@@ -47,38 +61,44 @@ function Settings() {
     twitch_hiding: false,
     onpageMessages: true,
     color_themes: {
-      popup_menu: 'default_theme',
-      options_page: 'default_theme',
+      popup_menu: "default_theme",
+      options_page: "default_theme",
     },
   };
   const that = this;
-  this.init = new Promise(((resolve) => {
+  this.init = new Promise((resolve) => {
     browser.storage.local.get(that.settingsKey).then((response) => {
       const settings = response.settings || {};
       that.data = extend(that.defaults, settings);
       if (settings.debug_logging) {
         logging(true);
       }
-      if ('managed' in browser.storage) {
-        browser.storage.managed.get(null).then((items) => {
-          for (const key in items) {
-            if (key === 'suppress_update_page' || key === 'suppress_surveys' || key === 'suppress_first_run_page') {
-              that.data[key] = items[key];
+      if ("managed" in browser.storage) {
+        browser.storage.managed.get(null).then(
+          (items) => {
+            for (const key in items) {
+              if (
+                key === "suppress_update_page" ||
+                key === "suppress_surveys" ||
+                key === "suppress_first_run_page"
+              ) {
+                that.data[key] = items[key];
+              }
             }
-          }
-          resolve();
-        },
-        // Opera and FF doesn't support browser.storage.managed, but instead of simply
-        // removing the API, it gives an asynchronous error which we ignore here.
-        () => {
-          resolve();
-        });
+            resolve();
+          },
+          // Opera and FF doesn't support browser.storage.managed, but instead of simply
+          // removing the API, it gives an asynchronous error which we ignore here.
+          () => {
+            resolve();
+          },
+        );
       } else {
         resolve();
       }
     });
-  })).then(() => {
-    log('\n===SETTINGS FINISHED LOADING===\n\n');
+  }).then(() => {
+    log("\n===SETTINGS FINISHED LOADING===\n\n");
   });
 }
 
@@ -98,9 +118,9 @@ Settings.prototype = {
       storedData[name] = localIsEnabled;
       chromeStorageSetHelper(that.settingsKey, storedData);
       if (originalValue !== localIsEnabled) {
-        settingsNotifier.emit('settings.changed', name, localIsEnabled, originalValue);
+        settingsNotifier.emit("settings.changed", name, localIsEnabled, originalValue);
       }
-      if (callback !== undefined && typeof callback === 'function') {
+      if (callback !== undefined && typeof callback === "function") {
         callback();
       }
     });
@@ -113,7 +133,6 @@ Settings.prototype = {
   onload() {
     return this.init;
   },
-
 };
 
 export const settings = new Settings();
@@ -125,7 +144,7 @@ export const getSettings = function () {
 export const setSetting = function (name, isEnabled, callback) {
   settings.set(name, isEnabled, callback);
 
-  if (name === 'debug_logging') {
+  if (name === "debug_logging") {
     logging(isEnabled);
   }
 };
@@ -134,7 +153,7 @@ const disableSetting = function (name) {
   settings.set(name, false);
 };
 
-export const isValidTheme = themeName => validThemes.includes(themeName);
+export const isValidTheme = (themeName) => validThemes.includes(themeName);
 
 // Attach methods to window
 // eslint-disable-next-line no-restricted-globals

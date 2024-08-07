@@ -17,20 +17,20 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser  */
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { Prefs } from '~/alias/prefs';
-import { getUserFilters } from '~/filter-utils';
-import { getUserId } from '~/id/background/index';
-import LocalDataCollection from '~/localdatacollection';
-import { adblockIsPaused } from '~/pause/background';
-import { License, channels } from '~/picreplacement/check';
-import SyncService from '~/picreplacement/sync-service';
-import { getSettings } from '~/prefs/background';
-import SubscriptionAdapter from '~/subscriptionadapter';
-import { TELEMETRY } from '~/telemetry/background';
+import { Prefs } from "~/alias/prefs";
+import { getUserFilters } from "~/filter-utils";
+import { getUserId } from "~/id/background/index";
+import LocalDataCollection from "~/localdatacollection";
+import { adblockIsPaused } from "~/pause/background";
+import { License, channels } from "~/picreplacement/check";
+import SyncService from "~/picreplacement/sync-service";
+import { getSettings } from "~/prefs/background";
+import SubscriptionAdapter from "~/subscriptionadapter";
+import { TELEMETRY } from "~/telemetry/background";
 
-import { IPM_CONSTANTS, NO_DATA } from './constants';
+import { IPM_CONSTANTS, NO_DATA } from "./constants";
 
 const getAdblockSettings = function () {
   const adblockSettings = {};
@@ -44,18 +44,20 @@ const getAdblockSettings = function () {
 
 const getBuildType = function () {
   // Is this installed build of AdBlock the official one?
-  if (browser.runtime.id === 'pljaalgmajnlogcgiohkhdmgpomjcihk') {
-    return ' Beta';
+  if (browser.runtime.id === "pljaalgmajnlogcgiohkhdmgpomjcihk") {
+    return " Beta";
   }
 
-  if (browser.runtime.id === 'gighmmpiobklfepjocnamgkkbiglidom'
-    || browser.runtime.id === 'aobdicepooefnbaeokijohmhjlleamfj'
-    || browser.runtime.id === 'ndcileolkflehcjpmjnfbnaibdcgglog'
-    || browser.runtime.id === 'jid1-NIfFY2CA8fy1tg@jetpack') {
-    return ' Stable';
+  if (
+    browser.runtime.id === "gighmmpiobklfepjocnamgkkbiglidom" ||
+    browser.runtime.id === "aobdicepooefnbaeokijohmhjlleamfj" ||
+    browser.runtime.id === "ndcileolkflehcjpmjnfbnaibdcgglog" ||
+    browser.runtime.id === "jid1-NIfFY2CA8fy1tg@jetpack"
+  ) {
+    return " Stable";
   }
 
-  return ' Unofficial';
+  return " Unofficial";
 };
 
 async function getCustomFilterMetaData(currentUserFilters) {
@@ -79,7 +81,7 @@ async function getCustomFilterMetaData(currentUserFilters) {
 
 const getCustomFilters = async function (userFilters) {
   if (userFilters && userFilters.length) {
-    return userFilters.map(filter => filter.text).join('\n');
+    return userFilters.map((filter) => filter.text).join("\n");
   }
 
   return NO_DATA;
@@ -89,14 +91,14 @@ const getDebugAlarmInfo = async () => {
   const response = {};
   const alarms = await browser.alarms.getAll();
   if (alarms && alarms.length > 0) {
-    response['Alarm info'] = `length: ${alarms.length}`;
+    response["Alarm info"] = `length: ${alarms.length}`;
     for (let i = 0; i < alarms.length; i++) {
       const alarm = alarms[i];
       response[`${i} Alarm Name`] = alarm.name;
       response[`${i} Alarm Scheduled Time`] = new Date(alarm.scheduledTime).toLocaleString();
     }
   } else {
-    response['No alarm info'] = 'No alarm info';
+    response["No alarm info"] = "No alarm info";
   }
   return response;
 };
@@ -113,20 +115,22 @@ const getDebugLicenseInfo = async () => {
   syncInfo.SyncCommitName = SyncService.getCurrentExtensionName();
   syncInfo.SyncCommitLog = await SyncService.getSyncLog();
   response.syncInfo = syncInfo;
-  response['License Installation Date'] = await License.getLicenseInstallationDate();
-  const customChannelId = channels.getIdByName('CustomChannel');
-  if (customChannelId
-    && channels.getGuide()[customChannelId]
-    && channels.getGuide()[customChannelId].enabled) {
+  response["License Installation Date"] = await License.getLicenseInstallationDate();
+  const customChannelId = channels.getIdByName("CustomChannel");
+  if (
+    customChannelId &&
+    channels.getGuide()[customChannelId] &&
+    channels.getGuide()[customChannelId].enabled
+  ) {
     const customChannel = channels.channelGuide[customChannelId].channel;
     const result = await customChannel.getTotalBytesInUse();
-    response['Custom Channel total bytes in use'] = result;
+    response["Custom Channel total bytes in use"] = result;
   }
   return response;
 };
 
 const getExcludeFilters = async function () {
-  const excludeFiltersKey = 'exclude_filters';
+  const excludeFiltersKey = "exclude_filters";
   const secondResponse = await browser.storage.local.get(excludeFiltersKey);
   if (secondResponse && secondResponse[excludeFiltersKey]) {
     return secondResponse[excludeFiltersKey];
@@ -145,9 +149,7 @@ const getHostPermissions = async function () {
 };
 
 const getIPMData = function () {
-  const IPMEntries = IPM_CONSTANTS.map(entry => (
-    [entry, Prefs[entry]]
-  ));
+  const IPMEntries = IPM_CONSTANTS.map((entry) => [entry, Prefs[entry]]);
   return Object.fromEntries(IPMEntries);
 };
 
@@ -163,7 +165,7 @@ const getJavascriptErrors = async function (errorKey) {
 const getLocalStorageInfo = function () {
   let localStorageInfo;
 
-  if (typeof localStorage !== 'undefined' && localStorage.length) {
+  if (typeof localStorage !== "undefined" && localStorage.length) {
     localStorageInfo = {};
     localStorageInfo.length = localStorage.length;
 
@@ -204,7 +206,7 @@ const getSubscriptionInfo = async function () {
 };
 
 const getTotalPings = async function () {
-  const storageResponse = await browser.storage.local.get('total_pings');
+  const storageResponse = await browser.storage.local.get("total_pings");
   return storageResponse.totalPings || 0;
 };
 
@@ -255,7 +257,7 @@ const getDebugInfo = function () {
     otherInfo.totalPings = await getTotalPings();
 
     // Add JavaScript exception error
-    const errorKey = 'errorkey';
+    const errorKey = "errorkey";
     otherInfo[errorKey] = await getJavascriptErrors(errorKey);
 
     // Add any migration messages (if there are any)
@@ -267,16 +269,12 @@ const getDebugInfo = function () {
     otherInfo.licenseInfo = await getDebugLicenseInfo();
     otherInfo.customRuleMetaData = await getCustomFilterMetaData(userFilters);
 
-    const blockageStats = (await browser.storage.local.get('blockage_stats')).blockage_stats;
+    const blockageStats = (await browser.storage.local.get("blockage_stats")).blockage_stats;
     if (blockageStats && blockageStats.start) {
-      otherInfo.extensionInstallTimestamp = (new Date(blockageStats.start)).toLocaleString();
+      otherInfo.extensionInstallTimestamp = new Date(blockageStats.start).toLocaleString();
     }
     resolve(response);
   });
 };
 
-export {
-  getCustomFilterMetaData,
-  getDebugInfo,
-  getUserFilters,
-};
+export { getCustomFilterMetaData, getDebugInfo, getUserFilters };

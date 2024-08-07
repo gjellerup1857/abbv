@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReadyState } from './ready-state.types';
+import { ReadyState } from "./ready-state.types";
 
 /**
  * The current ReadyState.

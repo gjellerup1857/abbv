@@ -23,17 +23,17 @@ export const commandLibraryVersion = 1;
 /**
  * The key for the command storage.
  */
-export const commandStorageKey = 'ipm_commands';
+export const commandStorageKey = "ipm_commands";
 
 /**
  * The key for the map of command stats.
  */
-export const commandStats = 'ipm_commands_stats';
+export const commandStats = "ipm_commands_stats";
 
 /**
  * Command behavior
  */
-export interface Behavior { }
+export interface Behavior {}
 
 /**
  * Command behavior
@@ -58,16 +58,16 @@ export type CommandHandler = (ipmId: string, isInitialization: boolean) => void;
  * An enum containing all known command names.
  */
 export enum CommandName {
-  createOnPageDialog = 'create_on_page_dialog',
-  createTab = 'create_tab',
-  deleteCommands = 'delete_commands',
+  createOnPageDialog = "create_on_page_dialog",
+  createTab = "create_tab",
+  deleteCommands = "delete_commands",
 }
 
 /**
  * General Command events
  */
 export enum CommandEventType {
-  ipmCancelled = 'ipm_cancelled',
+  ipmCancelled = "ipm_cancelled",
 }
 
 /**
@@ -105,7 +105,7 @@ export type Command = CommandMetaData & Record<string, unknown>;
 /**
  * Command content
  */
-export interface Content { }
+export interface Content {}
 
 /**
  * Command actor
@@ -139,6 +139,6 @@ export interface CommandActor {
  * IPM delete-commands event names
  */
 export enum DeleteEventType {
-  sucess = 'deletion_success',
-  error = 'deletion_error'
+  sucess = "deletion_success",
+  error = "deletion_error",
 }

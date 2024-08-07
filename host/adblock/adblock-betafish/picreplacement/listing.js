@@ -18,7 +18,6 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global  */
 
-
 // Inputs: width:int, height:int, url:url, title:string, attributionUrl:url
 class Listing {
   constructor(data) {

@@ -24,13 +24,11 @@ import { FilterMetadata } from "./polyfill.types";
  *
  * @returns whether candidate is valid filter metadata
  */
-export function isFilterMetadata(
-    candidate: unknown
-): candidate is FilterMetadata {
-    return (
-        candidate !== null &&
-        typeof candidate === "object" &&
-        "created" in candidate &&
-        "origin" in candidate
-    );
+export function isFilterMetadata(candidate: unknown): candidate is FilterMetadata {
+  return (
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "created" in candidate &&
+    "origin" in candidate
+  );
 }

@@ -26,10 +26,10 @@ import {
   closePopup,
   returnToIndex,
   sendMessageWithNoResponse,
-} from '../utils.js';
+} from "../utils.js";
 
 async function pauseOnce() {
-  sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'domain_pause_clicked' });
+  sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "domain_pause_clicked" });
 
   if (!this.pageInfo.url) {
     return;
@@ -37,14 +37,18 @@ async function pauseOnce() {
 
   const pageUrl = new URL(this.pageInfo.url);
   const { href } = pageUrl;
-  await browser.runtime.sendMessage({ command: 'adblockIsDomainPaused', activeTab: { url: href, id: this.pageInfo.id }, newValue: true });
-  await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
+  await browser.runtime.sendMessage({
+    command: "adblockIsDomainPaused",
+    activeTab: { url: href, id: this.pageInfo.id },
+    newValue: true,
+  });
+  await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
   browser.tabs.reload();
   closePopup();
 }
 
 async function resumeThisPage() {
-  sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'enable_adblock_clicked' });
+  sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "enable_adblock_clicked" });
   const { id, url } = this.pageInfo;
 
   if (!url) {
@@ -53,28 +57,30 @@ async function resumeThisPage() {
 
   const pageUrl = new URL(url);
   const response = await browser.runtime.sendMessage({
-    command: 'tryToUnwhitelist', url: pageUrl.href, id,
+    command: "tryToUnwhitelist",
+    url: pageUrl.href,
+    id,
   });
 
   if (response) {
-    await browser.runtime.sendMessage({ command: 'updateButtonUIAndContextMenus' });
+    await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
     browser.tabs.reload();
     closePopup();
   }
 }
 
 async function undoAllowlist() {
-  sendMessageWithNoResponse({ command: 'recordGeneralMessage', msg: 'undo_clicked' });
+  sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "undo_clicked" });
 
   const pageUrl = new URL(this.pageInfo.url);
   const { host } = pageUrl;
-  await browser.runtime.sendMessage({ command: 'removeCustomFilterForHost', host });
+  await browser.runtime.sendMessage({ command: "removeCustomFilterForHost", host });
   browser.tabs.reload(this.pageInfo.id);
   returnToIndex();
 }
 
 async function addSubscription(id) {
-  await browser.runtime.sendMessage({ command: 'subscribe', id });
+  await browser.runtime.sendMessage({ command: "subscribe", id });
   returnToIndex();
 }
 
@@ -105,31 +111,26 @@ const pauseIconTemplate = `
 `;
 
 const icons = {
-  none: '',
+  none: "",
   play: playIconTemplate,
   pause: pauseIconTemplate,
 };
 
-const generateIconButton = (text, icon) => `<span class="button-contents">${icons[icon]} ${translate(text)}`;
+const generateIconButton = (text, icon) =>
+  `<span class="button-contents">${icons[icon]} ${translate(text)}`;
 
 export default class ActionButton extends HTMLElement {
   async connectedCallback() {
     this.pageInfo = sessionStorageGet(PAGE_INFO_KEY);
 
-    const {
-      action,
-      label,
-      icon = 'none',
-      text = 'ok',
-      type = 'primary',
-    } = this.dataset;
+    const { action, label, icon = "none", text = "ok", type = "primary" } = this.dataset;
 
     const buttonLabel = label ? translate(label) : translate(text);
 
-    const actionButton = document.createElement('button');
+    const actionButton = document.createElement("button");
     actionButton.ariaLabel = buttonLabel;
     actionButton.classList.add(`${type}-action`);
-    actionButton.addEventListener('click', actionHandlers[action].bind(this));
+    actionButton.addEventListener("click", actionHandlers[action].bind(this));
     actionButton.innerHTML = DOMPurify.sanitize(generateIconButton(text, icon));
 
     this.appendChild(actionButton);

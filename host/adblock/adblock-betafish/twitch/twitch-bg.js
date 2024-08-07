@@ -18,32 +18,31 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, addCustomFilter */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { setBadge } from '~/../adblockplusui/adblockpluschrome/lib/browserAction';
-import { getSettings, settings } from '../prefs/background';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { setBadge } from "~/../adblockplusui/adblockpluschrome/lib/browserAction";
+import { getSettings, settings } from "../prefs/background";
 
 const twitchChannelNamePages = new Map();
 
 const webRequestFilter = {
-  url:
-    [
-      { hostEquals: 'www.twitch.tv' },
-    ],
+  url: [{ hostEquals: "www.twitch.tv" }],
 };
 
 // On single page sites, such as Twitch, that update the URL using the History API pushState(),
 // update the badge (clear the block count) when allow listed
 const historyStateHandler = async function (details) {
-  if (details
-    && Object.prototype.hasOwnProperty.call(details, 'url')
-    && Object.prototype.hasOwnProperty.call(details, 'tabId')
-    && details.transitionType === 'link') {
+  if (
+    details &&
+    Object.prototype.hasOwnProperty.call(details, "url") &&
+    Object.prototype.hasOwnProperty.call(details, "tabId") &&
+    details.transitionType === "link"
+  ) {
     const myURL = new URL(details.url);
-    if (myURL.hostname === 'www.twitch.tv') {
+    if (myURL.hostname === "www.twitch.tv") {
       const filters = await ewe.filters.getAllowingFilters(details.tabId);
       const isAllowListed = !!filters.length;
       if (isAllowListed) {
-        setBadge(details.tabId, { number: '' });
+        setBadge(details.tabId, { number: "" });
       }
     }
   }
@@ -57,7 +56,7 @@ const createAllowlistFilterForTwitchChannel = function (url, origin) {
   if (/ab_channel=/.test(url)) {
     [, twitchChannel] = url.match(/ab_channel=([^]*)/);
   } else {
-    twitchChannel = url.split('/').pop();
+    twitchChannel = url.split("/").pop();
   }
   if (twitchChannel) {
     const filter = `@@||twitch.tv/*${twitchChannel}^$document`;
@@ -67,10 +66,10 @@ const createAllowlistFilterForTwitchChannel = function (url, origin) {
 };
 
 const twitchMessageHandler = function (message, sender) {
-  if (message.command === 'createAllowlistFilterForTwitchChannel' && message.url) {
+  if (message.command === "createAllowlistFilterForTwitchChannel" && message.url) {
     createAllowlistFilterForTwitchChannel(message.url, message.origin);
   }
-  if (message.command === 'updateTwitchChannelName' && message.channelName) {
+  if (message.command === "updateTwitchChannelName" && message.channelName) {
     twitchChannelNamePages.set(sender.tab.id, message.channelName);
   }
 };

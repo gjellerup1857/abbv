@@ -16,17 +16,17 @@
  */
 
 export default {
-    mapping: {
-        copy: [
-        {
-            dest: "data/rules/abp",
-            src: "node_modules/@adblockinc/rules/dist/rules/abp/*"
-        },
-        {
-            dest: "data/rules/dnr",
-            src: "node_modules/@adblockinc/rules/dist/rules/dnr/*"
-        }
-        ],
-        rename: []
-    }
+  mapping: {
+    copy: [
+      {
+        dest: "data/rules/abp",
+        src: "node_modules/@adblockinc/rules/dist/rules/abp/*",
+      },
+      {
+        dest: "data/rules/dnr",
+        src: "node_modules/@adblockinc/rules/dist/rules/dnr/*",
+      },
+    ],
+    rename: [],
+  },
 };

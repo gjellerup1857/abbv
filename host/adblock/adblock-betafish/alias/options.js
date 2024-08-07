@@ -42,20 +42,16 @@ let optionsPort = null;
 // Firefox won't let us query for moz-extension:// pages, though
 // starting with Firefox 56 an extension can query for its own URLs:
 // https://bugzilla.mozilla.org/show_bug.cgi?id=1271354
-const optionsUrl = browser.runtime.getURL(
-  browser.runtime.getManifest().options_ui.page
-);
+const optionsUrl = browser.runtime.getURL(browser.runtime.getManifest().options_ui.page);
 
 const session = new SessionStorage("options");
 
 async function onMessage(message, port) {
-  if (message.type != "app.listen")
-    return;
+  if (message.type != "app.listen") return;
 
   const optionsMessage = await session.get(optionsMessageKey);
 
-  if (!optionsMessage)
-    return;
+  if (!optionsMessage) return;
 
   await session.delete(optionsMessageKey);
 
@@ -96,10 +92,7 @@ async function showOptions(message) {
   if (optionsPort) {
     // Firefox for Android doesn't support browser.windows
     if ("windows" in browser) {
-      await browser.windows.update(
-        optionsPort.sender.tab.windowId,
-        { focused: true }
-      );
+      await browser.windows.update(optionsPort.sender.tab.windowId, { focused: true });
     }
 
     await browser.tabs.update(optionsPort.sender.tab.id, { active: true });
@@ -108,8 +101,7 @@ async function showOptions(message) {
     if (message) {
       optionsPort.postMessage(message);
     }
-  }
-  else {
+  } else {
     // Send message after initializing options page
     if (message) {
       await session.set(optionsMessageKey, message);
@@ -126,12 +118,10 @@ export { showOptions };
 // Firefox from the manifest at all, instead setting it here only for
 // non-mobile.
 // [1] - https://bugzilla.mozilla.org/show_bug.cgi?id=1414613
-Promise.all([browser.action.getPopup({}),
-browser.runtime.getPlatformInfo()]).then(
+Promise.all([browser.action.getPopup({}), browser.runtime.getPlatformInfo()]).then(
   ([popup, platformInfo]) => {
-    if (!popup && platformInfo.os != "android")
-      browser.action.setPopup({ popup: "popup.html" });
-  }
+    if (!popup && platformInfo.os != "android") browser.action.setPopup({ popup: "popup.html" });
+  },
 );
 
 // On Firefox for Android, open the options page directly when the browser
@@ -145,7 +135,7 @@ browser.action.onClicked.addListener(async () => {
     const isAllowlisted = await ewe.filters.isResourceAllowlisted(
       currentPage.url,
       "document",
-      currentPage.id
+      currentPage.id,
     );
     message = {
       type: "app.respond",
@@ -153,9 +143,9 @@ browser.action.onClicked.addListener(async () => {
       args: [
         {
           host: currentPage.url.hostname.replace(/^www\./, ""),
-          allowlisted: isAllowlisted
-        }
-      ]
+          allowlisted: isAllowlisted,
+        },
+      ],
     };
   }
 

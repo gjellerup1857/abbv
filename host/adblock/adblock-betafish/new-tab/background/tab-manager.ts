@@ -15,8 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as browser from 'webextension-polyfill';
-import { ExtendedInstallType } from 'adblock-betafish/management';
+import * as browser from "webextension-polyfill";
+import { ExtendedInstallType } from "adblock-betafish/management";
 import {
   CommandName,
   createSafeOriginUrl,
@@ -24,22 +24,18 @@ import {
   doesLicenseStateMatch,
   getBehavior,
   recordEvent,
-} from '../../ipm/background';
+} from "../../ipm/background";
 
-import * as logger from '../../utilities/background';
-import { getSettings, settings } from '../../prefs/background/settings';
-import {
-  CreationMethod,
-  isNewTabBehavior,
-  setNewTabCommandHandler,
-} from './middleware';
+import * as logger from "../../utilities/background";
+import { getSettings, settings } from "../../prefs/background/settings";
+import { CreationMethod, isNewTabBehavior, setNewTabCommandHandler } from "./middleware";
 import {
   NewTabEventType,
   NewTabErrorEventType,
   NewTabExitEventType,
   blockCountQueryParameter,
-} from './tab-manager.types';
-import { Prefs } from '../../alias/prefs';
+} from "./tab-manager.types";
+import { Prefs } from "../../alias/prefs";
 
 const tabIds = new Set<number | undefined>();
 
@@ -69,7 +65,7 @@ const openNewtabOnUpdated = (
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab,
 ) => {
-  if (changeInfo.status !== 'complete' || tab === null || tabId !== tab.id) {
+  if (changeInfo.status !== "complete" || tab === null || tabId !== tab.id) {
     return;
   }
   const onUpdatedHandler = openNewtabOnUpdatedHandlerByIPMids.get(ipmId);
@@ -96,7 +92,7 @@ async function addBlockCountToURL(urlString: string): Promise<string | null> {
   }
 
   await Prefs.untilLoaded;
-  const blockCount = Prefs.get('blocked_total');
+  const blockCount = Prefs.get("blocked_total");
   url.searchParams.append(blockCountQueryParameter, blockCount);
   return url.toString();
 }
@@ -106,21 +102,19 @@ async function addBlockCountToURL(urlString: string): Promise<string | null> {
  *
  * @param ipmId - IPM ID
  */
-async function openNewtab(
-  ipmId: string,
-): Promise<void> {
+async function openNewtab(ipmId: string): Promise<void> {
   // Ignore and dismiss command if it has no behavior
-  logger.debug('[new-tab]:openNewtab');
+  logger.debug("[new-tab]:openNewtab");
   const behavior = getBehavior(ipmId);
   if (!isNewTabBehavior(behavior)) {
-    logger.debug('[new-tab]: No command behavior');
+    logger.debug("[new-tab]: No command behavior");
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
     dismissCommand(ipmId);
     return;
   }
   // Ignore and dismiss command if License states doesn't match the license state of the command
-  if (!await doesLicenseStateMatch(behavior)) {
-    logger.debug('[new-tab]: License state mis-match');
+  if (!(await doesLicenseStateMatch(behavior))) {
+    logger.debug("[new-tab]: License state mis-match");
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.licenseStateNoMatch);
     dismissCommand(ipmId);
     return;
@@ -137,7 +131,7 @@ async function openNewtab(
   if (url === null) {
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
     dismissCommand(ipmId);
-    logger.debug('[new-tab]: Invalid URL.');
+    logger.debug("[new-tab]: Invalid URL.");
     return;
   }
 
@@ -147,7 +141,7 @@ async function openNewtab(
   browser.tabs.onUpdated.addListener(onUpdatedHandler);
 
   tab = await browser.tabs.create({ url }).catch((error) => {
-    logger.error('[new-tab]: create tab error', error);
+    logger.error("[new-tab]: create tab error", error);
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.tabCreationError);
     return null;
   });
@@ -170,7 +164,7 @@ const openNotificationTab = (ipmId: string) => {
   onUpdatedHandlerByIPMids.delete(ipmId);
 
   // If we're here via the `force` method, we don't have handlers
-  if (typeof onCreatedHandler !== 'undefined') {
+  if (typeof onCreatedHandler !== "undefined") {
     browser.tabs.onCreated.removeListener(onCreatedHandler);
     browser.tabs.onUpdated.removeListener(onUpdatedHandler);
   }
@@ -189,7 +183,7 @@ const openNotificationTab = (ipmId: string) => {
 const onCreated = (ipmId: string, tab: browser.Tabs.Tab) => {
   // Firefox loads its New Tab Page immediately and doesn't notify us
   // when it's complete so we need to open our new tab already here.
-  if (tab.url === 'about:newtab') {
+  if (tab.url === "about:newtab") {
     openNotificationTab(ipmId);
     return;
   }
@@ -220,7 +214,7 @@ const onUpdated = (
 ) => {
   // Only look at tabs that have been opened since we started listening
   // and that have completed loading.
-  if (!tabIds.has(tabId) || changeInfo.status !== 'complete') {
+  if (!tabIds.has(tabId) || changeInfo.status !== "complete") {
     return;
   }
 
@@ -245,10 +239,10 @@ const onUpdated = (
  * @param ipmId - IPM ID
  */
 async function handleCommand(ipmId: string): Promise<void> {
-  logger.debug('[new-tab]:tab manager handleCommand', ipmId);
+  logger.debug("[new-tab]:tab manager handleCommand", ipmId);
 
   const { installType } = await browser.management.getSelf();
-  if ((installType as ExtendedInstallType) === 'admin') {
+  if ((installType as ExtendedInstallType) === "admin") {
     recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.admin);
     dismissCommand(ipmId);
     return;
@@ -257,17 +251,17 @@ async function handleCommand(ipmId: string): Promise<void> {
   await settings.onload();
   // Ignore and dismiss command if user opted-out of 'surveys'
   if (getSettings().suppress_update_page) {
-    logger.debug('[new-tab]:suppress_update_page - true');
+    logger.debug("[new-tab]:suppress_update_page - true");
     recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.disabled);
     dismissCommand(ipmId);
     return;
   }
 
   // Ignore and dismiss command if behavior is invalid.
-  logger.debug('[new-tab]:openNewtab');
+  logger.debug("[new-tab]:openNewtab");
   const behavior = getBehavior(ipmId);
   if (!isNewTabBehavior(behavior)) {
-    logger.debug('[new-tab]: Invalid command behavior');
+    logger.debug("[new-tab]: Invalid command behavior");
     recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
     dismissCommand(ipmId);
     return;
@@ -296,12 +290,11 @@ async function handleCommand(ipmId: string): Promise<void> {
   newTabCounter = 0;
 }
 
-
 /**
  * Initializes new tab manager
  */
 async function start(): Promise<void> {
-  logger.debug('[new-tab]:tab manager start');
+  logger.debug("[new-tab]:tab manager start");
 
   setNewTabCommandHandler(handleCommand);
 }

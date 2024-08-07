@@ -20,7 +20,7 @@
  * @overview Migrates existing data from older versions
  */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 async function unsubscribeToFilterList(url) {
   if (await ewe.subscriptions.has(url)) {
@@ -36,19 +36,19 @@ async function unsubscribeToFilterList(url) {
 async function migrateUserData() {
   // We remove the AdBlock Custom filter list,
   // because it no longer serves any purpose
-  unsubscribeToFilterList('https://cdn.adblockcdn.com/filters/adblock_custom.txt');
+  unsubscribeToFilterList("https://cdn.adblockcdn.com/filters/adblock_custom.txt");
 
   // Remove any of the old DC filters,
   // Subscript to the new DC filter list
   const DISTRACTION_CONTROL_URL_LIST = [
-    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt',
-    'https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt',
-    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt',
-    'https://cdn.adblockcdn.com/filters/distraction-control-push.txt',
-    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt',
-    'https://cdn.adblockcdn.com/filters/distraction-control-survey.txt',
-    'https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt',
-    'https://cdn.adblockcdn.com/filters/distraction-control-video.txt',
+    "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt",
+    "https://cdn.adblockcdn.com/filters/distraction-control-newsletter.txt",
+    "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-push.txt",
+    "https://cdn.adblockcdn.com/filters/distraction-control-push.txt",
+    "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-survey.txt",
+    "https://cdn.adblockcdn.com/filters/distraction-control-survey.txt",
+    "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-video.txt",
+    "https://cdn.adblockcdn.com/filters/distraction-control-video.txt",
   ];
   let subscribedTODC = false;
   for (const url of DISTRACTION_CONTROL_URL_LIST) {
@@ -58,10 +58,12 @@ async function migrateUserData() {
 
   if (subscribedTODC) {
     if (browser.runtime.getManifest().manifest_version === 2) {
-      ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/adblock_premium.txt');
+      ewe.subscriptions.add("https://easylist-downloads.adblockplus.org/adblock_premium.txt");
     }
     if (browser.runtime.getManifest().manifest_version === 3) {
-      ewe.subscriptions.add('https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt');
+      ewe.subscriptions.add(
+        "https://easylist-downloads.adblockplus.org/v3/full/adblock_premium.txt",
+      );
     }
   }
 }

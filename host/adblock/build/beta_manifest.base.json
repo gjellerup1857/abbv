@@ -23,65 +23,42 @@
         "polyfill.js",
         "ext/common.js",
         "ext/content.js",
+        "globals-front.js",
         "adblock-functions.js",
         "contentscript-loader.js",
         "premium.preload.js",
         "adblock-picreplacement.js"
       ],
       "match_about_blank": true,
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
       "all_frames": true,
-      "js": [
-        "adblock-uiscripts-rightclick_hook.js"
-      ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["adblock-uiscripts-rightclick_hook.js"],
+      "matches": ["http://*/*", "https://*/*"],
       "run_at": "document_idle"
     },
     {
       "all_frames": true,
-      "js": [
-        "adblock-getadblock.js"
-      ],
-      "matches": [
-        "*://*.getadblock.com/*",
-        "*://*.getadblockpremium.com/*"
-      ],
+      "js": ["globals-front.js", "adblock-getadblock.js"],
+      "matches": ["*://*.getadblock.com/*", "*://*.getadblockpremium.com/*"],
       "run_at": "document_start"
     },
     {
       "all_frames": true,
-      "js": [
-        "adblock-twitch-cs.js"
-      ],
-      "matches": [
-        "*://*.twitch.tv/*"
-      ],
+      "js": ["adblock-twitch-cs.js"],
+      "matches": ["*://*.twitch.tv/*"],
       "run_at": "document_start"
     },
     {
       "all_frames": true,
-      "js": [
-        "adblock-yt-cs.js",
-        "yt-wall-detection.preload.js"
-      ],
-      "matches": [
-        "*://*.youtube.com/*"
-      ],
+      "js": ["adblock-yt-cs.js", "yt-wall-detection.preload.js"],
+      "matches": ["*://*.youtube.com/*"],
       "run_at": "document_start"
     },
     {
-      "js": [
-        "info-injector.preload.js"
-      ],
+      "js": ["info-injector.preload.js"],
       "matches": [
         "https://adblockplus.org/*",
         "https://accounts.adblockplus.org/*",
@@ -110,9 +87,7 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "optional_permissions": [
-    "management"
-  ],
+  "optional_permissions": ["management"],
   "storage": {
     "managed_schema": "managed-storage-schema.json"
   }

@@ -15,10 +15,10 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SessionStorage } from '../../adblockplusui/adblockpluschrome/lib/storage/session';
+import { SessionStorage } from "../../adblockplusui/adblockpluschrome/lib/storage/session";
 
-const sessionStorageKey = 'ab:CustomFilterRandomName';
-const sessionKey = 'ab:randomtext';
+const sessionStorageKey = "ab:CustomFilterRandomName";
+const sessionKey = "ab:randomtext";
 
 const sessionStorage = new SessionStorage(sessionStorageKey);
 
@@ -33,7 +33,7 @@ class MessageValidator {
   validateMessage = async (message) => {
     const data = await sessionStorage.get(sessionKey);
     this.randomtext = data;
-    return Promise.resolve(message && (message.addCustomFilterRandomName === this.randomtext));
+    return Promise.resolve(message && message.addCustomFilterRandomName === this.randomtext);
   };
 }
 const messageValidator = new MessageValidator();

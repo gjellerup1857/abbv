@@ -25,19 +25,19 @@ function sendContentToBack() {
   // seen cases (e.g. mtv3.fi's right side ad) where the show was so fast
   // that the wmode=transparent hadn't been applied; thus, we delay 250ms
   // before showing.
-  const all = document.querySelectorAll('object,embed');
+  const all = document.querySelectorAll("object,embed");
   for (let i = 0; i < all.length; i++) {
     const el = all[i];
     el.oldDisplay = el.style.display;
-    el.style.display = 'none';
+    el.style.display = "none";
 
-    if (el.nodeName === 'OBJECT') {
-      const param = document.createElement('param');
-      param.setAttribute('name', 'wmode');
-      param.setAttribute('value', 'transparent');
+    if (el.nodeName === "OBJECT") {
+      const param = document.createElement("param");
+      param.setAttribute("name", "wmode");
+      param.setAttribute("value", "transparent");
       el.appendChild(param);
     } else {
-      el.setAttribute('wmode', 'transparent');
+      el.setAttribute("wmode", "transparent");
     }
   }
 
@@ -52,14 +52,14 @@ function sendContentToBack() {
   const zIndexes = document.querySelectorAll('[style*="z-index"]');
   for (let i = 0; i < zIndexes.length; i++) {
     const el = zIndexes[i];
-    if (el.style['z-index'] >= 1000000) {
-      el.style['z-index'] = 999;
+    if (el.style["z-index"] >= 1000000) {
+      el.style["z-index"] = 999;
     }
   }
 }
 
 // required return value for tabs.executeScript
 /* eslint-disable-next-line no-unused-expressions */
-'';
+("");
 
 //# sourceURL=/uiscripts/send_content_to_back.js

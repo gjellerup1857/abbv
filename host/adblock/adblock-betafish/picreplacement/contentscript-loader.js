@@ -15,7 +15,4 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* For ESLint: List any global identifiers used in this file below */
-/* global browser */
-
-browser.runtime.sendMessage({ message: 'load_my_adblock' });
+void modulesAsGlobal.messaging.send("adblock:load_my_adblock");

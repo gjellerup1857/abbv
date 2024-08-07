@@ -1,4 +1,3 @@
-
 /*
  * This file is part of AdBlock  <https://getadblock.com/>,
  * Copyright (C) 2013-present  Adblock, Inc.
@@ -16,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommandName } from './command-library.types';
+import { CommandName } from "./command-library.types";
 
 /**
  * The types of data sent to the IPM server
@@ -25,15 +24,15 @@ export enum DataType {
   /**
    * The customer data type.
    */
-  customer = 'customer',
+  customer = "customer",
   /**
    * The device data type.
    */
-  device = 'device',
+  device = "device",
   /**
    * The event data type.
    */
-  event = 'event'
+  event = "event",
 }
 
 /**
@@ -92,7 +91,7 @@ interface EventAttributes extends BaseAttributes {
  * An enum containing all known types of Platforms.
  */
 export enum PlatformType {
-  web = 'web'
+  web = "web",
 }
 
 /**
@@ -122,17 +121,17 @@ export interface EventData {
   /**
    * Local Time at which the event happened.
    */
-  user_time: string,
+  user_time: string;
 
-  attributes: EventAttributes,
+  attributes: EventAttributes;
 }
 
 /**
  * An enum containing all known states for License.
  */
 export enum LicenseState {
-  active = 'premium',
-  inactive = 'free'
+  active = "premium",
+  inactive = "free",
 }
 
 /**
@@ -162,14 +161,14 @@ export interface DeviceData {
    */
   device_id: string;
 
-  attributes: DeviceAttributes,
+  attributes: DeviceAttributes;
 }
 
 /**
  * An enum containing all known Platform statuses.
  */
 export enum PlatformStatus {
-  true = 'true'
+  true = "true",
 }
 
 /**
@@ -184,7 +183,6 @@ interface PlatformInfo {
  * List of associated platforms and their status.
  */
 type PlatformInfoList = PlatformInfo[];
-
 
 /**
  * The device attributes that are being sent to the IPM server
@@ -216,4 +214,4 @@ export interface PayloadData {
 /**
  * The key for the user event storage.
  */
-export const eventStorageKey = 'ipm_events';
+export const eventStorageKey = "ipm_events";

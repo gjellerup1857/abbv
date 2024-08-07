@@ -19,32 +19,32 @@
  * The query parameter that holds the humber of blocked
  * requests (the "block count", or short "bc").
  */
-export const blockCountQueryParameter = 'bc';
+export const blockCountQueryParameter = "bc";
 
 /**
  * New tab event names
  */
 export enum NewTabEventType {
-  created = 'tab_created',
-  loaded = 'tab_loaded',
-  received = 'received',
-  has_content = 'has_content',
+  created = "tab_created",
+  loaded = "tab_loaded",
+  received = "received",
+  has_content = "has_content",
 }
 
 /**
  * New tab error event names
  */
 export enum NewTabErrorEventType {
-  noBehaviorFound = 'error_no_behavior',
-  licenseStateNoMatch = 'license_state_no_match',
-  noUrlFound = 'error_no_url',
-  tabCreationError = 'tab_creation_error'
+  noBehaviorFound = "error_no_behavior",
+  licenseStateNoMatch = "license_state_no_match",
+  noUrlFound = "error_no_url",
+  tabCreationError = "tab_creation_error",
 }
 
 /**
  * New tab exit event names
  */
 export enum NewTabExitEventType {
-  admin = 'newtab_admin',
-  disabled = 'newtab_disabled',
+  admin = "newtab_admin",
+  disabled = "newtab_disabled",
 }

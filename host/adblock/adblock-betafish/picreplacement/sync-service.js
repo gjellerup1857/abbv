@@ -24,40 +24,38 @@
 
 /** @module SyncService */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { getCustomFilterMetaData } from '../debug/background';
-import { TELEMETRY } from '../telemetry/background';
-import { getUserId } from '../id/background/index';
-import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { getCustomFilterMetaData } from "../debug/background";
+import { TELEMETRY } from "../telemetry/background";
+import { getUserId } from "../id/background/index";
+import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events";
 // check.js imports disableSync from here
 // eslint-disable-next-line import/no-cycle
-import { License } from './check';
-import { channelsNotifier } from './channels';
-import SubscriptionAdapter from '../subscriptionadapter';
-import {
-  getSettings, setSetting, settingsNotifier, settings,
-} from '../prefs/background';
-import ServerMessages from '../servermessages';
-import postData from '../fetch-util';
+import { License } from "./check";
+import { channelsNotifier } from "./channels";
+import SubscriptionAdapter from "../subscriptionadapter";
+import { getSettings, setSetting, settingsNotifier, settings } from "../prefs/background";
+import ServerMessages from "../servermessages";
+import postData from "../fetch-util";
 import {
   chromeStorageDeleteHelper,
   chromeStorageGetHelper,
   log,
   chromeStorageSetHelper,
   getUserAgentInfo,
-} from '../utilities/background/index';
+} from "../utilities/background/index";
 
 const SyncService = (function getSyncService() {
   let storedSyncDomainPauses = [];
   let syncCommitVersion = 0;
-  let currentExtensionName = '';
+  let currentExtensionName = "";
   let pubnub;
   const syncSchemaVersion = 1;
-  const syncCommitVersionKey = 'SyncCommitKey';
-  const syncLogMessageKey = 'SyncLogMessageKey';
-  const syncPreviousDataKey = 'SyncPreviousDataKey';
-  const syncExtensionNameKey = 'SyncExtensionNameKey';
-  const syncPendingPostDataKey = 'syncPendingPostDataKey';
+  const syncCommitVersionKey = "SyncCommitKey";
+  const syncLogMessageKey = "SyncLogMessageKey";
+  const syncPreviousDataKey = "SyncPreviousDataKey";
+  const syncExtensionNameKey = "SyncExtensionNameKey";
+  const syncPendingPostDataKey = "syncPendingPostDataKey";
   const syncNotifier = new EventEmitter();
   let lastPostStatusCode = 200;
   let pendingPostData = false;
@@ -69,19 +67,19 @@ const SyncService = (function getSyncService() {
   // with an ID of 'url:...' instead of the id in the betafish-subscriptions.json file
   // any adds to the the betafish-subscriptions.json file should be added here as well.
   const sendFilterListByURL = [
-    'nordic',
-    'annoyances',
-    'fb_notifications',
-    'easylist_plus_romanian',
-    'idcac',
-    'cookies-premium',
-    'turkish',
-    'japanese',
+    "nordic",
+    "annoyances",
+    "fb_notifications",
+    "easylist_plus_romanian",
+    "idcac",
+    "cookies-premium",
+    "turkish",
+    "japanese",
   ];
   const { flavor } = getUserAgentInfo();
   const { os } = getUserAgentInfo();
 
-  const periodicSyncAlarmName = 'periodicSyncAlarm';
+  const periodicSyncAlarmName = "periodicSyncAlarm";
   const periodicSyncInterval = 10; // sync interval in minutes
 
   function setCommitVersion(newVersionNum) {
@@ -137,7 +135,7 @@ const SyncService = (function getSyncService() {
   const getSyncLog = function () {
     return new Promise((resolve) => {
       chromeStorageGetHelper(syncLogMessageKey).then((logMsgs) => {
-        const storedLog = JSON.parse(logMsgs || '[]');
+        const storedLog = JSON.parse(logMsgs || "[]");
         const theReturnObj = {};
         Object.assign(theReturnObj, storedLog);
         resolve(theReturnObj);
@@ -152,7 +150,7 @@ const SyncService = (function getSyncService() {
 
   const migrateSyncLog = function () {
     /* eslint-disable no-restricted-globals */
-    if (typeof self.localStorage === 'undefined') {
+    if (typeof self.localStorage === "undefined") {
       return;
     }
     let storedMsgs = localStorage.getItem(syncLogMessageKey);
@@ -160,7 +158,8 @@ const SyncService = (function getSyncService() {
       return;
     }
     storedMsgs = JSON.parse(storedMsgs);
-    while (storedMsgs.length > 500) { // only keep the last 500 log entries
+    while (storedMsgs.length > 500) {
+      // only keep the last 500 log entries
       storedMsgs.shift();
     }
     chromeStorageSetHelper(syncLogMessageKey, JSON.stringify(storedMsgs), (error) => {
@@ -196,11 +195,11 @@ const SyncService = (function getSyncService() {
   };
 
   /*
-  ** @param arrOne, arrTwo - Arrays to compare
-  ** @returns {boolean} - true if a and b are the same array
-  **                      has the length and same values in any order
-  **                      otherwise false
-  */
+   ** @param arrOne, arrTwo - Arrays to compare
+   ** @returns {boolean} - true if a and b are the same array
+   **                      has the length and same values in any order
+   **                      otherwise false
+   */
   function arrayComparison(arrOne, arrTwo) {
     if (!Array.isArray(arrOne) || !Array.isArray(arrTwo)) {
       return false;
@@ -208,16 +207,16 @@ const SyncService = (function getSyncService() {
     if (arrOne.length !== arrTwo.length) {
       return false;
     }
-    return arrOne.every(element => arrTwo.includes(element));
+    return arrOne.every((element) => arrTwo.includes(element));
   }
 
   /*
-  ** @param a, b        - values (Object, Date, etc.)
-  ** @returns {boolean} - true if a and b are the same object or
-  **                      same primitive value or
-  **                      have the same properties with the same values
-  **                      otherwise false
-  */
+   ** @param a, b        - values (Object, Date, etc.)
+   ** @returns {boolean} - true if a and b are the same object or
+   **                      same primitive value or
+   **                      have the same properties with the same values
+   **                      otherwise false
+   */
   function objectComparison(a, b) {
     // Helper to return a value's internal object [[Class]]
     // That this returns [object Type] even for primitives
@@ -232,13 +231,13 @@ const SyncService = (function getSyncService() {
 
     // If a and b aren't the same type, return false
     if (typeof a !== typeof b) {
-      log('object type compare is false', a, b);
+      log("object type compare is false", a, b);
       return false;
     }
 
     // Already know types are the same, so if type is number
     // and both NaN, return true
-    if (typeof a === 'number' && Number.isNaN(a) && Number.isNaN(b)) {
+    if (typeof a === "number" && Number.isNaN(a) && Number.isNaN(b)) {
       return true;
     }
 
@@ -248,26 +247,26 @@ const SyncService = (function getSyncService() {
 
     // Return false if not same class
     if (aClass !== bClass) {
-      log('object class compare is false', a, b);
+      log("object class compare is false", a, b);
       return false;
     }
 
     // If they're Boolean, String or Number objects, check values
     if (
-      aClass === '[object Boolean]'
-      || aClass === '[object String]'
-      || aClass === '[object Number]'
+      aClass === "[object Boolean]" ||
+      aClass === "[object String]" ||
+      aClass === "[object Number]"
     ) {
       if (a.valueOf() !== b.valueOf()) {
-        log('object valueOf compare is false', a, b);
+        log("object valueOf compare is false", a, b);
         return false;
       }
     }
 
     // If they're RegExps, Dates or Error objects, check stringified values
-    if (aClass === '[object RegExp]' || aClass === '[object Date]' || aClass === '[object Error]') {
+    if (aClass === "[object RegExp]" || aClass === "[object Date]" || aClass === "[object Error]") {
       if (a.toString() !== b.toString()) {
-        log('object string compare is false', a, b);
+        log("object string compare is false", a, b);
         return false;
       }
     }
@@ -275,8 +274,8 @@ const SyncService = (function getSyncService() {
     // For functions, check stringigied values are the same
     // Almost impossible to be equal if a and b aren't trivial
     // and are different functions
-    if (aClass === '[object Function]' && a.toString() !== b.toString()) {
-      log('object function compare is false', a, b);
+    if (aClass === "[object Function]" && a.toString() !== b.toString()) {
+      log("object function compare is false", a, b);
       return false;
     }
 
@@ -287,23 +286,23 @@ const SyncService = (function getSyncService() {
 
     // If they don't have the same number of keys, return false
     if (aKeys.length !== bKeys.length) {
-      log('object key length compare is false', a, b);
+      log("object key length compare is false", a, b);
       return false;
     }
 
     if (Array.isArray(a) && Array.isArray(b)) {
-      log('array compare is ', arrayComparison(a, b), a, b);
+      log("array compare is ", arrayComparison(a, b), a, b);
       return arrayComparison(a, b);
     }
 
     // Check they have the same keys
-    if (!aKeys.every(key => Object.prototype.hasOwnProperty.call(b, key))) {
-      log('object keys compare is false', aKeys, bKeys);
+    if (!aKeys.every((key) => Object.prototype.hasOwnProperty.call(b, key))) {
+      log("object keys compare is false", aKeys, bKeys);
       return false;
     }
 
     // Check key values - uses ES5 Object.keys
-    return aKeys.every(key => objectComparison(a[key], b[key]));
+    return aKeys.every((key) => objectComparison(a[key], b[key]));
   }
 
   const isDomainPauseFilter = function (filterText) {
@@ -320,8 +319,8 @@ const SyncService = (function getSyncService() {
 
   const isPauseFilter = function (filterText) {
     return (
-      isWhitelistFilter(filterText) && ((pausedFilterText1 === filterText)
-        || (pausedFilterText2 === filterText))
+      isWhitelistFilter(filterText) &&
+      (pausedFilterText1 === filterText || pausedFilterText2 === filterText)
     );
   };
 
@@ -333,9 +332,10 @@ const SyncService = (function getSyncService() {
 
   const addSyncLogText = function (msg) {
     chromeStorageGetHelper(syncLogMessageKey).then((logMsgs) => {
-      const storedLog = JSON.parse(logMsgs || '[]');
+      const storedLog = JSON.parse(logMsgs || "[]");
       storedLog.push(`${new Date().toUTCString()} , ${msg}`);
-      while (storedLog.length > 500) { // only keep the last 500 log entries
+      while (storedLog.length > 500) {
+        // only keep the last 500 log entries
         storedLog.shift();
       }
       chromeStorageSetHelper(syncLogMessageKey, JSON.stringify(storedLog));
@@ -343,11 +343,11 @@ const SyncService = (function getSyncService() {
   };
 
   const onExtensionNamesDownloadingAddLogEntry = function () {
-    addSyncLogText('extension.names.downloading');
+    addSyncLogText("extension.names.downloading");
   };
 
   const onExtensionNamesDownloadedAddLogEntry = function () {
-    addSyncLogText('extension.names.downloaded');
+    addSyncLogText("extension.names.downloaded");
   };
 
   const onExtensionNamesDownloadingErrorAddLogEntry = function (errorCode) {
@@ -355,11 +355,11 @@ const SyncService = (function getSyncService() {
   };
 
   const onExtensionNameUpdatingAddLogEntry = function () {
-    addSyncLogText('extension.name.updating');
+    addSyncLogText("extension.name.updating");
   };
 
   const onExtensionNameUpdatedAddLogEntry = function () {
-    addSyncLogText('extension.name.updated');
+    addSyncLogText("extension.name.updated");
   };
 
   const onExtensionNameUpdatedErrorAddLogEntry = function (errorCode) {
@@ -367,11 +367,11 @@ const SyncService = (function getSyncService() {
   };
 
   const onExtensionNameRemoveAddLogEntry = function () {
-    addSyncLogText('extension.name.remove');
+    addSyncLogText("extension.name.remove");
   };
 
   const onExtensionNameRemovedAddLogEntry = function () {
-    addSyncLogText('extension.name.removed');
+    addSyncLogText("extension.name.removed");
   };
 
   const onExtensionNamesRemoveErrorAddLogEntry = function (errorCode) {
@@ -379,7 +379,7 @@ const SyncService = (function getSyncService() {
   };
 
   const onPostDataSendingAddLogEntry = function () {
-    addSyncLogText('post.data.sending');
+    addSyncLogText("post.data.sending");
   };
 
   const onPostDataSentAddLogEntry = function () {
@@ -391,7 +391,7 @@ const SyncService = (function getSyncService() {
   };
 
   const onSyncDataGettingAddLogEntry = function () {
-    addSyncLogText('sync.data.getting');
+    addSyncLogText("sync.data.getting");
   };
 
   const onSyncDataReceievedAddLogEntry = function () {
@@ -431,7 +431,7 @@ const SyncService = (function getSyncService() {
   }
 
   const processSyncUpdate = async function (payload) {
-    log('processing sync update', payload);
+    log("processing sync update", payload);
     // do we need a check or comparison of payload.version vs. syncSchemaVersion ?
     if (payload.settings) {
       const keywords = Object.keys(payload.settings);
@@ -440,29 +440,32 @@ const SyncService = (function getSyncService() {
       // settings from being saved to storage
       for (let inx = 0, p = Promise.resolve(); inx < keywords.length; inx++) {
         const id = keywords[inx];
-        p = p.then(() => new Promise((resolve) => {
-          let value = payload.settings[id];
-          // since we receive a 'show_statsinpopup' property on the |Prefs| object
-          // from older versions of AdBLock, use the incoming value from |Prefs|
-          // object for backward compatability
-          if (
-            id === 'display_menu_stats'
-            && payload.prefs
-            && Object.prototype.hasOwnProperty.call(payload.prefs, 'show_statsinpopup')
-          ) {
-            value = payload.prefs.show_statsinpopup;
-          }
-          setSetting(id, value, () => {
-            resolve();
-          });
-        }));
+        p = p.then(
+          () =>
+            new Promise((resolve) => {
+              let value = payload.settings[id];
+              // since we receive a 'show_statsinpopup' property on the |Prefs| object
+              // from older versions of AdBLock, use the incoming value from |Prefs|
+              // object for backward compatability
+              if (
+                id === "display_menu_stats" &&
+                payload.prefs &&
+                Object.prototype.hasOwnProperty.call(payload.prefs, "show_statsinpopup")
+              ) {
+                value = payload.prefs.show_statsinpopup;
+              }
+              setSetting(id, value, () => {
+                resolve();
+              });
+            }),
+        );
       }
     }
     if (payload.subscriptions) {
       const currentSubs = await SubscriptionAdapter.getSubscriptionsMinusText();
       for (const id in currentSubs) {
         if (!payload.subscriptions[id] && currentSubs[id].subscribed) {
-          log('sync - removing subscription ', currentSubs[id].url);
+          log("sync - removing subscription ", currentSubs[id].url);
           // eslint-disable-next-line no-await-in-loop
           await ewe.subscriptions.remove(currentSubs[id].url);
         }
@@ -470,7 +473,7 @@ const SyncService = (function getSyncService() {
       for (const adblockId in payload.subscriptions) {
         if (!currentSubs[adblockId] || !currentSubs[adblockId].subscribed) {
           let url = SubscriptionAdapter.getUrlFromId(adblockId);
-          if (!url && adblockId.startsWith('url:')) {
+          if (!url && adblockId.startsWith("url:")) {
             url = adblockId.slice(4);
             const subId = SubscriptionAdapter.getIdFromURL(url);
             if (subId) {
@@ -478,10 +481,10 @@ const SyncService = (function getSyncService() {
             }
           }
           if (SubscriptionAdapter.isLegacyDistractionControlById(adblockId)) {
-            url = SubscriptionAdapter.getUrlFromId('distraction-control');
+            url = SubscriptionAdapter.getUrlFromId("distraction-control");
           }
           if (url) {
-            log('sync - adding subscription ', url);
+            log("sync - adding subscription ", url);
             // eslint-disable-next-line no-await-in-loop
             await ewe.subscriptions.add(url);
             ewe.subscriptions.sync(url);
@@ -494,12 +497,12 @@ const SyncService = (function getSyncService() {
       // capture, then remove all current custom filters, account for pause filters in
       // current processing
       let currentUserFilters = await getUserFilters();
-      const onlyUserFilters = currentUserFilters.map(filter => filter.text);
+      const onlyUserFilters = currentUserFilters.map((filter) => filter.text);
       let results = [];
       for (const inx in payload.customFilterRules) {
         if (
-          !ewe.filters.validate(payload.customFilterRules[inx])
-          && !onlyUserFilters.includes(payload.customFilterRules[inx])
+          !ewe.filters.validate(payload.customFilterRules[inx]) &&
+          !onlyUserFilters.includes(payload.customFilterRules[inx])
         ) {
           results.push(ewe.filters.add([payload.customFilterRules[inx]]));
         }
@@ -510,7 +513,7 @@ const SyncService = (function getSyncService() {
         currentUserFilters = cleanCustomFilter(currentUserFilters);
         // Delete / remove filters the user removed...
         if (currentUserFilters) {
-          for (let i = 0; (i < currentUserFilters.length); i++) {
+          for (let i = 0; i < currentUserFilters.length; i++) {
             const filter = currentUserFilters[i];
             if (!payload.customFilterRules.includes(filter.text)) {
               if (filter.text.length > 0) {
@@ -526,7 +529,7 @@ const SyncService = (function getSyncService() {
     }
     if (payload.customRuleMetaData) {
       let currentUserFilters = await getUserFilters();
-      currentUserFilters = currentUserFilters.map(filter => filter.text);
+      currentUserFilters = currentUserFilters.map((filter) => filter.text);
       for (const ruleText in payload.customRuleMetaData) {
         if (currentUserFilters.includes(ruleText)) {
           ewe.filters.setMetadata(ruleText, payload.customRuleMetaData[ruleText]);
@@ -542,8 +545,8 @@ const SyncService = (function getSyncService() {
         }
         // since we no long use the 'show_statsinpopup' property on the |Prefs| object,
         // manually set Settings property for backward compatability
-        if (key === 'show_statsinpopup') {
-          setSetting('display_menu_stats', payload.prefs[key]);
+        if (key === "show_statsinpopup") {
+          setSetting("display_menu_stats", payload.prefs[key]);
         }
       }
     }
@@ -576,28 +579,28 @@ const SyncService = (function getSyncService() {
   const getSyncData = function (initialGet, disableEmitMsg, callback, shouldForce) {
     const getSuccess = function (text, statusCode) {
       let responseObj = {};
-      if (text && typeof text === 'object') {
+      if (text && typeof text === "object") {
         responseObj = text;
-      } else if (text && typeof text === 'string') {
+      } else if (text && typeof text === "string") {
         try {
           responseObj = JSON.parse(text);
         } catch (e) {
           // eslint-disable-next-line no-console
-          console.log('Something went wrong with parsing license data.');
+          console.log("Something went wrong with parsing license data.");
           // eslint-disable-next-line no-console
-          console.log('error', e);
+          console.log("error", e);
           // eslint-disable-next-line no-console
           console.log(text);
           return;
         }
       }
-      if (responseObj && ((responseObj.commitVersion > syncCommitVersion) || shouldForce)) {
+      if (responseObj && (responseObj.commitVersion > syncCommitVersion || shouldForce)) {
         if (responseObj.data) {
           try {
             processSyncUpdate(JSON.parse(responseObj.data));
           } catch (e) {
             // eslint-disable-next-line no-console
-            console.log('failed to parse response data from server', responseObj.data);
+            console.log("failed to parse response data from server", responseObj.data);
             // eslint-disable-next-line no-console
             console.log(e);
           }
@@ -609,9 +612,9 @@ const SyncService = (function getSyncService() {
         chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
       }
       if (!disableEmitMsg) {
-        syncNotifier.emit('sync.data.receieved');
+        syncNotifier.emit("sync.data.receieved");
       }
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback(statusCode);
       }
     };
@@ -629,20 +632,20 @@ const SyncService = (function getSyncService() {
         return;
       }
       if (initialGet && !disableEmitMsg) {
-        syncNotifier.emit('sync.data.getting.error.initial.fail', statusCode);
+        syncNotifier.emit("sync.data.getting.error.initial.fail", statusCode);
       } else if (!disableEmitMsg) {
-        syncNotifier.emit('sync.data.getting.error', statusCode, responseJSON);
+        syncNotifier.emit("sync.data.getting.error", statusCode, responseJSON);
         if (statusCode === 403) {
           process403ErrorCode();
         }
       }
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback(statusCode);
       }
     };
 
     if (!disableEmitMsg) {
-      syncNotifier.emit('sync.data.getting');
+      syncNotifier.emit("sync.data.getting");
     }
     lastGetStatusCode = 200;
     lastGetErrorResponse = {};
@@ -652,12 +655,12 @@ const SyncService = (function getSyncService() {
 
   const getAllExtensionNames = function () {
     return new Promise(async (resolve) => {
-      syncNotifier.emit('extension.names.downloading');
+      syncNotifier.emit("extension.names.downloading");
       fetch(`${License.MAB_CONFIG.syncURL}/devices/list`, {
-        method: 'GET',
-        cache: 'no-cache',
+        method: "GET",
+        cache: "no-cache",
         headers: {
-          'X-GABSYNC-PARAMS': JSON.stringify({
+          "X-GABSYNC-PARAMS": JSON.stringify({
             extensionGUID: await getUserId(),
             licenseId: License.get().licenseId,
             extInfo: getExtensionInfo(),
@@ -667,21 +670,21 @@ const SyncService = (function getSyncService() {
         .then(async (response) => {
           if (response.ok) {
             const responseObj = await response.json();
-            syncNotifier.emit('extension.names.downloaded', responseObj);
+            syncNotifier.emit("extension.names.downloaded", responseObj);
             resolve(responseObj);
             return;
           }
           if (response.status === 404) {
-            syncNotifier.emit('extension.names.downloading.error', response.status);
+            syncNotifier.emit("extension.names.downloading.error", response.status);
             const text = await response.text();
             resolve(text);
             return;
           }
-          log('sync server error: ', response);
+          log("sync server error: ", response);
         })
         .catch((error) => {
-          syncNotifier.emit('extension.names.downloading.error');
-          log('sync server returned error: ', error);
+          syncNotifier.emit("extension.names.downloading.error");
+          log("sync server returned error: ", error);
         });
     });
   };
@@ -696,18 +699,18 @@ const SyncService = (function getSyncService() {
         licenseId: License.get().licenseId,
         extInfo: getExtensionInfo(),
       };
-      syncNotifier.emit('extension.name.updating');
+      syncNotifier.emit("extension.name.updating");
       postData(`${License.MAB_CONFIG.syncURL}/devices/add`, thedata)
         .then((response) => {
           if (response.ok) {
-            syncNotifier.emit('extension.name.updated');
+            syncNotifier.emit("extension.name.updated");
           } else {
-            syncNotifier.emit('extension.name.updated.error', response.status);
+            syncNotifier.emit("extension.name.updated.error", response.status);
           }
         })
         .catch((error) => {
-          syncNotifier.emit('extension.name.updated.error');
-          log('sync server returned error: ', error);
+          syncNotifier.emit("extension.name.updated.error");
+          log("sync server returned error: ", error);
         });
     }
   };
@@ -718,25 +721,24 @@ const SyncService = (function getSyncService() {
       licenseId: License.get().licenseId,
       extInfo: getExtensionInfo(),
     };
-    syncNotifier.emit('extension.name.remove');
+    syncNotifier.emit("extension.name.remove");
     postData(`${License.MAB_CONFIG.syncURL}/devices/remove`, thedata)
       .then((response) => {
         if (response.ok) {
           if (extensionName === currentExtensionName) {
-            currentExtensionName = '';
+            currentExtensionName = "";
             chromeStorageSetHelper(syncExtensionNameKey, currentExtensionName);
           }
-          syncNotifier.emit('extension.name.removed');
+          syncNotifier.emit("extension.name.removed");
         } else {
-          syncNotifier.emit('extension.name.remove.error', response.status);
+          syncNotifier.emit("extension.name.remove.error", response.status);
         }
       })
       .catch((error) => {
-        syncNotifier.emit('extension.name.remove.error');
-        log('sync server returned error: ', error);
+        syncNotifier.emit("extension.name.remove.error");
+        log("sync server returned error: ", error);
       });
   };
-
 
   const removeCurrentExtensionName = async function () {
     removeExtensionName(currentExtensionName, await getUserId());
@@ -756,7 +758,7 @@ const SyncService = (function getSyncService() {
       if (subscriptions[adblockId].subscribed) {
         const { id } = subscriptions[adblockId];
         const url = SubscriptionAdapter.getV2URLFromID(id) || subscriptions[adblockId].url;
-        if (adblockId === 'distraction-control') {
+        if (adblockId === "distraction-control") {
           const dcIDs = SubscriptionAdapter.legacyDistractionControlIDs;
           for (const [dcID, dcURL] of Object.entries(dcIDs)) {
             payload.subscriptions[dcID] = dcURL;
@@ -769,7 +771,7 @@ const SyncService = (function getSyncService() {
       }
     }
     const userFilters = await getUserFilters();
-    const userFiltersTexts = userFilters.map(filter => filter.text).sort();
+    const userFiltersTexts = userFilters.map((filter) => filter.text).sort();
     payload.customFilterRules = cleanCustomFilter(userFiltersTexts);
     const metaDataArr = await getCustomFilterMetaData(userFilters);
     if (metaDataArr && metaDataArr.length) {
@@ -795,7 +797,7 @@ const SyncService = (function getSyncService() {
     for (const id in guide) {
       payload.channels[guide[id].name] = guide[id].enabled;
     }
-    log('sync - sync payload', payload);
+    log("sync - sync payload", payload);
     return payload;
   };
 
@@ -812,55 +814,56 @@ const SyncService = (function getSyncService() {
       extInfo: getExtensionInfo(),
     };
     browser.storage.local.get(syncPreviousDataKey).then((response) => {
-      const previousData = response[syncPreviousDataKey] || '{}';
+      const previousData = response[syncPreviousDataKey] || "{}";
       if (objectComparison(payload, JSON.parse(previousData))) {
         return;
       }
-      syncNotifier.emit('post.data.sending');
+      syncNotifier.emit("post.data.sending");
       lastPostStatusCode = 200;
       pendingPostData = false;
       chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
-      log('sending sync \'payload\' to server', thedata);
-      log('sending sync \'thedata\' to server', payload);
-      postData(License.MAB_CONFIG.syncURL, thedata).then((postResponse) => {
-        lastPostStatusCode = postResponse.status;
-        if (postResponse.ok) {
-          postResponse.json().then((responseObj) => {
-            if (responseObj && responseObj.commitVersion > syncCommitVersion) {
-              syncCommitVersion = responseObj.commitVersion;
-              chromeStorageSetHelper(syncCommitVersionKey, responseObj.commitVersion);
-            }
-            chromeStorageSetHelper(syncPreviousDataKey, responseObj.data);
-            if (typeof callback === 'function') {
-              callback();
-            }
-            syncNotifier.emit('post.data.sent');
-          });
-        } else {
-          syncNotifier.emit('post.data.sent.error', postResponse.status, initialGet);
+      log("sending sync 'payload' to server", thedata);
+      log("sending sync 'thedata' to server", payload);
+      postData(License.MAB_CONFIG.syncURL, thedata)
+        .then((postResponse) => {
           lastPostStatusCode = postResponse.status;
-          if (postResponse.status === 409) {
-            // this extension probably had an version of the sync data
-            // aka - the sync commit version was behind the sync server
-            // so, undo / revert all of the user changes that were just posted
-            // by doing a 'GET'
-            // because we want the above error to be persisted, will set the
-            // 'disableEmitMsg' to true
-            getSyncData(false, true);
-            return;
+          if (postResponse.ok) {
+            postResponse.json().then((responseObj) => {
+              if (responseObj && responseObj.commitVersion > syncCommitVersion) {
+                syncCommitVersion = responseObj.commitVersion;
+                chromeStorageSetHelper(syncCommitVersionKey, responseObj.commitVersion);
+              }
+              chromeStorageSetHelper(syncPreviousDataKey, responseObj.data);
+              if (typeof callback === "function") {
+                callback();
+              }
+              syncNotifier.emit("post.data.sent");
+            });
+          } else {
+            syncNotifier.emit("post.data.sent.error", postResponse.status, initialGet);
+            lastPostStatusCode = postResponse.status;
+            if (postResponse.status === 409) {
+              // this extension probably had an version of the sync data
+              // aka - the sync commit version was behind the sync server
+              // so, undo / revert all of the user changes that were just posted
+              // by doing a 'GET'
+              // because we want the above error to be persisted, will set the
+              // 'disableEmitMsg' to true
+              getSyncData(false, true);
+              return;
+            }
+            if (postResponse.status === 403) {
+              process403ErrorCode();
+            }
+            // all other currently known errors (0, 401, 404, 500).
+            pendingPostData = true;
+            chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
           }
-          if (postResponse.status === 403) {
-            process403ErrorCode();
-          }
-          // all other currently known errors (0, 401, 404, 500).
-          pendingPostData = true;
-          chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
-        }
-      })
+        })
         .catch((error) => {
-          syncNotifier.emit('extension.name.updated.error');
+          syncNotifier.emit("extension.name.updated.error");
           // eslint-disable-next-line no-console
-          console.log('sync server returned error: ', error);
+          console.log("sync server returned error: ", error);
         });
     });
   };
@@ -918,7 +921,7 @@ const SyncService = (function getSyncService() {
   // a delay is added to allow the domain pause filters time to be saved to storage
   // otherwise the domain pause filter check below would always fail
   const onFilterListsSubAdded = function (sub, calledPreviously) {
-    log('onFilterListsSubAdded', sub);
+    log("onFilterListsSubAdded", sub);
     if (calledPreviously === undefined) {
       setTimeout(() => {
         onFilterListsSubAdded(sub, true);
@@ -926,7 +929,7 @@ const SyncService = (function getSyncService() {
       return;
     }
     let containsPauseFilter = false;
-    if (sub.url && sub.url.startsWith('~user~') && sub._filterText.length) {
+    if (sub.url && sub.url.startsWith("~user~") && sub._filterText.length) {
       const arrayLength = sub._filterText.length;
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
@@ -945,7 +948,7 @@ const SyncService = (function getSyncService() {
 
   const onFilterListsSubRemoved = function (sub) {
     let containsPauseFilter = false;
-    if (sub.url && sub.url.startsWith('~user~') && sub._filterText.length) {
+    if (sub.url && sub.url.startsWith("~user~") && sub._filterText.length) {
       const arrayLength = sub._filterText.length;
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
@@ -965,7 +968,7 @@ const SyncService = (function getSyncService() {
   };
 
   const onSettingsChanged = function (name) {
-    if (name === 'sync_settings') {
+    if (name === "sync_settings") {
       return; // don't process any sync setting changes
     }
     postDataSyncHandler();
@@ -982,7 +985,7 @@ const SyncService = (function getSyncService() {
     if (!fetchCommitVersion) {
       return;
     }
-    if (typeof fetchCommitVersion === 'string') {
+    if (typeof fetchCommitVersion === "string") {
       fetchCommitVersion = Number.parseInt(fetchCommitVersion, 10);
     }
     if (fetchCommitVersion === syncCommitVersion) {
@@ -1024,13 +1027,17 @@ const SyncService = (function getSyncService() {
         }
       },
       status(msg) {
-        if (msg.category === 'PNNetworkUpCategory') {
+        if (msg.category === "PNNetworkUpCategory") {
           pubnub.subscribe({
             channels: [License.get().licenseId],
           });
         }
         if (msg.error === true && msg.category && msg.operation) {
-          ServerMessages.recordGeneralMessage('pubnub_error', undefined, { licenseId: License.get().licenseId, category: msg.category, operation: msg.operation });
+          ServerMessages.recordGeneralMessage("pubnub_error", undefined, {
+            licenseId: License.get().licenseId,
+            category: msg.category,
+            operation: msg.operation,
+          });
         }
       },
     });
@@ -1041,29 +1048,35 @@ const SyncService = (function getSyncService() {
   }
 
   const addSyncEventListeners = function () {
-    syncNotifier.on('sync.data.getting.error', onSyncDataGettingErrorAddLogEntry);
-    syncNotifier.on('sync.data.getting.error.initial.fail', onSyncDataGettingErrorInitialFailAddLogEntry);
-    syncNotifier.on('extension.names.downloading', onExtensionNamesDownloadingAddLogEntry);
-    syncNotifier.on('sync.data.receieved', onSyncDataReceievedAddLogEntry);
-    syncNotifier.on('sync.data.getting', onSyncDataGettingAddLogEntry);
-    syncNotifier.on('post.data.sent.error', onPostDataSentErrorAddLogEntry);
-    syncNotifier.on('post.data.sending', onPostDataSendingAddLogEntry);
-    syncNotifier.on('post.data.sent', onPostDataSentAddLogEntry);
-    syncNotifier.on('extension.name.remove.error', onExtensionNamesRemoveErrorAddLogEntry);
-    syncNotifier.on('extension.name.removed', onExtensionNameRemovedAddLogEntry);
-    syncNotifier.on('extension.name.remove', onExtensionNameRemoveAddLogEntry);
-    syncNotifier.on('extension.name.updated.error', onExtensionNameUpdatedErrorAddLogEntry);
-    syncNotifier.on('extension.name.updated', onExtensionNameUpdatedAddLogEntry);
-    syncNotifier.on('extension.name.updating', onExtensionNameUpdatingAddLogEntry);
-    syncNotifier.on('extension.names.downloaded', onExtensionNamesDownloadedAddLogEntry);
-    syncNotifier.on('extension.names.downloading.error', onExtensionNamesDownloadingErrorAddLogEntry);
+    syncNotifier.on("sync.data.getting.error", onSyncDataGettingErrorAddLogEntry);
+    syncNotifier.on(
+      "sync.data.getting.error.initial.fail",
+      onSyncDataGettingErrorInitialFailAddLogEntry,
+    );
+    syncNotifier.on("extension.names.downloading", onExtensionNamesDownloadingAddLogEntry);
+    syncNotifier.on("sync.data.receieved", onSyncDataReceievedAddLogEntry);
+    syncNotifier.on("sync.data.getting", onSyncDataGettingAddLogEntry);
+    syncNotifier.on("post.data.sent.error", onPostDataSentErrorAddLogEntry);
+    syncNotifier.on("post.data.sending", onPostDataSendingAddLogEntry);
+    syncNotifier.on("post.data.sent", onPostDataSentAddLogEntry);
+    syncNotifier.on("extension.name.remove.error", onExtensionNamesRemoveErrorAddLogEntry);
+    syncNotifier.on("extension.name.removed", onExtensionNameRemovedAddLogEntry);
+    syncNotifier.on("extension.name.remove", onExtensionNameRemoveAddLogEntry);
+    syncNotifier.on("extension.name.updated.error", onExtensionNameUpdatedErrorAddLogEntry);
+    syncNotifier.on("extension.name.updated", onExtensionNameUpdatedAddLogEntry);
+    syncNotifier.on("extension.name.updating", onExtensionNameUpdatingAddLogEntry);
+    syncNotifier.on("extension.names.downloaded", onExtensionNamesDownloadedAddLogEntry);
+    syncNotifier.on(
+      "extension.names.downloading.error",
+      onExtensionNamesDownloadingErrorAddLogEntry,
+    );
   };
 
   const enableSync = function (initialGet) {
-    setSetting('sync_settings', true);
+    setSetting("sync_settings", true);
     const addListeners = function () {
       // eslint-disable-next-line no-use-before-define
-      License.licenseNotifier.on('license.expired', processDisableSync);
+      License.licenseNotifier.on("license.expired", processDisableSync);
 
       ewe.subscriptions.onAdded.addListener(onFilterListsSubAdded);
       ewe.subscriptions.onRemoved.addListener(onFilterListsSubRemoved);
@@ -1071,8 +1084,8 @@ const SyncService = (function getSyncService() {
       ewe.filters.onAdded.addListener(onFilterAdded);
       ewe.filters.onRemoved.addListener(onFilterRemoved);
 
-      settingsNotifier.on('settings.changed', onSettingsChanged);
-      channelsNotifier.on('channels.changed', postDataSyncHandler);
+      settingsNotifier.on("settings.changed", onSettingsChanged);
+      channelsNotifier.on("channels.changed", postDataSyncHandler);
 
       for (const inx in abpPrefPropertyNames) {
         const name = abpPrefPropertyNames[inx];
@@ -1080,7 +1093,7 @@ const SyncService = (function getSyncService() {
       }
       // wait a moment at start to allow all of the backgound scripts to load
       setTimeout(() => {
-        if (typeof PubNub !== 'undefined') {
+        if (typeof PubNub !== "undefined") {
           enablePubNub();
         } else {
           // If we don't have PubNub, we need to periodically run a sync ourselves.
@@ -1088,8 +1101,8 @@ const SyncService = (function getSyncService() {
         }
       }, 1000);
 
-      self.addEventListener('online', updateNetworkStatus);
-      self.addEventListener('offline', updateNetworkStatus);
+      self.addEventListener("online", updateNetworkStatus);
+      self.addEventListener("offline", updateNetworkStatus);
     };
 
     if (initialGet) {
@@ -1116,7 +1129,7 @@ const SyncService = (function getSyncService() {
 
   const disableSync = function (removeName) {
     stopPeriodicSync();
-    setSetting('sync_settings', false);
+    setSetting("sync_settings", false);
     syncCommitVersion = 0;
     disablePubNub();
     ewe.subscriptions.onAdded.removeListener(onFilterListsSubAdded);
@@ -1125,8 +1138,8 @@ const SyncService = (function getSyncService() {
     ewe.filters.onAdded.removeListener(onFilterAdded);
     ewe.filters.onRemoved.removeListener(onFilterRemoved);
 
-    settingsNotifier.off('settings.changed', onSettingsChanged);
-    channelsNotifier.off('channels.changed', postDataSyncHandler);
+    settingsNotifier.off("settings.changed", onSettingsChanged);
+    channelsNotifier.off("channels.changed", postDataSyncHandler);
 
     for (const inx in abpPrefPropertyNames) {
       const name = abpPrefPropertyNames[inx];
@@ -1137,14 +1150,14 @@ const SyncService = (function getSyncService() {
     if (removeName) {
       removeCurrentExtensionName();
 
-      currentExtensionName = '';
+      currentExtensionName = "";
       chromeStorageSetHelper(syncExtensionNameKey, currentExtensionName);
     }
 
     // eslint-disable-next-line no-use-before-define
-    License.licenseNotifier.off('license.expired', processDisableSync);
-    self.removeEventListener('online', updateNetworkStatus);
-    self.removeEventListener('offline', updateNetworkStatus);
+    License.licenseNotifier.off("license.expired", processDisableSync);
+    self.removeEventListener("online", updateNetworkStatus);
+    self.removeEventListener("offline", updateNetworkStatus);
   };
 
   const processDisableSync = function () {
@@ -1175,10 +1188,10 @@ const SyncService = (function getSyncService() {
     const forceParam = shouldForce || false;
 
     fetch(License.MAB_CONFIG.syncURL, {
-      method: 'GET',
-      cache: 'no-cache',
+      method: "GET",
+      cache: "no-cache",
       headers: {
-        'X-GABSYNC-PARAMS': JSON.stringify({
+        "X-GABSYNC-PARAMS": JSON.stringify({
           extensionGUID: await getUserId(),
           licenseId: License.get().licenseId,
           commitVersion: syncCommitVersion,
@@ -1188,14 +1201,14 @@ const SyncService = (function getSyncService() {
       },
     })
       .then(async (response) => {
-        if (response.ok && typeof successCallback === 'function') {
+        if (response.ok && typeof successCallback === "function") {
           const text = await response.text();
           successCallback(text, response.status);
         }
         if (!response.ok) {
-          log('sync server returned error, status', response.status);
+          log("sync server returned error, status", response.status);
           if (response.status === 304) {
-            log('response', response);
+            log("response", response);
             return;
           }
           if ((response.status !== 404 || response.status !== 403) && attemptCount < 3) {
@@ -1204,14 +1217,14 @@ const SyncService = (function getSyncService() {
             }, 1000); // wait 1 second for retry
             return;
           }
-          if (typeof errorCallback === 'function') {
+          if (typeof errorCallback === "function") {
             const responseObj = await response.json();
             errorCallback(response.status, response.status, responseObj);
           }
         }
       })
       .catch((error) => {
-        log('sync server returned error: ', error);
+        log("sync server returned error: ", error);
         errorCallback(error.message);
       });
   };
@@ -1232,7 +1245,7 @@ const SyncService = (function getSyncService() {
       }
 
       browser.storage.local.get(syncExtensionNameKey).then((response) => {
-        currentExtensionName = response[syncExtensionNameKey] || '';
+        currentExtensionName = response[syncExtensionNameKey] || "";
       });
     });
   });
@@ -1266,6 +1279,6 @@ const SyncService = (function getSyncService() {
     processEventChangeRequest,
     addSyncLogText,
   };
-}());
+})();
 
 export default SyncService;

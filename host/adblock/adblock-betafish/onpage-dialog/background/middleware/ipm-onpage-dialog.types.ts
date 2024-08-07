@@ -15,66 +15,22 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Command } from '../../../ipm/background';
-
-/**
- * Timing name
- */
-export enum Timing {
-    afterWebAllowlisting = 'after_web_allowlisting',
-    revisitWebAllowlisted = 'revisit_web_allowlisted_site',
-    afterNavigation = 'after_navigation',
-}
-
-/**
- * On-page dialog event names
- */
-export enum DialogEventType {
-    buttonClicked = 'dialog_button_clicked',
-    closed = 'dialog_closed',
-    ignored = 'dialog_ignored',
-    injected = 'dialog_injected',
-    injected_error = 'dialog_injected_error',
-    initial_ping = 'ping.initial',
-    received = 'received',
-}
-
-/**
- * On-page dialog error event names
- */
-export enum DialogErrorEventType {
-  error_no_ipm_found = 'error.no_ipm',
-  get_no_ipm_found = 'get.no_ipm',
-  get_no_dialog_found = 'get.no_dialog',
-  ping_no_ipm_found = 'ping.no_ipm',
-  ping_no_behavior_found = 'ping.no_behavior',
-  tab_no_behavior_found = 'tab.update.no_behavior',
-  tab_no_stats_found = 'tab.update.no_stats'
-}
-
-/**
- * On-page dialog exit event names
- */
-export enum DialogExitEventType {
-  tab_premium_user = 'tab.update.premium',
-  tab_disabled = 'tab.update.disabled',
-  tab_suppress_surveys = 'tab.update.suppress_surveys',
-  tab_opm_disabled = 'tab.update.opm_disabled',
-}
+import { type Command } from "../../../ipm/background";
+import { type Timing } from "../timing.types";
 
 /**
  * On-page dialog command parameters
  */
 export interface DialogParams {
-    timing: Timing;
-    display_duration?: number;
-    sub_title: string;
-    upper_body: string;
-    lower_body?: string;
-    button_label: string;
-    button_target: string;
-    domain_list?: string;
-    license_state_list?: string;
+  timing: Timing;
+  display_duration?: number;
+  sub_title: string;
+  upper_body: string;
+  lower_body?: string;
+  button_label: string;
+  button_target: string;
+  domain_list?: string;
+  license_state_list?: string;
 }
 
 /**

@@ -19,21 +19,21 @@
 /* global browser, adblockIsPaused,
    adblockIsDomainPaused, getUserFilters, */
 
-import * as info from 'info';
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import SubscriptionAdapter from './subscriptionadapter';
-import postData from './fetch-util';
-import { getSettings, settings, setSetting } from './prefs/background';
-import { parseUri, log, chromeStorageSetHelper } from './utilities/background/bg-functions';
-import { Prefs } from './alias/prefs';
+import * as info from "info";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import SubscriptionAdapter from "./subscriptionadapter";
+import postData from "./fetch-util";
+import { getSettings, settings, setSetting } from "./prefs/background";
+import { parseUri, log, chromeStorageSetHelper } from "./utilities/background/bg-functions";
+import { Prefs } from "./alias/prefs";
 
 const DataCollectionV2 = (function getDataCollectionV2() {
   const HOUR_IN_MIN = 60;
-  const TIME_LAST_PUSH_KEY = 'timeLastPush';
-  const DATA_COLLECTION_ALARM_NAME = 'datacollectionalarm';
-  const STORAGE_KEY = 'ab:data.collection.storage.key';
+  const TIME_LAST_PUSH_KEY = "timeLastPush";
+  const DATA_COLLECTION_ALARM_NAME = "datacollectionalarm";
+  const STORAGE_KEY = "ab:data.collection.storage.key";
   const REPORTING_OPTIONS = {
-    filterType: 'all',
+    filterType: "all",
     includeElementHiding: false,
   };
 
@@ -43,7 +43,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
   dataCollectionCache.domains = {};
 
   const addFilterToCache = async function (details, filter) {
-    const validFilterText = filter && filter.text && (typeof filter.text === 'string');
+    const validFilterText = filter && filter.text && typeof filter.text === "string";
     if (validFilterText && details && details.url) {
       let domain = details.url.hostname;
       if (!domain) {
@@ -87,7 +87,12 @@ const DataCollectionV2 = (function getDataCollectionV2() {
   };
 
   const webRequestListener = function (details) {
-    if (details.url && details.type === 'main_frame' && !adblockIsPaused() && !adblockIsDomainPaused({ url: details.url, id: details.id })) {
+    if (
+      details.url &&
+      details.type === "main_frame" &&
+      !adblockIsPaused() &&
+      !adblockIsDomainPaused({ url: details.url, id: details.id })
+    ) {
       const domain = parseUri(details.url).host;
       if (!dataCollectionCache.domains[domain]) {
         dataCollectionCache.domains[domain] = {};
@@ -108,7 +113,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
   };
 
   const sendToServer = async function () {
-    if (Prefs.get('data_collection_opt_out')) {
+    if (Prefs.get("data_collection_opt_out")) {
       return;
     }
 
@@ -125,10 +130,10 @@ const DataCollectionV2 = (function getDataCollectionV2() {
         }
       }
       if (await getUserFilters().length) {
-        subscribedSubs.push('customlist');
+        subscribedSubs.push("customlist");
       }
       const data = {
-        version: '5',
+        version: "5",
         addonName: info.addonName,
         addonVersion: info.addonVersion,
         application: info.application,
@@ -141,7 +146,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
         filters: dataCollectionCache.filters,
       };
       browser.storage.local.get(TIME_LAST_PUSH_KEY).then((response) => {
-        let timeLastPush = 'n/a';
+        let timeLastPush = "n/a";
         if (response[TIME_LAST_PUSH_KEY]) {
           const serverTimestamp = new Date(response[TIME_LAST_PUSH_KEY]);
           // Format the timeLastPush
@@ -164,33 +169,32 @@ const DataCollectionV2 = (function getDataCollectionV2() {
           if (minStr.length === 1) {
             minStr = `0${minStr}`;
           }
-          if (minStr === '60') {
-            minStr = '00';
+          if (minStr === "60") {
+            minStr = "00";
           }
           timeLastPush = `${yearStr}-${monthStr}-${dateStr} ${hourStr}:${minStr}:00`;
         }
         data.timeOfLastPush = timeLastPush;
-        postData('https://log.getadblock.com/v2/record_log.php', data)
-          .then((postResponse) => {
-            if (postResponse.ok) {
-              let nowTimestamp = (new Date()).toGMTString();
-              try {
-                if (postResponse.headers.has('date')) {
-                  nowTimestamp = postResponse.headers.get('date');
-                }
-              } catch (e) {
-                nowTimestamp = (new Date()).toGMTString();
+        postData("https://log.getadblock.com/v2/record_log.php", data).then((postResponse) => {
+          if (postResponse.ok) {
+            let nowTimestamp = new Date().toGMTString();
+            try {
+              if (postResponse.headers.has("date")) {
+                nowTimestamp = postResponse.headers.get("date");
               }
-              chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
-              // Reset memory cache
-              dataCollectionCache = {};
-              dataCollectionCache.filters = {};
-              dataCollectionCache.domains = {};
-              browser.storage.local.remove(STORAGE_KEY);
-              return;
+            } catch (e) {
+              nowTimestamp = new Date().toGMTString();
             }
-            log('bad response from log server', postResponse);
-          });
+            chromeStorageSetHelper(TIME_LAST_PUSH_KEY, nowTimestamp);
+            // Reset memory cache
+            dataCollectionCache = {};
+            dataCollectionCache.filters = {};
+            dataCollectionCache.domains = {};
+            browser.storage.local.remove(STORAGE_KEY);
+            return;
+          }
+          log("bad response from log server", postResponse);
+        });
       }); // end of TIME_LAST_PUSH_KEY
     }
   };
@@ -230,20 +234,19 @@ const DataCollectionV2 = (function getDataCollectionV2() {
       await loadCache();
       ewe.reporting.onBlockableItem.addListener(filterListener, REPORTING_OPTIONS);
       browser.webRequest.onBeforeRequest.addListener(webRequestListener, {
-        urls: ['http://*/*', 'https://*/*'],
-        types: ['main_frame'],
+        urls: ["http://*/*", "https://*/*"],
+        types: ["main_frame"],
       });
       browser.alarms.create(DATA_COLLECTION_ALARM_NAME, { periodInMinutes: HOUR_IN_MIN });
     });
   };
   initialize();
 
-
   const returnObj = {};
   returnObj.start = function returnObjStart() {
     dataCollectionCache.filters = {};
     dataCollectionCache.domains = {};
-    setSetting('data_collection_v2', true, () => {
+    setSetting("data_collection_v2", true, () => {
       initialize();
     });
   };
@@ -254,13 +257,13 @@ const DataCollectionV2 = (function getDataCollectionV2() {
     browser.storage.local.remove(TIME_LAST_PUSH_KEY);
     browser.storage.local.remove(STORAGE_KEY);
     browser.alarms.clear(DATA_COLLECTION_ALARM_NAME);
-    setSetting('data_collection_v2', false);
+    setSetting("data_collection_v2", false);
   };
   returnObj.getCache = function returnObjGetCache() {
     return dataCollectionCache;
   };
 
   return returnObj;
-}());
+})();
 
 export default DataCollectionV2;

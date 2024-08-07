@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { type LicenseStateBehavior } from '../../ipm/background';
-import { type Timing } from './timing.types';
+
+import { type LicenseStateBehavior } from "../../ipm/background";
+import { type DialogContent } from "../shared";
+import { type Timing } from "./timing.types";
 
 /**
  * On-page dialog behavior

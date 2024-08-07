@@ -1,13 +1,10 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser  */
 
-import { getUserId } from '../../../id/background/index';
+import { getUserId } from "../../../id/background/index";
 
 const webRequestFilter = {
-  url: [
-    { hostSuffix: 'getadblock.com' },
-    { hostSuffix: 'getadblockpremium.com' },
-  ],
+  url: [{ hostSuffix: "getadblock.com" }, { hostSuffix: "getadblockpremium.com" }],
 };
 
 function setAdblockUserID(userid) {
@@ -28,9 +25,8 @@ function cleanup() {
 // and then remove itself once executed (leave a clean
 // DOM behind).
 async function injectScriptTag(adblockUserId) {
-  const elem = document.createElement('script');
-  const scriptToInject = `(${cleanup.toString()})();`
-    + `(${setAdblockUserID.toString()})('${adblockUserId}');`;
+  const elem = document.createElement("script");
+  const scriptToInject = `(${cleanup.toString()})();(${setAdblockUserID.toString()})('${adblockUserId}');`;
   elem.appendChild(document.createTextNode(scriptToInject));
   try {
     (document.head || document.documentElement).appendChild(elem);
@@ -43,7 +39,7 @@ const webNavigationHandler = async function (details) {
   let userid = await getUserId();
   const invalidGUIDChars = /[^a-z0-9]/g;
   if (userid.match(invalidGUIDChars)) {
-    userid = 'invalid';
+    userid = "invalid";
   }
   const { tabId } = details;
   try {
@@ -52,14 +48,14 @@ const webNavigationHandler = async function (details) {
         target: { tabId: details.tabId },
         func: setAdblockUserID,
         args: [userid],
-        world: 'MAIN',
+        world: "MAIN",
       });
     } else {
       const codeToExecute = `${setAdblockUserID.toString()} ${cleanup.toString()} ${injectScriptTag.toString()} injectScriptTag("${userid}");`;
       void browser.tabs.executeScript(tabId, {
         code: codeToExecute,
         allFrames: false,
-        runAt: 'document_start',
+        runAt: "document_start",
       });
     }
   } catch (error) {

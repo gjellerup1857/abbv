@@ -15,11 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type DialogContent,
-  type Dialog,
-  type DialogBehavior,
-} from './dialog.types';
+import { type DialogContent } from "../shared";
+import { type Dialog, type DialogBehavior } from "./dialog.types";
 
 /**
  * Checks whether given candidate is dialog information
@@ -30,10 +27,10 @@ import {
  */
 export function isDialog(candidate: unknown): candidate is Dialog {
   return (
-    candidate !== null
-    && typeof candidate === 'object'
-    && 'behavior' in candidate
-    && 'content' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "behavior" in candidate &&
+    "content" in candidate
   );
 }
 
@@ -45,14 +42,14 @@ export function isDialog(candidate: unknown): candidate is Dialog {
  * @returns whether given candidate is on-page behavior
  */
 export function isDialogBehavior(
-  candidate: unknown,
+  candidate: unknown
 ): candidate is DialogBehavior {
   return (
-    candidate !== null
-    && typeof candidate === 'object'
-    && 'displayDuration' in candidate
-    && 'target' in candidate
-    && 'timing' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "displayDuration" in candidate &&
+    "target" in candidate &&
+    "timing" in candidate
   );
 }
 
@@ -64,13 +61,13 @@ export function isDialogBehavior(
  * @returns whether given candidate is on-page content
  */
 export function isDialogContent(
-  candidate: unknown,
+  candidate: unknown
 ): candidate is DialogContent {
   return (
-    candidate !== null
-    && typeof candidate === 'object'
-    && 'body' in candidate
-    && 'button' in candidate
-    && 'title' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "body" in candidate &&
+    "button" in candidate &&
+    "title" in candidate
   );
 }

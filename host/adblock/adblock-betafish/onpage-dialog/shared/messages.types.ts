@@ -14,63 +14,63 @@
  * You should have received a copy of the GNU General Public License
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { LocaleInfo } from '../../i18n/background';
-import { Message } from '../../polyfills/shared';
-import { Content } from '../../ipm/background';
+import { LocaleInfo } from "../../i18n/background";
+import { Message } from "../../polyfills/shared";
+import { Content } from "../../ipm/background";
 
 /**
  * Message for hiding the on-page dialog
  */
 export interface HideMessage extends Message {
-    type: 'onpage-dialog.hide';
+  type: "onpage-dialog.hide";
 }
 
 /**
  * Message for pinging the background page while the on-page dialog is shown
  */
 export interface PingMessage extends Message {
-    type: 'onpage-dialog.ping';
-    /**
-     * Number of minutes indicating how long the on-page dialog
-     * has already been shown
-     */
-    displayDuration: number;
+  type: "onpage-dialog.ping";
+  /**
+   * Number of minutes indicating how long the on-page dialog
+   * has already been shown
+   */
+  displayDuration: number;
 }
 
 /**
  * Message for resizing the on-page dialog frame
  */
 export interface ResizeMessage extends Message {
-    type: 'onpage-dialog.resize';
-    /**
-     * Frame height in pixel
-     */
-    height: number;
+  type: "onpage-dialog.resize";
+  /**
+   * Frame height in pixel
+   */
+  height: number;
 }
 
 /**
  * Message for showing the on-page dialog
  */
 export interface ShowMessage extends Message {
-    type: 'onpage-dialog.show';
-    /**
-     * Browser engine name
-     */
-    platform: string;
+  type: "onpage-dialog.show";
+  /**
+   * Browser engine name
+   */
+  platform: string;
 }
 
 /**
  * Information for initializing for on-page dialog
  */
 export interface StartInfo {
-    /**
-     * On-page dialog content
-     */
-    content: DialogContent;
-    /**
-     * Locale information
-     */
-    localeInfo: LocaleInfo;
+  /**
+   * On-page dialog content
+   */
+  content: DialogContent;
+  /**
+   * Locale information
+   */
+  localeInfo: LocaleInfo;
 }
 
 /**

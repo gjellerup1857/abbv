@@ -25,7 +25,7 @@ import {
   sevenDaysInMilliSeconds,
   ytAllowlistHardEndDate,
   ytAllowlistLanguageCodes,
-  ytAllowlistOPDLanguageCodes,
+  ytAllowlistDialogLanguageCodes,
   ytAllowlistStartDate,
 } from "./detection.types";
 import { determineUserLanguage } from "~/utilities/background/bg-functions";
@@ -55,7 +55,7 @@ const shouldAllowlistForLanguages = function (): Boolean {
  *
  */
 const shouldShowOPDForLanguages = function (): Boolean {
-  const OPDLanguages = Prefs.get(ytAllowlistOPDLanguageCodes);
+  const OPDLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
   const locale = determineUserLanguage();
   const language = locale.substring(0, 2);
   return OPDLanguages.includes(language);
@@ -109,7 +109,7 @@ const captureStartDate = function (): void {
     Prefs.set(ytAllowlistStartDate, Date.now());
     logger.debug(
       "[yt-detection]: set start date",
-      new Date(Prefs.get(ytAllowlistStartDate)).toLocaleDateString()
+      new Date(Prefs.get(ytAllowlistStartDate)).toLocaleDateString(),
     );
   }
 };
@@ -148,23 +148,27 @@ const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
  */
 const processYouTubeWallDetectedMessage = async (
   message: AdWallMessage,
-  sender: MessageSender
+  sender: MessageSender,
 ): Promise<void> => {
-  const filters = await ewe.filters.getAllowingFilters(sender.page.id);
+  if (typeof sender.tab?.id === "undefined") {
+    return;
+  }
+  const filters = await ewe.filters.getAllowingFilters(sender.tab.id);
   const isAllowListed = !!filters.length;
   ServerMessages.recordAdWallMessage(
     youTubeWallDetected,
     message.userLoggedIn ? "1" : "0",
-    isAllowListed ? "1" : "0"
+    isAllowListed ? "1" : "0",
   );
-  if (sender && sender.page && shouldAllowList()) {
-    adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true);
+  if (sender && sender.tab && shouldAllowList()) {
+    adblockIsDomainPaused({ url: sender.tab.url, id: sender.tab.id }, true, true);
+    browser.tabs.reload(sender.tab.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
     if (shouldShowOPDForLanguages()) {
-      pageLoadedHandler = onLoaded.bind(null, sender.page.id);
+      pageLoadedHandler = onLoaded.bind(null, sender.tab.id);
       ext.pages.onLoaded.addListener(pageLoadedHandler);
     }
-    browser.tabs.reload(sender.page.id);
+    browser.tabs.reload(sender.tab.id);
   }
 };
 

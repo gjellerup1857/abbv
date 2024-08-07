@@ -26,7 +26,7 @@ export {
   prefs,
   requests,
   stats,
-  subscriptions
+  subscriptions,
 } from "./api";
 
 export {
@@ -34,7 +34,7 @@ export {
   addDisconnectListener,
   addMessageListener,
   listen,
-  removeDisconnectListener
+  removeDisconnectListener,
 } from "./api.port";
 
 export type {
@@ -56,7 +56,7 @@ export type {
   SendArgs,
   SendType,
   Store,
-  SubscriptionOptions
+  SubscriptionOptions,
 } from "./api.types";
 
 export default api;

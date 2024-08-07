@@ -18,26 +18,21 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, channels, replacedCounts, getSettings, BigInt */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { chromeStorageSetHelper } from '~/utilities/background/bg-functions';
+import { chromeStorageSetHelper } from "~/utilities/background/bg-functions";
 import {
   getWebAllowlistingFilterCount,
   getPopupAllowlistingFilterCount,
   getCustomizedFilterCount,
   getWizardFilterCount,
   getMissingFilterCount,
-} from './custom-rule';
-import { Prefs } from '~/alias/prefs';
-import ServerMessages from '~/servermessages';
-import SubscriptionAdapter from '~/subscriptionadapter';
-import { getUserId } from '~/id/background/index';
-import {
-  determineUserLanguage,
-  storageSet,
-  getUserAgentInfo,
-} from '~/utilities/background/index';
-
+} from "./custom-rule";
+import { Prefs } from "~/alias/prefs";
+import ServerMessages from "~/servermessages";
+import SubscriptionAdapter from "~/subscriptionadapter";
+import { getUserId } from "~/id/background/index";
+import { determineUserLanguage, storageSet, getUserAgentInfo } from "~/utilities/background/index";
 
 const FiftyFiveMinutes = 3300000;
 
@@ -60,7 +55,7 @@ class TelemetryBase {
     this.flavor = getUserAgentInfo().flavor;
     this.browserVersion = getUserAgentInfo().browserVersion;
     this.firstRun = false;
-    this.userId = '';
+    this.userId = "";
     // added calls to these two methods because the need to be
     // called in the first turn of the event loop
     this.addAlarmListener();
@@ -95,10 +90,10 @@ class TelemetryBase {
     let data = {};
     const settingsObj = getSettings();
     const totalPings = response[this.totalRequestsStorageKey] || 0;
-    const themeOptionsPage = settingsObj.color_themes.options_page.replace('_theme', '');
-    const themePopupMenu = settingsObj.color_themes.popup_menu.replace('_theme', '');
-    let subsStr = '-1';
-    if (typeof BigInt === 'function') {
+    const themeOptionsPage = settingsObj.color_themes.options_page.replace("_theme", "");
+    const themePopupMenu = settingsObj.color_themes.popup_menu.replace("_theme", "");
+    let subsStr = "-1";
+    if (typeof BigInt === "function") {
       subsStr = BigInt(`0b${await SubscriptionAdapter.getSubscriptionsChecksum()}`).toString();
     }
 
@@ -109,24 +104,24 @@ class TelemetryBase {
       o: this.os,
       bv: this.browserVersion,
       ov: this.osVersion,
-      ad: settingsObj.show_advanced_options ? '1' : '0',
-      yt: settingsObj.youtube_channel_whitelist ? '1' : '0',
+      ad: settingsObj.show_advanced_options ? "1" : "0",
+      yt: settingsObj.youtube_channel_whitelist ? "1" : "0",
       l: determineUserLanguage(),
       pc: totalPings,
-      dcv2: settingsObj.data_collection_v2 ? '1' : '0',
-      ldc: settingsObj.local_data_collection ? '1' : '0',
+      dcv2: settingsObj.data_collection_v2 ? "1" : "0",
+      ldc: settingsObj.local_data_collection ? "1" : "0",
       rc: await replacedCounts.getTotalAdsReplaced(),
       to: themeOptionsPage,
       tm: themePopupMenu,
-      sy: settingsObj.sync_settings ? '1' : '0',
-      ir: channels.isAnyEnabled() ? '1' : '0',
-      cir: channels.channelGuide[channels.getIdByName('CustomChannel')].enabled ? '1' : '0',
-      tca: settingsObj.twitch_channel_allowlist ? '1' : '0',
-      sup: settingsObj.suppress_update_page ? '1' : '0',
-      ss: settingsObj.suppress_surveys ? '1' : '0',
-      sfrp: settingsObj.suppress_first_run_page ? '1' : '0',
-      opm: settingsObj.onpageMessages ? '1' : '0',
-      sendadwallmessages: Prefs.send_ad_wall_messages ? '1' : '0',
+      sy: settingsObj.sync_settings ? "1" : "0",
+      ir: channels.isAnyEnabled() ? "1" : "0",
+      cir: channels.channelGuide[channels.getIdByName("CustomChannel")].enabled ? "1" : "0",
+      tca: settingsObj.twitch_channel_allowlist ? "1" : "0",
+      sup: settingsObj.suppress_update_page ? "1" : "0",
+      ss: settingsObj.suppress_surveys ? "1" : "0",
+      sfrp: settingsObj.suppress_first_run_page ? "1" : "0",
+      opm: settingsObj.onpageMessages ? "1" : "0",
+      sendadwallmessages: Prefs.send_ad_wall_messages ? "1" : "0",
       subs: subsStr,
       customfc: await getCustomizedFilterCount(),
       missingfc: await getMissingFilterCount(),
@@ -138,7 +133,10 @@ class TelemetryBase {
     };
 
     // only on Chrome, Edge, or Firefox
-    if ((this.flavor === 'E' || this.flavor === 'CM' || this.flavor === 'F') && Prefs.blocked_total) {
+    if (
+      (this.flavor === "E" || this.flavor === "CM" || this.flavor === "F") &&
+      Prefs.blocked_total
+    ) {
       data.b = Prefs.blocked_total;
     }
     if (browser.runtime.id) {
@@ -150,13 +148,13 @@ class TelemetryBase {
       const aaPrivacy = subs.acceptable_ads_privacy;
 
       if (!aa && !aaPrivacy) {
-        data.aa = 'u'; // Both filter lists unavailable
+        data.aa = "u"; // Both filter lists unavailable
       } else if (aa.subscribed) {
-        data.aa = '1';
+        data.aa = "1";
       } else if (aaPrivacy.subscribed) {
-        data.aa = '2';
+        data.aa = "2";
       } else if (!aa.subscribed && !aaPrivacy.subscribed) {
-        data.aa = '0'; // Both filter lists unsubscribed
+        data.aa = "0"; // Both filter lists unsubscribed
       }
     }
 
@@ -177,18 +175,18 @@ class TelemetryBase {
       data.crctotal += 1;
     }
 
-    data.dc = this.dataCorrupt ? '1' : '0';
-    data.isPinned = '-1';
-    const userSettings = browser.action.getUserSettings
-      && await browser.action.getUserSettings();
+    data.dc = this.dataCorrupt ? "1" : "0";
+    data.isPinned = "-1";
+    const userSettings = browser.action.getUserSettings && (await browser.action.getUserSettings());
     if (userSettings) {
-      data.isPinned = userSettings.isOnToolbar ? '1' : '0';
+      data.isPinned = userSettings.isOnToolbar ? "1" : "0";
     }
     if (browser.permissions && browser.permissions.getAll) {
       const allPermissions = await browser.permissions.getAll();
-      data.dhp = allPermissions.origins && allPermissions.origins.includes('<all_urls>') ? '1' : '0';
+      data.dhp =
+        allPermissions.origins && allPermissions.origins.includes("<all_urls>") ? "1" : "0";
     } else {
-      data.dhp = '1';
+      data.dhp = "1";
     }
     return data;
   }
@@ -205,7 +203,7 @@ class TelemetryBase {
       this.firstRun = true;
     }
     let nextPingTime = response[this.nextRequestTimeStorageKey];
-    if (typeof nextPingTime !== 'number' || Number.isNaN(nextPingTime)) {
+    if (typeof nextPingTime !== "number" || Number.isNaN(nextPingTime)) {
       nextPingTime = 0;
     }
     if (nextPingTime === 0 && this.firstRun) {
@@ -214,21 +212,16 @@ class TelemetryBase {
     }
     // if we don't have a 'next ping time', or it's not a valid number,
     // default to 55 minute ping interval
-    if (
-      typeof nextPingTime !== 'number'
-      || nextPingTime === 0
-      || Number.isNaN(nextPingTime)
-    ) {
+    if (typeof nextPingTime !== "number" || nextPingTime === 0 || Number.isNaN(nextPingTime)) {
       return FiftyFiveMinutes;
     }
-    return (nextPingTime - Date.now());
+    return nextPingTime - Date.now();
   }
 
   async sleepThenPing() {
     const delay = await this.millisTillNextPing();
-    browser.alarms.create(this.alarmName, { delayInMinutes: (delay / 1000 / 60) });
+    browser.alarms.create(this.alarmName, { delayInMinutes: delay / 1000 / 60 });
   }
-
 
   async start() {
     await this.loadUserID();
@@ -241,10 +234,10 @@ class TelemetryBase {
         if (info) {
           ServerMessages.recordGeneralMessage(`new_install_${info.installType}`);
         } else {
-          ServerMessages.recordGeneralMessage('new_install');
+          ServerMessages.recordGeneralMessage("new_install");
         }
       } else {
-        ServerMessages.recordGeneralMessage('new_install');
+        ServerMessages.recordGeneralMessage("new_install");
       }
     }
     // This will sleep, then ping, then schedule a new ping, then
@@ -259,11 +252,11 @@ class TelemetryBase {
   }
 
   get browser() {
-    return ({
-      E: 'Chrome',
-      CM: 'Edge',
-      F: 'Firefox',
-    })[this.flavor];
+    return {
+      E: "Chrome",
+      CM: "Edge",
+      F: "Firefox",
+    }[this.flavor];
   }
 }
 

@@ -19,8 +19,7 @@
 /* global browser */
 
 /* eslint-disable import/no-mutable-exports */
-export let log = function log() {
-};
+export let log = function log() {};
 // Enabled in adblock_start_common.js and background.js if the user wants
 export const logging = function (enabled) {
   if (enabled) {
@@ -42,16 +41,26 @@ export const determineUserLanguage = function () {
 // parseUri 1.2.2, (c) Steven Levithan <stevenlevithan.com>, MIT License
 // Inputs: url: the URL you want to parse
 // Outputs: object containing all parts of |url| as attributes
-const parseUriRegEx = /^(([^:]+(?::|$))(?:(?:\w+:)?\/\/)?(?:[^:@/]*(?::[^:@/]*)?@)?(([^:/?#]*)(?::(\d*))?))((?:[^?#/]*\/)*[^?#]*)(\?[^#]*)?(#.*)?/;
+const parseUriRegEx =
+  /^(([^:]+(?::|$))(?:(?:\w+:)?\/\/)?(?:[^:@/]*(?::[^:@/]*)?@)?(([^:/?#]*)(?::(\d*))?))((?:[^?#/]*\/)*[^?#]*)(\?[^#]*)?(#.*)?/;
 export const parseUri = function (url) {
   const matches = parseUriRegEx.exec(url);
 
   // The key values are identical to the JS location object values for that key
-  const keys = ['href', 'origin', 'protocol', 'host', 'hostname', 'port',
-    'pathname', 'search', 'hash'];
+  const keys = [
+    "href",
+    "origin",
+    "protocol",
+    "host",
+    "hostname",
+    "port",
+    "pathname",
+    "search",
+    "hash",
+  ];
   const uri = {};
-  for (let i = 0; (matches && i < keys.length); i++) {
-    uri[keys[i]] = matches[i] || '';
+  for (let i = 0; matches && i < keys.length; i++) {
+    uri[keys[i]] = matches[i] || "";
   }
   return uri;
 };
@@ -65,16 +74,16 @@ parseUri.parseSearch = function parseSearch(searchQuery) {
   let pair;
 
   // Fails if a key exists twice (e.g., ?a=foo&a=bar would return {a:"bar"}
-  search = search.substring(search.indexOf('?') + 1).split('&');
+  search = search.substring(search.indexOf("?") + 1).split("&");
 
   for (let i = 0; i < search.length; i++) {
-    pair = search[i].split('=');
+    pair = search[i].split("=");
     if (pair[0] && !pair[1]) {
-      pair[1] = '';
+      pair[1] = "";
     }
     const pairKey = decodeURIComponent(pair[0]);
     const pairValue = decodeURIComponent(pair[1]);
-    if (pairKey && pairValue !== 'undefined') {
+    if (pairKey && pairValue !== "undefined") {
       params[pairKey] = pairValue;
     }
   }
@@ -119,7 +128,6 @@ export const sessionStorageSet = function (key, value) {
   sessionStorageMap.set(key, value);
 };
 
-
 // Inputs: key:string.
 // Returns object from localStorage.
 // The following two functions should only be used when
@@ -130,7 +138,7 @@ export const sessionStorageSet = function (key, value) {
  * @deprecated consider using browser.storage.local
  */
 export const storageGet = function (key) {
-  if (typeof localStorage === 'undefined') {
+  if (typeof localStorage === "undefined") {
     return undefined;
   }
   const store = localStorage;
@@ -153,7 +161,7 @@ export const storageGet = function (key) {
  * @deprecated consider using browser.storage.local
  */
 export const storageSet = function (key, value) {
-  if (typeof localStorage === 'undefined') {
+  if (typeof localStorage === "undefined") {
     return;
   }
   const store = localStorage;
@@ -172,27 +180,33 @@ export const storageSet = function (key, value) {
 export const chromeStorageSetHelper = function (key, value, callback) {
   const items = {};
   items[key] = value;
-  browser.storage.local.set(items).then(() => {
-    if (typeof callback === 'function') {
-      callback();
-    }
-  }).catch((error) => {
-    if (typeof callback === 'function') {
-      callback(error);
-    }
-  });
+  browser.storage.local
+    .set(items)
+    .then(() => {
+      if (typeof callback === "function") {
+        callback();
+      }
+    })
+    .catch((error) => {
+      if (typeof callback === "function") {
+        callback(error);
+      }
+    });
 };
 
 export const chromeStorageGetHelper = function (storageKey) {
-  return new Promise(((resolve, reject) => {
-    browser.storage.local.get(storageKey).then((items) => {
-      resolve(items[storageKey]);
-    }).catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      reject(error);
-    });
-  }));
+  return new Promise((resolve, reject) => {
+    browser.storage.local
+      .get(storageKey)
+      .then((items) => {
+        resolve(items[storageKey]);
+      })
+      .catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error(error);
+        reject(error);
+      });
+  });
 };
 
 export const chromeStorageDeleteHelper = function (key) {
@@ -210,7 +224,7 @@ export const chromeStorageDeleteHelper = function (key) {
 export const migrateData = function (key, parseData) {
   return new Promise((resolve, reject) => {
     /* eslint-disable no-restricted-globals */
-    if (typeof self.localStorage === 'undefined') {
+    if (typeof self.localStorage === "undefined") {
       resolve();
     }
     let data = localStorage.getItem(key);
@@ -221,7 +235,7 @@ export const migrateData = function (key, parseData) {
 
       chromeStorageSetHelper(key, data, (error) => {
         if (!error) {
-          if (typeof localStorage !== 'undefined') {
+          if (typeof localStorage !== "undefined") {
             localStorage.removeItem(key);
           }
           resolve();
@@ -247,7 +261,8 @@ export const reloadOptionsPageTabs = function () {
 };
 
 // eslint-disable-next-line max-len
-export const isEmptyObject = obj => !!(obj && Object.keys(obj).length === 0 && obj.constructor === Object);
+export const isEmptyObject = (obj) =>
+  !!(obj && Object.keys(obj).length === 0 && obj.constructor === Object);
 
 // mimics jQuery's functionality
 export function extend(primaryArg, ...args) {

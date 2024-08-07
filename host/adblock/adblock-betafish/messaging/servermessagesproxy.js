@@ -25,15 +25,15 @@
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 class ServerMessages {
   static recordGeneralMessage = (msg, callback, additionalParams) => {
-    send('recordGeneralMessage', { msg, additionalParams });
-    if (typeof callback === 'function') {
+    send("recordGeneralMessage", { msg, additionalParams });
+    if (typeof callback === "function") {
       callback();
     }
   };
 
   static recordAnonymousErrorMessage = (msg, callback, additionalParams) => {
-    send('recordAnonymousErrorMessage', { msg, additionalParams });
-    if (typeof callback === 'function') {
+    send("recordAnonymousErrorMessage", { msg, additionalParams });
+    if (typeof callback === "function") {
       callback();
     }
   };

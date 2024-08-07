@@ -19,6 +19,6 @@
  * The ReadyState values.
  */
 export enum ReadyState {
-  loading = 'loading',
-  started = 'started'
+  loading = "loading",
+  started = "started",
 }

@@ -16,89 +16,66 @@
  */
 
 import {
-  Command,
-  CommandHandler,
+  type Command,
+  type CommandHandler,
   CommandName,
+  type ParamDefinitionList,
   defaultLicenseState,
-  ParamDefinitionList,
   isNotEmpty,
   isSafeUrl,
   isValidDomainList,
   isValidLicenseStates,
   setCommandActor,
   validateParams,
-} from '../../../ipm/background';
-import * as logger from '../../../utilities/background';
-import {
-  DialogCommand,
-  DialogParams,
-  Timing,
-} from './ipm-onpage-dialog.types';
-import { DialogContent } from '../dialog.types';
-
+} from "../../../ipm/background";
+import * as logger from "../../../logger/background";
+import { type DialogContent } from "../../shared";
+import { type DialogBehavior } from "../dialog.types";
+import { Timing } from "../timing.types";
+import { type DialogCommand, type DialogParams } from "./ipm-onpage-dialog.types";
 
 /**
  * List of on-page dialog parameter definitions
  */
 const paramDefinitionList: ParamDefinitionList<DialogParams> = [
   {
-    name: 'timing',
-    validate: (param): boolean => typeof param === 'undefined'
-            || param === Timing.afterWebAllowlisting
-            || param === Timing.revisitWebAllowlisted
-            || param === Timing.afterNavigation,
+    name: "timing",
+    validate: (param): boolean =>
+      typeof param === "undefined" ||
+      param === Timing.afterWebAllowlisting ||
+      param === Timing.revisitWebAllowlisted ||
+      param === Timing.afterNavigation,
   },
   {
-    name: 'display_duration',
-    validate: (param): boolean => typeof param === 'undefined'
-            || (typeof param === 'number' && param >= 0 && param <= 20),
+    name: "display_duration",
+    validate: (param): boolean =>
+      typeof param === "undefined" || (typeof param === "number" && param >= 0 && param <= 20),
   },
   {
-    name: 'sub_title',
+    name: "sub_title",
     validate: isNotEmpty,
   },
   {
-    name: 'upper_body',
+    name: "upper_body",
     validate: isNotEmpty,
   },
   {
-    name: 'button_label',
+    name: "button_label",
     validate: isNotEmpty,
   },
   {
-    name: 'button_target',
+    name: "button_target",
     validate: isSafeUrl,
   },
   {
-    name: 'domain_list',
+    name: "domain_list",
     validate: isValidDomainList,
   },
   {
-    name: 'license_state_list',
+    name: "license_state_list",
     validate: isValidLicenseStates,
   },
 ];
-
-/**
- * Runs parameter validation on the given command to check whether it can be
- * worked with. Will log validation errors.
- *
- * @param command The command to check
- * @returns Whether the command is a valid DialogCommand and can be worked with
- */
-function isDialogCommand(command: Command): command is DialogCommand {
-  const validationErrors = validateParams(command, paramDefinitionList);
-
-  if (validationErrors.length === 0) {
-    return true;
-  }
-
-  logger.error(
-    '[onpage-dialog]: Invalid parameters received:',
-    validationErrors.join(' '),
-  );
-  return false;
-}
 
 /**
  * Extracts on-page dialog behavior from command
@@ -113,14 +90,11 @@ function getBehavior(command: Command): DialogBehavior | null {
   }
 
   return {
-    displayDuration:
-            typeof command.display_duration === 'number'
-              ? command.display_duration
-              : 5,
+    displayDuration: typeof command.display_duration === "number" ? command.display_duration : 5,
     target: command.button_target,
     timing: command.timing,
-    domain_list: command.domain_list,
-    license_state_list: command.license_state_list || defaultLicenseState,
+    domainList: command.domain_list,
+    licenseStateList: command.license_state_list ?? defaultLicenseState,
   };
 }
 
@@ -137,64 +111,31 @@ function getContent(command: Command): DialogContent | null {
   }
 
   return {
-    body: command.lower_body
-      ? [command.upper_body, command.lower_body]
-      : [command.upper_body],
+    body:
+      typeof command.lower_body === "string"
+        ? [command.upper_body, command.lower_body]
+        : [command.upper_body],
     button: command.button_label,
     title: command.sub_title,
   };
 }
 
 /**
- * Checks whether given candidate is on-page behavior
+ * Runs parameter validation on the given command to check whether it can be
+ * worked with. Will log validation errors.
  *
- * @param candidate - Candidate
- *
- * @returns whether given candidate is on-page behavior
+ * @param command The command to check
+ * @returns Whether the command is a valid DialogCommand and can be worked with
  */
-export function isDialogBehavior(
-  candidate: unknown,
-): candidate is DialogBehavior {
-  return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'displayDuration' in candidate
-        && 'target' in candidate
-        && 'timing' in candidate
-  );
-}
+function isDialogCommand(command: Command): command is DialogCommand {
+  const validationErrors = validateParams(command, paramDefinitionList);
 
-/**
- * Checks whether given candidate is on-page content
- *
- * @param candidate - Candidate
- *
- * @returns whether given candidate is on-page content
- */
-export function isDialogContent(
-  candidate: unknown,
-): candidate is DialogContent {
-  return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'body' in candidate
-        && 'button' in candidate
-        && 'title' in candidate
-  );
-}
+  if (validationErrors.length === 0) {
+    return true;
+  }
 
-/**
- * Checks whether given candidate is timing
- *
- * @param candidate - Candidate
- *
- * @returns whether given candidate is timing
- */
-export function isTiming(candidate: unknown): candidate is Timing {
-  return (
-    typeof candidate === 'string'
-        && Object.values(Timing).includes(candidate as Timing)
-  );
+  logger.error("[onpage-dialog]: Invalid parameters received:", validationErrors.join(" "));
+  return false;
 }
 
 /**

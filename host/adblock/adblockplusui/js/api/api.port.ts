@@ -17,12 +17,7 @@
 
 import Browser from "webextension-polyfill";
 
-import type {
-  ListenProps,
-  MessageProps,
-  Port,
-  PortEventListener
-} from "./api.types";
+import type { ListenProps, MessageProps, Port, PortEventListener } from "./api.types";
 
 declare const browser: Browser.Browser;
 
@@ -122,7 +117,7 @@ export function listen({ type, filter, ...options }: ListenProps) {
       port.postMessage({
         type: `${type}.listen`,
         filter,
-        ...options
+        ...options,
       });
     }
   });

@@ -16,40 +16,35 @@
  */
 
 /**
- * Key for on-page dialog timing configurations storage
+ * Timing name
  */
-export const configsStorageKey = 'onpage_dialog_timing_configurations';
+export enum Timing {
+  afterWebAllowlisting = "after_web_allowlisting",
+  immediate = "immediate",
+  revisitWebAllowlisted = "revisit_web_allowlisted_site",
+  afterNavigation = "after_navigation"
+}
 
 /**
  * On-page UI timing configuration
  */
 export interface TimingConfiguration {
-    /**
-     * Number of hours after which on-page dialog can be shown again
-     */
-    cooldownDuration: number;
-    /**
-     * Maximum number of minutes after the page was allowlisted that the on-page
-     * dialog can be shown for the first time
-     */
-    maxAllowlistingDelay?: number;
-    /**
-     * Maximum number of times the on-page dialog can be shown
-     */
-    maxDisplayCount: number;
-    /**
-     * Minimum number of minutes after the page was allowlisted that the on-page
-     * dialog can be shown for the first time
-     */
-    minAllowlistingDelay?: number;
-}
-
-/**
- * Timing name
- */
-export enum Timing {
-  afterWebAllowlisting = 'after_web_allowlisting',
-  immediate = 'immediate',
-  revisitWebAllowlisted = 'revisit_web_allowlisted_site',
-  afterNavigation = 'after_navigation'
+  /**
+   * Number of hours after which on-page dialog can be shown again
+   */
+  cooldownDuration: number;
+  /**
+   * Maximum number of minutes after the page was allowlisted that the on-page
+   * dialog can be shown for the first time
+   */
+  maxAllowlistingDelay?: number;
+  /**
+   * Maximum number of times the on-page dialog can be shown
+   */
+  maxDisplayCount: number;
+  /**
+   * Minimum number of minutes after the page was allowlisted that the on-page
+   * dialog can be shown for the first time
+   */
+  minAllowlistingDelay?: number;
 }

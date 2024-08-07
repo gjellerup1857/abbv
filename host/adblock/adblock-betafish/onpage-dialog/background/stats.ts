@@ -15,30 +15,49 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from '../../alias/prefs.js';
-import { Stats, statsStorageKey } from './stats.types';
+import { Prefs } from "../../alias/prefs";
+import { type Stats } from "./stats.types";
 
 /**
- * Clears stats for given IPM ID
- *
- * @param ipmId - IPM ID
+ * Key for stats storage
  */
-export function clearStats(ipmId: string): void {
+const statsStorageKey = "onpage_dialog_command_stats";
+
+/**
+ * Clears stats for given Dialog ID
+ *
+ * @param dialogId - Dialog ID
+ */
+export function clearStats(dialogId: string): void {
   const statsStorage = Prefs.get(statsStorageKey);
-  delete statsStorage[ipmId];
-  Prefs.set(statsStorageKey, statsStorage);
+  // We can't use a Map or Set for `statsStorage`, so we need dynamic
+  // deletion here.
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  delete statsStorage[dialogId];
+  void Prefs.set(statsStorageKey, statsStorage);
 }
 
 /**
- * Retrieves stats for given IPM ID
+ * Retrieves stats for given Dialog ID
  *
- * @param ipmId - IPM ID
+ * @param dialogId - Dialog ID
  *
  * @returns stats
  */
-export function getStats(ipmId: string): Stats | null {
-  const statsStorage = Prefs.get(statsStorageKey);
-  return statsStorage[ipmId] || null;
+export function getStats(dialogId: string): Stats {
+  const storage = Prefs.get(statsStorageKey);
+  const storedStats = storage[dialogId];
+
+  if (isStats(storedStats)) {
+    return storedStats;
+  }
+
+  const initialStats = {
+    displayCount: 0,
+    lastDisplayTime: 0,
+  };
+  setStats(dialogId, initialStats);
+  return initialStats;
 }
 
 /**
@@ -50,21 +69,21 @@ export function getStats(ipmId: string): Stats | null {
  */
 export function isStats(candidate: unknown): candidate is Stats {
   return (
-    candidate !== null
-        && typeof candidate === 'object'
-        && 'displayCount' in candidate
-        && 'lastDisplayTime' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "displayCount" in candidate &&
+    "lastDisplayTime" in candidate
   );
 }
 
 /**
- * Sets stats for given IPM ID
+ * Sets stats for given Dialog ID
  *
- * @param ipmId - IPM ID
+ * @param dialogId - Dialog ID
  * @param stats - Stats
  */
-export function setStats(ipmId: string, stats: Stats): void {
+export function setStats(dialogId: string, stats: Stats): void {
   const storage = Prefs.get(statsStorageKey);
-  storage[ipmId] = stats;
-  Prefs.set(statsStorageKey, storage);
+  storage[dialogId] = stats;
+  void Prefs.set(statsStorageKey, storage);
 }

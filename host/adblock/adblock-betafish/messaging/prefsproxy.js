@@ -33,9 +33,9 @@ let abpPrefPropertyNames = {};
 
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 async function initializePrefs() {
-  abpPrefPropertyNames = await send('getABPPrefPropertyNames');
+  abpPrefPropertyNames = await send("getABPPrefPropertyNames");
   abpPrefPropertyNames.forEach(async (key) => {
-    localprefs[key] = await sendTypeMessage('prefs.get', { key });
+    localprefs[key] = await sendTypeMessage("prefs.get", { key });
   });
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
@@ -46,22 +46,22 @@ async function initializePrefs() {
     set(objParm, prop, value) {
       const obj = objParm;
       obj[prop] = value;
-      return sendTypeMessage('prefs.set', { key: prop, value });
+      return sendTypeMessage("prefs.set", { key: prop, value });
     },
   });
 
-  const prefsPort = browser.runtime.connect({ name: 'ui' });
+  const prefsPort = browser.runtime.connect({ name: "ui" });
   prefsPort.onMessage.addListener((message) => {
-    if (message.type === 'prefs.respond') {
+    if (message.type === "prefs.respond") {
       const key = message.action;
       const value = message.args[0];
       localprefs[key] = value;
-      prefsNotifier.emit('prefs.changed', key, value);
+      prefsNotifier.emit("prefs.changed", key, value);
     }
   });
 
   prefsPort.postMessage({
-    type: 'prefs.listen',
+    type: "prefs.listen",
     filter: abpPrefPropertyNames,
   });
 }

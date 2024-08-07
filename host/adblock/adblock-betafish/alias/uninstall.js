@@ -21,10 +21,10 @@
 /** @module uninstall */
 /** similar to adblockpluschrome\lib\uninstall.js */
 
-import { Prefs } from './prefs';
-import SubscriptionAdapter from '../subscriptionadapter';
-import { getUserId } from '../id/background/index';
-import { getWebAllowlistingFilterCount } from '../telemetry/background/custom-rule';
+import { Prefs } from "./prefs";
+import SubscriptionAdapter from "../subscriptionadapter";
+import { getUserId } from "../id/background/index";
+import { getWebAllowlistingFilterCount } from "../telemetry/background/custom-rule";
 
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
@@ -47,7 +47,7 @@ export async function setUninstallURL() {
         return maxLastDownload;
       };
       const updateUninstallURL = async function () {
-        const data = await browser.storage.local.get('blockage_stats');
+        const data = await browser.storage.local.get("blockage_stats");
         let url = uninstallURL;
         if (data && data.blockage_stats && data.blockage_stats.start) {
           const installedDuration = Date.now() - data.blockage_stats.start;

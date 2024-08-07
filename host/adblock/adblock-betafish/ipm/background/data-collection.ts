@@ -15,10 +15,10 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as info from 'info';
-import * as browser from 'webextension-polyfill';
+import * as info from "info";
+import * as browser from "webextension-polyfill";
 
-import { CommandName, CommandVersion, commandLibraryVersion } from './command-library.types';
+import { CommandName, CommandVersion, commandLibraryVersion } from "./command-library.types";
 import {
   BaseAttributes,
   DataType,
@@ -30,10 +30,10 @@ import {
   PlatformStatus,
   PlatformType,
   UserData,
-} from './data-collection.types';
-import { getUserId } from '../../id/background/index';
-import { License } from '../../picreplacement/check';
-import { Prefs } from '../../alias/prefs';
+} from "./data-collection.types";
+import { getUserId } from "../../id/background/index";
+import { License } from "../../picreplacement/check";
+import { Prefs } from "../../alias/prefs";
 
 /**
  * Takes a number, turns it into a string, and pads it if necessary to create
@@ -43,7 +43,7 @@ import { Prefs } from '../../alias/prefs';
  * @returns The padded number
  */
 function leftPad(value: number): string {
-  return value.toString().padStart(2, '0');
+  return value.toString().padStart(2, "0");
 }
 
 /**
@@ -55,17 +55,17 @@ function getLocalTime(): string {
   const date = new Date();
   return [
     date.getFullYear(),
-    '-',
+    "-",
     leftPad(date.getMonth() + 1),
-    '-',
+    "-",
     leftPad(date.getDate()),
-    'T',
+    "T",
     leftPad(date.getHours()),
-    ':',
+    ":",
     leftPad(date.getMinutes()),
-    ':',
+    ":",
     leftPad(date.getSeconds()),
-  ].join('');
+  ].join("");
 }
 
 /**
@@ -122,8 +122,7 @@ async function getDeviceData(): Promise<DeviceData> {
     attributes: {
       ...(await getBaseAttributes()),
       blocked_total: (Prefs as any).blocked_total,
-      license_status:
-                License.isActiveLicense() ? LicenseState.active : LicenseState.inactive,
+      license_status: License.isActiveLicense() ? LicenseState.active : LicenseState.inactive,
     },
   };
 }
@@ -174,7 +173,7 @@ export async function recordEvent(
   name: string,
 ): Promise<void> {
   await Prefs.untilLoaded;
-  const eventData = await getEventData(ipmId || 'no ipm value', command, name);
+  const eventData = await getEventData(ipmId || "no ipm value", command, name);
   const eventStorage = Prefs.get(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
   Prefs.set(eventStorageKey, eventStorage);

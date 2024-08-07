@@ -12,8 +12,8 @@ This project requires [node.js](https://nodejs.org) and `npm` (which comes bundl
 The exact version requirements can be found in the [package descriptor file](package.json) under the `engines` field.
 
 ## Usage
-Building
----------
+
+## Building
 
 ### Building on Windows
 
@@ -33,13 +33,13 @@ e.g. after checking out a new revison.
 
 ### Building the extension
 
-Copy the `.env.defaults` file in the root directory to a `.env` file and fill in the variables accordingly.  This step can be skipped, and is only required if you wish to enable the sending of telemetry.
+Copy the `.env.defaults` file in the root directory to a `.env` file and fill in the variables accordingly. This step can be skipped, and is only required if you wish to enable the sending of telemetry.
 
 Run one of the following commands in the project directory:
 
 `npx gulp build -t {chrome|firefox} -m {2|3}`
 
-`npm run build:release {chrome|firefox}`
+`npm run build:release:{chrome|firefox}`
 
 The second is a shorter version of the first, and it will build only a manifest v2 version.
 
@@ -55,13 +55,13 @@ development environment. For that run one of the following commands:
 
 `npx gulp devenv -t {chrome|firefox} -m {2|3}`
 
-`npm run build:dev {chrome|firefox}`
+`npm run build:dev:{chrome|firefox}`
 
 `npm run build:dev:all`
 
 The second two are aliases for the first. Both build manifest v2 versions, where the second also by default builds both the Chrome and Firefox versions.
 
-All will create a _devenv.*_ directory in the project directory. You can load
+All will create a _devenv.\*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
 Chromium-based browsers, and under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development
@@ -71,13 +71,13 @@ environment, and the extension should reload automatically after a few seconds.
 
 Two other build options are provided to aid in testing of the extension.
 
-`--ext-version` - specifiying this parameter at build time will override the version specified in the `build/config/base.mjs` file.  Most information about the format of the version in the manifest.json file can be found [here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format).
+`--ext-version` - specifiying this parameter at build time will override the version specified in the `build/config/base.mjs` file. Most information about the format of the version in the manifest.json file can be found [here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format).
 
 `--ext-id` - specifiying this parameter at build time will override the Firefox / Mozilla extension id specified in the `build/manifest.json` file. More information about the format and when to provide the Extension / Add-on ID can be found [here](https://extensionworkshop.com/documentation/develop/extensions-and-the-add-on-id/).
 
-`--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.*_ directory in the project directory)  This option is only applicable to developer ('devenv') builds.
+`--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.\*_ directory in the project directory) This option is only applicable to developer ('devenv') builds.
 
-`--manifest-path` specifiying this parameter at build time will override the default 'base' manifest file that used during the build process.  It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension.  The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file.   The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
+`--manifest-path` specifiying this parameter at build time will override the default 'base' manifest file that used during the build process. It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension. The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file. The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
 
 `npx gulp devenv -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
 
@@ -117,11 +117,11 @@ Specifically, the standard JavaScript code style we've adopted is the [Airbnb Ja
 
 The following npm commands are then available:
 
-* `npm run lint` runs eslint and prints out all JavaScript violations.
-* `npm run lint-fix` runs eslint and automatically fixes JavaScript style violations in place (be sure to commit before running this command in case you need to revert the changes eslint makes).
-* `npm run prettier` runs prettier on HTML, CSS, and JSON files in the adblock-betafish directory and list all files that need to be Prettier.
-* `npm run prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.
-* `npm run html-hint` runs HTMLhint and flags any issues with the HTML templates such as missing `DOCTYPE`, tags and/or attributes. This does not run on pre-commits so it must be run manually. New AdBlock custom attributes should be added in `/rules/static/custom_attributes.json`. If mistakenly flagged, standard HTML attributes should be added in `/rules/static/aria_attributes.json` or `/rules/static/mapped_attributes.json`.
+- `npm run lint` runs eslint and prints out all JavaScript violations.
+- `npm run lint-fix` runs eslint and automatically fixes JavaScript style violations in place (be sure to commit before running this command in case you need to revert the changes eslint makes).
+- `npm run prettier` runs prettier on HTML, CSS, and JSON files in the adblock-betafish directory and list all files that need to be Prettier.
+- `npm run prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.
+- `npm run html-hint` runs HTMLhint and flags any issues with the HTML templates such as missing `DOCTYPE`, tags and/or attributes. This does not run on pre-commits so it must be run manually. New AdBlock custom attributes should be added in `/rules/static/custom_attributes.json`. If mistakenly flagged, standard HTML attributes should be added in `/rules/static/aria_attributes.json` or `/rules/static/mapped_attributes.json`.
 
 ### Aliases
 
@@ -143,11 +143,11 @@ Icons use SVG web fonts. We primarily use [Material Design Icons](https://www.ma
 <i class="material-icons">settings</i>
 ```
 
-For <abbr title="Web Content Accessibility Guidelines">WCAG</abbr> compliance, we use <abbr title="Accessible Rich Internet Applications">ARIA</abbr> content to make the web icons accessible for screen readers. Read the [full description](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA24) for details, but  a summary of the steps are:
+For <abbr title="Web Content Accessibility Guidelines">WCAG</abbr> compliance, we use <abbr title="Accessible Rich Internet Applications">ARIA</abbr> content to make the web icons accessible for screen readers. Read the [full description](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA24) for details, but a summary of the steps are:
 
-* mark the web icon element using attribute `role="img"`
-* if the web icon is purely visual, use `aria-hidden="true"`
-* if the web icon is semantic, use `aria-label="Settings"` to provide the screen reader description of the icon.
+- mark the web icon element using attribute `role="img"`
+- if the web icon is purely visual, use `aria-hidden="true"`
+- if the web icon is semantic, use `aria-label="Settings"` to provide the screen reader description of the icon.
 
 An example of an icon used as a button:
 
@@ -186,18 +186,19 @@ It is important to test using a screen reader. There is no substitute for experi
 The help flow structure is defined in `help-map.json`. Each entry represents a page in the help flow, and the key for each entry needs to be unique.
 
 Each page can contain any combination of the following:
-  * `title`: displayed at the top of page, i18n string key, max one per page
-  * `seques`: displayed first in body of page, can have multiple per page
-    * `content`: i18n string key, max one per segue
-    * `segueTo`: key for help flow page to transition to on click, max one per segue
-    * `sequeToIfPaused`: key for help flow page to transition to on click if paused, max one per segue
-    * `segueToIfWhitelisted`: key for help flow page to transition to on click if whitelisted, max one per segue
-  * `sections`: displayed second in body of page, can have multiple per page
-    * `content`: array of objects representing sentences to be displayed as a paragraph, can have multiple per section
-      * `text`: i18n string key
-      * `linkURL`: URL to be subbed into a string with link placeholders ("[[" and "]]")
-  * `buttons`: displayed third in body of page, can have multiple per page
-    * `text`: i18n string key
-    * `action`: function from `help-action.js` to be called on click
-    * `icon`: material icons key of icon to be displayed on button, displayed before text
-  * `footer`: displayed at bottom of page, i18n string key, max one per page
+
+- `title`: displayed at the top of page, i18n string key, max one per page
+- `seques`: displayed first in body of page, can have multiple per page
+  - `content`: i18n string key, max one per segue
+  - `segueTo`: key for help flow page to transition to on click, max one per segue
+  - `sequeToIfPaused`: key for help flow page to transition to on click if paused, max one per segue
+  - `segueToIfWhitelisted`: key for help flow page to transition to on click if whitelisted, max one per segue
+- `sections`: displayed second in body of page, can have multiple per page
+  - `content`: array of objects representing sentences to be displayed as a paragraph, can have multiple per section
+    - `text`: i18n string key
+    - `linkURL`: URL to be subbed into a string with link placeholders ("[[" and "]]")
+- `buttons`: displayed third in body of page, can have multiple per page
+  - `text`: i18n string key
+  - `action`: function from `help-action.js` to be called on click
+  - `icon`: material icons key of icon to be displayed on button, displayed before text
+- `footer`: displayed at bottom of page, i18n string key, max one per page

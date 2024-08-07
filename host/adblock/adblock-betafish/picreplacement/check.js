@@ -18,21 +18,20 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-
 // Yes, you could hack my code to not check the license.  But please don't.
 // Paying for this extension supports the work on AdBlock.  Thanks very much.
 
-import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
-import { TabSessionStorage } from '../../adblockplusui/adblockpluschrome/lib/storage/tab-session';
+import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events";
+import { TabSessionStorage } from "../../adblockplusui/adblockpluschrome/lib/storage/tab-session";
 
-import { getUserId } from '../id/background/index';
-import { Channels } from './channels';
-import { getSettings, setSetting } from '../prefs/background';
-import { showIconBadgeCTA, NEW_BADGE_REASONS } from '../alias/icon';
-import { initialize } from '../alias/subscriptionInit';
-import ServerMessages from '../servermessages';
-import SubscriptionAdapter from '../subscriptionadapter';
-import postData from '../fetch-util';
+import { getUserId } from "../id/background/index";
+import { Channels } from "./channels";
+import { getSettings, setSetting } from "../prefs/background";
+import { showIconBadgeCTA, NEW_BADGE_REASONS } from "../alias/icon";
+import { initialize } from "../alias/subscriptionInit";
+import ServerMessages from "../servermessages";
+import SubscriptionAdapter from "../subscriptionadapter";
+import postData from "../fetch-util";
 import {
   chromeStorageSetHelper,
   chromeStorageGetHelper,
@@ -40,39 +39,43 @@ import {
   log,
   storageSet,
   reloadOptionsPageTabs,
-} from '../utilities/background/bg-functions';
+} from "../utilities/background/bg-functions";
 
 const licenseNotifier = new EventEmitter();
 
 export const License = (function getLicense() {
   const isProd = true;
-  const licenseStorageKey = 'license';
-  const installTimestampStorageKey = 'install_timestamp';
-  const userClosedSyncCTAKey = 'user_closed_sync_cta';
-  const userSawSyncCTAKey = 'user_saw_sync_cta';
-  const pageReloadedOnSettingChangeKey = 'page_reloaded_on_user_settings_change';
-  const licenseAlarmName = 'licenseAlarm';
-  const sevenDayAlarmName = 'sevenDayLicenseAlarm';
+  const licenseStorageKey = "license";
+  const installTimestampStorageKey = "install_timestamp";
+  const userClosedSyncCTAKey = "user_closed_sync_cta";
+  const userSawSyncCTAKey = "user_saw_sync_cta";
+  const pageReloadedOnSettingChangeKey = "page_reloaded_on_user_settings_change";
+  const licenseAlarmName = "licenseAlarm";
+  const sevenDayAlarmName = "sevenDayLicenseAlarm";
 
   let theLicense;
   const fiveMinutes = 300000;
   const initialized = false;
   let ajaxRetryCount = 0;
   let readyComplete;
-  const licensePromise = new Promise(((resolve) => {
+  const licensePromise = new Promise((resolve) => {
     readyComplete = resolve;
-  }));
+  });
   const themesForCTA = [
-    'solarized_theme', 'solarized_light_theme', 'watermelon_theme', 'sunshine_theme', 'ocean_theme',
+    "solarized_theme",
+    "solarized_light_theme",
+    "watermelon_theme",
+    "sunshine_theme",
+    "ocean_theme",
   ];
   let currentThemeIndex = 0;
   const mabConfig = {
     prod: {
-      licenseURL: 'https://myadblock.licensing.getadblock.com/license/',
-      syncURL: 'https://myadblock.sync.getadblock.com/v1/sync',
-      subscribeKey: 'sub-c-9eccffb2-8c6a-11e9-97ab-aa54ad4b08ec',
-      payURL: 'https://getadblock.com/premium/enrollment/',
-      subscriptionURL: 'https://getadblock.com/premium/manage-subscription/',
+      licenseURL: "https://myadblock.licensing.getadblock.com/license/",
+      syncURL: "https://myadblock.sync.getadblock.com/v1/sync",
+      subscribeKey: "sub-c-9eccffb2-8c6a-11e9-97ab-aa54ad4b08ec",
+      payURL: "https://getadblock.com/premium/enrollment/",
+      subscriptionURL: "https://getadblock.com/premium/manage-subscription/",
       bypassAuthorizedKeys: [
         // Production keys
         `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAsCtBp9/0qCM5lp0lJVSx
@@ -90,11 +93,11 @@ export const License = (function getLicense() {
       ],
     },
     dev: {
-      licenseURL: 'https://dev.myadblock.licensing.getadblock.com/license/',
-      syncURL: 'https://dev.myadblock.sync.getadblock.com/v1/sync',
-      subscribeKey: 'sub-c-9e0a7270-83e7-11e9-99de-d6d3b84c4a25',
-      payURL: 'https://getadblock.com/premium/enrollment/?testmode=true',
-      subscriptionURL: 'https://dev.getadblock.com/premium/manage-subscription/',
+      licenseURL: "https://dev.myadblock.licensing.getadblock.com/license/",
+      syncURL: "https://dev.myadblock.sync.getadblock.com/v1/sync",
+      subscribeKey: "sub-c-9e0a7270-83e7-11e9-99de-d6d3b84c4a25",
+      payURL: "https://getadblock.com/premium/enrollment/?testmode=true",
+      subscriptionURL: "https://dev.getadblock.com/premium/manage-subscription/",
       bypassAuthorizedKeys: [
         // Development keys
         `MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAlTA+1kMAzbuPzMv/FV5B
@@ -148,7 +151,7 @@ export const License = (function getLicense() {
   const MAB_CONFIG = isProd ? mabConfig.prod : mabConfig.dev;
 
   const sevenDayAlarmIdleListener = function (newState) {
-    if (newState === 'active') {
+    if (newState === "active") {
       License.checkSevenDayAlarm();
     }
   };
@@ -177,7 +180,7 @@ export const License = (function getLicense() {
     if (alarm && alarm.name === licenseAlarmName) {
       // At this point, no alarms exists, so
       // create an temporary alarm to avoid race condition issues
-      browser.alarms.create(licenseAlarmName, { delayInMinutes: (24 * 60) });
+      browser.alarms.create(licenseAlarmName, { delayInMinutes: 24 * 60 });
       License.ready().then(() => {
         License.updatePeriodically();
       });
@@ -192,7 +195,7 @@ export const License = (function getLicense() {
   // remove it, and fire the update ourselves.
   // see - https://bugs.chromium.org/p/chromium/issues/detail?id=471524
   browser.idle.onStateChanged.addListener((newState) => {
-    if (newState === 'active') {
+    if (newState === "active") {
       browser.alarms.get(licenseAlarmName).then((alarm) => {
         if (alarm && Date.now() > alarm.scheduledTime) {
           browser.alarms.clear(licenseAlarmName).then(() => {
@@ -241,7 +244,7 @@ export const License = (function getLicense() {
         // if the install date is 7 days or more than now
         browser.storage.local.get(License.sevenDayAlarmName).then((data) => {
           if (data && data[License.sevenDayAlarmName]) {
-            browser.storage.local.get('blockage_stats').then((response) => {
+            browser.storage.local.get("blockage_stats").then((response) => {
               const { blockage_stats } = response;
               if (blockage_stats && blockage_stats.start) {
                 const installDate = new Date(blockage_stats.start);
@@ -280,33 +283,35 @@ export const License = (function getLicense() {
   const loadFromStorage = function (callback) {
     browser.storage.local.get(licenseStorageKey).then((response) => {
       theLicense = response[licenseStorageKey] || {};
-      if (typeof callback === 'function') {
+      if (typeof callback === "function") {
         callback();
       }
     });
   };
   const checkForManagedSettings = function () {
-    return new Promise(((resolve) => {
-      if ('managed' in browser.storage) {
-        browser.storage.managed.get(null).then((items) => {
-          for (const key in items) {
-            if (key === 'suppress_premium_cta') {
-              theLicense = License.get();
-              theLicense[key] = items[key];
-              License.set(theLicense);
+    return new Promise((resolve) => {
+      if ("managed" in browser.storage) {
+        browser.storage.managed.get(null).then(
+          (items) => {
+            for (const key in items) {
+              if (key === "suppress_premium_cta") {
+                theLicense = License.get();
+                theLicense[key] = items[key];
+                License.set(theLicense);
+              }
             }
-          }
-          resolve();
-        },
-        // Opera and FF doesn't support browser.storage.managed, but instead of simply
-        // removing the API, it gives an asynchronous error which we ignore here.
-        () => {
-          resolve();
-        });
+            resolve();
+          },
+          // Opera and FF doesn't support browser.storage.managed, but instead of simply
+          // removing the API, it gives an asynchronous error which we ignore here.
+          () => {
+            resolve();
+          },
+        );
       } else {
         resolve();
       }
-    }));
+    });
   };
 
   // Clean up / remove old, unused data in localStorage
@@ -335,7 +340,7 @@ export const License = (function getLicense() {
     enrollUser() {
       loadFromStorage(() => {
         // only enroll users if they were not previously enrolled
-        if (typeof theLicense.myadblock_enrollment === 'undefined') {
+        if (typeof theLicense.myadblock_enrollment === "undefined") {
           theLicense.myadblock_enrollment = true;
           License.set(theLicense);
         }
@@ -353,7 +358,7 @@ export const License = (function getLicense() {
       }
 
       if (licenseStatusBefore !== newLicense.status) {
-        licenseNotifier.emit('license.status.changed');
+        licenseNotifier.emit("license.status.changed");
       }
     },
     /**
@@ -365,7 +370,7 @@ export const License = (function getLicense() {
     initialize(callback) {
       loadFromStorage(() => {
         checkForManagedSettings().then(() => {
-          if (typeof callback === 'function') {
+          if (typeof callback === "function") {
             callback();
           }
           cleanUpLocalStorage();
@@ -376,74 +381,75 @@ export const License = (function getLicense() {
     getCurrentPopupMenuThemeCTA() {
       const theme = License.themesForCTA[currentThemeIndex];
       const lastThemeIndex = License.themesForCTA.length - 1;
-      currentThemeIndex = lastThemeIndex === currentThemeIndex ? 0 : currentThemeIndex += 1;
-      return theme || '';
+      currentThemeIndex = lastThemeIndex === currentThemeIndex ? 0 : (currentThemeIndex += 1);
+      return theme || "";
     },
     // Get the latest license data from the server, and talk to the user if needed.
     async update() {
       const userID = await getUserId();
-      licenseNotifier.emit('license.updating');
+      licenseNotifier.emit("license.updating");
       const postDataObj = {};
       postDataObj.u = userID;
-      postDataObj.cmd = 'license_check';
+      postDataObj.cmd = "license_check";
       const licenseStatusBefore = License.get().status;
       // license version
-      postDataObj.v = '1';
-      postData(License.MAB_CONFIG.licenseURL, postDataObj).then(async (response) => {
-        if (response.ok) {
-          const responseObj = await response.json();
-          ajaxRetryCount = 0;
-          const updatedLicense = responseObj;
-          licenseNotifier.emit('license.updated', updatedLicense);
-          if (!updatedLicense) {
-            return;
+      postDataObj.v = "1";
+      postData(License.MAB_CONFIG.licenseURL, postDataObj)
+        .then(async (response) => {
+          if (response.ok) {
+            const responseObj = await response.json();
+            ajaxRetryCount = 0;
+            const updatedLicense = responseObj;
+            licenseNotifier.emit("license.updated", updatedLicense);
+            if (!updatedLicense) {
+              return;
+            }
+            // merge the updated license
+            theLicense = { ...theLicense, ...updatedLicense };
+            theLicense.licenseId = theLicense.code;
+            License.set(theLicense);
+            // now check to see if we need to do anything because of a status change
+            if (
+              licenseStatusBefore === "active" &&
+              updatedLicense.status &&
+              updatedLicense.status === "expired"
+            ) {
+              License.processExpiredLicense();
+              ServerMessages.recordGeneralMessage("trial_license_expired");
+            }
+          } else {
+            log("license server error response", response.status, ajaxRetryCount);
+            licenseNotifier.emit("license.updated.error", ajaxRetryCount);
+            ajaxRetryCount += 1;
+            if (ajaxRetryCount > 3) {
+              log("Retry Count exceeded, giving up", ajaxRetryCount);
+              return;
+            }
+            const oneMinute = 1 * 60 * 1000;
+            setTimeout(() => {
+              License.updatePeriodically(`error${ajaxRetryCount}`);
+            }, oneMinute);
           }
-          // merge the updated license
-          theLicense = { ...theLicense, ...updatedLicense };
-          theLicense.licenseId = theLicense.code;
-          License.set(theLicense);
-          // now check to see if we need to do anything because of a status change
-          if (
-            licenseStatusBefore === 'active'
-            && updatedLicense.status
-            && updatedLicense.status === 'expired'
-          ) {
-            License.processExpiredLicense();
-            ServerMessages.recordGeneralMessage('trial_license_expired');
-          }
-        } else {
-          log('license server error response', response.status, ajaxRetryCount);
-          licenseNotifier.emit('license.updated.error', ajaxRetryCount);
-          ajaxRetryCount += 1;
-          if (ajaxRetryCount > 3) {
-            log('Retry Count exceeded, giving up', ajaxRetryCount);
-            return;
-          }
-          const oneMinute = 1 * 60 * 1000;
-          setTimeout(() => {
-            License.updatePeriodically(`error${ajaxRetryCount}`);
-          }, oneMinute);
-        }
-      })
+        })
         .catch((error) => {
-          log('license server returned error: ', error);
+          log("license server returned error: ", error);
         });
     },
     processExpiredLicense() {
       theLicense = License.get();
       theLicense.myadblock_enrollment = true;
       License.set(theLicense);
-      setSetting('picreplacement', false);
-      licenseNotifier.emit('license.expired');
+      setSetting("picreplacement", false);
+      licenseNotifier.emit("license.expired");
       if (getSettings().sync_settings) {
         // We have to import the "sync-service" module on demand,
         // as the "sync-service" module in turn requires this module.
         /* eslint-disable import/no-cycle */
-        (import('./sync-service')).disableSync();
+        import("./sync-service").disableSync();
       }
-      setSetting('color_themes', { popup_menu: 'default_theme', options_page: 'default_theme' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'distraction-control' });
-      SubscriptionAdapter.unsubscribe({ adblockId: 'cookies-premium' });
+      setSetting("color_themes", { popup_menu: "default_theme", options_page: "default_theme" });
+      SubscriptionAdapter.unsubscribe({ adblockId: "distraction-control" });
+      SubscriptionAdapter.unsubscribe({ adblockId: "cookies-premium" });
       browser.alarms.clear(licenseAlarmName);
     },
     ready() {
@@ -459,7 +465,7 @@ export const License = (function getLicense() {
         const originalInstallTimestamp = installTimestamp || Date.now();
         // If the installation timestamp is missing from storage,
         // save an updated version
-        if (!(response[installTimestampStorageKey])) {
+        if (!response[installTimestampStorageKey]) {
           installTimestamp = Date.now();
           browser.storage.local.set({ install_timestamp: installTimestamp });
         }
@@ -479,7 +485,7 @@ export const License = (function getLicense() {
       const response = await browser.storage.local.get(installTimestampStorageKey);
       const originalInstallTimestamp = response[installTimestampStorageKey];
       if (originalInstallTimestamp) {
-        return (new Date(originalInstallTimestamp));
+        return new Date(originalInstallTimestamp);
       }
       return undefined;
     },
@@ -490,10 +496,10 @@ export const License = (function getLicense() {
       let delay = delayMs;
       const currentLicense = License.get() || {};
       const newLicense = { ...currentLicense };
-      newLicense.status = 'active';
+      newLicense.status = "active";
       License.set(newLicense);
       reloadOptionsPageTabs();
-      if (typeof delay !== 'number') {
+      if (typeof delay !== "number") {
         delay = 0; // 0 minutes
       }
       if (!this.licenseTimer) {
@@ -501,19 +507,19 @@ export const License = (function getLicense() {
           License.updatePeriodically();
         }, delay);
       }
-      setSetting('picreplacement', false);
+      setSetting("picreplacement", false);
     },
     getFormattedActiveSinceDate() {
       if (
-        !License
-        || !License.isActiveLicense()
-        || !License.get()
-        || !License.get().createdAtUTC
-        || !Number.isInteger(License.get().createdAtUTC)
+        !License ||
+        !License.isActiveLicense() ||
+        !License.get() ||
+        !License.get().createdAtUTC ||
+        !Number.isInteger(License.get().createdAtUTC)
       ) {
         return null;
       }
-      const dateFormat = { year: 'numeric', month: 'long' };
+      const dateFormat = { year: "numeric", month: "long" };
       let formattedDate = null;
       try {
         const createdAtUTC = parseInt(License.get().createdAtUTC, 10);
@@ -524,21 +530,23 @@ export const License = (function getLicense() {
       return formattedDate;
     },
     isActiveLicense() {
-      return License && License.get() && License.get().status === 'active';
+      return License && License.get() && License.get().status === "active";
     },
     isLicenseCodeValid() {
-      return License && License.get().code && typeof License.get().code === 'string';
+      return License && License.get().code && typeof License.get().code === "string";
     },
     isMyAdBlockEnrolled() {
       return License && License.get() && License.get().myadblock_enrollment === true;
     },
     shouldShowMyAdBlockEnrollment() {
-      return License.isMyAdBlockEnrolled()
-        && !License.isActiveLicense()
-        && License.shouldShowPremiumCTA();
+      return (
+        License.isMyAdBlockEnrolled() &&
+        !License.isActiveLicense() &&
+        License.shouldShowPremiumCTA()
+      );
     },
     shouldShowPremiumDcCTA() {
-      return (License && License.isActiveLicense() && License.get().suppress_premium_cta !== true);
+      return License && License.isActiveLicense() && License.get().suppress_premium_cta !== true;
     },
     shouldShowPremiumCTA() {
       return !(License && License.get().suppress_premium_cta === true);
@@ -548,13 +556,13 @@ export const License = (function getLicense() {
         return false;
       }
       const currentLicense = License.get() || {};
-      if (typeof newValue === 'boolean') {
+      if (typeof newValue === "boolean") {
         currentLicense.showBlacklistCTA = newValue;
         License.set(currentLicense);
         return null;
       }
 
-      if (typeof currentLicense.showBlacklistCTA === 'undefined') {
+      if (typeof currentLicense.showBlacklistCTA === "undefined") {
         currentLicense.showBlacklistCTA = true;
         License.set(currentLicense);
       }
@@ -565,13 +573,13 @@ export const License = (function getLicense() {
         return false;
       }
       const currentLicense = License.get() || {};
-      if (typeof newValue === 'boolean') {
+      if (typeof newValue === "boolean") {
         currentLicense.showWhitelistCTA = newValue;
         License.set(currentLicense);
         return null;
       }
 
-      if (typeof currentLicense.showWhitelistCTA === 'undefined') {
+      if (typeof currentLicense.showWhitelistCTA === "undefined") {
         currentLicense.showWhitelistCTA = true;
         License.set(currentLicense);
       }
@@ -583,15 +591,15 @@ export const License = (function getLicense() {
       return License && isNotActive && [3, 4].includes(variant) && License.shouldShowPremiumCTA();
     },
   };
-}());
+})();
 
-const replacedPerPage = new TabSessionStorage('ab:premium:replacedPerPage');
+const replacedPerPage = new TabSessionStorage("ab:premium:replacedPerPage");
 
 // Records how many ads have been replaced by AdBlock.  This is used
 // by the AdBlock to display statistics to the user.
 export const replacedCounts = (function getReplacedCount() {
   const adReplacedNotifier = new EventEmitter();
-  const key = 'replaced_stats';
+  const key = "replaced_stats";
   migrateData(key, true).then(() => {
     chromeStorageGetHelper(key).then((data) => {
       let replacedCountData = data;
@@ -617,9 +625,9 @@ export const replacedCounts = (function getReplacedCount() {
         data.total += 1;
         chromeStorageSetHelper(key, data);
         browser.tabs.get(tabId).then(async (tab) => {
-          let replaced = await replacedPerPage.get(tabId) || 0;
-          await replacedPerPage.set(tabId, replaced += 1);
-          adReplacedNotifier.emit('adReplaced', tabId, tab.url);
+          let replaced = (await replacedPerPage.get(tabId)) || 0;
+          await replacedPerPage.set(tabId, (replaced += 1));
+          adReplacedNotifier.emit("adReplaced", tabId, tab.url);
         });
       });
     },
@@ -630,29 +638,29 @@ export const replacedCounts = (function getReplacedCount() {
       if (tabId) {
         return replacedPerPage.get(tabId);
       }
-      return this.get().then(data => data.total);
+      return this.get().then((data) => data.total);
     },
     adReplacedNotifier,
   };
-}());
+})();
 
 // for use in the premium enrollment process
 // de-coupled from the `License.ready().then` code below because the delay
 // prevents the addListener from being fired in a timely fashion.
-const onInstalledPromise = new Promise(((resolve) => {
+const onInstalledPromise = new Promise((resolve) => {
   browser.runtime.onInstalled.addListener((details) => {
     resolve(details);
   });
-}));
+});
 
 // the order of Promises below dictacts the order of the data in the detailsArray
 Promise.all([onInstalledPromise, License.ready(), initialize]).then((detailsArray) => {
   // Enroll existing users in Premium
   if (detailsArray.length > 0 && detailsArray[0].reason) {
     License.enrollUser();
-    if (detailsArray[0].reason === 'install') {
+    if (detailsArray[0].reason === "install") {
       // create an alarm that will fire in ~ 7 days to show the "New" badge text
-      browser.alarms.create(License.sevenDayAlarmName, { delayInMinutes: (60 * 24 * 7) });
+      browser.alarms.create(License.sevenDayAlarmName, { delayInMinutes: 60 * 24 * 7 });
       License.addSevenDayAlarmStateListener();
       browser.storage.local.set({ [License.sevenDayAlarmName]: true });
     }

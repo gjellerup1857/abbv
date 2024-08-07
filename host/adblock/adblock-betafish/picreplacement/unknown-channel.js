@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global  */
 
-import Channel from './channel';
+import Channel from "./channel";
 
 // Empty Channel
 // Subclass of Channel.

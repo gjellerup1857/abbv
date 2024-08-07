@@ -24,29 +24,21 @@ import { installHandler } from "../../adblockplusui/adblockpluschrome/lib/messag
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
 import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events.js";
 
-import {
-  commandStats,
-} from '../ipm/background/command-library.types';
+import { commandStats } from "../ipm/background/command-library.types";
 
-import {
-  eventStorageKey,
-} from '../ipm/background/data-collection.types';
+import { eventStorageKey } from "../ipm/background/data-collection.types";
 
-import {
-  configsStorageKey,
-} from '../onpage-dialog/background/timing.types';
+import { configsStorageKey } from "../onpage-dialog/background/timing.types";
 
-import {
-  statsStorageKey,
-} from '../onpage-dialog/background/stats.types';
+import { statsStorageKey } from "../onpage-dialog/background/stats.types";
 
 const keyPrefix = "pref:";
 
-let eventEmitter = new EventEmitter();
-let overrides = Object.create(null);
+const eventEmitter = new EventEmitter();
+const overrides = Object.create(null);
 
 /** @lends module:prefs.Prefs */
-let defaults = Object.create(null);
+const defaults = Object.create(null);
 
 /**
  * The application version as set during initialization. Used to detect updates.
@@ -83,7 +75,7 @@ l9/Ho6YFA7fKpBKEED2V+SrDb4RCkScvOOiMOI1v5bwsLinUd/2yxRDrO25uwU7h
 r4LqmOguqjjLGF17d2WvG5D+LIQwgusxQd9Jk/n9PRdwtVGJhSDsDc8el2nKIqk9
 ofk3YJzAIbS9iHQ2LuHubuhzYjkxRLcdSbt1oONHCSHeecZn/OXwYeTvU7Po1KPW
 emi3XUpyjylUe9ONlw50lynwRw117bNHQDDHwKPoVW1cjoAtRsCnviFHPWTPjQKe
-A2LS9qa7eNdIonehrzG20cECAwEAAQ==`
+A2LS9qa7eNdIonehrzG20cECAwEAAQ==`,
 ];
 /**
  * Whether to show a badge in the toolbar icon indicating the number
@@ -200,7 +192,7 @@ defaults.ipm_safe_origins = [
   defaults.ipm_default_origin,
   "https://blog.getadblock.com",
   "https://helpcenter.getadblock.com",
-  "https://vpn.getadblock.com"
+  "https://vpn.getadblock.com",
 ];
 
 /**
@@ -226,16 +218,16 @@ defaults[configsStorageKey] = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,
-    maxDisplayCount: 3
+    maxDisplayCount: 3,
   },
   revisit_web_allowlisted_site: {
     cooldownDuration: 48,
     maxDisplayCount: 3,
-    minAllowlistingDelay: 48 * 60
+    minAllowlistingDelay: 48 * 60,
   },
   after_navigation: {
     cooldownDuration: 1,
-    maxDisplayCount: 1
+    maxDisplayCount: 1,
   },
 };
 
@@ -251,14 +243,14 @@ defaults[eventStorageKey] = [];
  *
  * @type {string}
  */
-defaults.ipm_server_url = 'https://ipm.adblock.dev/api/stats';
+defaults.ipm_server_url = "https://ipm.adblock.dev/api/stats";
 
 /**
  * The URL of the Ping server.
  *
  * @type {string}
  */
-defaults.ping_server_url = 'https://ping.getadblock.com/stats/';
+defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 
 /**
  * Whether to send ad wall related log event messages
@@ -268,18 +260,18 @@ defaults.ping_server_url = 'https://ping.getadblock.com/stats/';
 defaults.send_ad_wall_messages = true;
 
 /**
- * Language codes that should be auto allowing YT
+ * Language codes that should show an On Page Dialog after auto allowing
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = [ 'ar', 'fr', 'ja', 'nl', 'pl', 'tr', 'zh'];
+defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
 
 /**
- * Language codes that should show an OPD after auto allowing
+ * Language codes that should auto allowing on YouTube
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_plus_opd_language_codes = ['ar', 'ja', 'nl', 'pl', 'tr'];
+defaults.yt_allowlist_language_codes = ["fr", "zh"];
 
 /**
  * Start date (as a number) to start auto allowing YT
@@ -296,10 +288,17 @@ defaults.yt_allowlist_start_date = 0;
 defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
 
 /**
-  * @namespace
-  * @static
-  */
-export let Prefs = {
+ * Milliseconds that the smart allowlist rule should be active for
+ *
+ * @type {number}
+ */
+defaults.smart_allowlist_duration_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * @namespace
+ * @static
+ */
+export const Prefs = {
   /**
    * Retrieves the given preference.
    *
@@ -307,21 +306,21 @@ export let Prefs = {
    * @return {any}
    */
   get(preference) {
-
     // We need to temporarily force-disable data collection in Firefox, while
     // we're working on improving our data collection opt-out mechanism based
     // on Mozilla's requirements
     // https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/574
-    if (preference === "data_collection_opt_out" &&
-      info.application === "firefox")
+    if (preference === "data_collection_opt_out" && info.application === "firefox") {
       return true;
+    }
 
     let result = (preference in overrides ? overrides : defaults)[preference];
 
     // Object preferences are mutable, so we need to clone them to avoid
     // accidentally modifying the preference when modifying the object
-    if (typeof result === "object")
+    if (typeof result === "object") {
       result = JSON.parse(JSON.stringify(result));
+    }
 
     return result;
   },
@@ -346,20 +345,21 @@ export let Prefs = {
                        browser.storage.local.set/remove() operation completes
    */
   set(preference, value) {
-    let defaultValue = defaults[preference];
+    const defaultValue = defaults[preference];
 
-    if (typeof value != typeof defaultValue)
+    if (typeof value !== typeof defaultValue) {
       throw new Error("Attempt to change preference type");
+    }
 
     if (value == defaultValue) {
-      let oldValue = overrides[preference];
+      const oldValue = overrides[preference];
       delete overrides[preference];
 
       // Firefox 66 fails to emit storage.local.onChanged events for falsey
       // values. https://bugzilla.mozilla.org/show_bug.cgi?id=1541449
-      if (!oldValue &&
-        info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66)
+      if (!oldValue && info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66) {
         onStorageChanged({ [prefToKey(preference)]: { oldValue } }, "local");
+      }
 
       return browser.storage.local.remove(prefToKey(preference));
     }
@@ -408,12 +408,13 @@ export let Prefs = {
    *
    * @type {Promise}
    */
-  untilLoaded: null
+  untilLoaded: null,
 };
 
 function keyToPref(key) {
-  if (key.indexOf(keyPrefix) != 0)
+  if (key.indexOf(keyPrefix) != 0) {
     return null;
+  }
 
   return key.substr(keyPrefix.length);
 }
@@ -432,16 +433,13 @@ if (info.platform == "gecko" && parseInt(info.platformVersion, 10) < 66) {
   // Firefox versions <66. Make sure that updating ad counter doesn't cause
   // the filters data to be saved frequently as a side-effect.
   let promise = null;
-  customSave.set("blocked_total", pref => {
+  customSave.set("blocked_total", (pref) => {
     if (!promise) {
       promise = new Promise((resolve, reject) => {
-        setTimeout(
-          () => {
-            promise = null;
-            savePref(pref).then(resolve, reject);
-          },
-          60 * 1000
-        );
+        setTimeout(() => {
+          promise = null;
+          savePref(pref).then(resolve, reject);
+        }, 60 * 1000);
       });
     }
     return promise;
@@ -456,19 +454,20 @@ function addPreference(pref) {
     set(value) {
       Prefs.set(pref, value);
     },
-    enumerable: true
+    enumerable: true,
   });
 }
 
 function onStorageChanged(changes) {
-  for (let key in changes) {
-    let pref = keyToPref(key);
+  for (const key in changes) {
+    const pref = keyToPref(key);
     if (pref && pref in defaults) {
-      let change = changes[key];
-      if ("newValue" in change && change.newValue != defaults[pref])
+      const change = changes[key];
+      if ("newValue" in change && change.newValue != defaults[pref]) {
         overrides[pref] = change.newValue;
-      else
+      } else {
         delete overrides[pref];
+      }
 
       eventEmitter.emit(pref);
     }
@@ -476,26 +475,24 @@ function onStorageChanged(changes) {
 }
 
 async function init() {
-  let prefs = Object.keys(defaults);
+  const prefs = Object.keys(defaults);
   prefs.forEach(addPreference);
 
-  let isEdgeChromium = info.application == "edge" &&
-    info.platform == "chromium";
+  const isEdgeChromium = info.application == "edge" && info.platform == "chromium";
 
   // When upgrading from EdgeHTML to Edge Chromium (v79) data stored in
   // browser.storage.local gets corrupted.
   // To fix it, we have to call JSON.parse twice.
   // See: https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/152
   if (isEdgeChromium) {
-    let items = await browser.storage.local.get(null);
+    const items = await browser.storage.local.get(null);
 
-    let fixedItems = {};
-    for (let key in items) {
-      if (typeof items[key] == "string") {
+    const fixedItems = {};
+    for (const key in items) {
+      if (typeof items[key] === "string") {
         try {
           fixedItems[key] = JSON.parse(JSON.parse(items[key]));
-        }
-        catch (e) { }
+        } catch (e) { }
       }
     }
 
@@ -503,18 +500,19 @@ async function init() {
   }
 
   {
-    let items = await browser.storage.local.get(prefs.map(prefToKey));
-    for (let key in items)
+    const items = await browser.storage.local.get(prefs.map(prefToKey));
+    for (const key in items) {
       overrides[keyToPref(key)] = items[key];
+    }
   }
 
   if ("managed" in browser.storage) {
     try {
-      let items = await browser.storage.managed.get(null);
-      for (let key in items)
+      const items = await browser.storage.managed.get(null);
+      for (const key in items) {
         defaults[key] = items[key];
-    }
-    catch (e) {
+      }
+    } catch (e) {
       // Opera doesn't support browser.storage.managed, but instead of simply
       // removing the API, it gives an asynchronous error which we ignore here.
     }
@@ -530,16 +528,14 @@ async function init() {
     set(value) {
       ewe.notifications.toggleIgnoreCategory("*", !!value);
     },
-    enumerable: true
+    enumerable: true,
   });
 
-  ewe.notifications.on(
-    "ignored-category-added",
-    () => eventEmitter.emit("notifications_ignoredcategories")
+  ewe.notifications.on("ignored-category-added", () =>
+    eventEmitter.emit("notifications_ignoredcategories"),
   );
-  ewe.notifications.on(
-    "ignored-category-removed",
-    () => eventEmitter.emit("notifications_ignoredcategories")
+  ewe.notifications.on("ignored-category-removed", () =>
+    eventEmitter.emit("notifications_ignoredcategories"),
   );
 }
 
@@ -562,10 +558,7 @@ port.on("prefs.get", (message, sender) => Prefs[message.key]);
  * @property {string} value - The value to set.
  * @returns {string|string[]|number|boolean|undefined}
  */
-port.on(
-  "prefs.set",
-  async (message, sender) => Prefs[message.key] = message.value
-);
+port.on("prefs.set", async (message, sender) => (Prefs[message.key] = message.value));
 
 /**
  * Toggles the value of the given preference key.
@@ -575,10 +568,11 @@ port.on(
  * @returns {?boolean}
  */
 port.on("prefs.toggle", async (message, sender) => {
-  if (message.key == "notifications_ignoredcategories")
+  if (message.key == "notifications_ignoredcategories") {
     return ewe.notifications.toggleIgnoreCategory("*");
+  }
 
-  return Prefs[message.key] = !Prefs[message.key];
+  return (Prefs[message.key] = !Prefs[message.key]);
 });
 
 /**
@@ -591,10 +585,11 @@ port.on("prefs.toggle", async (message, sender) => {
  */
 port.on("prefs.getDocLink", (message, sender) => {
   let { application, platform } = info;
-  if (platform == "chromium" && application != "opera" && application != "edge")
+  if (platform == "chromium" && application != "opera" && application != "edge") {
     application = "chrome";
-  else if (platform == "gecko")
+  } else if (platform == "gecko") {
     application = "firefox";
+  }
 
   return Prefs.getDocLink(message.link.replace("{browser}", application));
 });

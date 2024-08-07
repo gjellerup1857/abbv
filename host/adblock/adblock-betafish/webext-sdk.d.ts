@@ -19,47 +19,47 @@
  * Options for retrieving filters
  */
 interface FiltersGetAllowingFiltersOptions {
-    /**
-     * ID of the frame to look up
-     */
-    frameId?: number = 0;
-    /**
-     * Types of filters to consider
-     */
-    types?: string[] = ["document"];
+  /**
+   * ID of the frame to look up
+   */
+  frameId?: number;
+  /**
+   * Types of filters to consider
+   */
+  types?: string[];
 }
 
 declare module "@eyeo/webext-ad-filtering-solution" {
-    declare namespace filters {
-        /**
-         * Returns the allowing filters that will be effective when the given
-         * document will be reloaded
-         */
-        const getAllowingFilters: (
-            /**
-             * ID of tab to look up
-             */
-            tabId: number,
-            /**
-             * Options for retrieving filters
-             */
-            options?: FiltersGetAllowingFiltersOptions
-        ) => Promise<string[]>;
+  declare namespace filters {
+    /**
+     * Returns the allowing filters that will be effective when the given
+     * document will be reloaded
+     */
+    const getAllowingFilters: (
+      /**
+       * ID of tab to look up
+       */
+      tabId: number,
+      /**
+       * Options for retrieving filters
+       */
+      options?: FiltersGetAllowingFiltersOptions,
+    ) => Promise<string[]>;
 
-        /**
-         * Returns an extra data associated with a filter
-         *
-         * @param text - Filter text
-         *
-         * @returns filter metadata
-         */
-        const getMetadata: (text: string) => Promise<?object>;
-    }
+    /**
+     * Returns an extra data associated with a filter
+     *
+     * @param text - Filter text
+     *
+     * @returns filter metadata
+     */
+    const getMetadata: (text: string) => Promise<?object>;
+  }
 
-    declare namespace notifications {
-        /**
-         * Returns the list of ignored notification categories
-         */
-        const getIgnoredCategories: () => string[];
-    }
+  declare namespace notifications {
+    /**
+     * Returns the list of ignored notification categories
+     */
+    const getIgnoredCategories: () => string[];
+  }
 }

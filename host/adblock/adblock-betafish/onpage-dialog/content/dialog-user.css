@@ -18,7 +18,9 @@
 #__ABoverlay {
   padding: 0 !important;
   margin: 0 !important;
-  font: 13px Arial, Helvetica !important;
+  font:
+    13px Arial,
+    Helvetica !important;
   text-transform: none !important;
   font-size: 100% !important;
   vertical-align: baseline !important;

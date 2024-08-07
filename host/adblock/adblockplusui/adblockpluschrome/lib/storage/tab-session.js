@@ -21,8 +21,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {EventEmitter} from "../events.js";
-import {SessionStorage} from "./session.js";
+import { EventEmitter } from "../events.js";
+import { SessionStorage } from "./session.js";
 
 /**
  * Session storage instance for storing tab-specific data.
@@ -46,14 +46,12 @@ const tabStorages = new Set();
  * Session storage for storing tab-specific in-memory data in a way that's safe
  * to use in a service worker context.
  */
-export class TabSessionStorage extends EventEmitter
-{
+export class TabSessionStorage extends EventEmitter {
   /**
    * Initializes session storage.
    * @param {string} namespace
    */
-  constructor(namespace)
-  {
+  constructor(namespace) {
     super();
 
     this._namespace = namespace;
@@ -66,20 +64,15 @@ export class TabSessionStorage extends EventEmitter
    * @param {number} tabId
    * @return {Promise}
    */
-  async delete(tabId)
-  {
-    return sessionByTabId.transaction(async() =>
-    {
+  async delete(tabId) {
+    return sessionByTabId.transaction(async () => {
       const session = await sessionByTabId.get(tabId);
-      if (!session)
-        return;
+      if (!session) return;
 
       delete session[this._namespace];
 
-      if (Object.keys(session).length)
-        await sessionByTabId.set(tabId, session);
-      else
-        await sessionByTabId.delete(tabId);
+      if (Object.keys(session).length) await sessionByTabId.set(tabId, session);
+      else await sessionByTabId.delete(tabId);
     });
   }
 
@@ -88,15 +81,13 @@ export class TabSessionStorage extends EventEmitter
    * @param {string} name
    * @param {number} tabId
    */
-  async emit(name, tabId)
-  {
+  async emit(name, tabId) {
     const session = await sessionByTabId.get(tabId);
-    if (!session)
-      return;
+    if (!session) return;
 
     super.emit(name, {
       tabId,
-      value: session[this._namespace]
+      value: session[this._namespace],
     });
   }
 
@@ -105,11 +96,9 @@ export class TabSessionStorage extends EventEmitter
    * @param {number} tabId
    * @return {Promise<any>}
    */
-  async get(tabId)
-  {
+  async get(tabId) {
     const session = await sessionByTabId.get(tabId);
-    if (!session)
-      return;
+    if (!session) return;
 
     return session[this._namespace];
   }
@@ -119,8 +108,7 @@ export class TabSessionStorage extends EventEmitter
    * @param {number} tabId
    * @return {Promise<boolean>}
    */
-  async has(tabId)
-  {
+  async has(tabId) {
     const session = await sessionByTabId.get(tabId);
     return session && this._namespace in session;
   }
@@ -131,10 +119,8 @@ export class TabSessionStorage extends EventEmitter
    * @param {any} value
    * @return {Promise}
    */
-  async set(tabId, value)
-  {
-    return sessionByTabId.transaction(async() =>
-    {
+  async set(tabId, value) {
+    return sessionByTabId.transaction(async () => {
       const session = (await sessionByTabId.get(tabId)) || {};
       session[this._namespace] = value;
       await sessionByTabId.set(tabId, session);
@@ -146,8 +132,7 @@ export class TabSessionStorage extends EventEmitter
    * @param {Function} fn
    * @return {Promise}
    */
-  async transaction(fn)
-  {
+  async transaction(fn) {
     this._queue = this._queue
       // Necessary to avoid breakage of promise chain
       .catch(console.error)
@@ -161,14 +146,11 @@ export class TabSessionStorage extends EventEmitter
  * @param {number} tabId
  * @return {Promise}
  */
-async function clearStorage(tabId)
-{
+async function clearStorage(tabId) {
   // Provide stored data to listeners before removing it
   const session = await sessionByTabId.get(tabId);
-  if (session)
-  {
-    for (const tabStorage of tabStorages)
-      await tabStorage.emit("tab-removed", tabId);
+  if (session) {
+    for (const tabStorage of tabStorages) await tabStorage.emit("tab-removed", tabId);
   }
 
   await sessionByTabId.delete(tabId);
@@ -177,17 +159,14 @@ async function clearStorage(tabId)
 /**
  * Initializes tab-specific session storage.
  */
-function start()
-{
+function start() {
   // Clear tab-specific data when the tab's content changes
-  ext.pages.onLoading.addListener(page =>
-  {
+  ext.pages.onLoading.addListener((page) => {
     void clearStorage(page.id);
   });
 
   // Clear tab-specific data when the tab gets removed
-  ext.pages.onRemoved.addListener(tabId =>
-  {
+  ext.pages.onRemoved.addListener((tabId) => {
     void clearStorage(tabId);
   });
 }

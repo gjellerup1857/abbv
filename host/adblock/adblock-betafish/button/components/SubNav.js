@@ -19,9 +19,9 @@
 /* global DOMPurify, sessionStorageSet, translate */
 
 /* eslint-disable import/extensions */
-import { CLOSED_KEY } from '../utils.js';
+import { CLOSED_KEY } from "../utils.js";
 
-const generateBackIconTemplate = labelText => `
+const generateBackIconTemplate = (labelText) => `
   <i
     class="material-icons md-18"
     role="img"
@@ -31,9 +31,9 @@ const generateBackIconTemplate = labelText => `
 `;
 
 const goBack = () => {
-  const main = document.querySelector('main');
-  main.classList.remove('animate-in');
-  main.classList.add('animate-out');
+  const main = document.querySelector("main");
+  main.classList.remove("animate-in");
+  main.classList.add("animate-out");
 
   setTimeout(() => {
     sessionStorageSet(CLOSED_KEY, true);
@@ -43,14 +43,14 @@ const goBack = () => {
 
 export default class SubNav extends HTMLElement {
   async connectedCallback() {
-    const backIconButton = document.createElement('button');
-    backIconButton.addEventListener('click', goBack);
+    const backIconButton = document.createElement("button");
+    backIconButton.addEventListener("click", goBack);
 
-    const backIconTemplate = generateBackIconTemplate(translate('back_flow_general'));
+    const backIconTemplate = generateBackIconTemplate(translate("back_flow_general"));
     backIconButton.innerHTML = DOMPurify.sanitize(backIconTemplate);
 
     const { title } = this.dataset;
-    const titleSpan = document.createElement('span');
+    const titleSpan = document.createElement("span");
     titleSpan.textContent = translate(title);
 
     this.appendChild(backIconButton);

@@ -17,10 +17,10 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global importScripts
-*/
+ */
 
-if (typeof importScripts !== 'undefined') {
-  importScripts('polyfill.js');
-  importScripts('ext/common.js');
-  importScripts('ext/background.js');
+if (typeof importScripts !== "undefined") {
+  importScripts("polyfill.js");
+  importScripts("ext/common.js");
+  importScripts("ext/background.js");
 }

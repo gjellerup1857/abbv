@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LicenseStateBehavior, Command } from '../../../ipm/background';
+import { LicenseStateBehavior, Command } from "../../../ipm/background";
 
 /**
  * The method to use for creating the new tab.
@@ -25,12 +25,12 @@ export enum CreationMethod {
    * `default` refers to the method implemented by earlier versions of the
    * command, and means waiting until the user opens a new, blank tab.
    */
-  default = 'default',
+  default = "default",
   /**
    * `force` means that the tab is to be created as soon as the extension
    * receives the command.
    */
-  force = 'force'
+  force = "force",
 }
 
 /**

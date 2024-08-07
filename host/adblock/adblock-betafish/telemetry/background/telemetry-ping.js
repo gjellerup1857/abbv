@@ -18,12 +18,12 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import { EventEmitter } from '../../../adblockplusui/adblockpluschrome/lib/events';
-import ServerMessages from '../../servermessages';
-import TelemetryBase from './telemetry-base';
-import postData from '../../fetch-util';
-import { Prefs } from '../../alias/prefs';
-import { log, chromeStorageSetHelper } from '../../utilities/background/bg-functions';
+import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
+import ServerMessages from "../../servermessages";
+import TelemetryBase from "./telemetry-base";
+import postData from "../../fetch-util";
+import { Prefs } from "../../alias/prefs";
+import { log, chromeStorageSetHelper } from "../../utilities/background/bg-functions";
 
 export const telemetryNotifier = new EventEmitter();
 
@@ -33,18 +33,21 @@ class Telemetry extends TelemetryBase {
     return new Promise(async (resolve) => {
       const response = await browser.storage.local.get(this.totalRequestsStorageKey);
       let totalPings = response[this.totalRequestsStorageKey];
-      if (typeof totalPings !== 'number' || Number.isNaN(totalPings)) {
+      if (typeof totalPings !== "number" || Number.isNaN(totalPings)) {
         totalPings = 0;
       }
       totalPings += 1;
       chromeStorageSetHelper(this.totalRequestsStorageKey, totalPings);
 
       let delayHours;
-      if (totalPings === 1) { // Ping one hour after install
+      if (totalPings === 1) {
+        // Ping one hour after install
         delayHours = 1;
-      } else if (totalPings < 9) { // Then every day for a week
+      } else if (totalPings < 9) {
+        // Then every day for a week
         delayHours = 24;
-      } else { // Then weekly forever
+      } else {
+        // Then weekly forever
         delayHours = 24 * 7;
       }
       const millis = 1000 * 60 * 60 * delayHours;
@@ -58,7 +61,7 @@ class Telemetry extends TelemetryBase {
 
   sendPingData(pingData) {
     return new Promise(async (resolve) => {
-      if (Prefs.get('data_collection_opt_out')) {
+      if (Prefs.get("data_collection_opt_out")) {
         return;
       }
 
@@ -67,13 +70,13 @@ class Telemetry extends TelemetryBase {
         // to help us determine why there's been a drop in ping requests
         // See https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/136
         .catch((error) => {
-          void ServerMessages.sendMessageToBackupLogServer('fetch_error', error.toString());
-          log('ping server returned error: ', error);
+          void ServerMessages.sendMessageToBackupLogServer("fetch_error", error.toString());
+          log("ping server returned error: ", error);
         });
       if (response && response.ok) {
-        telemetryNotifier.emit('ping.complete');
+        telemetryNotifier.emit("ping.complete");
       } else {
-        log('Ping server returned error: ', (response && response.statusText));
+        log("Ping server returned error: ", response && response.statusText);
       }
       resolve(pingData);
     });
@@ -90,14 +93,14 @@ class Telemetry extends TelemetryBase {
     // if the ping count is above a theshold,
     // then only ping 'occasionally'
     if (pingData.pc > 5000) {
-      if (pingData.pc > 5000 && pingData.pc < 100000 && ((pingData.pc % 5000) !== 0)) {
+      if (pingData.pc > 5000 && pingData.pc < 100000 && pingData.pc % 5000 !== 0) {
         return pingData;
       }
-      if (pingData.pc >= 100000 && ((pingData.pc % 50000) !== 0)) {
+      if (pingData.pc >= 100000 && pingData.pc % 50000 !== 0) {
         return pingData;
       }
     }
-    pingData.cmd = 'ping';
+    pingData.cmd = "ping";
     if (browser.management && browser.management.getSelf) {
       const info = await browser.management.getSelf();
       pingData.it = info.installType.charAt(0);

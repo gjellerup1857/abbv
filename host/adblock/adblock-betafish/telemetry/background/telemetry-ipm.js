@@ -18,30 +18,29 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser */
 
-import * as logger from '../../utilities/background/logger.ts';
+import * as logger from "../../utilities/background/logger.ts";
 
-import { chromeStorageSetHelper } from '../../utilities/background/bg-functions';
-import { clearEvents, executeIPMCommand, getPayload } from '../../ipm/background/index.ts';
-import postData from '../../fetch-util';
-import { Prefs } from '../../alias/prefs';
-import ServerMessages from '../../servermessages';
-import TelemetryBase from './telemetry-base';
-import { telemetryNotifier } from './telemetry-ping';
-
+import { chromeStorageSetHelper } from "../../utilities/background/bg-functions";
+import { clearEvents, executeIPMCommand, getPayload } from "../../ipm/background/index.ts";
+import postData from "../../fetch-util";
+import { Prefs } from "../../alias/prefs";
+import ServerMessages from "../../servermessages";
+import TelemetryBase from "./telemetry-base";
+import { telemetryNotifier } from "./telemetry-ping";
 
 class IPMTelemetry extends TelemetryBase {
   /**
- * Processes a response from the IPM server. Will request command execution
- * if necessary.
- *
- * @param response The response from the IPM server
- */
+   * Processes a response from the IPM server. Will request command execution
+   * if necessary.
+   *
+   * @param response The response from the IPM server
+   */
   static async processResponse(response) {
     if (!response.ok) {
       logger.error(`[Telemetry]: Bad response status from IPM server: ${response.status}`);
       return;
     }
-    telemetryNotifier.emit('ipm.ping.complete');
+    telemetryNotifier.emit("ipm.ping.complete");
 
     // if the server responded with something, we assume it's a command
     const responseText = await response.text();
@@ -56,16 +55,18 @@ class IPMTelemetry extends TelemetryBase {
     return new Promise(async (resolve) => {
       const response = await browser.storage.local.get(this.totalRequestsStorageKey);
       let totalPings = response[this.totalRequestsStorageKey];
-      if (typeof totalPings !== 'number' || Number.isNaN(totalPings)) {
+      if (typeof totalPings !== "number" || Number.isNaN(totalPings)) {
         totalPings = 0;
       }
       totalPings += 1;
       chromeStorageSetHelper(this.totalRequestsStorageKey, totalPings);
 
       let delayHours;
-      if (totalPings === 1) { // Ping one hour after install
+      if (totalPings === 1) {
+        // Ping one hour after install
         delayHours = 1;
-      } else { // Then every day
+      } else {
+        // Then every day
         delayHours = 24;
       }
       const millis = 1000 * 60 * 60 * delayHours;
@@ -87,15 +88,15 @@ class IPMTelemetry extends TelemetryBase {
   }
 
   async sendPingData(pingData) {
-    if (Prefs.get('data_collection_opt_out')) {
+    if (Prefs.get("data_collection_opt_out")) {
       return;
     }
 
     // as we about to send all user events, we can delete them
     void clearEvents();
     const response = await postData(Prefs.get(this.hostURLPref), pingData).catch((error) => {
-      logger.error('ipm ping error', error);
-      ServerMessages.recordGeneralMessage('ipm ping error', undefined, { error });
+      logger.error("ipm ping error", error);
+      ServerMessages.recordGeneralMessage("ipm ping error", undefined, { error });
     });
     IPMTelemetry.processResponse(response);
   }

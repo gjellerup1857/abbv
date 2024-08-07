@@ -18,57 +18,52 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global settings, getSettings, browser */
 
-import { contentTypes } from 'adblockpluscore/lib/contentTypes';
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { EventEmitter } from '../../adblockplusui/adblockpluschrome/lib/events';
-import {
-  SKINNYTALL,
-  SKINNYWIDE,
-  TALL,
-  WIDE,
-} from './image-sizes-map';
-import SubscriptionAdapter from '../subscriptionadapter';
-import CustomChannel from './custom-channel';
-import CatsChannel from './cat-channel';
-import DogsChannel from './dog-channel';
-import LandscapesChannel from './landscape-channel';
-import BirdChannel from './birds-channel';
-import FoodChannel from './food-channel';
-import GoatsChannel from './goat-channel';
-import OceanChannel from './ocean-channel';
-import UnknownChannel from './unknown-channel';
+import { contentTypes } from "adblockpluscore/lib/contentTypes";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events";
+import { SKINNYTALL, SKINNYWIDE, TALL, WIDE } from "./image-sizes-map";
+import SubscriptionAdapter from "../subscriptionadapter";
+import CustomChannel from "./custom-channel";
+import CatsChannel from "./cat-channel";
+import DogsChannel from "./dog-channel";
+import LandscapesChannel from "./landscape-channel";
+import BirdChannel from "./birds-channel";
+import FoodChannel from "./food-channel";
+import GoatsChannel from "./goat-channel";
+import OceanChannel from "./ocean-channel";
+import UnknownChannel from "./unknown-channel";
 import {
   chromeStorageGetHelper,
   chromeStorageSetHelper,
   migrateData,
-} from '../utilities/background/bg-functions';
+} from "../utilities/background/bg-functions";
 
 const resourceTypes = new Map();
 for (const type in contentTypes) {
   resourceTypes.set(type.toLowerCase(), contentTypes[type]);
 }
-resourceTypes.set('sub_frame', contentTypes.SUBDOCUMENT);
-resourceTypes.set('beacon', contentTypes.PING);
-resourceTypes.set('imageset', contentTypes.IMAGE);
-resourceTypes.set('object_subrequest', contentTypes.OBJECT);
-resourceTypes.set('main_frame', contentTypes.DOCUMENT);
+resourceTypes.set("sub_frame", contentTypes.SUBDOCUMENT);
+resourceTypes.set("beacon", contentTypes.PING);
+resourceTypes.set("imageset", contentTypes.IMAGE);
+resourceTypes.set("object_subrequest", contentTypes.OBJECT);
+resourceTypes.set("main_frame", contentTypes.DOCUMENT);
 
 const typeSelectors = new Map([
-  [contentTypes.IMAGE, 'img,input'],
-  [contentTypes.MEDIA, 'audio,video'],
-  [contentTypes.SUBDOCUMENT, 'frame,iframe,object,embed'],
-  [contentTypes.OBJECT, 'object,embed'],
+  [contentTypes.IMAGE, "img,input"],
+  [contentTypes.MEDIA, "audio,video"],
+  [contentTypes.SUBDOCUMENT, "frame,iframe,object,embed"],
+  [contentTypes.OBJECT, "object,embed"],
 ]);
 
 const REPORTING_OPTIONS = {
-  filterType: 'blocking',
+  filterType: "blocking",
   includeElementHiding: false,
 };
 
-const channelsKey = 'channels';
+const channelsKey = "channels";
 
-const subscription1 = SubscriptionAdapter.getUrlFromId('antisocial');
-const subscription2 = SubscriptionAdapter.getUrlFromId('annoyances');
+const subscription1 = SubscriptionAdapter.getUrlFromId("antisocial");
+const subscription2 = SubscriptionAdapter.getUrlFromId("annoyances");
 
 const channelObjects = {
   CustomChannel,
@@ -156,11 +151,11 @@ export class Channels {
   }
 
   isCustomChannel(id) {
-    return (this.getIdByName('CustomChannel') === id);
+    return this.getIdByName("CustomChannel") === id;
   }
 
   isCustomChannelEnabled() {
-    return (this.channelGuide[this.getIdByName('CustomChannel')].enabled);
+    return this.channelGuide[this.getIdByName("CustomChannel")].enabled;
   }
 
   getListings(id) {
@@ -172,7 +167,7 @@ export class Channels {
     this.channelGuide[id].enabled = enabled;
     this.saveToStorage();
     if (originalValue !== enabled) {
-      channelsNotifier.emit('channels.changed', id, enabled, originalValue);
+      channelsNotifier.emit("channels.changed", id, enabled, originalValue);
     }
   }
 
@@ -199,7 +194,7 @@ export class Channels {
     for (const id in this.channelGuide) {
       if (this.channelGuide[id].enabled) {
         this.channelGuide[id].enabled = false;
-        channelsNotifier.emit('channels.changed', id, false, true);
+        channelsNotifier.emit("channels.changed", id, false, true);
       }
     }
   }
@@ -213,7 +208,7 @@ export class Channels {
     }
     // if the element to be replace is 'fixed' in position, it may make for bad pic
     // replacement element.
-    if (opts.position === 'fixed') {
+    if (opts.position === "fixed") {
       for (const sub of SubscriptionAdapter.getSubscriptionsMinusText()) {
         if (sub.url === subscription1 || sub.url === subscription2) {
           return undefined;
@@ -223,8 +218,8 @@ export class Channels {
 
     const heightLowRange = opts.height;
     const widthLowRange = opts.width;
-    const heightHighRange = (opts.height * 1.25);
-    const widthHighRange = (opts.width * 1.25);
+    const heightHighRange = opts.height * 1.25;
+    const widthHighRange = opts.width * 1.25;
     const typeMatchListings = [];
     const rangeLimitedListings = [];
     let targetRatio = Math.max(opts.width, opts.height) / Math.min(opts.width, opts.height);
@@ -234,37 +229,37 @@ export class Channels {
       if (opts.channelId === id || (data.enabled && !opts.channelId)) {
         data.channel.getListings().forEach((element) => {
           if (
-            (opts.type === WIDE || opts.type === SKINNYWIDE)
-            && (element.type !== SKINNYTALL)
-            && (element.width <= widthHighRange)
-            && (element.height >= heightLowRange)
-            && (element.height <= heightHighRange)
+            (opts.type === WIDE || opts.type === SKINNYWIDE) &&
+            element.type !== SKINNYTALL &&
+            element.width <= widthHighRange &&
+            element.height >= heightLowRange &&
+            element.height <= heightHighRange
           ) {
             rangeLimitedListings.push(element);
           } else if (
-            (opts.type === TALL || opts.type === SKINNYTALL)
-            && (element.type !== SKINNYWIDE)
-            && (element.width >= widthLowRange)
-            && (element.width <= widthHighRange)
-            && (element.height <= heightHighRange)
+            (opts.type === TALL || opts.type === SKINNYTALL) &&
+            element.type !== SKINNYWIDE &&
+            element.width >= widthLowRange &&
+            element.width <= widthHighRange &&
+            element.height <= heightHighRange
           ) {
             rangeLimitedListings.push(element);
           } else if (
-            (opts.type !== WIDE)
-            && (opts.type !== TALL)
-            && (opts.type !== SKINNYTALL)
-            && (opts.type !== SKINNYWIDE)
-            && (element.width >= widthLowRange)
-            && (element.width <= widthHighRange)
-            && (element.height >= heightLowRange)
-            && (element.height <= heightHighRange)
+            opts.type !== WIDE &&
+            opts.type !== TALL &&
+            opts.type !== SKINNYTALL &&
+            opts.type !== SKINNYWIDE &&
+            element.width >= widthLowRange &&
+            element.width <= widthHighRange &&
+            element.height >= heightLowRange &&
+            element.height <= heightHighRange
           ) {
             rangeLimitedListings.push(element);
           }
           if (
-            opts.type === element.type
-            && element.width >= widthLowRange
-            && element.height >= heightLowRange
+            opts.type === element.type &&
+            element.width >= widthLowRange &&
+            element.height >= heightLowRange
           ) {
             typeMatchListings.push(element);
           }
@@ -307,7 +302,16 @@ export class Channels {
 
   // adds any new or missing channels (in a disabled state) to the users channel guide
   addNewChannels() {
-    const channelNames = ['DogsChannel', 'CatsChannel', 'LandscapesChannel', 'OceanChannel', 'GoatsChannel', 'BirdChannel', 'FoodChannel', 'CustomChannel'];
+    const channelNames = [
+      "DogsChannel",
+      "CatsChannel",
+      "LandscapesChannel",
+      "OceanChannel",
+      "GoatsChannel",
+      "BirdChannel",
+      "FoodChannel",
+      "CustomChannel",
+    ];
     for (const name of channelNames) {
       if (!this.getIdByName(name)) {
         this.add({
@@ -346,8 +350,7 @@ export class Channels {
   }
 
   static getFrameId(details) {
-    return details.type === 'sub_frame' ? details.parentFrameId
-      : details.frameId;
+    return details.type === "sub_frame" ? details.parentFrameId : details.frameId;
   }
 
   // Ignore EasyPrivacy rules, since they can cause issue with odd image swaps
@@ -356,8 +359,10 @@ export class Channels {
       return false;
     }
     const subscriptions = await ewe.subscriptions.getForFilter(filter);
-    const isEasyPrivacy = subscriptions.filter(subscription => subscription.title === 'EasyPrivacy');
-    return (isEasyPrivacy && isEasyPrivacy.length === 0);
+    const isEasyPrivacy = subscriptions.filter(
+      (subscription) => subscription.title === "EasyPrivacy",
+    );
+    return isEasyPrivacy && isEasyPrivacy.length === 0;
   }
 
   async filterListener({ request, filter }) {
@@ -366,21 +371,26 @@ export class Channels {
       if (!shouldUseFilter) {
         return;
       }
-      if (request
-        && request.tabId
-        && filter
-        && filter.type === 'elemhide'
-        && filter.selector && filter.enabled) {
-        const msgDetail = { hidingSelector: filter.selector, command: 'addSelector' };
+      if (
+        request &&
+        request.tabId &&
+        filter &&
+        filter.type === "elemhide" &&
+        filter.selector &&
+        filter.enabled
+      ) {
+        const msgDetail = { hidingSelector: filter.selector, command: "addSelector" };
         browser.tabs.sendMessage(request.tabId, msgDetail, { frameId: request.frameId });
-      } else if (request
-        && request.tabId
-        && filter
-        && filter.type === 'blocking'
-        && filter.enabled) {
+      } else if (
+        request &&
+        request.tabId &&
+        filter &&
+        filter.type === "blocking" &&
+        filter.enabled
+      ) {
         const selector = typeSelectors.get(Channels.getContentType(request));
         const frameId = Channels.getFrameId(request);
-        const msg = { selector, command: 'addBlockingSelector', url: request.url };
+        const msg = { selector, command: "addBlockingSelector", url: request.url };
         browser.tabs.sendMessage(request.tabId, msg, { frameId });
       }
     } else if (!getSettings().picreplacement) {
@@ -388,14 +398,14 @@ export class Channels {
     }
   }
 
-
   initializeListeners() {
     this.license.ready().then(() => {
       settings.onload().then(() => {
         if (getSettings().picreplacement && this.license.isActiveLicense()) {
           ewe.reporting.onBlockableItem.removeListener(this.filterListener, REPORTING_OPTIONS);
           ewe.reporting.onBlockableItem.addListener(
-            this.filterListener.bind(this), REPORTING_OPTIONS,
+            this.filterListener.bind(this),
+            REPORTING_OPTIONS,
           );
         }
       });

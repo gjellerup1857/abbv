@@ -15,15 +15,15 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import gulp from 'gulp';
-import merge from 'merge-stream';
+import gulp from "gulp";
+import merge from "merge-stream";
 import changePath from "../utils/gulp-change-path.mjs";
 
 export default function mapping(bundles) {
   return merge(
-    bundles.copy.map(bundle => gulp.src(bundle.src)
-      .pipe(changePath(bundle.dest))),
-    bundles.rename.map(bundle => gulp.src(bundle.src)
-      .pipe(changePath(bundle.dest, { rename: true }))),
+    bundles.copy.map((bundle) => gulp.src(bundle.src).pipe(changePath(bundle.dest))),
+    bundles.rename.map((bundle) =>
+      gulp.src(bundle.src).pipe(changePath(bundle.dest, { rename: true })),
+    ),
   );
 }

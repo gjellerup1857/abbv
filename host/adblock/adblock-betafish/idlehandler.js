@@ -25,7 +25,7 @@
 // inputs: theFunction: function to be executed
 //         seconds: maximum time to wait upon idle, in seconds. 600 if omitted.
 const idleHandler = {
-  IDLE_ALARM_NAME: 'idlehandleralarm',
+  IDLE_ALARM_NAME: "idlehandleralarm",
   alarmHandler(alarm) {
     if (alarm && alarm.name === idleHandler.IDLE_ALARM_NAME) {
       idleHandler.runIfIdle();
@@ -34,7 +34,7 @@ const idleHandler = {
   async scheduleItemOnce(callback, seconds) {
     // Schedule the item to be executed
     const state = await browser.idle.queryState(60);
-    if (state === 'active') {
+    if (state === "active") {
       idleHandler.scheduledItems.push({
         callback,
         runAt: new Date(Date.now() + 1000 * (seconds || 600)),
@@ -54,7 +54,7 @@ const idleHandler = {
     // Otherwise, it checks if an item has waited longer than allowed, and
     // executes the ones who should be executed
     const state = await browser.idle.queryState(15);
-    if (state === 'idle') {
+    if (state === "idle") {
       while (idleHandler.scheduledItems.length) {
         idleHandler.scheduledItems.shift().callback();
       }

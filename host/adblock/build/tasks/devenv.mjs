@@ -17,23 +17,21 @@
 
 import handlebars from "handlebars";
 import fs from "fs";
-import {Readable} from "stream";
+import { Readable } from "stream";
 import Vinyl from "vinyl";
 
-export function addDevEnvVersion()
-{
+export function addDevEnvVersion() {
   let randNumber = Number(new Date()).toString();
 
   return new Readable.from([
     new Vinyl({
       contents: Buffer.from(randNumber),
-      path: "devenvVersion__"
-    })
+      path: "devenvVersion__",
+    }),
   ]);
 }
 
-export async function addTestsPage(templateData)
-{
+export async function addTestsPage(templateData) {
   let file = await fs.promises.readFile("build/templates/testIndex.html.tmpl");
   let template = handlebars.compile(file.toString());
   let data = template(templateData);
@@ -41,7 +39,7 @@ export async function addTestsPage(templateData)
   return new Readable.from([
     new Vinyl({
       contents: Buffer.from(data),
-      path: "qunit/index.html"
-    })
+      path: "qunit/index.html",
+    }),
   ]);
 }

@@ -22,7 +22,7 @@ export default class PopupDetailText extends HTMLElement {
   async connectedCallback() {
     const { content } = this.dataset;
 
-    const para = document.createElement('p');
+    const para = document.createElement("p");
     para.textContent = translate(content);
     this.appendChild(para);
   }

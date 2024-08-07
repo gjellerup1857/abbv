@@ -15,11 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  Schedule,
-  Listener,
-  ScheduleType
-} from "./scheduled-event-emitter.types";
+import { Schedule, Listener, ScheduleType } from "./scheduled-event-emitter.types";
 
 // The following path to the session module was modified from the original source,
 // because the webpack `alias` configuration does not apply to TypeScript files
@@ -96,10 +92,7 @@ const listeners: Map<string, Listener> = new Map();
  * @param name The event name to register the listener for
  * @param listener The listener to register
  */
-export async function setListener(
-  name: string,
-  listener: Listener
-): Promise<void> {
+export async function setListener(name: string, listener: Listener): Promise<void> {
   await initialization;
 
   if (listeners.has(name)) {
@@ -127,7 +120,7 @@ export async function setListener(
 export async function setSchedule(
   name: string,
   time: number,
-  scheduleType: ScheduleType = ScheduleType.once
+  scheduleType: ScheduleType = ScheduleType.once,
 ): Promise<void> {
   await initialization;
 
@@ -139,7 +132,7 @@ export async function setSchedule(
     period: time,
     next: time + Date.now(),
     runOnce: scheduleType === ScheduleType.once,
-    count: 0
+    count: 0,
   };
   await persistSchedules();
   activateSchedules();
@@ -232,10 +225,7 @@ function activateSchedules(): void {
     if (!schedule.runOnce) {
       // Intervals are to start immediately.
       // eslint-disable-next-line no-param-reassign
-      schedule.activationId = global.setInterval(
-        () => emitEvent(name),
-        schedule.period
-      );
+      schedule.activationId = global.setInterval(() => emitEvent(name), schedule.period);
       return;
     }
 

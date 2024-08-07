@@ -17,28 +17,23 @@
 /* global browser, sessionStorageSet */
 
 /* eslint-disable import/extensions */
-import CancelActionButton from './components/CancelActionButton.js';
-import ActionButton from './components/ActionButton.js';
-import ConfirmText from './components/ConfirmText.js';
-import InlineLinkButton from './components/InlineLinkButton.js';
-import SubNav from './components/SubNav.js';
+import CancelActionButton from "./components/CancelActionButton.js";
+import ActionButton from "./components/ActionButton.js";
+import ConfirmText from "./components/ConfirmText.js";
+import InlineLinkButton from "./components/InlineLinkButton.js";
+import SubNav from "./components/SubNav.js";
 
-import {
-  PAGE_INFO_KEY,
-  getTabId,
-  setupBehaviorListeners,
-  translatePageTitle,
-} from './utils.js';
+import { PAGE_INFO_KEY, getTabId, setupBehaviorListeners, translatePageTitle } from "./utils.js";
 
 const initializeAndAddElements = () => {
   const tabId = getTabId();
-  browser.runtime.sendMessage({ command: 'getCurrentTabInfo', tabId }).then((pageInfo) => {
+  browser.runtime.sendMessage({ command: "getCurrentTabInfo", tabId }).then((pageInfo) => {
     sessionStorageSet(PAGE_INFO_KEY, pageInfo);
-    customElements.define('action-button', ActionButton);
-    customElements.define('cancel-action-button', CancelActionButton);
-    customElements.define('confirm-text', ConfirmText);
-    customElements.define('inline-link-button', InlineLinkButton);
-    customElements.define('subsection-navigation', SubNav);
+    customElements.define("action-button", ActionButton);
+    customElements.define("cancel-action-button", CancelActionButton);
+    customElements.define("confirm-text", ConfirmText);
+    customElements.define("inline-link-button", InlineLinkButton);
+    customElements.define("subsection-navigation", SubNav);
   });
 };
 

@@ -9,7 +9,9 @@ called 'fragments' into the host extension, in order to create customized
 extensions with different features and branding to suit various user needs.
 
 This architecture also streamlines dependency management, making development and
-collaboration more efficient.  Main architectural components
+collaboration more efficient.  
+
+## Main architectural components
 
 There are three main types of architectural components:
 
@@ -96,3 +98,12 @@ graph LR;
   fragment/cdp-->host/adblockplus;
   host/adblockplus-->AdblockPlus
 ```
+
+## CI pipeline
+
+### Runners
+
+Pipeline jobs use self-managed runners from Google Cloud Platform (GCP). The
+the setup of the runner is defined in [the devops runner project](https://gitlab.com/eyeo/devops/terraform/projects/gitlab-runners/terraform-adblock-inc-runner/), and the runner status can be checked
+[here](https://gitlab.com/groups/eyeo/extensions/-/runners). Access to GCP
+resources like the GCloud console can be granted by devops as well.

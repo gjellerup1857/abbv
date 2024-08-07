@@ -17,97 +17,80 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-const requestMethods = new Set([
-  "allowing",
-  "header",
-  "request"
-]);
+const requestMethods = new Set(["allowing", "header", "request"]);
 
-export function toPlainBlockableItem({filter, matchInfo, request})
-{
+export function toPlainBlockableItem({ filter, matchInfo, request }) {
   let isFrame = !requestMethods.has(matchInfo.method);
 
   let type;
-  if (matchInfo.method == "request")
-    type = ewe.reporting.contentTypesMap.get(request.type);
-  else if (matchInfo.method == "allowing")
-    type = matchInfo.allowingReason;
+  if (matchInfo.method == "request") type = ewe.reporting.contentTypesMap.get(request.type);
+  else if (matchInfo.method == "allowing") type = matchInfo.allowingReason;
   // Show matching method when it had an effect on the request
   else if (filter)
-    if (filter.remove === true)
-      type = "remove";
-    else
-      type = matchInfo.method;
-  else
-    type = ewe.reporting.contentTypesMap.get(request.type);
+    if (filter.remove === true) type = "remove";
+    else type = matchInfo.method;
+  else type = ewe.reporting.contentTypesMap.get(request.type);
 
-  if (!type)
-    type = "other";
+  if (!type) type = "other";
 
   return {
     docDomain: matchInfo.docDomain,
     isFrame,
     rewrittenUrl: matchInfo.rewrittenUrl,
     type: type.toUpperCase(),
-    url: request.url
+    url: request.url,
   };
 }
 
-export function toPlainFilter(filter)
-{
-  let obj = toPlainObject(
-    ["csp", "enabled", "selector", "slow", "text", "type"],
-    filter
-  );
+export function toPlainFilter(filter) {
+  let obj = toPlainObject(["csp", "enabled", "selector", "slow", "text", "type"], filter);
 
   // For the time being, we are renaming the enabled property to
   // make the UI compatible with EWE without having to rename it
   // in the UI code itself just yet
   // For the same reason, we're not adding the property for comment filters
-  if (obj.enabled !== null)
-    obj.disabled = !obj.enabled;
+  if (obj.enabled !== null) obj.disabled = !obj.enabled;
   delete obj.enabled;
 
   return obj;
 }
 
-export let toPlainFilterError = toPlainObject.bind(null, [
-  "lineno", "option", "reason", "type"
-]);
+export let toPlainFilterError = toPlainObject.bind(null, ["lineno", "option", "reason", "type"]);
 
-function toPlainObject(keys, obj)
-{
+function toPlainObject(keys, obj) {
   let result = {};
-  for (let key of keys)
-  {
-    if (key in obj)
-      result[key] = obj[key];
+  for (let key of keys) {
+    if (key in obj) result[key] = obj[key];
   }
   return result;
 }
 
-export function toPlainRecommendation(recommendation)
-{
+export function toPlainRecommendation(recommendation) {
   // The recommendation URL always refers to the one for Manifest v3,
   // so we need to overwrite it for Manifest v2
   if (browser.runtime.getManifest().manifest_version === 2)
     recommendation.url = recommendation.mv2URL;
 
-  return toPlainObject(
-    ["languages", "title", "type", "url"],
-    recommendation
-  );
+  return toPlainObject(["languages", "title", "type", "url"], recommendation);
 }
 
-export function toPlainSubscription(subscription)
-{
+export function toPlainSubscription(subscription) {
   let obj = toPlainObject(
     [
-      "downloading", "downloadStatus", "enabled", "homepage", "version",
-      "lastDownload", "lastSuccess", "softExpiration", "expires", "title",
-      "updatable", "url"
+      "downloading",
+      "downloadStatus",
+      "enabled",
+      "homepage",
+      "version",
+      "lastDownload",
+      "lastSuccess",
+      "softExpiration",
+      "expires",
+      "title",
+      "updatable",
+      "url",
     ],
-    subscription
+    subscription,
   );
 
   // For the time being, we are renaming the enabled property to

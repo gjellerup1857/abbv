@@ -17,12 +17,10 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global  */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 async function getUserFilters() {
   return ewe.filters.getUserFilters();
 }
 
-export {
-  getUserFilters,
-};
+export { getUserFilters };

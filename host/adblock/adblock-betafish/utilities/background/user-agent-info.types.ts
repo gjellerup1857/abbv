@@ -19,30 +19,29 @@
  * Flavor Types
  */
 export enum FlavorType {
-    chrome = 'E',
-    edge = 'CM',
-    firefox = 'F',
+  chrome = "E",
+  edge = "CM",
+  firefox = "F",
 }
-
 
 /**
  * The parsed user agent information.
  */
 export interface UserAgentInfo {
-    /**
-     * The browser the extension is running on.
-     */
-    flavor: FlavorType;
-    /**
-     * The operating system.
-     */
-    os: string;
-    /**
-     * The version of the operating system.
-     */
-    osVersion: string;
-    /**
-     * The version of the browser.
-     */
-    browserVersion: string;
+  /**
+   * The browser the extension is running on.
+   */
+  flavor: FlavorType;
+  /**
+   * The operating system.
+   */
+  os: string;
+  /**
+   * The version of the operating system.
+   */
+  osVersion: string;
+  /**
+   * The version of the browser.
+   */
+  browserVersion: string;
 }

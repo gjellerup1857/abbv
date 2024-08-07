@@ -18,21 +18,20 @@
 /* global browser */
 /* eslint-disable import/prefer-default-export */
 
-
-import { Prefs } from 'prefs';
-import * as info from 'info';
-import { TELEMETRY } from '../../telemetry/background';
+import { Prefs } from "prefs";
+import * as info from "info";
+import { TELEMETRY } from "../../telemetry/background";
 
 /**
  * The domain where pages are hosted on.
  */
-const pageDomain = 'https://getadblock.com';
+const pageDomain = "https://getadblock.com";
 
 /**
  * A map of relative paths for pages.
  */
 const pagePath = {
-  installed: '/installed/',
+  installed: "/installed/",
 };
 
 /**
@@ -72,7 +71,7 @@ async function openInstalledPage() {
 function start() {
   browser.runtime.onInstalled.addListener(async (details) => {
     await Prefs.untilLoaded;
-    if (details.reason === 'install' && !Prefs.suppress_first_run_page) {
+    if (details.reason === "install" && !Prefs.suppress_first_run_page) {
       openInstalledPage();
     }
   });

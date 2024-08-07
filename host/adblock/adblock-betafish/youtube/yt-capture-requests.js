@@ -32,20 +32,20 @@ It performs the following actions:
 
 const parseChannelName = function (channelNameToParse) {
   // used to decode all encoded HTML (convert '&' to &amp;)
-  const parseElem = document.createElement('textarea');
+  const parseElem = document.createElement("textarea");
 
   function fixedEncodeURIComponent(str) {
-    return encodeURIComponent(str).replace(/[!'()*]/g, c => `%${c.charCodeAt(0).toString(16)}`);
+    return encodeURIComponent(str).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16)}`);
   }
 
   parseElem.innerHTML = DOMPurify.sanitize(channelNameToParse);
   const channelName = parseElem.innerText;
   // Remove whitespace, and encode
-  return fixedEncodeURIComponent(channelName.replace(/\s/g, ''));
+  return fixedEncodeURIComponent(channelName.replace(/\s/g, ""));
 };
 
 const updateURLWrapped = function (channelName) {
-  if (window.location.pathname !== '/watch') {
+  if (window.location.pathname !== "/watch") {
     return;
   }
   if (channelName) {
@@ -53,8 +53,8 @@ const updateURLWrapped = function (channelName) {
     const currentLocation = new URL(window.location.href);
     let updatedUrl;
 
-    let [baseUrl] = window.location.href.split('&ab_channel');
-    [baseUrl] = baseUrl.split('?ab_channel');
+    let [baseUrl] = window.location.href.split("&ab_channel");
+    [baseUrl] = baseUrl.split("?ab_channel");
 
     if (currentLocation.search) {
       updatedUrl = `${baseUrl}&ab_channel=${parsedChannelName}`;
@@ -68,18 +68,28 @@ const updateURLWrapped = function (channelName) {
 };
 
 const postRequestCheck = function (response, toContentScriptEventName) {
-  if (response && response.url && response.url.startsWith('https://www.youtube.com/youtubei/v1/player')) {
-    response.clone().json().then((respObj) => {
-      if (respObj && respObj.videoDetails) {
-        const { author, videoId } = respObj.videoDetails;
-        updateURLWrapped(author);
-        window.postMessage({
-          eventName: toContentScriptEventName,
-          channelName: String(author),
-          videoId,
-        }, '*');
-      }
-    });
+  if (
+    response &&
+    response.url &&
+    response.url.startsWith("https://www.youtube.com/youtubei/v1/player")
+  ) {
+    response
+      .clone()
+      .json()
+      .then((respObj) => {
+        if (respObj && respObj.videoDetails) {
+          const { author, videoId } = respObj.videoDetails;
+          updateURLWrapped(author);
+          window.postMessage(
+            {
+              eventName: toContentScriptEventName,
+              channelName: String(author),
+              videoId,
+            },
+            "*",
+          );
+        }
+      });
   }
 };
 
@@ -87,7 +97,8 @@ const wrapFetch = function (toContentScriptEventName) {
   const myFetch = window.fetch;
   window.fetch = function theFetch(...args) {
     return new Promise((resolve, reject) => {
-      myFetch.apply(this, args)
+      myFetch
+        .apply(this, args)
         .then((response) => {
           postRequestCheck(response, toContentScriptEventName);
           resolve(response);
@@ -100,15 +111,16 @@ const wrapFetch = function (toContentScriptEventName) {
 };
 
 const addContentScriptListeners = function (toContentScriptEventName, fromContentScriptEventName) {
-  window.addEventListener('message', (event) => {
+  window.addEventListener("message", (event) => {
     if (!event || !event.data) {
       return;
     }
 
     if (
-      event.data.channelName
-      && (event.data.eventName === fromContentScriptEventName
-        || event.data.eventName === toContentScriptEventName)) {
+      event.data.channelName &&
+      (event.data.eventName === fromContentScriptEventName ||
+        event.data.eventName === toContentScriptEventName)
+    ) {
       updateURLWrapped(event.data.channelName);
     }
 
@@ -116,30 +128,38 @@ const addContentScriptListeners = function (toContentScriptEventName, fromConten
       // remove the query string from the URL
 
       const currentURL = new URL(window.location.href);
-      currentURL.searchParams.delete('ab_channel');
+      currentURL.searchParams.delete("ab_channel");
       const queryString = currentURL.searchParams.toString();
 
-      window.history.replaceState(null, null, `${window.location.origin}${window.location.pathname}?${queryString}`);
+      window.history.replaceState(
+        null,
+        null,
+        `${window.location.origin}${window.location.pathname}?${queryString}`,
+      );
     }
   });
 };
 
 const addYtListeners = function (toContentScriptEventName) {
-  document.addEventListener('yt-navigate-finish', (event) => {
+  document.addEventListener("yt-navigate-finish", (event) => {
     if (
-      event
-      && event.detail
-      && event.detail.response
-      && event.detail.response.playerResponse
-      && event.detail.response.playerResponse.videoDetails
-      && event.detail.response.playerResponse.videoDetails.author) {
+      event &&
+      event.detail &&
+      event.detail.response &&
+      event.detail.response.playerResponse &&
+      event.detail.response.playerResponse.videoDetails &&
+      event.detail.response.playerResponse.videoDetails.author
+    ) {
       const { author, videoId } = event.detail.response.playerResponse.videoDetails;
       updateURLWrapped(author);
-      window.postMessage({
-        eventName: toContentScriptEventName,
-        channelName: String(author),
-        videoId,
-      }, '*');
+      window.postMessage(
+        {
+          eventName: toContentScriptEventName,
+          channelName: String(author),
+          videoId,
+        },
+        "*",
+      );
     }
   });
 };

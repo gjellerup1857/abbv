@@ -16,20 +16,15 @@
  */
 
 /**
- * Key for stats storage
- */
-export const statsStorageKey = 'onpage_dialog_command_stats';
-
-/**
  * On-page UI command stats
  */
 export interface Stats {
-    /**
-     * Count indicating how often the UI was displayed
-     */
-    displayCount: number;
-    /**
-     * Timestamp indicating when the UI was last display
-     */
-    lastDisplayTime: number;
+  /**
+   * Count indicating how often the UI was displayed
+   */
+  displayCount: number;
+  /**
+   * Timestamp indicating when the UI was last display
+   */
+  lastDisplayTime: number;
 }

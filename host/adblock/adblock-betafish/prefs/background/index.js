@@ -15,14 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import migration from './migration';
+import migration from "./migration";
 
-export {
-  getSettings,
-  isValidTheme,
-  setSetting,
-  settings,
-  settingsNotifier,
-} from './settings';
+export { getSettings, isValidTheme, setSetting, settings, settingsNotifier } from "./settings";
 
 export const { migrateUserData } = migration;
