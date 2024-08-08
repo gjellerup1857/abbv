@@ -6,3 +6,5 @@
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea
+
+node_modules
