@@ -41,9 +41,7 @@ export function isDialog(candidate: unknown): candidate is Dialog {
  *
  * @returns whether given candidate is on-page behavior
  */
-export function isDialogBehavior(
-  candidate: unknown
-): candidate is DialogBehavior {
+export function isDialogBehavior(candidate: unknown): candidate is DialogBehavior {
   return (
     candidate !== null &&
     typeof candidate === "object" &&
@@ -60,9 +58,7 @@ export function isDialogBehavior(
  *
  * @returns whether given candidate is on-page content
  */
-export function isDialogContent(
-  candidate: unknown
-): candidate is DialogContent {
+export function isDialogContent(candidate: unknown): candidate is DialogContent {
   return (
     candidate !== null &&
     typeof candidate === "object" &&

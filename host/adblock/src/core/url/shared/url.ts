@@ -25,17 +25,14 @@
  *
  * @returns A map
  */
-function parseDomains(
-  source: string,
-  separator: string
-): Map<string, boolean> | null {
+function parseDomains(source: string, separator: string): Map<string, boolean> | null {
   let domains;
 
   if (source[0] !== "~" && !source.includes(separator)) {
     // Fast track for the common one-domain scenario.
     domains = new Map([
       ["", false],
-      [source, true]
+      [source, true],
     ]);
   } else {
     domains = null;
@@ -90,10 +87,7 @@ function isIPAddress(hostname: string): boolean {
 
   // Note: The first condition helps us avoid the more expensive regular
   // expression match for most hostnames.
-  return (
-    Number(hostname[hostname.length - 1]) >= 0 &&
-    /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
-  );
+  return Number(hostname[hostname.length - 1]) >= 0 && /^\d+\.\d+\.\d+\.\d+$/.test(hostname);
 }
 
 /**
@@ -167,10 +161,7 @@ function isValidHostname(hostname: string): boolean {
  *   end.
  * @returns A generator yielding domain suffixes.
  */
-function* domainSuffixes(
-  domain: string,
-  includeBlank = false
-): Generator<string, void, unknown> {
+function* domainSuffixes(domain: string, includeBlank = false): Generator<string, void, unknown> {
   // Since any IP address is already expected to be normalized, there's no need
   // to validate it.
   if (isIPAddress(domain)) {
@@ -247,7 +238,5 @@ export function isDomainList(list: string): boolean {
     return true;
   }
 
-  return Array.from(domains.keys()).every(
-    (domain) => !domain || isValidHostname(domain)
-  );
+  return Array.from(domains.keys()).every((domain) => !domain || isValidHostname(domain));
 }

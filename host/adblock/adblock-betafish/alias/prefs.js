@@ -207,17 +207,14 @@ defaults.logger_log_level = 3;
  *
  * @type {Object}
  */
-defaults.onpage_dialog_command_stats = {};
+defaults[statsStorageKey] = {};
 
 /**
  * Map of on-page dialog timing configurations
  *
- * @see onpage-dialog/background/middleware/ipm-onpage-dialog.types.ts
- * @see onpage-dialog/background/timing.types.ts
- *
  * @type {Object}
  */
-defaults.onpage_dialog_timing_configurations = {
+defaults[configsStorageKey] = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,
@@ -279,7 +276,6 @@ defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"
  * @type {Array of string}
  */
 defaults.yt_allowlist_language_codes = ["ar", "fr", "ja", "nl", "pl", "tr", "zh"];
-
 /**
  * Start date (as a number) to start auto allowing YT
  *
@@ -292,14 +288,7 @@ defaults.yt_allowlist_start_date = 0;
  *
  * @type {Number}
  */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 9, 1, 0, 0).getTime(); // October 1st, 2024
-
-/**
- * Where the dialog for the YouTube wall should link users to
- *
- * @type {string}
- */
-defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube";
+defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
 
 /**
  * Milliseconds that the smart allowlist rule should be active for
@@ -506,7 +495,7 @@ async function init() {
       if (typeof items[key] === "string") {
         try {
           fixedItems[key] = JSON.parse(JSON.parse(items[key]));
-        } catch (e) { }
+        } catch (e) {}
       }
     }
 
