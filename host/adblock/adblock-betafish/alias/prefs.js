@@ -34,11 +34,11 @@ import { statsStorageKey } from "../onpage-dialog/background/stats.types";
 
 const keyPrefix = "pref:";
 
-const eventEmitter = new EventEmitter();
-const overrides = Object.create(null);
+let eventEmitter = new EventEmitter();
+let overrides = Object.create(null);
 
 /** @lends module:prefs.Prefs */
-const defaults = Object.create(null);
+let defaults = Object.create(null);
 
 /**
  * The application version as set during initialization. Used to detect updates.
@@ -264,18 +264,19 @@ defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 defaults.send_ad_wall_messages = true;
 
 /**
+ * Language codes that should auto allowing on YouTube
+ *
+ * @type {Array of string}
+ */
+defaults.yt_allowlist_language_codes = ["ar", "fr", "ja", "nl", "pl", "tr", "zh"];
+
+/**
  * Language codes that should show an On Page Dialog after auto allowing
  *
  * @type {Array of string}
  */
 defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
 
-/**
- * Language codes that should auto allowing on YouTube
- *
- * @type {Array of string}
- */
-defaults.yt_allowlist_language_codes = ["ar", "fr", "ja", "nl", "pl", "tr", "zh"];
 /**
  * Start date (as a number) to start auto allowing YT
  *
@@ -301,7 +302,7 @@ defaults.smart_allowlist_duration_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
  * @namespace
  * @static
  */
-export const Prefs = {
+export let Prefs = {
   /**
    * Retrieves the given preference.
    *
@@ -313,17 +314,13 @@ export const Prefs = {
     // we're working on improving our data collection opt-out mechanism based
     // on Mozilla's requirements
     // https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/574
-    if (preference === "data_collection_opt_out" && info.application === "firefox") {
-      return true;
-    }
+    if (preference === "data_collection_opt_out" && info.application === "firefox") return true;
 
     let result = (preference in overrides ? overrides : defaults)[preference];
 
     // Object preferences are mutable, so we need to clone them to avoid
     // accidentally modifying the preference when modifying the object
-    if (typeof result === "object") {
-      result = JSON.parse(JSON.stringify(result));
-    }
+    if (typeof result === "object") result = JSON.parse(JSON.stringify(result));
 
     return result;
   },
@@ -348,21 +345,18 @@ export const Prefs = {
                        browser.storage.local.set/remove() operation completes
    */
   set(preference, value) {
-    const defaultValue = defaults[preference];
+    let defaultValue = defaults[preference];
 
-    if (typeof value !== typeof defaultValue) {
-      throw new Error("Attempt to change preference type");
-    }
+    if (typeof value != typeof defaultValue) throw new Error("Attempt to change preference type");
 
     if (value == defaultValue) {
-      const oldValue = overrides[preference];
+      let oldValue = overrides[preference];
       delete overrides[preference];
 
       // Firefox 66 fails to emit storage.local.onChanged events for falsey
       // values. https://bugzilla.mozilla.org/show_bug.cgi?id=1541449
-      if (!oldValue && info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66) {
+      if (!oldValue && info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66)
         onStorageChanged({ [prefToKey(preference)]: { oldValue } }, "local");
-      }
 
       return browser.storage.local.remove(prefToKey(preference));
     }
@@ -415,9 +409,7 @@ export const Prefs = {
 };
 
 function keyToPref(key) {
-  if (key.indexOf(keyPrefix) != 0) {
-    return null;
-  }
+  if (key.indexOf(keyPrefix) != 0) return null;
 
   return key.substr(keyPrefix.length);
 }
@@ -462,15 +454,13 @@ function addPreference(pref) {
 }
 
 function onStorageChanged(changes) {
-  for (const key in changes) {
-    const pref = keyToPref(key);
+  for (let key in changes) {
+    let pref = keyToPref(key);
     if (pref && pref in defaults) {
-      const change = changes[key];
-      if ("newValue" in change && change.newValue != defaults[pref]) {
+      let change = changes[key];
+      if ("newValue" in change && change.newValue != defaults[pref])
         overrides[pref] = change.newValue;
-      } else {
-        delete overrides[pref];
-      }
+      else delete overrides[pref];
 
       eventEmitter.emit(pref);
     }
@@ -478,21 +468,21 @@ function onStorageChanged(changes) {
 }
 
 async function init() {
-  const prefs = Object.keys(defaults);
+  let prefs = Object.keys(defaults);
   prefs.forEach(addPreference);
 
-  const isEdgeChromium = info.application == "edge" && info.platform == "chromium";
+  let isEdgeChromium = info.application == "edge" && info.platform == "chromium";
 
   // When upgrading from EdgeHTML to Edge Chromium (v79) data stored in
   // browser.storage.local gets corrupted.
   // To fix it, we have to call JSON.parse twice.
   // See: https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/152
   if (isEdgeChromium) {
-    const items = await browser.storage.local.get(null);
+    let items = await browser.storage.local.get(null);
 
-    const fixedItems = {};
-    for (const key in items) {
-      if (typeof items[key] === "string") {
+    let fixedItems = {};
+    for (let key in items) {
+      if (typeof items[key] == "string") {
         try {
           fixedItems[key] = JSON.parse(JSON.parse(items[key]));
         } catch (e) {}
@@ -503,18 +493,14 @@ async function init() {
   }
 
   {
-    const items = await browser.storage.local.get(prefs.map(prefToKey));
-    for (const key in items) {
-      overrides[keyToPref(key)] = items[key];
-    }
+    let items = await browser.storage.local.get(prefs.map(prefToKey));
+    for (let key in items) overrides[keyToPref(key)] = items[key];
   }
 
   if ("managed" in browser.storage) {
     try {
-      const items = await browser.storage.managed.get(null);
-      for (const key in items) {
-        defaults[key] = items[key];
-      }
+      let items = await browser.storage.managed.get(null);
+      for (let key in items) defaults[key] = items[key];
     } catch (e) {
       // Opera doesn't support browser.storage.managed, but instead of simply
       // removing the API, it gives an asynchronous error which we ignore here.
@@ -571,9 +557,8 @@ port.on("prefs.set", async (message, sender) => (Prefs[message.key] = message.va
  * @returns {?boolean}
  */
 port.on("prefs.toggle", async (message, sender) => {
-  if (message.key == "notifications_ignoredcategories") {
+  if (message.key == "notifications_ignoredcategories")
     return ewe.notifications.toggleIgnoreCategory("*");
-  }
 
   return (Prefs[message.key] = !Prefs[message.key]);
 });
@@ -588,11 +573,9 @@ port.on("prefs.toggle", async (message, sender) => {
  */
 port.on("prefs.getDocLink", (message, sender) => {
   let { application, platform } = info;
-  if (platform == "chromium" && application != "opera" && application != "edge") {
+  if (platform == "chromium" && application != "opera" && application != "edge")
     application = "chrome";
-  } else if (platform == "gecko") {
-    application = "firefox";
-  }
+  else if (platform == "gecko") application = "firefox";
 
   return Prefs.getDocLink(message.link.replace("{browser}", application));
 });
