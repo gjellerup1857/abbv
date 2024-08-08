@@ -38,7 +38,8 @@ export interface FilterMetadata {
 }
 
 /**
- * Message sender
+ * Temporary interface for sender object, as passed to us via callback by
+ * browser.runtime.sendMessage()
  */
 export interface MessageSender {
   /**

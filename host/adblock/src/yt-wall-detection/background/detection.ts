@@ -134,25 +134,26 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
  *
  */
 const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
-  if (tabId === tab.id) {
-    void showOnpageDialog(tabId, tab, {
-      behavior: {
-        displayDuration: 0,
-        target: Prefs.get("yt_auto_allow_dialog_url"),
-        timing: Timing.immediate,
-      },
-      content: {
-        body: [
-          browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
-          browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
-        ],
-        button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
-        title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
-      },
-      id: dialogId,
-    });
-    ext.pages.onLoaded.removeListener(pageLoadedHandler);
+  if (tabId !== tab.id) {
+    return;
   }
+  ext.pages.onLoaded.removeListener(pageLoadedHandler);
+  void showOnpageDialog(tabId, tab, {
+    behavior: {
+      displayDuration: 0,
+      target: Prefs.get("yt_auto_allow_dialog_url"),
+      timing: Timing.immediate,
+    },
+    content: {
+      body: [
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
+      ],
+      button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
+      title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
+    },
+    id: dialogId,
+  });
 };
 
 /**
