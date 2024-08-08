@@ -50,9 +50,10 @@ const dialogId = "yt-wall-detection";
  */
 const shouldAllowlistForLanguages = function (): Boolean {
   const allowlistLanguages = Prefs.get(ytAllowlistLanguageCodes);
+  const dialogLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
   const locale = determineUserLanguage();
   const language = locale.substring(0, 2);
-  return allowlistLanguages.includes(language);
+  return allowlistLanguages.includes(language) || dialogLanguages.includes(language);
 };
 
 /**

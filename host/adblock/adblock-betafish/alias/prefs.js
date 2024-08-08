@@ -266,10 +266,12 @@ defaults.send_ad_wall_messages = true;
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = ["ar", "fr", "ja", "nl", "pl", "tr", "zh"];
+defaults.yt_allowlist_language_codes = ["fr", "pt"];
 
 /**
  * Language codes that should show an On Page Dialog after auto allowing
+ * Note:  These locales will be considered as well as the ones in `yt_allowlist_language_codes`,
+ *        so they don't need to be duplicated in that preference
  *
  * @type {Array of string}
  */
