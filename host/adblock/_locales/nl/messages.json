@@ -3778,5 +3778,21 @@
   "get_around_popups": {
     "message": "Met de Bypass-modus kun je een aantal van die pop-ups omzeilen zonder dat je AdBlock hoeft uit te schakelen.",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "yt_auto_allow_dialog_title": {
+    "description": "Titeltekst op OPD getoond aan gebruikers wanneer YT automatisch wordt toegelaten na detectie van de YT-advertentiewall",
+    "message": "YouTube voorkomt dat advertentieblokkering videoadvertenties overslaat."
+  },
+  "yt_auto_allow_dialog_body_part_I": {
+    "description": "Bovenste bodytekst op OPD getoond aan gebruikers wanneer YT automatisch wordt toegelaten na detectie van de YT-advertentiewall",
+    "message": "Daarom hebben we voor dit bezoek het afspelen van advertenties op YouTube automatisch toegestaan."
+  },
+  "yt_auto_allow_dialog_body_part_II": {
+    "description": "Onderste bodytekst op OPD getoond aan gebruikers wanneer YT automatisch wordt toegelaten na detectie van de YT-advertentiewall",
+    "message": "Nu advertenties tijdelijk worden toegestaan, kunt u video's bekijken."
+  },
+  "yt_auto_allow_dialog_button": {
+    "description": "OPD knop bodytekst getoond aan gebruikers wanneer YT automatisch wordt toegelaten na detectie van de YT-advertentiewall",
+    "message": "Ontdek meer"
   }
 }

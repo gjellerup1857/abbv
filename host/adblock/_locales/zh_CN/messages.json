@@ -3778,5 +3778,21 @@
   "get_around_popups": {
     "message": "有了旁路模式，您可以在不禁用 AdBlock 的情况下绕过一些弹窗。",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "yt_auto_allow_dialog_title": {
+    "description": "当检测到 YT 广告墙但未拦截时，向用户显示的 OPD 上的标题文字",
+    "message": "当您开启广告拦截程序时，YouTube 会阻止视频播放。"
+  },
+  "yt_auto_allow_dialog_body_part_I": {
+    "description": "当检测到 YT 广告墙但未拦截时，向用户显示的 OPD 上的上部主体文字",
+    "message": "允许播放广告后，您才能观看喜欢的 YouTube 视频。"
+  },
+  "yt_auto_allow_dialog_body_part_II": {
+    "description": "当检测到 YT 广告墙但未拦截时，向用户显示的 OPD 上的下部主体文字",
+    "message": "打开 AdBlock 菜单，点击“在本网站上暂停”(Pause on this site)，即可在本次访问期间临时允许广告。"
+  },
+  "yt_auto_allow_dialog_button": {
+    "description": "当检测到 YT 广告墙但未拦截时，向用户显示的 OPD 按钮主体文字",
+    "message": "了解更多"
   }
 }

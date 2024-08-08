@@ -278,7 +278,7 @@ defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = ["fr", "zh"];
+defaults.yt_allowlist_language_codes = ["ar", "fr", "ja", "nl", "pl", "tr", "zh"];
 
 /**
  * Start date (as a number) to start auto allowing YT
@@ -292,7 +292,7 @@ defaults.yt_allowlist_start_date = 0;
  *
  * @type {Number}
  */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
+defaults.yt_allowlist_hard_end_date = new Date(2024, 10, 1, 0, 0).getTime(); // October 1st, 2024
 
 /**
  * Where the dialog for the YouTube wall should link users to

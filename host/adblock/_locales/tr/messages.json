@@ -3714,5 +3714,21 @@
   "get_around_popups": {
     "message": "Bypass Modu ile, AdBlock'u devre dışı bırakmadan bu pop-up'lardan bazılarının etrafından dolaşabileceksiniz.\n",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "yt_auto_allow_dialog_title": {
+    "description": "YT reklam duvarı algılandıktan sonra YT otomatik izin verilenler listesine eklendiğinde kullanıcılara gösterilen OPD’deki başlık metni",
+    "message": "YouTube, reklam engelleyicilerin video reklamlarını atlamasını önlüyor."
+  },
+  "yt_auto_allow_dialog_body_part_I": {
+    "description": "YT reklam duvarı algılandıktan sonra YT otomatik izin verilenler listesine eklendiğinde kullanıcılara gösterilen OPD’deki üst gövde metni",
+    "message": "Bu nedenle, ziyaretiniz esnasında YouTube'da otomatik olarak reklam oynatılmasına izin verdik."
+  },
+  "yt_auto_allow_dialog_body_part_II": {
+    "description": "YT reklam duvarı algılandıktan sonra YT otomatik izin verilenler listesine eklendiğinde kullanıcılara gösterilen OPD’deki alt gövde metni",
+    "message": "Reklamlara geçici olarak izin verildiği için artık videoları izleyebileceksiniz."
+  },
+  "yt_auto_allow_dialog_button": {
+    "description": "YT reklam duvarı algılandıktan sonra YT otomatik izin verilenler listesine eklendiğinde kullanıcılara gösterilen OPD’deki OPD düğme gövde metni",
+    "message": "Daha fazla bilgi edinin"
   }
 }

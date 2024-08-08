@@ -3654,5 +3654,21 @@
   "get_around_popups": {
     "message": "W trybie Bypass będziesz mógł dotrzeć do niektórych z wyskakujących okienek bez wyłączania AdBlocka.",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "yt_auto_allow_dialog_title": {
+    "description": "Tekst tytułu w OPD wyświetlany użytkownikom, gdy YouTube jest automatycznie umieszczany na liście dozwolonych po wykryciu ściany reklam YouTube",
+    "message": "YouTube uniemożliwia blokerom reklam pomijanie reklam wideo."
+  },
+  "yt_auto_allow_dialog_body_part_I": {
+    "description": "Górny tekst w OPD wyświetlany użytkownikom, gdy YouTube jest automatycznie umieszczany na liście dozwolonych po wykryciu ściany reklam YouTube",
+    "message": "Dlatego automatycznie zezwoliliśmy na odtwarzanie reklam w YouTube podczas tej wizyty."
+  },
+  "yt_auto_allow_dialog_body_part_II": {
+    "description": "Dolny tekst w OPD wyświetlany użytkownikom, gdy YouTube jest automatycznie umieszczany na liście dozwolonych po wykryciu ściany reklam YouTube",
+    "message": "Dzięki tymczasowemu zezwoleniu na reklamy możesz oglądać filmy."
+  },
+  "yt_auto_allow_dialog_button": {
+    "description": "Tekst przycisku w OPD wyświetlany użytkownikom, gdy YouTube jest automatycznie umieszczany na liście dozwolonych po wykryciu ściany reklam YouTube",
+    "message": "Dowiedź się więcej"
   }
 }
