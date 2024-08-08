@@ -28,8 +28,6 @@ import { commandStats } from "../ipm/background/command-library.types";
 
 import { eventStorageKey } from "../ipm/background/data-collection.types";
 
-import { configsStorageKey } from "../onpage-dialog/background/timing.types";
-
 import { statsStorageKey } from "../onpage-dialog/background/stats.types";
 
 const keyPrefix = "pref:";
@@ -207,14 +205,14 @@ defaults.logger_log_level = 3;
  *
  * @type {Object}
  */
-defaults[statsStorageKey] = {};
+defaults.onpage_dialog_command_stats = {};
 
 /**
  * Map of on-page dialog timing configurations
  *
  * @type {Object}
  */
-defaults[configsStorageKey] = {
+defaults.onpage_dialog_timing_configurations = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,

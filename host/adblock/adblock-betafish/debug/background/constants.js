@@ -21,10 +21,6 @@ import { commandStats, commandStorageKey } from "~/ipm/background/command-librar
 
 import { eventStorageKey } from "~/ipm/background/data-collection.types";
 
-import { configsStorageKey } from "~/onpage-dialog/background/timing.types";
-
-import { statsStorageKey } from "~/onpage-dialog/background/stats.types";
-
 const IPM_CONSTANTS = [
   /* IPM values */
   commandStats,
@@ -32,8 +28,8 @@ const IPM_CONSTANTS = [
   eventStorageKey,
 
   /* OPD values */
-  statsStorageKey,
-  configsStorageKey,
+  "onpage_dialog_command_stats",
+  "onpage_dialog_timing_configurations",
 ];
 
 const NO_DATA = "no data";
