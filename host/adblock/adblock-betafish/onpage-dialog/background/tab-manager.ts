@@ -351,15 +351,15 @@ async function injectScriptAndStyle(tabId: number): Promise<boolean> {
     }
     return true;
   } catch (error: unknown) {
-    logger.error("Injection of OPD css & script failed");
+    logger.error("Injection of Dialog css & script failed");
     logger.error(error);
     return false;
   }
 }
 
 /**
- * Injects the user style and content script into the tab to show the OPD
- * Updates the statistics on successful injection of the OPD
+ * Injects the user style and content script into the tab to show the Dialog
+ * Updates the statistics on successful injection of the Dialog
  *
  * @param tabId - Tab ID
  * @param ipmId - IPM ID
@@ -422,8 +422,6 @@ export async function showOnpageDialog(
   }
 
   const stats = getStats(dialog.id);
-  console.log("dialog", dialog);
-  console.log("stats", stats);
   // Ignore if on-page dialog should not be shown for this tab
   if (!(await shouldBeShown(tab, dialog, stats))) {
     logger.debug("[onpage-dialog]: Don't show");

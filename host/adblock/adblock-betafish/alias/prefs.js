@@ -292,7 +292,7 @@ defaults.yt_allowlist_start_date = 0;
  *
  * @type {Number}
  */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 10, 1, 0, 0).getTime(); // October 1st, 2024
+defaults.yt_allowlist_hard_end_date = new Date(2024, 9, 1, 0, 0).getTime(); // October 1st, 2024
 
 /**
  * Where the dialog for the YouTube wall should link users to

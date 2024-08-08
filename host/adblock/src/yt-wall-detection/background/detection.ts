@@ -56,14 +56,14 @@ const shouldAllowlistForLanguages = function (): Boolean {
 };
 
 /**
- * Should the extension show an OPD after allowing ads on YT
+ * Should the extension show an On Page Dialog after allowing ads on YT
  *
  */
-const shouldShowOPDForLanguages = function (): Boolean {
-  const OPDLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
+const shouldShowDialogForLanguages = function (): Boolean {
+  const dialogLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
   const locale = determineUserLanguage();
   const language = locale.substring(0, 2);
-  return OPDLanguages.includes(language);
+  return dialogLanguages.includes(language);
 };
 
 /**
@@ -130,7 +130,7 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
 };
 
 /**
- * Show the OPD once the tab has been reloaded
+ * Show the On Page Dialog once the tab has been reloaded
  *
  */
 const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
@@ -177,7 +177,7 @@ const processYouTubeWallDetectedMessage = async (
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true);
     browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
-    if (shouldShowOPDForLanguages()) {
+    if (shouldShowDialogForLanguages()) {
       pageLoadedHandler = onLoaded.bind(null, sender.page.id);
       ext.pages.onLoaded.addListener(pageLoadedHandler);
     }
