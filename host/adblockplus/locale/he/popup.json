@@ -1,0 +1,50 @@
+{
+  "click_element_to_block_it": {
+    "message": "לחץ על אלמנט בעמוד כדי לחסום אותו."
+  },
+  "easy_create_filter": {
+    "message": "חסום אלמנט"
+  },
+  "options_refresh": {
+    "message": "רענן"
+  },
+  "options_short": {
+    "message": "אפשרויות"
+  },
+  "overlay_notification_closing_button_hide": {
+    "message": "סגור"
+  },
+  "overlay_notification_closing_button_optout": {
+    "message": "הפסק להראות התראות"
+  },
+  "refresh_this_page": {
+    "message": "רענן דף זה"
+  },
+  "refresh_to_take_effect": {
+    "message": "לחץ על הכפתור למטה כדי שהשינויים ייכנסו לתוקף."
+  },
+  "sendReport": {
+    "message": "דווח על סוגייה בדף זה"
+  },
+  "share_on_facebook": {
+    "message": "שתף בפייסבוק"
+  },
+  "stats_header": {
+    "message": "מספר של פריטים חסומים"
+  },
+  "stats_label_page": {
+    "message": "בדף זה"
+  },
+  "stats_label_total": {
+    "message": "בסך הכל"
+  },
+  "status_domain": {
+    "message": "אתר זה:"
+  },
+  "status_header": {
+    "message": "חסום פרסומות ב"
+  },
+  "status_page": {
+    "message": "דף זה:"
+  }
+}

@@ -28,3 +28,7 @@ adblock:
   variables:
     HOSTPATH: host/adblock
 
+adblockplus:
+  extends: .child
+  variables:
+    HOSTPATH: host/adblockplus
