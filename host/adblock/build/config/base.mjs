@@ -80,6 +80,10 @@ export default {
         dest: "adblock-deny-push-notifications-requests.js",
         src: ["src/premium-push-notification/content/deny-notifications-requests.ts"],
       },
+      {
+        dest: "button/react-popup.js",
+        src: ["adblock-betafish/button/react-components/main.jsx"],
+      },
     ],
   },
   mapping: {
