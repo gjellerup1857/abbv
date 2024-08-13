@@ -1,0 +1,20 @@
+{
+    "name": "@eyeo/ext-ui-components",
+    "version": "0.0.1",
+    "description": "UI components library",
+    "author": "eyeo GmbH",
+    "license": "GPL-3.0",
+    "homepage": "https://gitlab.com/eyeo/extensions/extensions/-/blob/main/ui-components/README.md",
+    "main": "index.jsx",
+    "types": "index.d.ts",
+    "scripts": {
+        "generate-types": "npx tsc"
+    },
+    "peerDependencies": {
+        "react": "^18.3.1"
+    },
+    "devDependencies": {
+        "react": "^18.3.1",
+        "typescript": "^5.5.4"
+    }
+}
