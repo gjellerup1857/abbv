@@ -8,4 +8,12 @@
 
 module.exports = {
   extends: "./eslint/legacy.js",
+  overrides: [
+    {
+      files: ["*.jsx"],
+      rules: {
+        strict: "off", // Disable 'strict' rule for JSX files
+      },
+    },
+  ],
 };

@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": ".",
+        "allowJs": true,
+        "checkJs": false,
+        "skipLibCheck": true,
+        "jsx": "react-jsx"
+    },
+    "include": ["index.jsx"],
+    "exclude": ["node_modules"]
+}
