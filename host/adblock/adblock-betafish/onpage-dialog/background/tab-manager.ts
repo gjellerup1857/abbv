@@ -58,11 +58,6 @@ export const eventEmitter = new EventEmitter();
 const unassignedDialogs = new Map<string, Dialog>();
 
 /**
- * Tab-specific session storage for IPM IDs
- */
-const assignedIpmIds = new TabSessionStorage("onpage-dialog:ipm");
-
-/**
  * Sends message to the given tab
  *
  * @param tabId - Tab ID
@@ -515,9 +510,9 @@ async function start(): Promise<void> {
     "onpage-dialog.error",
   ]);
 
-  // Dismiss command when tab used for storing session data gets closed,
+  // Dismiss dialog when tab used for storing session data gets closed,
   // reloaded or unloaded
-  assignedIpmIds.on("tab-removed", handleTabRemovedEvent);
+  assignedDialogs.on("tab-removed", handleTabRemovedEvent);
 
   // Handle commands
   browser.tabs.onUpdated.addListener(handleTabsUpdatedEvent);
