@@ -149,7 +149,7 @@ async function removeDialog(tabId: number): Promise<void> {
  *
  * @param ipmId - IPM ID
  */
-async function handleDialogCommand(ipmId: string): Promise<void> {
+async function handleDialogCommand(ipmId: string, isInitialization: boolean): Promise<void> {
   if (typeof ipmId !== "string") {
     return;
   }
@@ -166,7 +166,9 @@ async function handleDialogCommand(ipmId: string): Promise<void> {
 
   const dialog: Dialog = { behavior, content, id: ipmId, ipmId };
   unassignedDialogs.set(dialog.id, dialog);
-  recordDialogEvent(dialog, DialogEventType.received); // TODO - remove? load from storage?
+  if (!isInitialization) {
+    recordDialogEvent(dialog, DialogEventType.received);
+  }
 }
 
 /**

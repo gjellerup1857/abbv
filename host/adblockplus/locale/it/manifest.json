@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Rimuovi gli annunci su YouTube e dovunque vorrai navigare."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Versione di sviluppo di Adblock Plus"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - ad-blocker gratuito"
+  }
+}

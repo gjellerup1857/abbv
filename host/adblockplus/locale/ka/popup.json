@@ -1,0 +1,47 @@
+{
+  "click_element_to_block_it": {
+    "message": "დააწკაპეთ ელემენტზე მოცემულ გვერდზე მის შესაზღუდად."
+  },
+  "easy_create_filter": {
+    "message": "ელემენტის შეზღუდვა"
+  },
+  "options_refresh": {
+    "message": "განახლება"
+  },
+  "options_short": {
+    "message": "პარამეტრები"
+  },
+  "overlay_notification_closing_button_hide": {
+    "message": "დახურვა"
+  },
+  "overlay_notification_closing_button_optout": {
+    "message": "შეტყობინებების შეწყვეტა"
+  },
+  "refresh_this_page": {
+    "message": "განაახლეთ გვერდი"
+  },
+  "refresh_to_take_effect": {
+    "message": "დაწკაპეთ <strong>განახლებას</strong> ცვლილებების ასახვისთვის."
+  },
+  "sendReport": {
+    "message": "ხარვეზის მოხსენება"
+  },
+  "stats_header": {
+    "message": "შეზღუდული ერთეულების რიცხვი"
+  },
+  "stats_label_page": {
+    "message": "ამ გვერდზე"
+  },
+  "stats_label_total": {
+    "message": "ჯამში"
+  },
+  "status_domain": {
+    "message": "ეს საიტი:"
+  },
+  "status_header": {
+    "message": "რეკლამების შეზღუდვა:"
+  },
+  "status_page": {
+    "message": "ეს გვერდი:"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "notification_updates_message": {
+    "message": "Aucune action n'est requise : continuez à naviguer sur Internet sans être importuné par les publicités agaçantes ! <a>Découvrez les nouveautés</a>"
+  },
+  "notification_updates_title": {
+    "message": "Adblock Plus a été mis à jour !"
+  },
+  "updates_subtitle": {
+    "message": "Voici un aperçu de nos mises à jour effectuées afin d'adhérer aux changements introduits par Google avec Manifest V3 - la nouvelle version de la plateforme d'extension de navigateur."
+  },
+  "updates_title": {
+    "message": "Adblock Plus a été mis à jour !"
+  },
+  "updates_update_f1_description": {
+    "message": "Nous avons mis à jour notre libellé afin de pouvoir dorénavant utiliser la <strong>liste d’autorisation</strong>."
+  },
+  "updates_update_f1_title": {
+    "message": "Mise à jour de notre libellé"
+  },
+  "updates_update_f2_description": {
+    "message": "Vous serez désormais averti(e) lorsque certains filtres des listes de filtres téléchargeables sont désactivés afin que vous puissiez les réactiver à votre convenance."
+  },
+  "updates_update_f2_title": {
+    "message": "Ajout d’une option pour réactiver les filtres dans les listes de filtres téléchargeables"
+  },
+  "updates_update_f3_description": {
+    "message": "Nous avons mis à jour le lien du bouton « Évaluer » sur Microsoft Edge afin qu’il pointe vers le bon magasin d'extensions."
+  },
+  "updates_update_f3_title": {
+    "message": "Correction d’un mauvais lien pour le bouton « Évaluer »"
+  },
+  "updates_update_i1_description": {
+    "message": "Il arrive de temps en temps que nous devions faire des changements importants pour qu'Adblock Plus s'adapte à l'écosystème des navigateurs. Nous sommes sur le point de procéder à un tel changement, suite aux modifications apportées par Google au mode de fonctionnement des extensions de navigateur dans Chrome. Le nom Manifest V3, fait référence à une nouvelle version de la plateforme d'extension de navigateur de Google. Cette évolution de l'écosystème du navigateur aura une incidence sur le fonctionnement de toutes les extensions de navigateur et présentera certains défis. Nous avons fait de gros efforts pour nous assurer que notre version Manifest V3 soit prête. Plus tôt en 2022, nous avons divisé la base de code d'Adblock Plus afin de créer une bibliothèque dédiée à la fonctionnalité principale de blocage des publicités. Ce changement nous a permis de continuer à prendre en charge les extensions Manifest V2 dans les cas autorisés, et de passer à Manifest V3 sur les navigateurs Chromium le nécessitant. Grâce à cette version, nos utilisateurs de navigateur Chromium utilisent désormais la version Manifest V3 d'Adblock Plus et peuvent ainsi bénéficier d'une meilleure expérience de navigation. En cas de problème, veuillez nous contacter à l'adresse suivante : support@adblockplus.org ; nous serons ravis de vous aider !"
+  },
+  "updates_update_i1_title": {
+    "message": "Passer à Manifest V3 pour les navigateurs Chromium"
+  },
+  "updates_update_i2_description": {
+    "message": "Comme tout autre bloqueur de publicité, Adblock Plus a recours à des règles prédéfinies pour déterminer ce qu'il faut bloquer et masquer sur les pages Web que vous visitez. Ces règles sont regroupées sous forme de listes, également appelées « listes de filtres ». Dans le cadre de Manifest V3, nous sommes tenus de limiter le nombre de listes de filtres que nous proposons à nos utilisateurs, et de les intégrer à l'extension. Conformément à cette nouvelle règle, nous proposerons désormais jusqu'à 50 listes de filtres pré-installées que vous pourrez activer et désactiver au gré de vos préférences. Seules 10 d'entre elles peuvent être activées simultanément - nous vous en dirons plus à ce sujet ci-dessous. Nous nous efforçons de prendre en charge les listes de filtres populaires appréciées par nos utilisateurs, et de faire en sorte que toute mise à jour de ces listes vous soit proposée par le biais de fréquentes mises à jour de l'extension."
+  },
+  "updates_update_i2_image": {
+    "message": "« M’avertir des filtres de langue disponibles » est mis en surbrillance dans la section « Langue » de la page des options."
+  },
+  "updates_update_i2_title": {
+    "message": "Des listes de filtres statiques sont maintenant intégrées à l'extension"
+  },
+  "updates_update_i3_description": {
+    "message": "Manifest V3 établit une limite de 10 listes de filtres actives dans les extensions de navigateur, et Adblock Plus n'y fait pas exception. Cela veut dire que vous ne pouvez avoir que 10 listes de filtres activées simultanément. La plupart des utilisateurs ne s'en rendront pas compte car les paramètres par défaut des listes de filtres actifs dans ABP sont bien inférieurs à cette limite. Si vous atteignez la limite de 10 listes de filtres actives et souhaitez en activer une autre, vous devrez d'abord désactiver l'une de vos autres listes de filtres actives."
+  },
+  "updates_update_i3_title": {
+    "message": "Utilisez 10 listes de filtres au maximum"
+  },
+  "updates_update_i4_description": {
+    "message": "Si vous ajoutez fréquemment des filtres personnalisés à ABP, vous voyez désormais des messages d’erreur plus clairs en cas de problème. Nous espérons que cela vous aidera !"
+  },
+  "updates_update_i4_title": {
+    "message": "Messages de validation de filtre mis à jour"
+  }
+}

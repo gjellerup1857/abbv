@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Távolítsd el a hirdetéseket a YouTube-ról vagy bármely más olyan helyről, ahol böngészel."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus fejlesztői változat"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - ingyenes hirdetés blokkoló"
+  }
+}

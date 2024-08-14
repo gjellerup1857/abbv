@@ -2,7 +2,33 @@ default:
   tags:
     - "GCP"
 
-include:
-  - local: 'host/adblock/.gitlab-ci.yml'
-    inputs:
-      hostpath: "host/adblock"
+stages:
+  - children
+
+.child:
+  stage: children
+  rules:
+    # Do not trigger merge request event pipelines
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - when: always
+      changes:
+        - $HOSTPATH/**/*
+  trigger:
+    include:
+      - local: '$HOSTPATH/.gitlab-ci.yml'
+        inputs:
+          hostpath: $HOSTPATH
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
+adblock:
+  extends: .child
+  variables:
+    HOSTPATH: host/adblock
+
+adblockplus:
+  extends: .child
+  variables:
+    HOSTPATH: host/adblockplus

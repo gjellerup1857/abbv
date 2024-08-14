@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "在 YouTube 和您浏览的其他网站上去除广告。"
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus 开发版"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - 免费的广告拦截器"
+  }
+}
