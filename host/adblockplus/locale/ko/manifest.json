@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "YouTube 및 여러분이 탐색하는 모든 곳의 광고를 제거합니다."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus 개발 빌드"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - 무료 광고 차단"
+  }
+}

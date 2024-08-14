@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Usuń reklamy z YouTube i wszystkich innych miejsc, które przeglądasz."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus – wersja rozwojowa"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - darmowy adblocker"
+  }
+}

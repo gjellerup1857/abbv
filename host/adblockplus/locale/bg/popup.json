@@ -1,0 +1,47 @@
+{
+  "click_element_to_block_it": {
+    "message": "Щракнете по елемент в страницата, който блокирате."
+  },
+  "easy_create_filter": {
+    "message": "Блокирай елемента"
+  },
+  "options_refresh": {
+    "message": "Опресни"
+  },
+  "options_short": {
+    "message": "Настройки"
+  },
+  "overlay_notification_closing_button_hide": {
+    "message": "Затвори"
+  },
+  "overlay_notification_closing_button_optout": {
+    "message": "Спри показването на известия"
+  },
+  "refresh_this_page": {
+    "message": "Опресняване на тази страница"
+  },
+  "refresh_to_take_effect": {
+    "message": "Натиснете <strong>Опресни</strong> за влизане на промените в сила."
+  },
+  "sendReport": {
+    "message": "Докладвай недостатъка"
+  },
+  "stats_header": {
+    "message": "Брой блокирани"
+  },
+  "stats_label_page": {
+    "message": "— в страницата"
+  },
+  "stats_label_total": {
+    "message": "— общо"
+  },
+  "status_domain": {
+    "message": "Този уебсайт:"
+  },
+  "status_header": {
+    "message": "Блокирани реклами:"
+  },
+  "status_page": {
+    "message": "Тази страница:"
+  }
+}

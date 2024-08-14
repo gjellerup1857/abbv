@@ -1,0 +1,14 @@
+{
+  "description": {
+    "message": "Entferne Werbung auf YouTube und allen anderen Webseiten, die du besuchst."
+  },
+  "name": {
+    "message": "Adblock Plus"
+  },
+  "name_devbuild": {
+    "message": "Adblock Plus (Entwicklungsversion)"
+  },
+  "name_releasebuild": {
+    "message": "Adblock Plus - kostenloser Adblocker"
+  }
+}
