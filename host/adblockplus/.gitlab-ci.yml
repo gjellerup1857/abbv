@@ -478,6 +478,7 @@ unit:standard:
   artifacts:
     when: always
     paths:
+      - $[[ inputs.hostpath ]]/dist
       - $[[ inputs.hostpath ]]/allure-report
     expire_in: 1 week
   rules:
