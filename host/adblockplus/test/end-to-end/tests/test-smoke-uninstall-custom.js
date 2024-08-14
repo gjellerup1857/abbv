@@ -18,7 +18,7 @@
 
 "use strict";
 
-const {beforeSequence} = require("../helpers");
+const {beforeSequence, uninstallExtension} = require("../helpers");
 const {expect} = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
@@ -45,17 +45,19 @@ describe("Smoke Tests - Uninstall with custom settings", function()
       isEasyListFLStatusToggleSelected()).to.be.false;
     // Wait for FL to be properly removed
     await browser.pause(1000);
-    await browser.executeScript("browser.management.uninstallSelf();", []);
-    await generalPage.switchToUninstalledTab();
-    // Wait for tab to properly load
-    await browser.pause(1000);
-    const uninstallCurrentUrl = await generalPage.getCurrentUrl();
-    expect(uninstallCurrentUrl).to.have.string("https://adblockplus.org/en/uninstalled");
+
+    const url = await uninstallExtension();
+
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (url === null)
+      this.skip();
+
+    expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
+
     const todaysDate = moment().utc().format("YYYYMMDD");
-    const url = new URL(uninstallCurrentUrl);
-    const params = url.searchParams;
-    expect(params.get("s")).to.equal("0");
-    expect(params.get("c")).to.equal("0");
-    expect(params.get("fv")).to.equal(todaysDate);
+    const {searchParams} = new URL(url);
+    expect(searchParams.get("s")).to.equal("0");
+    expect(searchParams.get("c")).to.equal("0");
+    expect(searchParams.get("fv")).to.equal(todaysDate);
   });
 });
