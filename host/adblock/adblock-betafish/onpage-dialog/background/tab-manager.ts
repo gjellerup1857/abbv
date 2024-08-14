@@ -152,7 +152,6 @@ async function removeDialog(tabId: number): Promise<void> {
  *   module initializes
  */
 async function handleDialogCommand(ipmId: string, isInitialization: boolean): Promise<void> {
-  console.log("handleDialogCommand");
   if (typeof ipmId !== "string") {
     return;
   }
