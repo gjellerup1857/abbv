@@ -133,9 +133,9 @@ function handleCommand(ipmId: string, isInitialization: boolean): void {
       displayCount: 0,
       lastDisplayTime: 0,
     });
+    recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.received);
   }
   unassignedIpmIds.add(ipmId);
-  recordEvent(ipmId, CommandName.createOnPageDialog, DialogEventType.received);
 }
 
 /**
