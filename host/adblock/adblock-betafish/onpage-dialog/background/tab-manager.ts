@@ -111,12 +111,13 @@ function dismissDialog(dialog: Dialog): void {
  * Removes on-page dialog
  *
  * @param tabId - Tab ID
+ * @param dialog - Dialog
  */
-async function removeDialog(tabId: number): Promise<void> {
+async function removeDialog(tabId: number, dialog: Dialog): Promise<void> {
   logger.debug("[onpage-dialog]: Remove dialog");
 
-  const dialog = await assignedDialogs.get(tabId);
   if (!isDialog(dialog)) {
+    logger.debug("[onpage-dialog]: Remove dialog, no dialog found");
     return;
   }
 
@@ -184,7 +185,7 @@ async function handleCloseMessage(message: Message, sender: MessageSender): Prom
     return;
   }
 
-  void removeDialog(sender.page.id);
+  void removeDialog(sender.page.id, dialog);
   recordDialogEvent(dialog, DialogEventType.closed);
 }
 
@@ -211,7 +212,7 @@ async function handleContinueMessage(message: Message, sender: MessageSender): P
 
   void browser.tabs.create({ url: safeTargetUrl });
 
-  void removeDialog(sender.page.id);
+  void removeDialog(sender.page.id, dialog);
   recordDialogEvent(dialog, DialogEventType.buttonClicked);
 }
 
@@ -272,7 +273,7 @@ async function handlePingMessage(message: Message, sender: MessageSender): Promi
     return;
   }
 
-  void removeDialog(sender.page.id);
+  void removeDialog(sender.page.id, dialog);
   recordDialogEvent(dialog, DialogEventType.ignored);
 }
 
@@ -303,12 +304,13 @@ async function handleErrorMessage(message: ErrorMessage, sender: MessageSender):
  */
 function handleTabRemovedEvent(data: TabRemovedEventData): void {
   const { tabId, value: dialog } = data;
-
+  logger.debug("[onpage-dialog]: Handle Tab Removed Event");
   if (!isDialog(dialog)) {
+    logger.debug("[onpage-dialog]: Handle Tab Removed Event, no dialog");
     return;
   }
 
-  void removeDialog(tabId);
+  void removeDialog(tabId, dialog);
   recordDialogEvent(dialog, DialogEventType.ignored);
 }
 
