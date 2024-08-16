@@ -661,6 +661,34 @@ function isEdge()
   return isBrowser("edge");
 }
 
+async function uninstallExtension()
+{
+  try
+  {
+    await browser.execute(() =>
+    {
+      // WDIO may throw "connect ECONNREFUSED" after executing
+      // browser.management.uninstallSelf(). Using the chrome object seems to
+      // reduce the amount of times that would happen
+      return chrome.management.uninstallSelf();
+    });
+  }
+  catch (err)
+  {
+    if (!err.message.includes("connect ECONNREFUSED"))
+      throw err;
+
+    // After such error the connection with the driver is permanently broken.
+    // Returning null to let the test decide how to handle that
+    return null;
+  }
+
+  const generalPage = new GeneralPage(browser);
+  await generalPage.switchToUninstalledTab();
+
+  return await browser.getUrl();
+}
+
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
   executeAsyncScript, testConfig, localRunChecks,
@@ -670,5 +698,5 @@ module.exports = {
   randomIntFromInterval, globalRetriesNumber, switchToABPOptionsTab,
   waitForExtension, getABPOptionsTabId, waitForCondition,
   waitForSwitchToABPOptionsTab, waitForNewWindow, waitForAssertion, isChrome,
-  isFirefox, isEdge
+  isFirefox, isEdge, uninstallExtension
 };

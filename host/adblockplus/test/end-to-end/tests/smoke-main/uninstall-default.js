@@ -19,7 +19,7 @@
 
 const {expect} = require("chai");
 
-const GeneralPage = require("../../page-objects/general.page");
+const {uninstallExtension} = require("../../helpers");
 const checkInstallUninstallUrl =
   require("./shared/check-install-uninstall-url");
 
@@ -32,25 +32,15 @@ module.exports = function()
 
   it("uninstalls the extension with default settings", async function()
   {
-    const generalPage = new GeneralPage(browser);
     const appVersion = await browser.
       executeScript("return browser.runtime.getManifest().version;", []);
 
-    try
-    {
-      await browser.executeScript("browser.management.uninstallSelf();", []);
-    }
-    catch (err)
-    {
-      if (!err.message.includes("connect ECONNREFUSED"))
-        throw err;
+    const url = await uninstallExtension();
 
-      // WDIO seems to not handle well the options tab being closed when the
-      // extension is uninstalled
-    }
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (url === null)
+      this.skip();
 
-    await generalPage.switchToUninstalledTab();
-    const url = await browser.getUrl();
     expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
     await checkInstallUninstallUrl(url, appVersion);
   });
