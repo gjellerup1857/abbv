@@ -11,12 +11,14 @@ stages:
     # Do not trigger merge request event pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: always
-      changes:
+    - if: $CI_COMMIT_BRANCH == "pipeline-cleanup"
+      when: always
+    - changes:
         paths:
           - $HOSTPATH/**/*
           - '*'
         compare_to: 'refs/heads/pipeline-cleanup'
+      when: always
   trigger:
     include:
       - local: '$HOSTPATH/.gitlab-ci.yml'
