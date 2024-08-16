@@ -202,3 +202,5 @@ Each page can contain any combination of the following:
   - `action`: function from `help-action.js` to be called on click
   - `icon`: material icons key of icon to be displayed on button, displayed before text
 - `footer`: displayed at bottom of page, i18n string key, max one per page
+
+This is a change!
