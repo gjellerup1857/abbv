@@ -15,7 +15,6 @@ stages:
       changes:
         - $HOSTPATH/**/*   # Run changes for the specific host.
         - /*               # Or when anything in the root changes.
-      compare_to: 'refs/heads/main'
   trigger:
     include:
       - local: '$HOSTPATH/.gitlab-ci.yml'
