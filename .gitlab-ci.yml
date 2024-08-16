@@ -16,7 +16,7 @@ stages:
         paths:
           - $HOSTPATH/**/*
           - '*'
-        compare_to: 'refs/heads/main'
+        compare_to: 'refs/heads/pipeline-cleanup'
   trigger:
     include:
       - local: '$HOSTPATH/.gitlab-ci.yml'
