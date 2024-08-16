@@ -10,10 +10,12 @@ stages:
   rules:
     # Do not trigger merge request event pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
+      when: never    
     - when: always
       changes:
-        - $HOSTPATH/**/*
+        - $HOSTPATH/**/*   # Run changes for the specific host.
+        - /*               # Or when anything in the root changes.
+      compare_to: 'refs/heads/main'
   trigger:
     include:
       - local: '$HOSTPATH/.gitlab-ci.yml'
