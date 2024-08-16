@@ -1,7 +1,7 @@
 # Eyeo Web Extensions Monorepo
 
 ## The Monorepo Architecture
-Testing! 
+A change!
 
 The extension fragments architecture aims to provide a structured method for
 developing complex browser extensions with a focus on adaptability and
