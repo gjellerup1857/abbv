@@ -35,6 +35,7 @@ default:
       - $[[ inputs.hostpath ]]/.npm/
   tags:
     - "GCP"
+  interruptible: true
 
 stages:
   - build
@@ -357,7 +358,6 @@ downloadxtm:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   needs: ["build"]
   before_script:
     - apk add bash git
@@ -482,10 +482,12 @@ unit:standard:
     expire_in: 1 week
   rules:
     # Do not trigger a merge request pipeline
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: always
     - when: manual
-      allow_failure: true
+  allow_failure: true
 
 uitests:all:
   extends: .uitests:lambdatest
@@ -503,16 +505,6 @@ uitests:all:mv3:
   variables:
     CONFIGURATION: end-to-end-mv3
     SUITE: all
-
-uitests:all:scheduled:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end
-    SUITE: all
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-      when: always
-      allow_failure: true
 
 uitests:e2e:
   extends: .uitests:lambdatest
@@ -548,7 +540,6 @@ uitests:oldbrowsers:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   script:
     - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
     - docker run --cpus=2 --shm-size=2g -t -e SUITE=smoke -e CI end-to-end
