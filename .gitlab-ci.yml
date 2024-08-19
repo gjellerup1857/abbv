@@ -11,9 +11,19 @@ stages:
     # Do not trigger merge request event pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: always
-      changes:
-        - $HOSTPATH/**/*
+    # Always run everything on the main branch and tags
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+    # On feature branches, only run pipelines for a host if there are changes 
+    # in that host
+    - changes:
+        paths:
+          - $HOSTPATH/**/*
+          - '*'
+        compare_to: 'refs/heads/main'
+      when: always
   trigger:
     include:
       - local: '$HOSTPATH/.gitlab-ci.yml'
