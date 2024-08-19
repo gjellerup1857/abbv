@@ -53,9 +53,9 @@ let processingIntervalId = null;
  */
 function isAuthRequestEvent(event) {
   return (
-    event.detail
-    && typeof event.detail.signature === 'string'
-    && typeof event.detail.timestamp === 'number'
+    event.detail &&
+    typeof event.detail.signature === "string" &&
+    typeof event.detail.timestamp === "number"
   );
 }
 
@@ -67,8 +67,7 @@ function isAuthRequestEvent(event) {
  * @returns {boolean} whether the event can be trusted
  */
 function isTrustedEvent(event) {
-  return Object.getPrototypeOf(event) === CustomEvent.prototype
-    && !Object.hasOwnProperty.call(event, 'detail');
+  return Object.getPrototypeOf(event) === CustomEvent.prototype && !Object.hasOwn(event, "detail");
 }
 
 /**
@@ -79,7 +78,7 @@ function isTrustedEvent(event) {
  * @returns {boolean} whether event contains website ID
  */
 function isSignatureRequestEvent(event) {
-  return event.detail != null && typeof event.detail.website_id === 'string';
+  return event.detail != null && typeof event.detail.website_id === "string";
 }
 
 /**
@@ -91,7 +90,7 @@ function isSignatureRequestEvent(event) {
  */
 async function getPayload(event) {
   return browser.runtime.sendMessage({
-    command: 'users.isPaying',
+    command: "users.isPaying",
     timestamp: event.detail.timestamp,
     signature: event.detail.signature,
   });
@@ -109,24 +108,20 @@ async function getExtensionInfo(event) {
   }
 
   try {
-    const [
-      dataCollectionOptOut,
-      manifest,
-      signature,
-      acceptableAds,
-      allowlist,
-    ] = await Promise.all([
-      browser.runtime.sendMessage({ type: 'prefs.get', key: 'data_collection_opt_out' }),
-      browser.runtime.getManifest(),
-      browser.runtime.sendMessage({
-        command: 'premium.signature',
-        signature: event.detail.signature,
-        timestamp: event.detail.timestamp,
-        w: event.detail.website_id,
-      }),
-      isAcceptableAdsActive(),
-      allowlistState(),
-    ]);
+    const [dataCollectionOptOut, manifest, signature, acceptableAds, allowlist] = await Promise.all(
+      [
+        browser.runtime.sendMessage({ type: "prefs.get", key: "data_collection_opt_out" }),
+        browser.runtime.getManifest(),
+        browser.runtime.sendMessage({
+          command: "premium.signature",
+          signature: event.detail.signature,
+          timestamp: event.detail.timestamp,
+          w: event.detail.website_id,
+        }),
+        isAcceptableAdsActive(),
+        allowlistState(),
+      ],
+    );
 
     if (dataCollectionOptOut === true || signature === null) {
       return null;
@@ -164,16 +159,13 @@ function handleFlattrRequestPayloadEvent(event) {
  * @returns {Promise<boolean>} Whether Acceptable Ads are active
  */
 const isAcceptableAdsActive = async () => {
-  const [
-    acceptableAdsUrl,
-    subscriptions,
-  ] = await Promise.all([
-    browser.runtime.sendMessage({ type: 'app.get', what: 'acceptableAdsUrl' }),
-    browser.runtime.sendMessage({ type: 'subscriptions.get' }),
+  const [acceptableAdsUrl, subscriptions] = await Promise.all([
+    browser.runtime.sendMessage({ type: "app.get", what: "acceptableAdsUrl" }),
+    browser.runtime.sendMessage({ type: "subscriptions.get" }),
   ]);
-  const activeSubscriptionUrls = subscriptions.map(
-    ({ disabled, url }) => !disabled && url,
-  ).filter(Boolean);
+  const activeSubscriptionUrls = subscriptions
+    .map(({ disabled, url }) => !disabled && url)
+    .filter(Boolean);
 
   return activeSubscriptionUrls.includes(acceptableAdsUrl);
 };
@@ -184,7 +176,9 @@ const isAcceptableAdsActive = async () => {
  * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
  */
 const allowlistState = async () => {
-  const allowlistResponse = await browser.runtime.sendMessage({ command: 'filters.isTabAllowlisted' });
+  const allowlistResponse = await browser.runtime.sendMessage({
+    command: "filters.isTabAllowlisted",
+  });
   const [status, source, oneCA] = allowlistResponse || [false, null, false];
   return { status, source, oneCA };
 };
@@ -211,14 +205,12 @@ async function processNextEvent() {
       ]);
 
       let detail = { detail: { payload, extras: extensionInfo } };
-      if (typeof cloneInto === 'function') {
+      if (typeof cloneInto === "function") {
         // Firefox requires content scripts to clone objects
         // that are passed to the document
         detail = cloneInto(detail, document.defaultView);
       }
-      document.dispatchEvent(
-        new CustomEvent('flattr-payload', detail),
-      );
+      document.dispatchEvent(new CustomEvent("flattr-payload", detail));
       stop();
     } catch (e) {
       errorCount += 1;
@@ -257,16 +249,14 @@ function stopProcessingInterval() {
  * Initializes module
  */
 function start() {
-  document.addEventListener('flattr-request-payload',
-    handleFlattrRequestPayloadEvent, true);
+  document.addEventListener("flattr-request-payload", handleFlattrRequestPayloadEvent, true);
 }
 
 /**
  * Uninitializes module
  */
 function stop() {
-  document.removeEventListener('flattr-request-payload',
-    handleFlattrRequestPayloadEvent, true);
+  document.removeEventListener("flattr-request-payload", handleFlattrRequestPayloadEvent, true);
   eventQueue.length = 0;
   stopProcessingInterval();
 }

@@ -18,18 +18,18 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, ext */
 
-import * as ewe from '@eyeo/webext-ad-filtering-solution';
-import { log } from '../utilities/background/index';
-import { License } from './check';
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { log } from "../utilities/background/index";
+import { License } from "./check";
 
 /**
  * Algorithm used to verify authenticity of sender
  */
 const algorithm = {
-  name: 'RSASSA-PKCS1-v1_5',
+  name: "RSASSA-PKCS1-v1_5",
   modulusLength: 4096,
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-  hash: { name: 'SHA-512' },
+  hash: { name: "SHA-512" },
 };
 /**
  * Time (in milliseconds) from now for which we consider signatures to be valid
@@ -46,7 +46,7 @@ const signatureExpiration = 60 * 60 * 1000;
  */
 function base64ToArrayBuffer(str) {
   const decodedData = atob(str);
-  return Uint8Array.from(decodedData, c => c.charCodeAt(0));
+  return Uint8Array.from(decodedData, (c) => c.charCodeAt(0));
 }
 
 /**
@@ -71,14 +71,7 @@ function getAllowData(domain, timestamp) {
  */
 async function getKey(key) {
   const abKey = base64ToArrayBuffer(key);
-  const importedKey = await crypto.subtle.importKey(
-    'spki',
-    abKey,
-    algorithm,
-    false,
-    ['verify'],
-  );
-  return importedKey;
+  return crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
 }
 
 /**
@@ -96,7 +89,7 @@ async function handleUsersIsPayingMessage(message, sender) {
 
   // Check Premium state
   if (!License.isActiveLicense()) {
-    log('user not active');
+    log("user not active");
     return null;
   }
 
@@ -108,7 +101,7 @@ async function handleUsersIsPayingMessage(message, sender) {
   // Retrieve payload
   const payload = License.getBypassPayload();
   if (!payload) {
-    log('no bypass mode payload');
+    log("no bypass mode payload");
     return null;
   }
 
@@ -126,18 +119,18 @@ async function handleUsersIsPayingMessage(message, sender) {
  * @returns {Promise<boolean>} whether signature matches data and any authorized public key
  */
 async function verifySignature(domain, timestamp, signature) {
-  if (typeof signature !== 'string') {
+  if (typeof signature !== "string") {
     return false;
   }
 
   const data = getAllowData(domain, timestamp);
   const abSignature = base64ToArrayBuffer(signature);
 
-  const promisedValidations = License.MAB_CONFIG.bypassAuthorizedKeys.map(
-    key => verifySignatureWithKey(data, abSignature, key),
+  const promisedValidations = License.MAB_CONFIG.bypassAuthorizedKeys.map((key) =>
+    verifySignatureWithKey(data, abSignature, key),
   );
   const validations = await Promise.all(promisedValidations);
-  return validations.some(isValid => isValid);
+  return validations.some((isValid) => isValid);
 }
 
 /**
@@ -150,12 +143,7 @@ async function verifySignature(domain, timestamp, signature) {
  * @returns {Promise<boolean>} whether signature matches data and public key
  */
 async function verifySignatureWithKey(data, signature, pubKey) {
-  return crypto.subtle.verify(
-    algorithm,
-    await getKey(pubKey),
-    signature,
-    data,
-  );
+  return crypto.subtle.verify(algorithm, await getKey(pubKey), signature, data);
 }
 
 /**
@@ -166,8 +154,8 @@ async function verifySignatureWithKey(data, signature, pubKey) {
  * @returns {boolean} whether timestamp is valid
  */
 function verifyTimestamp(timestamp) {
-  if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
-    log('timestamp is not number', timestamp);
+  if (typeof timestamp !== "number" || Number.isNaN(timestamp)) {
+    log("timestamp is not number", timestamp);
     return false;
   }
 
@@ -193,11 +181,7 @@ async function verifyRequest(message, sender) {
 
   const isSignatureValid = await verifySignature(domain, timestamp, signature);
 
-  if (!isSignatureValid) {
-    return false;
-  }
-
-  return true;
+  return !!isSignatureValid;
 }
 
 /**
@@ -208,10 +192,10 @@ async function verifyRequest(message, sender) {
  */
 function isValidPremiumAuthMessage(candidate) {
   return (
-    candidate !== null
-    && typeof candidate === 'object'
-    && 'signature' in candidate
-    && 'timestamp' in candidate
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "signature" in candidate &&
+    "timestamp" in candidate
   );
 }
 
@@ -225,20 +209,14 @@ function isValidPremiumAuthMessage(candidate) {
  */
 const handleIsTabAllowlistedMessage = async (message, sender) => {
   if (sender?.tab?.id !== undefined) {
-    const allowlistingFilters = await ewe.filters.getAllowingFilters(
-      sender.tab.id,
-    );
+    const allowlistingFilters = await ewe.filters.getAllowingFilters(sender.tab.id);
     let source = null;
     if (allowlistingFilters.length > 0) {
       const metaData = await ewe.filters.getMetadata(allowlistingFilters[0]);
-      source = metaData !== null && metaData.origin === 'web' ? '1ca' : 'user';
+      source = metaData !== null && metaData.origin === "web" ? "1ca" : "user";
     }
 
-    return [
-      allowlistingFilters.length > 0,
-      source,
-      ewe?.allowlisting !== undefined,
-    ];
+    return [allowlistingFilters.length > 0, source, ewe?.allowlisting !== undefined];
   }
 
   return [];
@@ -253,7 +231,7 @@ const handleIsTabAllowlistedMessage = async (message, sender) => {
  * @returns {Promise<Object|null>} response from server
  */
 const handleSignatureRequest = async (message, sender) => {
-  if (!isValidPremiumAuthMessage(message) || !('w' in message)) {
+  if (!isValidPremiumAuthMessage(message) || !("w" in message)) {
     return null;
   }
   const isRequestVerified = await verifyRequest(message, sender);
@@ -264,7 +242,7 @@ const handleSignatureRequest = async (message, sender) => {
   const { w } = message;
   try {
     const response = await fetch(`${License.MAB_CONFIG.signatureURL}/mw/sign_pbm?w=${w}`, {
-      method: 'POST',
+      method: "POST",
     });
     if (!response.ok) {
       return null;
@@ -279,19 +257,19 @@ const handleSignatureRequest = async (message, sender) => {
  * Initializes module
  */
 function start() {
-  ext.addTrustedMessageTypes(null, ['app.get']);
-  ext.addTrustedMessageTypes(null, ['subscriptions.get']);
-  ext.addTrustedMessageTypes(null, ['filters.isTabAllowlisted']);
-  ext.addTrustedMessageTypes(null, ['premium.signature']);
-  ext.addTrustedMessageTypes(null, ['prefs.get']);
+  ext.addTrustedMessageTypes(null, ["app.get"]);
+  ext.addTrustedMessageTypes(null, ["subscriptions.get"]);
+  ext.addTrustedMessageTypes(null, ["filters.isTabAllowlisted"]);
+  ext.addTrustedMessageTypes(null, ["premium.signature"]);
+  ext.addTrustedMessageTypes(null, ["prefs.get"]);
 
   browser.runtime.onMessage.addListener((message, sender) => {
     switch (message.command) {
-      case 'users.isPaying':
+      case "users.isPaying":
         return handleUsersIsPayingMessage(message, sender);
-      case 'filters.isTabAllowlisted':
+      case "filters.isTabAllowlisted":
         return handleIsTabAllowlistedMessage(message, sender);
-      case 'premium.signature':
+      case "premium.signature":
         return handleSignatureRequest(message, sender);
       default:
         return null;
