@@ -17,7 +17,7 @@
 
 import { port } from "../../api/background";
 import { isMessage, type Message } from "../../api/shared";
-import { type StateMessage, type Store } from "../shared";
+import { MessageName, type StateMessage, type Store } from "../shared";
 
 /**
  * Checks whether the given candidate satisfies the requirements to be a
@@ -80,6 +80,8 @@ export function handleSetStateMessage(message: Message, store: Store): boolean {
  * @param store The store to operate on
  */
 export function addMessageListeners(store: Store): void {
-  port.on("prefs.get", (message) => handleGetStateMessage(message, store));
-  port.on("prefs.set", (message) => handleSetStateMessage(message, store));
+  port.on(MessageName.read, (message) => handleGetStateMessage(message, store));
+  port.on(MessageName.modify, (message) =>
+    handleSetStateMessage(message, store)
+  );
 }

@@ -23,6 +23,7 @@ import {
   handleSetStateMessage,
   isStateMessage
 } from "./messaging-adapter";
+import { MessageName } from "../shared";
 
 describe("state:messagingAdapter", () => {
   describe("addMessageListeners", () => {
@@ -30,14 +31,20 @@ describe("state:messagingAdapter", () => {
       jest.spyOn(port, "on");
       addMessageListeners({});
 
-      expect(port.on).toHaveBeenCalledWith("prefs.get", expect.any(Function));
-      expect(port.on).toHaveBeenCalledWith("prefs.set", expect.any(Function));
+      expect(port.on).toHaveBeenCalledWith(
+        MessageName.read,
+        expect.any(Function)
+      );
+      expect(port.on).toHaveBeenCalledWith(
+        MessageName.modify,
+        expect.any(Function)
+      );
     });
   });
 
   describe("handleGetStateMessage", () => {
     // the message type
-    const type = "prefs.get";
+    const type = MessageName.read;
 
     it("should return the correct value when given a valid message and key", () => {
       const value = "__value__";
@@ -84,7 +91,7 @@ describe("state:messagingAdapter", () => {
 
   describe("handleSetStateMessage", () => {
     // the message type
-    const type = "prefs.set";
+    const type = MessageName.modify;
 
     it("should update the value if the message is valid and the key exists ", () => {
       const newValue = "__new_value__";
@@ -143,16 +150,16 @@ describe("state:messagingAdapter", () => {
   describe("isStateMessage", () => {
     it("should return `true` for valid messages", () => {
       const message1 = {
-        type: "prefs.set",
+        type: MessageName.modify,
         key: "__some_key__"
       };
       const message2 = {
-        type: "prefs.set",
+        type: MessageName.modify,
         key: "__some_key__",
         value: "__value__"
       };
       const message3 = {
-        type: "prefs.set",
+        type: MessageName.modify,
         key: "__some_key__",
         value: "__value__",
         some: "additional_prop"
@@ -164,10 +171,10 @@ describe("state:messagingAdapter", () => {
     });
     it("should return `false` for invalid messages", () => {
       const message1 = {
-        type: "prefs.set"
+        type: MessageName.modify
       };
       const message2 = {
-        type: "prefs.set",
+        type: MessageName.modify,
         key: 12345,
         value: "__value__"
       };

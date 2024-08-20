@@ -18,6 +18,14 @@
 import { type Message } from "../../api/shared";
 
 /**
+ * The message names the the message adapter will listen to.
+ */
+export enum MessageName {
+  read = "state.read",
+  modify = "state.modify"
+}
+
+/**
  * A message object for setting/getting state
  */
 export interface StateMessage extends Message {
