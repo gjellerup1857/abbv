@@ -1,0 +1,17 @@
+{
+  "name": "state-core-utility",
+  "version": "1.0.0",
+  "repository": "",
+  "license": "GPL-3.0",
+  "scripts": {
+    "docs": "",
+    "lint": "eslint --ext .ts ./",
+    "test": "jest -t state:"
+  },
+  "dependencies": {
+    "rxjs": "7.8.1"
+  },
+  "devDependencies": {
+    "jest-extended": "4.0.2"
+  }
+}
