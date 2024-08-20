@@ -18,7 +18,7 @@
 
 "use strict";
 
-const {beforeSequence, uninstallExtension} = require("../helpers");
+const {beforeSequence, uninstallExtension, isEdge} = require("../helpers");
 const {expect} = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
@@ -33,6 +33,10 @@ describe("Smoke Tests - Uninstall with custom settings", function()
 
   it("uninstalls the extension with custom settings", async function()
   {
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (isEdge())
+      this.skip();
+
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
     await generalPage.clickAllowAcceptableAdsCheckbox();

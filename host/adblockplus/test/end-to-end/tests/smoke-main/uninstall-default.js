@@ -19,7 +19,7 @@
 
 const {expect} = require("chai");
 
-const {uninstallExtension} = require("../../helpers");
+const {uninstallExtension, isEdge} = require("../../helpers");
 const checkInstallUninstallUrl =
   require("./shared/check-install-uninstall-url");
 
@@ -32,6 +32,10 @@ module.exports = function()
 
   it("uninstalls the extension with default settings", async function()
   {
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (isEdge())
+      this.skip();
+
     const appVersion = await browser.
       executeScript("return browser.runtime.getManifest().version;", []);
 

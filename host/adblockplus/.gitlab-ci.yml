@@ -35,6 +35,7 @@ default:
       - $[[ inputs.hostpath ]]/.npm/
   tags:
     - "GCP"
+  interruptible: true
 
 stages:
   - build
@@ -357,7 +358,6 @@ downloadxtm:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   needs: ["build"]
   before_script:
     - apk add bash git
@@ -458,6 +458,7 @@ unit:standard:
   variables:
     LT_USERNAME: $LT_USERNAME
     LT_ACCESS_KEY: $LT_ACCESS_KEY
+    SUITE: all
   script:
     - npm ci --cache .npm --prefer-offline
     - cp .env.e2e.template .env.e2e
@@ -482,73 +483,42 @@ unit:standard:
     expire_in: 1 week
   rules:
     # Do not trigger a merge request pipeline
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: manual
-      allow_failure: true
-
-uitests:all:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end
-    SUITE: all
-
-uitests:all:mv3:
-  before_script:    
-    - cd $[[ inputs.hostpath ]]    
-    - npm install axios
-    - export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js $LT_USERNAME $LT_ACCESS_KEY $CHROME_BUILD_MV3)
-    - echo $MV3_BUILD_CLOUD_URL
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end-mv3
-    SUITE: all
-
-uitests:all:scheduled:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end
-    SUITE: all
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: $CI_PIPELINE_SOURCE == "schedule"
       when: always
-      allow_failure: true
+    - if: $CI_COMMIT_BRANCH == "release"
+      when: always
+    - when: manual
+  allow_failure: true
 
-uitests:e2e:
+uitests:lambdatest:MV2:all:
   extends: .uitests:lambdatest
   variables:
     CONFIGURATION: end-to-end
-    SUITE: e2e
 
-uitests:filterlists:mv3:
+uitests:lambdatest:MV2:oldbrowsers:
+  extends: .uitests:lambdatest
+  variables:
+    CONFIGURATION: end-to-end-old-browsers
+    SUITE: oldbrowsers
+
+uitests:lambdatest:MV3:all:
+  extends: .uitests:lambdatest
   before_script:
     - cd $[[ inputs.hostpath ]]
     - npm install axios
     - export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js $LT_USERNAME $LT_ACCESS_KEY $CHROME_BUILD_MV3)
     - echo $MV3_BUILD_CLOUD_URL
-  extends: .uitests:lambdatest
   variables:
     CONFIGURATION: end-to-end-mv3
-    SUITE: filterlists
-
-uitests:integration:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end
-    SUITE: integration
-
-uitests:oldbrowsers:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end-old-browsers
-    SUITE: oldbrowsers
+    CHROME_BUILD_MV3: dist/release/adblockplus-chrome-*-mv3.zip
 
 .uitests:docker:
   extends: .uitests
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   script:
     - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
     - docker run --cpus=2 --shm-size=2g -t -e SUITE=smoke -e CI end-to-end
