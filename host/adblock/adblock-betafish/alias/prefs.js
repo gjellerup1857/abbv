@@ -289,6 +289,13 @@ defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 defaults.send_ad_wall_messages = true;
 
 /**
+ * Where the dialog for the YouTube wall should link users to
+ *
+ * @type {string}
+ */
+defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube/";
+
+/**
  * Language codes that should auto allowing on YouTube
  *
  * @type {Array of string}
