@@ -21,5 +21,6 @@ module.exports = {
     "./mocks/js/jest-polyfill.js"
   ],
   testEnvironment: "./mocks/js/jest-jsdom.mjs",
-  testMatch: ["**/*.spec.ts"]
+  testMatch: ["**/*.spec.ts"],
+  setupFilesAfterEnv: ["jest-extended/all"]
 };
