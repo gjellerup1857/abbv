@@ -19,16 +19,13 @@ import { type BehaviorSubject } from "rxjs";
 
 /**
  * Due to type restrictions of the storage area we use to persist state data,
- * state values can only be of certain types.
+ * state values can only be of certain types. However, using a union of
+ * allowed types here will not confuse TypeScript, so we have to go with
+ * `any` instead.
  *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/set#parameters
  */
-export type StateValue =
-  | number
-  | boolean
-  | string
-  | any[]
-  | Record<string, any>;
+export type StateValue = any;
 
 /**
  * The format of the Store object that holds the state.
