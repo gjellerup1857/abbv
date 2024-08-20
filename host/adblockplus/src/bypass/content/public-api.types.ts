@@ -35,5 +35,23 @@ export interface AuthRequestEvent extends TrustedEvent {
      * Timestamp corresponding to current date and time
      */
     timestamp: number;
+
+    /**
+     * Website ID for requesting signature
+     */
+    websiteId: string;
+  };
+}
+
+/**
+ * DOM event for requesting signature to verify
+ * authenticity of extra data
+ */
+export interface SignatureRequestEvent extends TrustedEvent {
+  detail: {
+    /**
+     * Website ID for requesting signature
+     */
+    websiteId: string;
   };
 }

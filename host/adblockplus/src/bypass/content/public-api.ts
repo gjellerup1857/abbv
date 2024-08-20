@@ -15,7 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthRequestEvent, type TrustedEvent } from "./public-api.types";
+import {
+  type SignatureRequestEvent,
+  type AuthRequestEvent,
+  type TrustedEvent
+} from "./public-api.types";
+import browser from "webextension-polyfill";
 
 /**
  * List of events that are waiting to be processed
@@ -45,33 +50,19 @@ let processingIntervalId: ReturnType<typeof setInterval> | null = null;
 
 /**
  * Retrieves requested payload from background page
- *
- * @param event - "flattr-request-payload" DOM event
- *
- * @returns payload - Encoded signed Premium license data
  */
-async function getPayload(event: Event): Promise<string | null> {
-  if (!isTrustedEvent(event)) {
-    return null;
-  }
-
-  if (!isAuthRequestEvent(event)) {
-    return null;
-  }
-
-  const payload = (await browser.runtime.sendMessage({
+async function getPayloadAndExtras(event: AuthRequestEvent): Promise<{
+  payload: string | null;
+  extensionInfo: any;
+}> {
+  return await browser.runtime.sendMessage({
     type: "premium.getAuthPayload",
     signature: event.detail.signature,
-    timestamp: event.detail.timestamp
-  })) as string | null;
-  return payload;
+    timestamp: event.detail.timestamp,
+    websiteId: event.detail.websiteId
+  });
 }
 
-/**
- * Queues up incoming requests
- *
- * @param event - "flattr-request-payload" DOM event
- */
 function handleFlattrRequestPayloadEvent(event: Event): void {
   if (eventQueue.length >= maxQueuedEvents) {
     return;
@@ -90,10 +81,19 @@ function handleFlattrRequestPayloadEvent(event: Event): void {
  */
 function isAuthRequestEvent(event: TrustedEvent): event is AuthRequestEvent {
   return (
-    event.detail &&
+    event.detail != null &&
     typeof event.detail.signature === "string" &&
     typeof event.detail.timestamp === "number"
   );
+}
+
+/**
+ * Checks whether event contains website ID
+ */
+function isSignatureRequestEvent(
+  event: TrustedEvent
+): event is SignatureRequestEvent {
+  return event.detail != null && typeof event.detail.websiteId === "string";
 }
 
 /**
@@ -115,14 +115,14 @@ function isTrustedEvent(event: Event): event is TrustedEvent {
  */
 async function processNextEvent(): Promise<void> {
   const event = eventQueue.shift();
-  if (event) {
-    try {
-      const payload = await getPayload(event);
-      if (!payload) {
-        throw new Error("Premium request rejected");
-      }
+  if (event != null) {
+    if (!isTrustedEvent(event)) return;
+    if (!isAuthRequestEvent(event)) return;
+    if (!isSignatureRequestEvent(event)) return;
 
-      let detail = { detail: { payload } };
+    try {
+      const { payload, extensionInfo } = await getPayloadAndExtras(event);
+      let detail = { detail: { payload, extensionInfo } };
       if (typeof cloneInto === "function") {
         // Firefox requires content scripts to clone objects
         // that are passed to the document
@@ -147,7 +147,7 @@ async function processNextEvent(): Promise<void> {
  * Starts interval for processing incoming requests
  */
 function startProcessingInterval(): void {
-  if (processingIntervalId) {
+  if (processingIntervalId != null) {
     return;
   }
 

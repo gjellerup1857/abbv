@@ -29,4 +29,9 @@ export interface PremiumGetAuthPayloadOptions {
    * Timestamp corresponding to current date and time
    */
   timestamp: number;
+
+  /**
+   * Website ID for requesting signature
+   */
+  websiteId: string;
 }

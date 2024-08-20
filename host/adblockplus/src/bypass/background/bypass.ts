@@ -18,24 +18,19 @@
 import { addTrustedMessageTypes, port } from "../../core/api/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getAuthPayload, getPremiumState } from "../../premium/background";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { type MessageSender } from "../../core/api/background";
 import { type Message } from "../../core/api/shared";
 import { type PremiumGetAuthPayloadOptions } from "./bypass.types";
 
-/**
- * Algorithm used to verify authenticity of sender
- */
 const algorithm = {
   name: "RSASSA-PKCS1-v1_5",
   modulusLength: 4096,
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
   hash: { name: "SHA-512" }
 };
-/**
- * Time (in milliseconds) from now for which we consider signatures to be valid
- * based on their associated timestamps
- */
+
 const signatureExpiration = 60 * 60 * 1000;
 
 /**
@@ -72,71 +67,17 @@ function getAllowData(domain: string, timestamp: number): Uint8Array {
  */
 async function getKey(key: string): Promise<CryptoKey> {
   const abKey = base64ToArrayBuffer(key);
-  const importedKey = await crypto.subtle.importKey(
-    "spki",
-    abKey,
-    algorithm,
-    false,
-    ["verify"]
-  );
-  return importedKey;
+  return await crypto.subtle.importKey("spki", abKey, algorithm, false, [
+    "verify"
+  ]);
 }
 
 /**
- * Handles incoming "premium.getAuthPayload" messages
+ * Checks if the message is a valid premium.getAuthPayload message
  *
- * @param message - "premium.getAuthPayload" message
- * @param sender - Message sender
+ * @param candidate - The message to check
  *
- * @returns requested payload
- */
-async function handleGetAuthPayloadMessage(
-  message: Message,
-  sender: MessageSender
-): Promise<string | null> {
-  if (!isPremiumGetAuthPayloadMessage(message)) {
-    return null;
-  }
-
-  // Check Premium state
-  if (!getPremiumState().isActive) {
-    return null;
-  }
-
-  // Verify timestamp
-  const { signature, timestamp } = message;
-  const validTimestamp = verifyTimestamp(timestamp);
-  if (!validTimestamp) {
-    return null;
-  }
-
-  // Verify signature
-  if (!sender.tab?.url) {
-    return null;
-  }
-  const domain = new URL(sender.tab.url).hostname;
-  if (!domain) {
-    return null;
-  }
-  const validSignature = await verifySignature(domain, timestamp, signature);
-  if (!validSignature) {
-    return null;
-  }
-
-  // Retrieve payload
-  const payload = getAuthPayload();
-  if (!payload) {
-    return null;
-  }
-
-  return payload;
-}
-
-/**
- * Checks whether candidate is message of type "premium.getAuthPayload".
- *
- * @param candidate - Candidate
- * @returns whether candidate is messag eof type "premium.getAuthPayload"
+ * @returns whether the message is a valid premium.getAuthPayload message
  */
 function isPremiumGetAuthPayloadMessage(
   candidate: unknown
@@ -145,7 +86,8 @@ function isPremiumGetAuthPayloadMessage(
     candidate !== null &&
     typeof candidate === "object" &&
     "signature" in candidate &&
-    "timestamp" in candidate
+    "timestamp" in candidate &&
+    "websiteId" in candidate
   );
 }
 
@@ -164,10 +106,6 @@ async function verifySignature(
   timestamp: number,
   signature: string
 ): Promise<boolean> {
-  if (typeof signature !== "string") {
-    return false;
-  }
-
   const data = getAllowData(domain, timestamp);
   const abSignature = base64ToArrayBuffer(signature);
   const authorizedKeys = Prefs.get("bypass_authorizedKeys") as string[];
@@ -209,7 +147,7 @@ async function verifySignatureWithKey(
  * @returns whether timestamp is valid
  */
 function verifyTimestamp(timestamp: number): boolean {
-  if (typeof timestamp !== "number" || Number.isNaN(timestamp)) {
+  if (Number.isNaN(timestamp)) {
     return false;
   }
 
@@ -218,7 +156,167 @@ function verifyTimestamp(timestamp: number): boolean {
 }
 
 /**
- * Initializes module
+ * Checks if the allowlist is active for the given tab
+ *
+ * @param tabId - The tab ID
+ *
+ * @returns Whether the allowlist is active
+ */
+async function getAllowlistState(tabId: number): Promise<{
+  status: boolean;
+  source: string | null;
+  oneCA: boolean;
+}> {
+  const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
+  let source = null;
+  if (allowlistingFilters.length > 0) {
+    const metaData = await ewe.filters.getMetadata(allowlistingFilters[0]);
+    source = metaData !== null && metaData.origin === "web" ? "1ca" : "user";
+  }
+
+  return {
+    status: allowlistingFilters.length > 0,
+    source,
+    oneCA: ewe?.allowlisting !== undefined
+  };
+}
+
+/**
+ * Checks if the acceptable ads subscription is active
+ *
+ * @returns Whether the acceptable ads subscription is active
+ */
+async function isAcceptableAdsActive(): Promise<boolean> {
+  return await ewe.subscriptions.has(ewe.subscriptions.ACCEPTABLE_ADS_URL);
+}
+
+/**
+ * Gets the signature for the given website ID
+ *
+ * @param websiteId - The website ID
+ * @param sender - The message sender
+ *
+ * @returns The signature
+ */
+async function getSignature(
+  websiteId: string,
+  sender: MessageSender
+): Promise<{
+  signature: string;
+  timestamp: number;
+  domain: string;
+} | null> {
+  try {
+    const url = new URL(sender.tab.url);
+    const btEnv = url.searchParams.get("bt_env");
+
+    let signatureUrl = `${Prefs.get("premium_signature_url")}/mw/sign_pbm?w=${websiteId}`;
+    if (btEnv) {
+      signatureUrl += `&bt_env=${btEnv}`;
+    }
+
+    const response = await fetch(signatureUrl, {
+      method: "POST"
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Verifies the request
+ *
+ * @param message - The message to verify
+ * @param sender - The message sender
+ *
+ * @returns Whether the request is valid
+ */
+async function verifyRequest(
+  message: PremiumGetAuthPayloadOptions,
+  sender: MessageSender
+): Promise<boolean> {
+  try {
+    const { signature, timestamp } = message;
+    const domain = new URL(sender.tab.url).hostname;
+    if (!verifyTimestamp(timestamp)) return false;
+
+    return await verifySignature(domain, timestamp, signature);
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Gets the extension info
+ *
+ * @param websiteId - The website ID
+ * @param sender - The message sender
+ *
+ * @returns The extension info
+ */
+async function getExtensionInfo(
+  websiteId: string,
+  sender: MessageSender
+): Promise<any> {
+  try {
+    const [manifest, signature, acceptableAds, allowlist] = await Promise.all([
+      browser.runtime.getManifest(),
+      getSignature(websiteId, sender),
+      isAcceptableAdsActive(),
+      getAllowlistState(sender.tab.id)
+    ]);
+
+    if (signature === null) {
+      return null;
+    }
+
+    return {
+      name: manifest.short_name,
+      version: manifest.version,
+      acceptableAds,
+      allowlistState: allowlist,
+      ...signature
+    };
+  } catch (error) {
+    console.error("Error in getExtensionInfo:", error);
+    return null;
+  }
+}
+
+/**
+ * Handles the premium.getAuthPayload message
+ *
+ * @param message - The message to handle
+ * @param sender - The message sender
+ *
+ * @returns The payload and extension info
+ */
+async function handleGetAuthPayloadMessage(
+  message: Message,
+  sender: MessageSender
+): Promise<{
+  payload: string | null;
+  extensionInfo: any;
+}> {
+  if (!isPremiumGetAuthPayloadMessage(message)) {
+    return { payload: null, extensionInfo: null };
+  }
+
+  if (!(await verifyRequest(message, sender))) {
+    return { payload: null, extensionInfo: null };
+  }
+
+  const premiumState = getPremiumState();
+  const payload = premiumState.isActive ? getAuthPayload() : null;
+  const extensionInfo = await getExtensionInfo(message.websiteId, sender);
+
+  return { payload, extensionInfo };
+}
+
+/**
+ * Initializes the bypass module
  */
 export function start(): void {
   port.on("premium.getAuthPayload", handleGetAuthPayloadMessage);

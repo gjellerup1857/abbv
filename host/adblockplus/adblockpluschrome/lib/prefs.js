@@ -216,6 +216,13 @@ defaults.premium_license_nextcheck = 0;
 defaults.premium_license_check_url = "https://myadblock.licensing.adblockplus.dev/license";
 
 /**
+ * Premium signature API endpoint
+ *
+ * @type {string}
+ */
+defaults.premium_signature_url = "https://api.btmessage.com";
+
+/**
  * Address of page to manage Premium account.
  *
  * @type {string}
