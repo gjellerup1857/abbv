@@ -21,3 +21,4 @@ export const ytAllowlistHardEndDate = "yt_allowlist_hard_end_date";
 export const ytAllowlistLanguageCodes = "yt_allowlist_language_codes";
 export const ytAllowlistDialogLanguageCodes = "yt_allowlist_with_dialog_language_codes";
 export const ytAllowlistStartDate = "yt_allowlist_start_date";
+export const ytDialogOnlyLanguageCodes = "yt_dialog_only_language_codes";

@@ -289,6 +289,13 @@ defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 defaults.send_ad_wall_messages = true;
 
 /**
+ * Where the dialog for the YouTube wall should link users to
+ *
+ * @type {string}
+ */
+defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube/";
+
+/**
  * Language codes that should auto allowing on YouTube
  *
  * @type {Array of string}
@@ -303,6 +310,13 @@ defaults.yt_allowlist_language_codes = ["fr", "pt"];
  * @type {Array of string}
  */
 defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
+
+/**
+ * Language codes that should only show an On Page Dialog once the YT ad wall is shown
+ *
+ * @type {Array of string}
+ */
+defaults.yt_dialog_only_language_codes = ["de", "it", "zh"];
 
 /**
  * Start date (as a number) to start auto allowing YT
