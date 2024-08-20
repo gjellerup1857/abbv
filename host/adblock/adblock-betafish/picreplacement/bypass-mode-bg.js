@@ -16,11 +16,13 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext */
+/* global browser */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { Prefs } from "../alias/prefs";
 import { log } from "../utilities/background/index";
 import { License } from "./check";
+import SubscriptionAdapter from "../subscriptionadapter";
 
 /**
  * Algorithm used to verify authenticity of sender
@@ -80,32 +82,126 @@ async function getKey(key) {
  * @param {Object} message - "users.isPaying" message
  * @param {Object} sender - Message sender
  *
- * @returns {Promise<string|null>} requested payload
+ * @returns {Promise<Object>} Payload and additional information
  */
 async function handleUsersIsPayingMessage(message, sender) {
   if (!isValidPremiumAuthMessage(message)) {
-    return null;
-  }
-
-  // Check Premium state
-  if (!License.isActiveLicense()) {
-    log("user not active");
-    return null;
+    return { payload: null, extensionInfo: null };
   }
 
   const isVerified = await verifyRequest(message, sender);
   if (!isVerified) {
-    return null;
+    return { payload: null, extensionInfo: null };
   }
 
-  // Retrieve payload
-  const payload = License.getBypassPayload();
-  if (!payload) {
-    log("no bypass mode payload");
+  const payload = License.isActiveLicense() ? License.getBypassPayload() : null;
+  const extensionInfo = await getExtensionInfo(message, sender);
+
+  return { payload, extensionInfo };
+}
+
+/**
+ * Retrieves additional data to be sent along with the payload
+ *
+ * @param {Object} message - Message containing signature request data
+ * @param {Object} sender - Message sender
+ * @returns {Promise<Object|null>} extensionInfo - Additional data or null if conditions are not met
+ */
+async function getExtensionInfo(message, sender) {
+  try {
+    const [dataCollectionOptOut, manifest, signature, acceptableAds, allowlist] = await Promise.all(
+      [
+        Prefs.get("data_collection_opt_out"),
+        browser.runtime.getManifest(),
+        getSignature(message, sender),
+        isAcceptableAdsActive(),
+        getAllowlistState(sender.tab.id),
+      ],
+    );
+
+    if (dataCollectionOptOut === true || signature === null) {
+      return null;
+    }
+
+    return {
+      name: manifest.short_name,
+      version: manifest.version,
+      acceptableAds,
+      allowlistState: allowlist,
+      ...signature,
+    };
+  } catch (error) {
     return null;
   }
+}
 
-  return payload;
+/**
+ * Retrieves signature from server
+ *
+ * @param {Object} message - Message containing signature request data
+ * @param {Object} sender - Message sender
+ * @returns {Promise<Object|null>} Signature data or null if request fails
+ */
+async function getSignature(message, sender) {
+  const { websiteId } = message;
+  try {
+    const url = new URL(sender.url);
+    const btEnv = url.searchParams.get("bt_env");
+
+    let signatureUrl = `${License.MAB_CONFIG.signatureURL}/mw/sign_pbm?w=${websiteId}`;
+    if (btEnv) {
+      signatureUrl += `&bt_env=${btEnv}`;
+    }
+
+    const response = await fetch(signatureUrl, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Checks whether Acceptable Ads are active
+ *
+ * @returns {Promise<boolean>} Whether Acceptable Ads are active
+ */
+async function isAcceptableAdsActive() {
+  const [acceptableAdsUrl, subscriptions] = await Promise.all([
+    ewe.subscriptions.ACCEPTABLE_ADS_URL,
+    SubscriptionAdapter.getSubscriptionsMinusText(),
+  ]);
+
+  const activeSubscriptionUrls = Object.values(subscriptions)
+    .filter((sub) => !sub.disabled)
+    .map((sub) => sub.url);
+
+  return activeSubscriptionUrls.includes(acceptableAdsUrl);
+}
+
+/**
+ * Checks whether current tab is allowlisted
+ *
+ * @param {number} tabId - ID of the current tab
+ * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
+ */
+async function getAllowlistState(tabId) {
+  const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
+  let source = null;
+  if (allowlistingFilters.length > 0) {
+    const metaData = await ewe.filters.getMetadata(allowlistingFilters[0]);
+    source = metaData !== null && metaData.origin === "web" ? "1ca" : "user";
+  }
+
+  return {
+    status: allowlistingFilters.length > 0,
+    source,
+    oneCA: ewe?.allowlisting !== undefined,
+  };
 }
 
 /**
@@ -200,80 +296,15 @@ function isValidPremiumAuthMessage(candidate) {
 }
 
 /**
- * Handles incoming "filters.isTabAllowlisted" messages
- *
- * @param message - "filters.isTabAllowlisted" message
- * @param sender - Message sender
- *
- * @returns {Promise<Array>} whether current tab is allowlisted and all allowlisting filters
- */
-const handleIsTabAllowlistedMessage = async (message, sender) => {
-  if (sender?.tab?.id !== undefined) {
-    const allowlistingFilters = await ewe.filters.getAllowingFilters(sender.tab.id);
-    let source = null;
-    if (allowlistingFilters.length > 0) {
-      const metaData = await ewe.filters.getMetadata(allowlistingFilters[0]);
-      source = metaData !== null && metaData.origin === "web" ? "1ca" : "user";
-    }
-
-    return [allowlistingFilters.length > 0, source, ewe?.allowlisting !== undefined];
-  }
-
-  return [];
-};
-
-/**
- * Handles incoming "premium.signature" messages
- *
- * @param {Object} message - "premium.signature" message
- * @param {Object} sender - Message sender
- *
- * @returns {Promise<Object|null>} response from server
- */
-const handleSignatureRequest = async (message, sender) => {
-  if (!isValidPremiumAuthMessage(message) || !("w" in message)) {
-    return null;
-  }
-  const isRequestVerified = await verifyRequest(message, sender);
-  if (!isRequestVerified) {
-    return null;
-  }
-
-  const { w } = message;
-  try {
-    const response = await fetch(`${License.MAB_CONFIG.signatureURL}/mw/sign_pbm?w=${w}`, {
-      method: "POST",
-    });
-    if (!response.ok) {
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
-    return null;
-  }
-};
-
-/**
  * Initializes module
  */
 function start() {
-  ext.addTrustedMessageTypes(null, ["app.get"]);
-  ext.addTrustedMessageTypes(null, ["subscriptions.get"]);
-  ext.addTrustedMessageTypes(null, ["filters.isTabAllowlisted"]);
-  ext.addTrustedMessageTypes(null, ["premium.signature"]);
-  ext.addTrustedMessageTypes(null, ["prefs.get"]);
-
   browser.runtime.onMessage.addListener((message, sender) => {
-    switch (message.command) {
-      case "users.isPaying":
-        return handleUsersIsPayingMessage(message, sender);
-      case "filters.isTabAllowlisted":
-        return handleIsTabAllowlistedMessage(message, sender);
-      case "premium.signature":
-        return handleSignatureRequest(message, sender);
-      default:
-        return null;
+    if (message.command !== "users.isPaying") {
+      return null;
     }
+
+    return handleUsersIsPayingMessage(message, sender);
   });
 }
 

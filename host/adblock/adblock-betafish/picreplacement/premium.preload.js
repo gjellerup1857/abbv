@@ -78,65 +78,23 @@ function isTrustedEvent(event) {
  * @returns {boolean} whether event contains website ID
  */
 function isSignatureRequestEvent(event) {
-  return event.detail != null && typeof event.detail.website_id === "string";
+  return event.detail != null && typeof event.detail.websiteId === "string";
 }
 
 /**
- * Retrieves requested payload from background page
+ * Retrieves requested payload and additional info from background page
  *
  * @param {Event} event - "flattr-request-payload" DOM event
  *
- * @returns {Promise<string|null>} payload - Encoded signed Premium license data
+ * @returns {Promise<Object>} Object containing payload and extras
  */
-async function getPayload(event) {
+async function getPayloadAndExtras(event) {
   return browser.runtime.sendMessage({
     command: "users.isPaying",
     timestamp: event.detail.timestamp,
     signature: event.detail.signature,
+    websiteId: event.detail.websiteId,
   });
-}
-
-/**
- * Retrieves additional data to be sent along with the payload
- *
- * @param {Event} event - Event containing signature request data
- * @returns {Promise<Object|null>} extensionInfo - Additional data or null if conditions are not met
- */
-async function getExtensionInfo(event) {
-  if (!isSignatureRequestEvent(event)) {
-    return null;
-  }
-
-  try {
-    const [dataCollectionOptOut, manifest, signature, acceptableAds, allowlist] = await Promise.all(
-      [
-        browser.runtime.sendMessage({ type: "prefs.get", key: "data_collection_opt_out" }),
-        browser.runtime.getManifest(),
-        browser.runtime.sendMessage({
-          command: "premium.signature",
-          signature: event.detail.signature,
-          timestamp: event.detail.timestamp,
-          w: event.detail.website_id,
-        }),
-        isAcceptableAdsActive(),
-        allowlistState(),
-      ],
-    );
-
-    if (dataCollectionOptOut === true || signature === null) {
-      return null;
-    }
-
-    return {
-      name: manifest.short_name,
-      version: manifest.version,
-      acceptableAds,
-      allowlistState: allowlist,
-      ...signature,
-    };
-  } catch (error) {
-    return null;
-  }
 }
 
 /**
@@ -154,36 +112,6 @@ function handleFlattrRequestPayloadEvent(event) {
 }
 
 /**
- * Checks whether Acceptable Ads are active
- *
- * @returns {Promise<boolean>} Whether Acceptable Ads are active
- */
-const isAcceptableAdsActive = async () => {
-  const [acceptableAdsUrl, subscriptions] = await Promise.all([
-    browser.runtime.sendMessage({ type: "app.get", what: "acceptableAdsUrl" }),
-    browser.runtime.sendMessage({ type: "subscriptions.get" }),
-  ]);
-  const activeSubscriptionUrls = subscriptions
-    .map(({ disabled, url }) => !disabled && url)
-    .filter(Boolean);
-
-  return activeSubscriptionUrls.includes(acceptableAdsUrl);
-};
-
-/**
- * Checks whether current tab is allowlisted
- *
- * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
- */
-const allowlistState = async () => {
-  const allowlistResponse = await browser.runtime.sendMessage({
-    command: "filters.isTabAllowlisted",
-  });
-  const [status, source, oneCA] = allowlistResponse || [false, null, false];
-  return { status, source, oneCA };
-};
-
-/**
  * Processes incoming requests
  *
  * @returns {Promise<void>}
@@ -197,14 +125,13 @@ async function processNextEvent() {
     if (!isAuthRequestEvent(event)) {
       return;
     }
-
+    if (!isSignatureRequestEvent(event)) {
+      return;
+    }
     try {
-      const [payload, extensionInfo] = await Promise.all([
-        getPayload(event),
-        getExtensionInfo(event),
-      ]);
+      const { payload, extensionInfo } = await getPayloadAndExtras(event);
 
-      let detail = { detail: { payload, extras: extensionInfo } };
+      let detail = { detail: { payload, extensionInfo } };
       if (typeof cloneInto === "function") {
         // Firefox requires content scripts to clone objects
         // that are passed to the document

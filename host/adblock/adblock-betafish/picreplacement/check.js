@@ -77,6 +77,7 @@ export const License = (function getLicense() {
       subscribeKey: "sub-c-9eccffb2-8c6a-11e9-97ab-aa54ad4b08ec",
       payURL: "https://getadblock.com/premium/enrollment/",
       subscriptionURL: "https://getadblock.com/premium/manage-subscription/",
+      signatureURL: "https://api.btmessage.com",
     },
     dev: {
       licenseURL: "https://dev.myadblock.licensing.getadblock.com/license/",
@@ -84,6 +85,7 @@ export const License = (function getLicense() {
       subscribeKey: "sub-c-9e0a7270-83e7-11e9-99de-d6d3b84c4a25",
       payURL: "https://getadblock.com/premium/enrollment/?testmode=true",
       subscriptionURL: "https://dev.getadblock.com/premium/manage-subscription/",
+      signatureURL: "https://api.btmessage-dev.com",
     },
   };
 
