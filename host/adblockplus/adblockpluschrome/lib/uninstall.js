@@ -19,9 +19,9 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
+import {Prefs} from "./prefs.js";
 import {isDataCorrupted} from "./subscriptionInit.js";
 import {info} from "../../src/info/background";
-import {getDocLink} from "../../src/doc-link/background";
 
 const abbreviations = [
   ["an", "addonName"],
@@ -133,7 +133,7 @@ export async function setUninstallURL()
   for (let [abbreviation, key] of abbreviations)
     search.push(abbreviation + "=" + encodeURIComponent(params[key]));
 
-  browser.runtime.setUninstallURL(getDocLink("uninstalled") + "&" +
+  browser.runtime.setUninstallURL(Prefs.getDocLink("uninstalled") + "&" +
                                   search.join("&"));
 }
 
