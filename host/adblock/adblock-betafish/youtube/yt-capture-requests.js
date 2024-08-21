@@ -38,7 +38,7 @@ const parseChannelName = function (channelNameToParse) {
     return encodeURIComponent(str).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16)}`);
   }
 
-  parseElem.innerHTML = DOMPurify.sanitize(channelNameToParse);
+  parseElem.innerHTML = DOMPurify.sanitize(channelNameToParse, { RETURN_TRUSTED_TYPE: true });
   const channelName = parseElem.innerText;
   // Remove whitespace, and encode
   return fixedEncodeURIComponent(channelName.replace(/\s/g, ""));
