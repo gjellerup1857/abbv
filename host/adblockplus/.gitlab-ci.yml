@@ -19,6 +19,9 @@ spec:
       type: string
       description: "Path to the host directory"
       default: "."
+    parent_pipeline_source:
+      type: string
+      description: "Value of CI_PIPELINE_SOURCE in the parent pipeline"
 
 ---
 default:
@@ -485,7 +488,7 @@ unit:standard:
     # Do not trigger a merge request pipeline
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $[[ inputs.parent_pipeline_source ]] == "schedule"
       when: always
     - if: $CI_COMMIT_BRANCH == "release"
       when: always
