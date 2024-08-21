@@ -19,7 +19,7 @@ import { BehaviorSubject } from "rxjs";
 import { port } from "../../core/api/background";
 import { store } from "../../store/background";
 import {
-  addMessageListener,
+  start,
   getBrowserName,
   getDocLink,
   handleDocLinkMessage,
@@ -34,10 +34,10 @@ describe("docLink", () => {
     jest.replaceProperty(store, "documentationLink", mockSubject);
   });
 
-  describe("addMessageListener", () => {
+  describe("start", () => {
     it("should add a listener for doc-link messages", () => {
       jest.spyOn(port, "on");
-      addMessageListener();
+      start();
 
       expect(port.on).toHaveBeenCalledWith(
         "prefs.getDocLink",

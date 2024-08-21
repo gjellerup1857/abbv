@@ -84,8 +84,9 @@ export function handleDocLinkMessage(message: Message): string {
 }
 
 /**
+ * Starts the docLink module.
  * Adds a listener for the `prefs.getDocLink` message.
  */
-export function addMessageListener(): void {
+export function start(): void {
   port.on("prefs.getDocLink", (message) => handleDocLinkMessage(message));
 }
