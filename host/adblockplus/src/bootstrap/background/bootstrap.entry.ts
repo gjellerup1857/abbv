@@ -45,6 +45,9 @@ import { start as startYTWallDetection } from "../../yt-wall-detection/backgroun
 import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startUpdateCampaign } from "../../update-campaign/background";
 import { start as startPages } from "../../core/pages/background";
+import { start as startState } from "../../core/state/background";
+import { start as startDocLink } from "../../doc-link/background";
+import { store } from "../../store/background";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -54,6 +57,7 @@ function reportAndLogError(e: Error): void {
 async function bootstrap(): Promise<void> {
   startErrorReporting();
   try {
+    await startState(store);
     startPages();
     startTabSessionStorage();
     startDevTools();
@@ -78,6 +82,7 @@ async function bootstrap(): Promise<void> {
     startYTWallDetection();
     startInfoInjector();
     startUpdateCampaign();
+    startDocLink();
   } catch (error) {
     reportError(error as Error);
   }

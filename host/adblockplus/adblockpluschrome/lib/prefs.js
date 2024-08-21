@@ -89,11 +89,7 @@ defaults.installation_id = "";
  * @type {string}
  */
 defaults.currentVersion = "";
-/**
- * @see https://adblockplus.org/en/preferences#documentation_link
- * @type {string}
- */
-defaults.documentation_link = "https://adblockplus.org/redirect?link=%LINK%&lang=%LANG%";
+
 /**
  * The total number of requests blocked by the extension.
  *
@@ -474,19 +470,6 @@ export let Prefs = {
   },
 
   /**
-   * Reads the documentation_link preference and substitutes placeholders.
-   *
-   * @param {string} linkID
-   * @return {string}
-   */
-  getDocLink(linkID)
-  {
-    return this.documentation_link
-      .replace(/%LINK%/g, linkID)
-      .replace(/%LANG%/g, browser.i18n.getUILanguage());
-  },
-
-  /**
    * A promise that is fullfilled when all preferences have been loaded.
    * Wait for this promise to be fulfilled before using preferences during
    * extension initialization.
@@ -709,25 +692,6 @@ port.on("prefs.toggle", async(message, sender) =>
     return ewe.notifications.toggleIgnoreCategory("*");
 
   return Prefs[message.key] = !Prefs[message.key];
-});
-
-/**
- * Returns a link to a page on our website, in the user's locale if possible.
- *
- * @event "prefs.getDocLink"
- * @property {string} link
- *   The link ID to generate the doc link for.
- * @returns {string}
- */
-port.on("prefs.getDocLink", (message, sender) =>
-{
-  let {application, platform} = info;
-  if (platform == "chromium" && application != "opera" && application != "edge")
-    application = "chrome";
-  else if (platform == "gecko")
-    application = "firefox";
-
-  return Prefs.getDocLink(message.link.replace("{browser}", application));
 });
 
 installHandler("prefs", null, (emit, action) =>

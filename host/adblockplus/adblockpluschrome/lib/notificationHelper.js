@@ -31,8 +31,8 @@ import {port} from "~/core/messaging/background";
 import {SessionStorage} from "./storage/session.js";
 import {askConfirmSubscription} from "./filterConfiguration.js";
 import {startIconAnimation, stopIconAnimation} from "./icon.js";
-import {Prefs} from "./prefs.js";
 import {Stats} from "./stats.js";
+import {getDocLink} from "../../src/doc-link/background";
 
 /**
  * The active notification is (if any) the most recent currently displayed
@@ -190,7 +190,7 @@ function openNotificationLink(link)
   if (link.startsWith("abp:"))
     url = localNotificationPages.get(link);
   else
-    url = Prefs.getDocLink(link);
+    url = getDocLink(link);
 
   browser.tabs.create({url});
 }
