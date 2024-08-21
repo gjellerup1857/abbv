@@ -22,7 +22,6 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { Prefs } from "../alias/prefs";
 import { log } from "../utilities/background/index";
 import { License } from "./check";
-import SubscriptionAdapter from "../subscriptionadapter";
 
 /**
  * Algorithm used to verify authenticity of sender
@@ -85,6 +84,7 @@ async function getKey(key) {
  * @returns {Promise<Object>} Payload and additional information
  */
 async function handleUsersIsPayingMessage(message, sender) {
+  // Check Premium state
   if (!isValidPremiumAuthMessage(message)) {
     return { payload: null, extensionInfo: null };
   }
@@ -94,7 +94,15 @@ async function handleUsersIsPayingMessage(message, sender) {
     return { payload: null, extensionInfo: null };
   }
 
-  const payload = License.isActiveLicense() ? License.getBypassPayload() : null;
+  let payload = null;
+  if (!License.isActiveLicense()) {
+    log("user not active");
+  } else {
+    payload = License.getBypassPayload();
+    if (!payload) {
+      log("no bypass mode payload");
+    }
+  }
   const extensionInfo = await getExtensionInfo(message, sender);
 
   return { payload, extensionInfo };
@@ -171,16 +179,7 @@ async function getSignature(message, sender) {
  * @returns {Promise<boolean>} Whether Acceptable Ads are active
  */
 async function isAcceptableAdsActive() {
-  const [acceptableAdsUrl, subscriptions] = await Promise.all([
-    ewe.subscriptions.ACCEPTABLE_ADS_URL,
-    SubscriptionAdapter.getSubscriptionsMinusText(),
-  ]);
-
-  const activeSubscriptionUrls = Object.values(subscriptions)
-    .filter((sub) => !sub.disabled)
-    .map((sub) => sub.url);
-
-  return activeSubscriptionUrls.includes(acceptableAdsUrl);
+  return ewe.subscriptions.has(ewe.subscriptions.ACCEPTABLE_ADS_URL);
 }
 
 /**
@@ -221,11 +220,13 @@ async function verifySignature(domain, timestamp, signature) {
 
   const data = getAllowData(domain, timestamp);
   const abSignature = base64ToArrayBuffer(signature);
+  const authorizedKeys = Prefs.get("bypass_authorizedKeys");
 
-  const promisedValidations = License.MAB_CONFIG.bypassAuthorizedKeys.map((key) =>
-    verifySignatureWithKey(data, abSignature, key),
-  );
+  const promisedValidations = authorizedKeys.map(async (key) => {
+    return verifySignatureWithKey(data, abSignature, key);
+  });
   const validations = await Promise.all(promisedValidations);
+
   return validations.some((isValid) => isValid);
 }
 
@@ -272,12 +273,16 @@ async function verifyRequest(message, sender) {
   const domain = new URL(sender.url).hostname;
 
   if (!verifyTimestamp(timestamp)) {
+    log("invalid Timestamp", timestamp);
     return false;
   }
 
-  const isSignatureValid = await verifySignature(domain, timestamp, signature);
+  if (!(await verifySignature(domain, timestamp, signature))) {
+    log("invalid signature");
+    return false;
+  }
 
-  return !!isSignatureValid;
+  return true;
 }
 
 /**

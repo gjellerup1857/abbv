@@ -114,6 +114,7 @@ async function verifySignature(
     return await verifySignatureWithKey(data, abSignature, key);
   });
   const validations = await Promise.all(promisedValidations);
+
   return validations.some((isValid) => isValid);
 }
 
@@ -147,7 +148,7 @@ async function verifySignatureWithKey(
  * @returns whether timestamp is valid
  */
 function verifyTimestamp(timestamp: number): boolean {
-  if (Number.isNaN(timestamp)) {
+  if (typeof timestamp !== "number" || Number.isNaN(timestamp)) {
     return false;
   }
 
@@ -187,6 +188,7 @@ async function getAllowlistState(tabId: number): Promise<{
  * @returns Whether the acceptable ads subscription is active
  */
 async function isAcceptableAdsActive(): Promise<boolean> {
+  // @ts-expect-error - ewe.subscriptions.ACCEPTABLE_ADS_URL is not typed
   return await ewe.subscriptions.has(ewe.subscriptions.ACCEPTABLE_ADS_URL);
 }
 
@@ -207,7 +209,7 @@ async function getSignature(
   domain: string;
 } | null> {
   try {
-    const url = new URL(sender.tab.url);
+    const url = new URL(sender?.tab?.url as string);
     const btEnv = url.searchParams.get("bt_env");
 
     let signatureUrl = `${Prefs.get("premium_signature_url")}/mw/sign_pbm?w=${websiteId}`;
@@ -239,7 +241,7 @@ async function verifyRequest(
 ): Promise<boolean> {
   try {
     const { signature, timestamp } = message;
-    const domain = new URL(sender.tab.url).hostname;
+    const domain = new URL(sender?.tab?.url as string).hostname;
     if (!verifyTimestamp(timestamp)) return false;
 
     return await verifySignature(domain, timestamp, signature);
@@ -265,7 +267,7 @@ async function getExtensionInfo(
       browser.runtime.getManifest(),
       getSignature(websiteId, sender),
       isAcceptableAdsActive(),
-      getAllowlistState(sender.tab.id)
+      getAllowlistState(sender?.tab?.id as number)
     ]);
 
     if (signature === null) {

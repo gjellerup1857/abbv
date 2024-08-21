@@ -67,7 +67,10 @@ function isAuthRequestEvent(event) {
  * @returns {boolean} whether the event can be trusted
  */
 function isTrustedEvent(event) {
-  return Object.getPrototypeOf(event) === CustomEvent.prototype && !Object.hasOwn(event, "detail");
+  return (
+    Object.getPrototypeOf(event) === CustomEvent.prototype &&
+    !Object.hasOwnProperty.call(event, "detail")
+  );
 }
 
 /**
