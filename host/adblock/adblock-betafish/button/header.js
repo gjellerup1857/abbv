@@ -70,9 +70,17 @@ const loadTemplate = function () {
 };
 
 const addLogoAndTheme = (info, $template) => {
+  const popupMenuTheme =
+    (info.settings && info.settings.color_themes.popup_menu) ?? "default_theme";
+
+  // default_theme applied in html and does not need to be set
+  if (popupMenuTheme !== "default_theme") {
+    const body = document.querySelector("body");
+    body.id = popupMenuTheme;
+    body.dataset.theme = popupMenuTheme.replace("_theme", "");
+  }
+
   const $logo = $template.find(".header-logo");
-  const popupMenuTheme = info.settings ? info.settings.color_themes.popup_menu : "default_theme";
-  $("body").attr("id", popupMenuTheme).data("theme", popupMenuTheme);
   $logo.attr("src", `icons/${popupMenuTheme}/logo.svg`);
   $logo.attr("alt", translate("adblock_logo"));
 };

@@ -1,0 +1,137 @@
+@layer base {
+  [data-extension='adblock'][data-theme='default'],
+  [data-extension='adblock'] [data-theme='default'] {
+    --theme-primary: var(--white);
+    --theme-secondary: var(--gray6);
+    --theme-text-primary: var(--gray1);
+    --theme-text-secondary: var(--gray3);
+    --theme-link-color: var(--blue1);
+    --theme-accent-dark: var(--gray2);
+    --theme-accent-light: var(--gray5);
+    --theme-text-accent: var(--red2);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--white);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='dark'],
+  [data-extension='adblock'] [data-theme='dark'] {
+    --theme-primary: var(--gray2);
+    --theme-secondary: var(--gray1);
+    --theme-text-primary: var(--gray6);
+    --theme-text-secondary: var(--gray4);
+    --theme-link-color: var(--blue3);
+    --theme-accent-dark: var(--gray2);
+    --theme-accent-light: var(--gray3);
+    --theme-text-accent: var(--blue2);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='solarized'],
+  [data-extension='adblock'] [data-theme='solarized'] {
+    --theme-primary: var(--solarized-teal2);
+    --theme-secondary: var(--solarized-teal1);
+    --theme-text-primary  : var(--solarized-gray1);
+    --theme-text-secondary: var(--solarized-gray1);
+    --theme-link-color: var(--solarized-teal4);
+    --theme-accent-dark: var(--solarized-gray1);
+    --theme-accent-light: var(--solarized-teal3);
+    --theme-text-accent: var(--solarized-teal5);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='solarized_light'],
+  [data-extension='adblock'] [data-theme='solarized_light'] {
+    --theme-primary: var(--solarized-yellow3);
+    --theme-secondary: var(--solarized-yellow2);
+    --theme-text-primary: var(--solarized-gray1l);
+    --theme-text-secondary: var(--solarized-gray2l);
+    --theme-link-color: var(--solarized-teal4);
+    --theme-accent-dark: var(--solarized-gray1l);
+    --theme-accent-light: var(--solarized-gray0l);  /* double check this one */
+    --theme-text-accent: var(--solarized-teal2);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='rebecca_purple'],
+  [data-extension='adblock'] [data-theme='rebecca_purple'] {
+    --theme-primary: var(--purple2);
+    --theme-secondary: var(--purple1);
+    --theme-text-primary: var(--white);
+    --theme-text-secondary: var(--white);
+    --theme-link-color: var(--blue3);
+    --theme-accent-dark: var(--purple3);
+    --theme-accent-light: var(--white);
+    --theme-text-accent: var(--white);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='watermelon'],
+  [data-extension='adblock'] [data-theme='watermelon'] {
+    --theme-primary: var(--red2);
+    --theme-secondary: var(--red1);
+    --theme-text-primary: var(--white);
+    --theme-text-secondary: var(--white);
+    --theme-link-color: var(--white);
+    --theme-accent-dark: var(--watermelon);
+    --theme-accent-light: var(--watermelon);
+    --theme-text-accent: var(--white);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='ocean'],
+  [data-extension='adblock'] [data-theme='ocean'] {
+    --theme-primary: var(--blue2);
+    --theme-secondary: var(--blue1);
+    --theme-text-primary: var(--white);
+    --theme-text-secondary: var(--white);
+    --theme-link-color: var(--white);
+    --theme-accent-dark: var(--ocean);
+    --theme-accent-light: var(--white);
+    --theme-text-accent: var(--blue1);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+
+  [data-extension='adblock'][data-theme='sunshine'],
+  [data-extension='adblock'] [data-theme='sunshine'] {
+    --theme-primary: var( --yellow2);
+    --theme-secondary: var(--yellow1);
+    --theme-text-primary: var(--white);
+    --theme-text-secondary: var(--white);
+    --theme-link-color: var(--white);
+    --theme-accent-dark: var(--sunshine);
+    --theme-accent-light: var(--sunshine);
+    --theme-text-accent: var(--white);
+
+    ::selection {
+      background: var(--theme-link-color);
+      color: var(--black);
+    }
+  }
+}

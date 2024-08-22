@@ -223,11 +223,16 @@ function startSubscriptionSelection(title, url) {
 }
 
 function setSelectedThemeColor() {
-  let optionsTheme = "default_theme";
-  if (settings && settings.color_themes) {
-    optionsTheme = settings.color_themes.options_page;
+  const optionsTheme =
+    (settings && settings.color_themes && settings.color_themes.options_page) ?? "default_theme";
+
+  // default_theme applied in html and does not need to be set
+  if (optionsTheme !== "default_theme") {
+    const body = document.querySelector("body");
+    body.id = optionsTheme;
+    body.dataset.theme = optionsTheme.replace("_theme", "");
   }
-  $("body").attr("id", optionsTheme).data("theme", optionsTheme);
+
   $("#sidebar-adblock-logo").attr("src", `icons/${optionsTheme}/logo.svg`);
 }
 
@@ -608,7 +613,10 @@ $(async () => {
 
   const onSettingsChanged = function (name, currentValue) {
     if (name === "color_themes") {
-      $("body").attr("id", currentValue.options_page).data("theme", currentValue.options_page);
+      const optionsTheme = currentValue.options_page;
+      const body = document.querySelector("body");
+      body.id = optionsTheme;
+      body.dataset.theme = optionsTheme.replace("_theme", "");
       $("#sidebar-adblock-logo").attr("src", `icons/${currentValue.options_page}/logo.svg`);
     }
   };
