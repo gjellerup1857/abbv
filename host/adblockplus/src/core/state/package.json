@@ -9,7 +9,8 @@
     "test": "jest -t state:"
   },
   "dependencies": {
-    "rxjs": "7.8.1"
+    "rxjs": "7.8.1",
+    "ts-essentials": "10.0.2"
   },
   "devDependencies": {
     "jest-extended": "4.0.2"
