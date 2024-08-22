@@ -112,14 +112,12 @@ async function getBuildOptions(isDevenv, isSource) {
   if (isDevenv) {
     opts.output = gulp.dest(targetDir);
   } else {
+    opts.baseversion = opts.version;
     if (opts.channel === "development") {
       opts.version = args.build_num
         ? opts.version.concat(".", args.build_num)
         : opts.version.concat(".", await gitUtils.getBuildnum());
     }
-    opts.output = zip.dest(
-      `${opts.basename}${opts.target}-${opts.version}-mv${opts.manifestVersion}${opts.archiveType}`,
-    );
   }
   if (args.ext_version) {
     opts.version = args.ext_version;
@@ -136,15 +134,52 @@ async function getBuildOptions(isDevenv, isSource) {
   return opts;
 }
 
+async function getBuildOutput(opts) {
+  if (opts.isDevenv) {
+    return gulp.dest(targetDir);
+  }
+
+  const filenameTarget = opts.channel === "release" ? opts.target : `${opts.target}${opts.channel}`;
+  const filenameVersion = await getFilenameVersion(opts);
+
+  const filenameParts = [
+    opts.basename,
+    filenameTarget,
+    filenameVersion,
+    `mv${opts.manifestVersion}`,
+  ];
+  const filename = `${filenameParts.join("-")}${opts.archiveType}`;
+
+  return zip.dest(`./dist/release/${filename}`);
+}
+
+async function getFilenameVersion(opts) {
+  try {
+    const hasReleaseTag = await gitUtils.hasTag(`${opts.basename}-${opts.baseversion}`);
+    if (hasReleaseTag) {
+      return opts.version;
+    }
+  } catch (ex) {
+    // We may not be running in the context of a git repository, such as
+    // when generating builds from the source archive
+    return opts.version;
+  }
+
+  return gitUtils.getCommitHash();
+}
+
 async function buildDevenv() {
   const options = await getBuildOptions(true);
-  return merge(await getBuildSteps(options)).pipe(options.output);
+  const output = await getBuildOutput(options);
+
+  return merge(await getBuildSteps(options)).pipe(output);
 }
 
 async function buildPacked() {
   const options = await getBuildOptions(false);
+  const output = await getBuildOutput(options);
 
-  return merge(await getBuildSteps(options)).pipe(options.output);
+  return merge(await getBuildSteps(options)).pipe(output);
 }
 
 function cleanDir() {
@@ -157,7 +192,9 @@ export const build = gulp.series(buildPacked);
 
 export async function source() {
   const options = await getBuildOptions(false, true);
-  return tasks.sourceDistribution(`${options.basename}-${options.version}`);
+  const filenameVersion = await getFilenameVersion(options);
+
+  return tasks.sourceDistribution(`./dist/release/${options.basename}-${filenameVersion}`);
 }
 
 function startWatch() {

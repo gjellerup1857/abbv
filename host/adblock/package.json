@@ -24,6 +24,7 @@
     "build:release:edge": "npx gulp build -m 2 -t chrome",
     "build:release:all": "npx gulp build -m 3 -t chrome && npx gulp build -m 2 -t chrome && npx gulp build -m 2 -t firefox",
     "build:release:beta": "npx gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
+    "build:source": "npx gulp source",
     "json-bundle": "node build/jsonBundle.cjs",
     "lint": "eslint --ext .js,.mjs adblock-betafish/ src/",
     "lint:standard": "eslint --ignore-path .gitignore src/",

@@ -15,7 +15,8 @@ cp $EXTENSION testpages.adblockplus.org
 
 pushd testpages.adblockplus.org
 IMAGE_NAME="${IMAGE_NAME:-compliance}"
-docker build -t $IMAGE_NAME --build-arg EXTENSION_FILE="$EXTENSION" .
+EXTENSION_FILE="${EXTENSION##*/}" # Keep filename without folders
+docker build -t $IMAGE_NAME --build-arg EXTENSION_FILE="$EXTENSION_FILE" .
 
 TERMINAL="${TERMINAL:-it}"
 BROWSER="${BROWSER:-chromium latest}"
