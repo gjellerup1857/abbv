@@ -1,0 +1,75 @@
+@import "tailwindcss/base";
+@import './adblock-color-themes.css';
+@import './extension-theme-adblock.css';
+@import './extension-theme-abp.css';
+
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+
+:root {
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Note: These theme colors names need to be updated. */
+  /* Theme colors default */
+  /* Also uses general white */
+  --gray1: #333333;
+  --gray2: #666666;
+  --gray3: #999999;
+  --gray5: #e6e6e6;
+  --gray6: #f4f4f4;
+  --red2: #e40d0d;
+  --blue1: #0047ff;
+
+  /* Theme colors dark */
+  /* Also uses --gray 1, 2, 3, 6 */
+  --gray4: #c6c6c6;
+  --blue2: #03bcfc;
+  --blue3: #4ecdf9;
+
+  /* Theme colors solarized */
+  --solarized-gray1: #90a2a2;
+  --solarized-teal1: #002c38;
+  --solarized-teal2: #003643;
+  --solarized-teal3: #2f5b61;
+  --solarized-teal4: #00a498;
+  --solarized-teal5: #2be3d6;
+
+  /* Theme colors solarized_light */
+  /* Also uses solarized-teal4 & solarized-teal2 from solarized */
+  --solarized-gray0l: #4c6369;
+  --solarized-gray1l: #607c84;
+  --solarized-gray2l: #76898d;
+  --solarized-yellow2: #eee8d5;
+  --solarized-yellow3: #fdf6e3;
+
+  /* Theme colors rebecca_purple */
+  /* Also uses --blue3, --white */
+  --purple1: #48226e;
+  --purple2: #663399;
+  --purple3: #b399cc;
+
+  /* Theme colors watermelon */
+  /* Also uses --red2, --white */
+  --watermelon: #f18686;
+  --red1: #ce0707;
+
+  /* Theme colors ocean */
+  /* Also uses --blue1, 2, --white */
+  --ocean: #81defe;
+
+  /* Theme colors sunshine */
+  /* Also uses --white */
+  --yellow1: #ff9c00;
+  --yellow2: #ffae00;
+  --sunshine: #ffd780;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+
