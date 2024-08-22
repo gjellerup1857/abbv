@@ -122,8 +122,8 @@ that you want to test.
 
 ### Unit testing
 
-The `./test/unit` folder contains various mocha unit tests files 
-which can be run via `npm run $ unit.legacy`. For `.ts` files we have jest 
+The `./test/unit` folder contains various mocha unit tests files
+which can be run via `npm run $ unit.legacy`. For `.ts` files we have jest
 unit tests that can be run via `npm run $ unit.standard`.
 Those can be run together via `npm test`.
 
@@ -154,13 +154,16 @@ The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
 headful mode instead of headless.
 
 #### LambdaTest run
-  
+
 To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
 
 - Create a new .env file with your Lambda credentials. You can use the
 [.env.e2e.template](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/.env.e2e.template?ref_type=heads)
 provided as a guide.
 - Generate the [release builds](#building-the-extension) of the extension.
+- Additional steps are needed for running the tests with MV3 version of the extension:
+  - Install the axios package globally: `npm install -g axios`
+  - Upload the extension to LambdaTest by running: `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
 - Run the test:end-to-end npm script `npm run test:end-to-end all` or
 `npm run test:end-to-end-mv3 all`.
 

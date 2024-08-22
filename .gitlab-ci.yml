@@ -29,9 +29,12 @@ stages:
       - local: '$HOSTPATH/.gitlab-ci.yml'
         inputs:
           hostpath: $HOSTPATH
+          parent_pipeline_source: $PARENT_PIPELINE_SOURCE
     strategy: depend
     forward:
       pipeline_variables: true
+  variables:
+    PARENT_PIPELINE_SOURCE: $CI_PIPELINE_SOURCE
 
 adblock:
   extends: .child
