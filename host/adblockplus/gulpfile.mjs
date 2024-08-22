@@ -187,7 +187,20 @@ async function getBuildOptions(isDevenv, isSource)
 
         versionParts[i] = "0";
       }
-      versionParts[3] = args["build_num"] || await gitUtils.getBuildnum();
+
+      try
+      {
+        versionParts[3] = args["build_num"] || await gitUtils.getBuildnum();
+      }
+      catch (ex)
+      {
+        // We may not be running in the context of a git repository, such as
+        // when generating builds from the source archive
+        throw new Error([
+          "Unable to determine build number.",
+          "You can specify a build number using the build-num argument."
+        ].join(" "));
+      }
 
       opts.version = versionParts.join(".");
     }
@@ -229,11 +242,20 @@ async function getBuildOutput(opts)
 
 async function getFilenameVersion(opts)
 {
-  const hasReleaseTag = await gitUtils.hasTag(
-    `${opts.basename}-${opts.baseversion}`
-  );
-  if (hasReleaseTag)
+  try
   {
+    const hasReleaseTag = await gitUtils.hasTag(
+      `${opts.basename}-${opts.baseversion}`
+    );
+    if (hasReleaseTag)
+    {
+      return opts.version;
+    }
+  }
+  catch (ex)
+  {
+    // We may not be running in the context of a git repository, such as
+    // when generating builds from the source archive
     return opts.version;
   }
 
