@@ -151,7 +151,6 @@ div.mab-page-box > .option-page-content {
 div.mab-page-box > .option-page-content > footer h2 {
   font-size: 18px;
   font-weight: bold;
-  color: var(--options-page-accent-text);
 }
 
 .myadblock_feedback_footer p {
@@ -210,7 +209,7 @@ div.mab-page-box > .option-page-content > footer h2 {
   padding: 10px 0;
   font-size: 14px;
   font-weight: bold;
-  color: var(--options-page-accent-text);
+  color: inherit;
   cursor: pointer;
   background: var(--background-color);
 }
@@ -257,7 +256,7 @@ div.mab-page-box > .option-page-content > footer h2 {
 
 #photo-icon {
   margin-right: 8px;
-  color: var(--options-page-accent-text);
+  color: inherit;
 }
 #channel-options,
 #custom-channel-options {
@@ -643,7 +642,7 @@ input.invisible-overlay {
 /* Themes */
 #video-icon {
   margin-right: 16px;
-  color: var(--options-page-accent-text);
+  color: inherit;
 }
 .theme-locked-icon {
   display: none;
@@ -732,6 +731,9 @@ input.invisible-overlay {
 #sync-title-block {
   justify-content: space-between;
 }
+#sync-title-block i {
+  color: inherit;
+}
 #sync-title-block.details-hidden {
   margin-bottom: 20px;
 }
@@ -781,7 +783,6 @@ input.invisible-overlay {
   line-height: normal;
   margin-bottom: 20px;
 }
-.extension-name-item,
 .accent-text {
   color: var(--options-page-accent-text);
 }
