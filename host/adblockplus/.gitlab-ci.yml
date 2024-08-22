@@ -103,23 +103,28 @@ buildfromsource:
   stage: build
   needs: ["build"]
   before_script:
-   - cd $[[ inputs.hostpath ]]
+    - cd $[[ inputs.hostpath ]]
   script:
-   - mkdir source
-   - tar xvf dist/release/adblockplus-*.tar.gz -C source
-   - cd source
-   - npm ci --cache .npm --prefer-offline
-   # Create MV2 extension builds from source archive
-   - npm run build:release chrome -- -m 2 --unhandled-rejections=strict
-   - npm run build:release firefox -- -m 2 --unhandled-rejections=strict
-   # Create MV3 extension builds from source archive
-   - npm run build:release chrome -- -m 3 --unhandled-rejections=strict
+    # We need to generate the builds outside of the git repo to avoid any
+    # implicit dependencies to git in our build scripts
+    - mkdir /tmp/source
+    - tar xvf dist/release/adblockplus-*.tar.gz -C /tmp/source
+    - cd /tmp/source
+    - npm ci --cache .npm --prefer-offline
+    # Create MV2 extension builds from source archive
+    - npm run build:release chrome -- -m 2 --unhandled-rejections=strict
+    - npm run build:release firefox -- -m 2 --unhandled-rejections=strict
+    # Create MV3 extension builds from source archive
+    - npm run build:release chrome -- -m 3 --unhandled-rejections=strict
+  after_script:
+    # We cannot refer to artifacts in directories outside of the project
+    - cp -r /tmp/source $[[ inputs.hostpath ]]/source
   artifacts:
-   name: "adblockplus-source-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
-   paths:
-     - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv2.zip
-     - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv3.zip
-     - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-firefox-*-mv2.xpi
+    name: "adblockplus-source-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv2.zip
+      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv3.zip
+      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-firefox-*-mv2.xpi
   rules:
     # Do not trigger a merge request pipeline
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
