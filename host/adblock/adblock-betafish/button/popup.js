@@ -168,8 +168,6 @@ const popupMenuDCCtaClosedKey = "popup_menu_dc_cta_closed";
 const popupMenuVPNCtaClosedKey = "popup_menu_vpn_cta_closed";
 
 const shown = {};
-
-let popupMenuTheme = "default_theme";
 const themeCTA = "";
 let itemClicked = false;
 
@@ -243,6 +241,10 @@ const start = async function () {
   }
 
   const info = await browser.runtime.sendMessage({ command: "getCurrentTabInfo", tabId });
+
+  const popupMenuTheme =
+    (info.settings && info.settings.color_themes.popup_menu) ?? "default_theme";
+
   if (info) {
     const text = await browser.action.getBadgeText({ tabId: info.id });
     let newBadgeText = translate("new_badge");
@@ -264,12 +266,6 @@ const start = async function () {
     sendMessageWithNoResponse(genMsgData);
     sendMessageWithNoResponse({ command: "resetBadgeText" });
     void modulesAsGlobal.messaging.send("adblock:cleanUpSevenDayAlarm");
-
-    if (info.settings) {
-      popupMenuTheme = info.settings.color_themes.popup_menu;
-    }
-    $("body").attr("id", popupMenuTheme).data("theme", popupMenuTheme);
-    $(".header-logo").attr("src", `icons/${popupMenuTheme}/logo.svg`);
 
     if (info && info.errorStr) {
       processError(info.errorStr, info.stack, info.message);
@@ -690,7 +686,10 @@ const start = async function () {
     .on("mouseenter", function handleIn() {
       $("#themes-cta-text").text(translate("check_out_themes"));
       const currentThemeCTA = $(this).attr("data-theme-cta");
-      $("body").attr("id", currentThemeCTA).data("theme", currentThemeCTA);
+      const body = document.querySelector("body");
+      body.id = currentThemeCTA;
+      body.dataset.theme = currentThemeCTA;
+
       let logoFileName = "logo.svg";
       if (browser.runtime && browser.runtime.id === betaExtId) {
         logoFileName = "beta_logo.svg";
@@ -700,7 +699,10 @@ const start = async function () {
     })
     .on("mouseleave", function handleOut() {
       $("#themes-cta-text").text(translate("adblock_looked_like_this"));
-      $("body").attr("id", popupMenuTheme).data("theme", popupMenuTheme);
+      const body = document.querySelector("body");
+      body.id = popupMenuTheme;
+      body.dataset.theme = popupMenuTheme;
+
       let logoFileName = "logo.svg";
       if (browser.runtime && browser.runtime.id === betaExtId) {
         logoFileName = "beta_logo.svg";

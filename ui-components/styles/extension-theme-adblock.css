@@ -1,0 +1,9 @@
+@layer base {
+  [data-extension='adblock'] {
+    --extension-font-family: "Lato", Arial, sans-serif;
+  }
+
+  body {
+    @apply m-0 text-base;
+  }
+}

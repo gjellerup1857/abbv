@@ -315,7 +315,11 @@ $(async () => {
   if (settings) {
     optionsTheme = settings.color_themes.options_page;
   }
-  $("body").attr("id", optionsTheme).data("theme", optionsTheme);
+
+  const body = document.querySelector("body");
+  body.id = optionsTheme;
+  // New components look for theme as a data attribute. When this is updated completely with new components, the line above can be deleted.
+  body.dataset.theme = optionsTheme.replace("_theme", "");
   $("#sidebar-adblock-logo").attr("src", `icons/${optionsTheme}/logo.svg`);
   bugReportLogic();
 });
