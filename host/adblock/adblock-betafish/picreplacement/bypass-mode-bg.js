@@ -16,11 +16,8 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser */
+/* global browser, log */
 
-import * as ewe from "@eyeo/webext-ad-filtering-solution";
-import { Prefs } from "../alias/prefs";
-import { log } from "../utilities/background/index";
 import { License } from "./check";
 
 /**
@@ -72,7 +69,8 @@ function getAllowData(domain, timestamp) {
  */
 async function getKey(key) {
   const abKey = base64ToArrayBuffer(key);
-  return crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
+  const importedKey = await crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
+  return importedKey;
 }
 
 /**
@@ -81,126 +79,41 @@ async function getKey(key) {
  * @param {Object} message - "users.isPaying" message
  * @param {Object} sender - Message sender
  *
- * @returns {Promise<Object>} Payload and additional information
+ * @returns {Promise<string|null>} requested payload
  */
 async function handleUsersIsPayingMessage(message, sender) {
   // Check Premium state
-  if (!isValidPremiumAuthMessage(message)) {
-    return { payload: null, extensionInfo: null };
-  }
-
-  const isVerified = await verifyRequest(message, sender);
-  if (!isVerified) {
-    return { payload: null, extensionInfo: null };
-  }
-
-  let payload = null;
   if (!License.isActiveLicense()) {
     log("user not active");
-  } else {
-    payload = License.getBypassPayload();
-    if (!payload) {
-      log("no bypass mode payload");
-    }
-  }
-  const extensionInfo = await getExtensionInfo(message, sender);
-
-  return { payload, extensionInfo };
-}
-
-/**
- * Retrieves additional data to be sent along with the payload
- *
- * @param {Object} message - Message containing signature request data
- * @param {Object} sender - Message sender
- * @returns {Promise<Object|null>} extensionInfo - Additional data or null if conditions are not met
- */
-async function getExtensionInfo(message, sender) {
-  try {
-    const [dataCollectionOptOut, manifest, signature, acceptableAds, allowlist] = await Promise.all(
-      [
-        Prefs.get("data_collection_opt_out"),
-        browser.runtime.getManifest(),
-        getSignature(message, sender),
-        isAcceptableAdsActive(),
-        getAllowlistState(sender.tab.id),
-      ],
-    );
-
-    if (dataCollectionOptOut === true || signature === null) {
-      return null;
-    }
-
-    return {
-      name: manifest.short_name,
-      version: manifest.version,
-      acceptableAds,
-      allowlistState: allowlist,
-      ...signature,
-    };
-  } catch (error) {
     return null;
   }
-}
 
-/**
- * Retrieves signature from server
- *
- * @param {Object} message - Message containing signature request data
- * @param {Object} sender - Message sender
- * @returns {Promise<Object|null>} Signature data or null if request fails
- */
-async function getSignature(message, sender) {
-  const { websiteId } = message;
-  try {
-    const url = new URL(sender.url);
-    const btEnv = url.searchParams.get("bt_env");
-
-    let signatureUrl = `${License.MAB_CONFIG.signatureURL}/mw/sign_pbm?w=${websiteId}`;
-    if (btEnv) {
-      signatureUrl += `&bt_env=${btEnv}`;
-    }
-
-    const response = await fetch(signatureUrl, {
-      method: "POST",
-    });
-    if (!response.ok) {
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
+  // Verify timestamp
+  const { signature, timestamp } = message;
+  /* eslint-disable-next-line no-use-before-define */
+  const validTimestamp = verifyTimestamp(timestamp);
+  if (!validTimestamp) {
+    log("invalid Timestamp", timestamp);
     return null;
   }
-}
 
-/**
- * Checks whether Acceptable Ads are active
- *
- * @returns {Promise<boolean>} Whether Acceptable Ads are active
- */
-async function isAcceptableAdsActive() {
-  return ewe.subscriptions.has(ewe.subscriptions.ACCEPTABLE_ADS_URL);
-}
-
-/**
- * Checks whether current tab is allowlisted
- *
- * @param {number} tabId - ID of the current tab
- * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
- */
-async function getAllowlistState(tabId) {
-  const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
-  let source = null;
-  if (allowlistingFilters.length > 0) {
-    const metaData = await ewe.filters.getMetadata(allowlistingFilters[0]);
-    source = metaData !== null && metaData.origin === "web" ? "1ca" : "user";
+  // Verify signature
+  const domain = new URL(sender.url).hostname;
+  /* eslint-disable-next-line no-use-before-define */
+  const validSignature = await verifySignature(domain, timestamp, signature);
+  if (!validSignature) {
+    log("invalid signature");
+    return null;
   }
 
-  return {
-    status: allowlistingFilters.length > 0,
-    source,
-    oneCA: ewe?.allowlisting !== undefined,
-  };
+  // Retrieve payload
+  const payload = License.getBypassPayload();
+  if (!payload) {
+    log("no bypass mode payload");
+    return null;
+  }
+
+  return payload;
 }
 
 /**
@@ -220,13 +133,12 @@ async function verifySignature(domain, timestamp, signature) {
 
   const data = getAllowData(domain, timestamp);
   const abSignature = base64ToArrayBuffer(signature);
-  const authorizedKeys = Prefs.get("bypass_authorizedKeys");
 
-  const promisedValidations = authorizedKeys.map(async (key) => {
-    return verifySignatureWithKey(data, abSignature, key);
-  });
+  const promisedValidations = License.MAB_CONFIG.bypassAuthorizedKeys.map(
+    /* eslint-disable-next-line no-use-before-define */
+    (key) => verifySignatureWithKey(data, abSignature, key),
+  );
   const validations = await Promise.all(promisedValidations);
-
   return validations.some((isValid) => isValid);
 }
 
@@ -261,56 +173,18 @@ function verifyTimestamp(timestamp) {
 }
 
 /**
- * Checks whether request is valid
- *
- * @param {Object} message - Request message
- * @param {Object} sender - Message sender
- *
- * @returns {Promise<boolean>} whether request is valid
- */
-async function verifyRequest(message, sender) {
-  const { signature, timestamp } = message;
-  const domain = new URL(sender.url).hostname;
-
-  if (!verifyTimestamp(timestamp)) {
-    log("invalid Timestamp", timestamp);
-    return false;
-  }
-
-  if (!(await verifySignature(domain, timestamp, signature))) {
-    log("invalid signature");
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * Checks whether candidate is a valid message for premium authentication.
- *
- * @param candidate - Candidate
- * @returns whether candidate is a valid message for premium authentication
- */
-function isValidPremiumAuthMessage(candidate) {
-  return (
-    candidate !== null &&
-    typeof candidate === "object" &&
-    "signature" in candidate &&
-    "timestamp" in candidate
-  );
-}
-
-/**
  * Initializes module
  */
 function start() {
+  /* eslint-disable consistent-return */
   browser.runtime.onMessage.addListener((message, sender) => {
     if (message.command !== "users.isPaying") {
-      return null;
+      return;
     }
 
     return handleUsersIsPayingMessage(message, sender);
   });
+  /* eslint-enable consistent-return */
 }
 
 start();
