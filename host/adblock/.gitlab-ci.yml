@@ -32,6 +32,9 @@ default:
         - $[[ inputs.hostpath ]]/package-lock.json
     paths:
       - $[[ inputs.hostpath ]]/.npm/
+  tags:
+    - "GCP"
+  interruptible: true
 
 stages:
   - build
@@ -128,7 +131,6 @@ check_filesizes:firefox_mv2:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   needs: ["build"]
   before_script:
     - apk add bash git
