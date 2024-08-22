@@ -38,6 +38,10 @@
   justify-content: space-between;
 }
 
+#stats-tab-header i {
+  color: inherit;
+}
+
 /* stats tab menu / legend items */
 
 #stats-tabs ul {

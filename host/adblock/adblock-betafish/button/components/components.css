@@ -48,9 +48,9 @@ cancel-action-button > button {
   border-radius: 3px;
   border-width: 1px;
   border-style: solid;
-  border-color: var(--popup-button-secondary-text);
+  border-color: var(--popup-secondary-text-color);
   background-color: var(--popup-card-background-color);
-  color: var(--popup-button-secondary-text);
+  color: var(--popup-secondary-text-color);
   width: 100%;
   height: 2.2rem;
   font-size: 13px;
@@ -60,7 +60,7 @@ confirm-text {
   padding: 0 0.5rem 0 0;
   font-style: italic;
   line-height: 1.4;
-  color: var(--popup-button-secondary-text);
+  color: var(--popup-secondary-text-color);
 }
 
 inline-link-button > button {
@@ -91,6 +91,10 @@ subsection-navigation {
 menu-link-button > button,
 subsection-navigation > button {
   background-color: var(--popup-card-background-color);
+}
+
+subsection-navigation > button i.material-icons {
+  color: var(--popup-secondary-text-color);
 }
 
 menu-link-button > button {
