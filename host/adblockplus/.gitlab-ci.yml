@@ -524,7 +524,7 @@ uitests:lambdatest:MV3:all:
     - docker:24.0.5-dind
   script:
     - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
-    - docker run --cpus=2 --shm-size=2g -t -e SUITE=smoke -e CI end-to-end
+    - docker run --cpus=2 --shm-size=2g -t -e SUITE -e CI end-to-end
   after_script:
     - cd $[[ inputs.hostpath ]]
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
@@ -536,6 +536,8 @@ uitests:lambdatest:MV3:all:
     expire_in: 1 mo
   rules:
     - !reference [.always, rules]
+  variables:
+    SUITE: filterlists
 
 uitests:docker:MV2:firefox:
   extends: .uitests:docker
