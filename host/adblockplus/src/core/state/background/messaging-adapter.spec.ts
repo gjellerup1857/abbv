@@ -23,7 +23,7 @@ import {
   handleSetStateMessage,
   isStateMessage
 } from "./messaging-adapter";
-import { MessageName } from "../shared";
+import { MessageName, type StateMessage } from "../shared";
 
 describe("state:messagingAdapter", () => {
   describe("addMessageListeners", () => {
@@ -117,6 +117,20 @@ describe("state:messagingAdapter", () => {
         type,
         key: "foo"
       };
+
+      handleSetStateMessage(message, store);
+      expect(store.foo.value).toBe(oldValue);
+    });
+
+    it("should not update the value if the message is invalid", () => {
+      const oldValue = "__old_value__";
+      const store = {
+        foo: new BehaviorSubject(oldValue)
+      };
+      const message = {
+        invalid: "message",
+        key: "foo"
+      } as unknown as StateMessage;
 
       handleSetStateMessage(message, store);
       expect(store.foo.value).toBe(oldValue);
