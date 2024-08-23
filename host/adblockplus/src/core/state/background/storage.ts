@@ -18,6 +18,11 @@
 import browser from "webextension-polyfill";
 import { type StateValue, type StateData } from "../shared";
 
+/* ######################### !! ATTENTION !! ############################ */
+/* Note that this is a temporary solution. The State Core Utility should  */
+/* use the Storage Core Utility for disk I/O once that is available.      */
+/* ###################################################################### */
+
 /**
  * The prefix for the keys we want to store.
  */
