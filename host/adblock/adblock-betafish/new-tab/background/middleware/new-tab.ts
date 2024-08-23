@@ -107,7 +107,7 @@ function getBehavior(command: Command): NewTabBehavior | null {
 
   return {
     target: command.url,
-    license_state_list: command.license_state_list || defaultLicenseState,
+    licenseStateList: command.license_state_list || defaultLicenseState,
     method,
   };
 }

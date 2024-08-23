@@ -16,11 +16,6 @@
  */
 
 /**
- * Key for stats storage
- */
-export const statsStorageKey = "onpage_dialog_command_stats";
-
-/**
  * On-page UI command stats
  */
 export interface Stats {

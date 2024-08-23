@@ -3778,5 +3778,21 @@
   "get_around_popups": {
     "message": "Mit dem Bypass-Modus können Sie einige dieser Pop-ups umgehen, ohne AdBlock deaktivieren zu müssen.",
     "description": "Description of Bypass Mode on the main Premium options page"
+  },
+  "yt_auto_allow_dialog_title": {
+    "description": "Titeltext auf OPD, der Nutzern angezeigt wird, wenn die YT-Werbewand entdeckt, aber nicht blockiert wird",
+    "message": "YouTube verhindert, dass Videos abgespielt werden, wenn Ihr Adblocker aktiviert ist."
+  },
+  "yt_auto_allow_dialog_body_part_I": {
+    "description": "Oberer Text auf OPD, der Nutzern angezeigt wird, wenn die YT-Werbewand entdeckt, aber nicht blockiert wird",
+    "message": "Sie können Ihre Lieblingsvideos auf YouTube anschauen, wenn Sie Werbung zulassen."
+  },
+  "yt_auto_allow_dialog_body_part_II": {
+    "description": "Unterer Text auf OPD, der Nutzern angezeigt wird, wenn die YT-Werbewand entdeckt, aber nicht blockiert wird",
+    "message": "Öffnen Sie das AdBlock-Menü und klicken Sie auf „Auf dieser Website pausieren“, um Werbung vorübergehend zuzulassen."
+  },
+  "yt_auto_allow_dialog_button": {
+    "description": "OPD Schaltflächentext auf OPD, der Nutzern angezeigt wird, wenn die YT-Werbewand entdeckt, aber nicht blockiert wird",
+    "message": "Mehr erfahren"
   }
 }

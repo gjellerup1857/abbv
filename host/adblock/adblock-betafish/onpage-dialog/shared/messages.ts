@@ -15,9 +15,20 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const sevenDaysInMilliSeconds = 7 * 24 * 60 * 60 * 1000;
+import { type PingMessage } from "./messages.types";
 
-export const ytAllowlistHardEndDate = "yt_allowlist_hard_end_date";
-export const ytAllowlistLanguageCodes = "yt_allowlist_language_codes";
-export const ytAllowlistDialogLanguageCodes = "yt_allowlist_with_dialog_language_codes";
-export const ytAllowlistStartDate = "yt_allowlist_start_date";
+/**
+ * Checks whether given candidate is message of type "onpage-dialog.ping"
+ *
+ * @param candidate - Candidate
+ *
+ * @returns whether given candidate is message of type "onpage-dialog.ping"
+ */
+export function isPingMessage(candidate: unknown): candidate is PingMessage {
+  return (
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "displayDuration" in candidate &&
+    "type" in candidate
+  );
+}

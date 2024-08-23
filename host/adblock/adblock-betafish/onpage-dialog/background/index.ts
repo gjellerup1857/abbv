@@ -15,4 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./tab-manager";
+export * from "./dialog.types";
+export * from "./tab-manager";
+export * from "./tab-manager.types";
+export * from "./timing.types";

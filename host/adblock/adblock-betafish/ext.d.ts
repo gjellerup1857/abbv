@@ -18,6 +18,33 @@
  * Global extension utilities
  */
 declare namespace ext {
+  const pages: Pages;
+
+  interface Pages {
+    onLoaded: OnLoadedEvent;
+  }
+
+  /**
+   * Fired when a tab loading status is complete
+   *
+   */
+  interface OnLoadedEvent {
+    /**
+     * Registers an event listener <em>callback</em> to the onLoaded event.
+     *
+     * @param callback Called when an tab is loaded.
+     * The parameters of this function depend on the type of event.
+     */
+    addListener(callback: (tab: browser.Tabs.Tab) => void): void;
+
+    /**
+     * Removes an event listener <em>callback</em> to an event.
+     *
+     * @param callback Called when an tab is loaded.
+     * The parameters of this function depend on the type of event.
+     */
+    removeListener(callback: (tab: browser.Tabs.Tab) => void): void;
+  }
   /**
    * Adds trusted message types for certain origins
    *

@@ -40,10 +40,10 @@ export const doesLicenseStateMatch = async function (
   behavior: LicenseStateBehavior,
 ): Promise<boolean> {
   // If the string is empty, then its a match
-  if (!behavior.license_state_list) {
+  if (!behavior.licenseStateList) {
     return true;
   }
-  const licenseStates = behavior.license_state_list.split(",");
+  const licenseStates = behavior.licenseStateList.split(",");
   await License.ready();
   return licenseStates.some(
     (state) =>

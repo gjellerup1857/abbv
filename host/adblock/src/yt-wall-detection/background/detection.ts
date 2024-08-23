@@ -25,6 +25,7 @@ import {
   sevenDaysInMilliSeconds,
   ytAllowlistHardEndDate,
   ytAllowlistLanguageCodes,
+  ytAllowlistDialogLanguageCodes,
   ytAllowlistStartDate,
 } from "./detection.types";
 import { determineUserLanguage } from "~/utilities/background/bg-functions";
@@ -33,7 +34,15 @@ import { MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
+import { Timing, showOnpageDialog } from "~/onpage-dialog/background";
 import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "../shared/index";
+
+let pageLoadedHandler: (tab: browser.Tabs.Tab) => void;
+
+/**
+ * Dialog ID
+ */
+const dialogId = "yt-wall-detection";
 
 /**
  * Should the extension allowlist YT users in a specific locale/language
@@ -41,9 +50,21 @@ import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "
  */
 const shouldAllowlistForLanguages = function (): Boolean {
   const allowlistLanguages = Prefs.get(ytAllowlistLanguageCodes);
+  const dialogLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
   const locale = determineUserLanguage();
   const language = locale.substring(0, 2);
-  return allowlistLanguages.includes(language);
+  return allowlistLanguages.includes(language) || dialogLanguages.includes(language);
+};
+
+/**
+ * Should the extension show an On Page Dialog after allowing ads on YT
+ *
+ */
+const shouldShowDialogForLanguages = function (): Boolean {
+  const dialogLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
+  const locale = determineUserLanguage();
+  const language = locale.substring(0, 2);
+  return dialogLanguages.includes(language);
 };
 
 /**
@@ -110,6 +131,33 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
 };
 
 /**
+ * Show the On Page Dialog once the tab has been reloaded
+ *
+ */
+const onLoaded = (tabId: number, tab: browser.Tabs.Tab): void => {
+  if (tabId !== tab.id) {
+    return;
+  }
+  ext.pages.onLoaded.removeListener(pageLoadedHandler);
+  void showOnpageDialog(tabId, tab, {
+    behavior: {
+      displayDuration: 0,
+      target: Prefs.get("yt_auto_allow_dialog_url"),
+      timing: Timing.immediate,
+    },
+    content: {
+      body: [
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
+        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
+      ],
+      button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
+      title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
+    },
+    id: dialogId,
+  });
+};
+
+/**
  * Process the YouTube Wall Detected message from the content script
  *
  */
@@ -117,6 +165,9 @@ const processYouTubeWallDetectedMessage = async (
   message: AdWallMessage,
   sender: MessageSender,
 ): Promise<void> => {
+  if (typeof sender.page?.id === "undefined") {
+    return;
+  }
   const filters = await ewe.filters.getAllowingFilters(sender.page.id);
   const isAllowListed = !!filters.length;
   ServerMessages.recordAdWallMessage(
@@ -128,6 +179,11 @@ const processYouTubeWallDetectedMessage = async (
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true);
     browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
+    if (shouldShowDialogForLanguages()) {
+      pageLoadedHandler = onLoaded.bind(null, sender.page.id);
+      ext.pages.onLoaded.addListener(pageLoadedHandler);
+    }
+    browser.tabs.reload(sender.page.id);
   }
 };
 

@@ -16,9 +16,14 @@
  */
 
 /**
- * Key for on-page dialog timing configurations storage
+ * Timing name
  */
-export const configsStorageKey = "onpage_dialog_timing_configurations";
+export enum Timing {
+  afterWebAllowlisting = "after_web_allowlisting",
+  immediate = "immediate",
+  revisitWebAllowlisted = "revisit_web_allowlisted_site",
+  afterNavigation = "after_navigation",
+}
 
 /**
  * On-page UI timing configuration

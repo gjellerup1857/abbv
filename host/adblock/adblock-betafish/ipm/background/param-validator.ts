@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isValidHostname, parseDomains } from "adblockpluscore/lib/url";
+import { isDomainList } from "../../../src/core/url/shared";
 import { isValidLicenseState } from "./license";
 import { Command } from "./command-library.types";
 import { ParamDefinitionList, ParamValidator } from "./param-validator.types";
@@ -103,24 +103,16 @@ export function validateParams<T>(
  * Validates a list of domains
  *
  * @param param The parameter to check
- * @returns whether the given parameter is a safe URL string
+ * @returns whether the given parameter is a valid domain list
  */
 export const isValidDomainList: ParamValidator = (param: unknown): boolean => {
   if (!param) {
     return true;
   }
+
   if (typeof param !== "string") {
     return false;
   }
-  const parsedDomains = parseDomains(param, ",");
-  if (!parsedDomains) {
-    return true;
-  }
-  let isValid = true;
-  for (const [domain] of parsedDomains) {
-    if (domain) {
-      isValid = isValid && isValidHostname(domain);
-    }
-  }
-  return isValid;
+
+  return isDomainList(param);
 };

@@ -28,8 +28,6 @@ import { commandStats } from "../ipm/background/command-library.types";
 
 import { eventStorageKey } from "../ipm/background/data-collection.types";
 
-import { configsStorageKey } from "../onpage-dialog/background/timing.types";
-
 import { statsStorageKey } from "../onpage-dialog/background/stats.types";
 
 const keyPrefix = "pref:";
@@ -234,18 +232,22 @@ defaults.logger_log_level = 3;
  *
  * @type {Object}
  */
-defaults[statsStorageKey] = {};
+defaults.onpage_dialog_command_stats = {};
 
 /**
  * Map of on-page dialog timing configurations
  *
  * @type {Object}
  */
-defaults[configsStorageKey] = {
+defaults.onpage_dialog_timing_configurations = {
   after_web_allowlisting: {
     cooldownDuration: 24,
     maxAllowlistingDelay: 2,
     maxDisplayCount: 3,
+  },
+  immediate: {
+    cooldownDuration: 0,
+    maxDisplayCount: 0,
   },
   revisit_web_allowlisted_site: {
     cooldownDuration: 48,
@@ -287,11 +289,27 @@ defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 defaults.send_ad_wall_messages = true;
 
 /**
- * Language codes that should be auto allowing YT
+ * Where the dialog for the YouTube wall should link users to
+ *
+ * @type {string}
+ */
+defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube/";
+
+/**
+ * Language codes that should auto allowing on YouTube
  *
  * @type {Array of string}
  */
-defaults.yt_allowlist_language_codes = ["fr", "zh"];
+defaults.yt_allowlist_language_codes = ["fr", "pt"];
+
+/**
+ * Language codes that should show an On Page Dialog after auto allowing
+ * Note:  These locales will be considered as well as the ones in `yt_allowlist_language_codes`,
+ *        so they don't need to be duplicated in that preference
+ *
+ * @type {Array of string}
+ */
+defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
 
 /**
  * Start date (as a number) to start auto allowing YT
