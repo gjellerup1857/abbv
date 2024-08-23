@@ -26,7 +26,7 @@ import { type StateValue, type StateData } from "../shared";
 /**
  * The prefix for the keys we want to store.
  */
-const prefix = "state:";
+export const prefix = "state:";
 
 /**
  * Persists a single state property.
