@@ -79,11 +79,11 @@ It is possible to combine data streams and/or use operators on them, for example
 
 ```typescript
 store.premiumLicense.pipe(
-    skip(1), // we're not interested in the initial value
-    distinctUntilChanged(), // we only want to know when the value actually changes
-  ).subscribe(license => {
-    console.log('🔔 The value for "premiumLicense" has changed and now is:', license);
-  });
+  skip(1), // we're not interested in the initial value
+  distinctUntilChanged(), // we only want to know when the value actually changes
+).subscribe(license => {
+  console.log('🔔 The value for "premiumLicense" has changed and now is:', license);
+});
 ```
 
 ### Modifying State
@@ -149,7 +149,7 @@ $ npm run lint
 
 ## Links and Resources
 
-There's many sites providing docs and tutorials around RxJS. Two prominent ones are [rxjs.dev](https://rxjs.dev/), the official site of the ReactiveX JavaScript implementation, and [learnrxjs.io](https://www.learnrxjs.io/).
+There's many sites providing docs and tutorials around RxJS. Two prominent ones are the official site [rxjs.dev](https://rxjs.dev/), and [learnrxjs.io](https://www.learnrxjs.io/).
 
 * [RxJS Overview](https://rxjs.dev/guide/overview)
 * [Short and good introduction into RxJS concepts](https://www.learnrxjs.io/learn-rxjs/concepts/rxjs-primer)
