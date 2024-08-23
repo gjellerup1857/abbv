@@ -46,11 +46,6 @@ stages:
   - unit
   - compliance
   - uitests
-  - uploadxtm
-  - updatextm
-  - downloadxtm
-  - uploadcrowdin
-  - downloadcrowdin
 
 # Pipeline rules
 .always:
@@ -59,6 +54,17 @@ stages:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - when: always
+
+.release-or-main:
+  rules:
+    # Do not trigger merge request pipelines
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    # Run automatically on release and main branch
+    - if: $CI_COMMIT_BRANCH == "adblockplus-release" || $CI_COMMIT_BRANCH == "main"
+    # Run manually on all other branches
+    - when: manual
+      allow_failure: true
 
 ################################################################################
 # Build
@@ -124,14 +130,7 @@ buildfromsource:
      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv3.zip
      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-firefox-*-mv2.xpi
   rules:
-    # Do not trigger a merge request pipeline
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    # Run automatically on release and main branch
-    - if: $CI_COMMIT_BRANCH == "release" || $CI_COMMIT_BRANCH == "main"
-    # Run manually on all other branches
-    - when: manual
-      allow_failure: true
+    - !reference [.release-or-main, rules]
 
 # ################################################################################
 # # Check filesizes
@@ -192,14 +191,7 @@ checkfilesizes:MV2:firefox:
         exit 0;
       fi
   rules:
-    # Do not trigger a merge request pipeline
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    # Run automatically on release and main branch
-    - if: $CI_COMMIT_BRANCH == "release" || $CI_COMMIT_BRANCH == "main"
-    # Run manually on all other branches
-    - when: manual
-      allow_failure: true
+    - !reference [.release-or-main, rules]
 
 checkbuildsizes:MV3:chrome:
   extends: .checkbuildsizes
@@ -218,139 +210,6 @@ checkbuildsizes:MV2:firefox:
   variables:
     REPOSITORY_BUILD: dist/release/adblockplus-firefox-*-mv2.xpi
     SOURCE_BUILD: source/dist/release/adblockplus-firefox-*-mv2.xpi
-
-################################################################################
-# Translate
-################################################################################
-
-.translations:
-  rules:
-    - if: $CI_COMMIT_BRANCH =~ /^feature-/
-      when: manual
-    - if: $CI_COMMIT_BRANCH == "release"
-      when: manual
-
-.crowdin:
-  variables:
-    CROWDIN_TOKEN: $CROWDIN_TOKEN
-    CROWDIN_PROJECT_ID: $CROWDIN_PROJECT_ID
-  environment:
-    name: crowdin
-    url: https://crowdin.com/project/adblockplusui
-
-uploadcrowdin:
-  stage: uploadcrowdin
-  extends:
-    - .crowdin
-    - .translations
-  script:
-    - npm ci --cache .npm --prefer-offline
-    # installing java
-    - apt-get install default-jre-headless -yqq
-    # installing crowdin-cli
-    - wget https://artifacts.crowdin.com/repo/deb/crowdin3.deb -O crowdin.deb
-    - dpkg -i crowdin.deb
-    - crowdin --version
-    # Uploading strings
-    - npm run $ crowdin.upload-strings
-    - npm run $ crowdin.upload-translations
-
-downloadcrowdin:
-  stage: downloadcrowdin
-  extends:
-    - .crowdin
-    - .translations
-  script:
-    - npm ci --cache .npm --prefer-offline
-    # installing java
-    - apt-get install default-jre-headless -yqq
-    # installing crowdin-cli
-    - wget https://artifacts.crowdin.com/repo/deb/crowdin3.deb -O crowdin.deb
-    - dpkg -i crowdin.deb
-    - crowdin --version
-    # Download strings
-    - npm run $ crowdin.download-translations
-    # Test translations
-    - npm run $ lint.locale
-    # Configure author for commit
-    - git config user.email "$GITLAB_USER_EMAIL"
-    - git config user.name "$GITLAB_USER_NAME"
-    # Add changes and commit
-    - git add locale
-    - export COMMIT_MSG="Noissue - Downloaded Crowdin translations for $CI_COMMIT_REF_NAME"
-    - git commit -m "$COMMIT_MSG"
-    # Push into new branch and create a new merge request
-    - export TARGET_BRANCH="translation-${CI_COMMIT_REF_NAME}-crowdin-download"
-    - export PUSH_URL=$(echo $CI_PROJECT_URL | sed "s/:\/\//:\/\/$GITLAB_USER:$GITLAB_TOKEN@/")
-    - 'git push -f -o merge_request.create -o merge_request.target=$CI_COMMIT_REF_NAME -o merge_request.remove_source_branch -o merge_request.title="WIP: ${COMMIT_MSG}" $PUSH_URL HEAD:refs/heads/$TARGET_BRANCH'
-
-.xtm:
-  variables:
-    USER_ID: $XTM_USER_ID
-    CLIENT: $XTM_CLIENT
-    PASSWORD: $XTM_PASSWORD
-  environment:
-    name: xtm/$CI_COMMIT_REF_SLUG
-    url: https://www.xtm-cloud.com
-
-uploadxtm:
-  stage: uploadxtm
-  extends:
-    - .xtm
-    - .translations
-  script:
-    - npm ci --cache .npm --prefer-offline
-    # Currently the xtm script determines the branch name using git rev-parse
-    # which doesn't work inside the CI environment because it's using a detached
-    # head (see https://gitlab.com/gitlab-org/gitlab-ce/issues/19421) to make
-    # it work we need to created the corresponding branches
-    - git branch main origin/main
-    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
-    - npm run $ xtm.create
-
-updatextm:
-  stage: updatextm
-  extends:
-    - .xtm
-    - .translations
-  script:
-    - npm ci --cache .npm --prefer-offline
-    # Currently the xtm script determines the branch name using git rev-parse
-    # which doesn't work inside the CI environment because it's using a detached
-    # head (see https://gitlab.com/gitlab-org/gitlab-ce/issues/19421) to make
-    # it work we need to created the corresponding branches
-    - git branch main origin/main
-    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
-    - npm run $ xtm.update
-
-downloadxtm:
-  stage: downloadxtm
-  extends:
-    - .xtm
-    - .translations
-  script:
-    - npm ci --cache .npm --prefer-offline
-    # Currently the xtm script determines the branch name using git rev-parse
-    # which doesn't work inside the CI environment because it's using a detached
-    # head (see https://gitlab.com/gitlab-org/gitlab-ce/issues/19421) to make
-    # it work we need to created the corresponding branches
-    - git branch main origin/main
-    - git checkout -B "$CI_COMMIT_REF_NAME" "$CI_COMMIT_SHA"
-    # Download the translations
-    - npm run $ xtm.download
-    # Test translations
-    - npm run $ lint.locale
-    # Configure author for commit
-    - git config user.email "$GITLAB_USER_EMAIL"
-    - git config user.name "$GITLAB_USER_NAME"
-    # Add changes and commit
-    - git add locale
-    - export COMMIT_MSG="Noissue - Downloaded XTM translations for $CI_COMMIT_REF_NAME"
-    - git commit -m "$COMMIT_MSG"
-    # Push into new branch and create a new merge request
-    - export TARGET_BRANCH="translation-${CI_COMMIT_REF_NAME}-xtm-download"
-    - export PUSH_URL=$(echo $CI_PROJECT_URL | sed "s/:\/\//:\/\/$GITLAB_USER:$GITLAB_TOKEN@/")
-    - 'git push -f -o merge_request.create -o merge_request.target=$CI_COMMIT_REF_NAME -o merge_request.remove_source_branch -o merge_request.title="WIP: ${COMMIT_MSG}" $PUSH_URL HEAD:refs/heads/$TARGET_BRANCH'
 
 ################################################################################
 # Compliance tests
@@ -490,7 +349,7 @@ unit:standard:
       when: never
     - if: $[[ inputs.parent_pipeline_source ]] == "schedule"
       when: always
-    - if: $CI_COMMIT_BRANCH == "release"
+    - if: $CI_COMMIT_BRANCH == "adblockplus-release"
       when: always
     - when: manual
   allow_failure: true
@@ -524,7 +383,7 @@ uitests:lambdatest:MV3:all:
     - docker:24.0.5-dind
   script:
     - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
-    - docker run --cpus=2 --shm-size=2g -t -e SUITE=smoke -e CI end-to-end
+    - docker run --cpus=2 --shm-size=2g -t -e SUITE -e CI end-to-end
   after_script:
     - cd $[[ inputs.hostpath ]]
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
@@ -536,6 +395,8 @@ uitests:lambdatest:MV3:all:
     expire_in: 1 mo
   rules:
     - !reference [.always, rules]
+  variables:
+    SUITE: filterlists
 
 uitests:docker:MV2:firefox:
   extends: .uitests:docker

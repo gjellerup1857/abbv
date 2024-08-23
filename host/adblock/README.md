@@ -37,35 +37,41 @@ Copy the `.env.defaults` file in the root directory to a `.env` file and fill in
 
 Run one of the following commands in the project directory:
 
-`npx gulp build -t {chrome|firefox} -m {2|3}`
+- `npm run build:release -- -t {chrome|firefox} -m {2|3}`
+- `npm run build:release:{beta|chrome|edge|ff}`\
+  _equivalent to running the first command with the appropriate arguments already pre-set_
+- `npm run build:release:all`\
+  _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
 
-`npm run build:release:{chrome|firefox}`
+This will create a build in the _dist/release/_ directory with a name in the
+form _adblock-chrome-\*.zip_ or _adblock-firefox-\*.xpi_ . These builds are
+unsigned. They can be submitted as-is to the extension stores, or if unpacked
+loaded in development mode for testing (same as development environment below).
 
-The second is a shorter version of the first, and it will build only a manifest v2 version.
-
-Both will create a build with a name in the form
-_adblockpluschrome-n.n.n.zip_ or _adblockplusfirefox-n.n.n.xpi_. These builds
-are unsigned. They can be submitted as-is to the extension stores, or if
-unpacked loaded in development mode for testing (same as devenv builds below).
-
-### Development environment
+### Building the development environment
 
 To simplify the process of testing your changes you can create an unpacked
 development environment. For that run one of the following commands:
 
-`npx gulp devenv -t {chrome|firefox} -m {2|3}`
+- `npm run build:dev -- -t {chrome|firefox} -m {2|3}`
+- `npm run build:dev:{chrome|edge|ff}`\
+  _equivalent to running the first command with the appropriate arguments already pre-set_
+- `npm run build:dev:all`\
+  _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
 
-`npm run build:dev:{chrome|firefox}`
-
-`npm run build:dev:all`
-
-The second two are aliases for the first. Both build manifest v2 versions, where the second also by default builds both the Chrome and Firefox versions.
-
-All will create a _devenv.\*_ directory in the project directory. You can load
+This will create a _devenv.\*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
 Chromium-based browsers, and under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development
 environment, and the extension should reload automatically after a few seconds.
+
+### Building the source archive
+
+To generate an archive for extension stores that includes all of the extension's
+source code, and from which extension builds can be generated, run the following
+command:
+
+`npm run build:source`
 
 ### Other Build options
 
@@ -77,9 +83,11 @@ Two other build options are provided to aid in testing of the extension.
 
 `--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.\*_ directory in the project directory) This option is only applicable to developer ('devenv') builds.
 
-`--manifest-path` specifiying this parameter at build time will override the default 'base' manifest file that used during the build process. It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension. The AdBlock beta version can be built with the included `\build\beta_manifest.base.json` file. The following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
+`--manifest-path` - specifiying this parameter at build time will override the default 'base' manifest file that used during the build process. It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension. The AdBlock beta version can be built with the included `build/beta_manifest.base.json` file.
 
-`npx gulp devenv -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
+For example, the following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
+
+`npm run build:dev -- -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
 
 ## Testing
 

@@ -20,8 +20,7 @@
 const {beforeSequence} = require("../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
-const defaultFilterLists =
-  require("../test-data/data-built-in-filter-lists").defaultFilterLists;
+const {defaultFilterLists} = require("../test-data/data-built-in-filter-lists");
 let flNames;
 
 // eslint-disable-next-line max-len

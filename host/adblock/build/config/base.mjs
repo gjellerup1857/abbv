@@ -159,7 +159,7 @@ export default {
         dest: "",
         src: [
           "adblock-betafish/lib/purify.min.js",
-          "adblock-betafish/CHANGELOG.txt",
+          "RELEASE_NOTES.md",
           "COPYING",
           "adblock-betafish/translators.json",
           "adblock-betafish/jquery/jquery-3.5.1.min.js",

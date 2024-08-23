@@ -355,17 +355,6 @@ configured by default.
 
 [Extension releases (prior to 3.11)][abp-webext-releases]
 
-## Contributing
-
-This project follows the typical GitLab process:
-
-1. Fork it.
-2. Create your feature branch.
-3. Commit your changes.
-4. Push to the branch.
-5. Create a new merge request.
-
-
 
 [abp-ext]: https://gitlab.com/adblockinc/ext/adblockplus/adblockplus
 [abp-ext-nightlies]: https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/pipelines?scope=branches

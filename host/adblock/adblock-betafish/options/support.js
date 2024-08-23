@@ -159,10 +159,20 @@ $(async () => {
 
   // Show the changelog
   selected("#whatsnew_link", () => {
-    fetch(browser.runtime.getURL("CHANGELOG.txt"))
+    fetch(browser.runtime.getURL("RELEASE_NOTES.md"))
       .then((response) => response.text())
       .then((text) => {
-        $("#changes").text(text).fadeIn();
+        const unreleasedSection = "# Unreleased";
+        let cleanedText = text;
+
+        if (text.startsWith(unreleasedSection)) {
+          const firstReleaseIndex = text.indexOf("#", unreleasedSection.length);
+          if (firstReleaseIndex !== -1) {
+            cleanedText = text.slice(firstReleaseIndex);
+          }
+        }
+
+        $("#changes").text(cleanedText).fadeIn();
         $("body, html").animate(
           {
             scrollTop: $("#changes").offset().top,

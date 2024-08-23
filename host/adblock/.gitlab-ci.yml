@@ -32,6 +32,9 @@ default:
         - $[[ inputs.hostpath ]]/package-lock.json
     paths:
       - $[[ inputs.hostpath ]]/.npm/
+  tags:
+    - "GCP"
+  interruptible: true
 
 stages:
   - build
@@ -51,30 +54,29 @@ stages:
 build:
   extends: .build
   script:
-    # Create extension builds
-    - npx gulp build -t chrome -m 2 --unhandled-rejections=strict
-    - npx gulp build -t chrome -m 3 --unhandled-rejections=strict
-    - npx gulp build -t firefox -m 2 --unhandled-rejections=strict
-    - npx gulp build -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
-    - npx gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
-    - npx gulp source
-    # Attach commit hash to build files
-    - mv adblockchrome-*-mv2.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-    - mv adblockchrome-*-mv3.zip adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-    - mv adblockfirefox-*-mv2.xpi adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
-    - mv adblockbetachrome-*-mv2.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-    - mv adblockbetachrome-*-mv3.zip adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-    - mv adblock-*.tar.gz adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
+    # Create .env file from CI variables
+    - echo "CDP_AGGREGATE_URL=\"$ADBLOCK_CDP_AGGREGATE_URL\"" >> .env
+    - echo "CDP_BEARER=\"$ADBLOCK_CDP_BEARER\"" >> .env
+    - echo "CDP_PING_URL=\"$ADBLOCK_CDP_PING_URL\"" >> .env
+    - echo "EYEOMETRY_BEARER=\"$ADBLOCK_EYEOMETRY_BEARER\"" >> .env
+    - echo "EYEOMETRY_URL=\"$ADBLOCK_EYEOMETRY_URL\"" >> .env
+    # Create source archive
+    - npm run build:source
+    # Create MV2 extension builds
+    - npm run build:release -- -t chrome -m 2 --unhandled-rejections=strict
+    - npm run build:release -- -t firefox -m 2 --unhandled-rejections=strict
+    # Create MV3 extension builds
+    - npm run build:release -- -t chrome -m 3 --unhandled-rejections=strict
+    - npm run build:release -- -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - $[[ inputs.hostpath ]]/adblock-${CI_COMMIT_SHORT_SHA}.tar.gz
-      - $[[ inputs.hostpath ]]/adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-      - $[[ inputs.hostpath ]]/adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-      - $[[ inputs.hostpath ]]/adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
-      - $[[ inputs.hostpath ]]/adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
-      - $[[ inputs.hostpath ]]/adblockbetachrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
-      - $[[ inputs.hostpath ]]/adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+      - $[[ inputs.hostpath ]]/dist/release/adblock-*.tar.gz
+      - $[[ inputs.hostpath ]]/dist/release/adblock-chrome-*-mv2.zip
+      - $[[ inputs.hostpath ]]/dist/release/adblock-chrome-*-mv3.zip
+      - $[[ inputs.hostpath ]]/dist/release/adblock-firefox-*-mv2.xpi
+      - $[[ inputs.hostpath ]]/dist/release/adblock-firefox-*-mv2.xpi
+      - $[[ inputs.hostpath ]]/dist/release/adblockbeta-chrome-*-mv3.zip
 
 lint:
   extends: .build
@@ -93,7 +95,7 @@ lint:
   before_script:
     - cd $[[ inputs.hostpath ]]
   script:
-    - unzip -d unpacked-extension/ $EXTENSION
+    - unzip -d unpacked-extension/ dist/release/$EXTENSION
     - cd unpacked-extension/
     - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
       echo 'Some extension files are bigger than 4 MB:' &&
@@ -107,17 +109,17 @@ lint:
 check_filesizes:chrome_mv2:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    EXTENSION: adblock-chrome-*-mv2.zip
 
 check_filesizes:chrome_mv3:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    EXTENSION: adblock-chrome-*-mv3.zip
 
 check_filesizes:firefox_mv2:
   extends: .check_filesizes
   variables:
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    EXTENSION: adblock-firefox-*-mv2.xpi
 
 ################################################################################
 # Ad filtering tests
@@ -128,13 +130,12 @@ check_filesizes:firefox_mv2:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  interruptible: true
   needs: ["build"]
   before_script:
     - apk add bash git
     - cd $[[ inputs.hostpath ]]
   script:
-    - TERMINAL=t ./test/compliance.sh
+    - TERMINAL=t EXTENSION=dist/release/$EXTENSION ./test/compliance.sh
   after_script:
     - cd $[[ inputs.hostpath ]]
     - docker cp $(docker ps -aqf ancestor=compliance):/testpages.adblockplus.org/test/screenshots . 2> /dev/null
@@ -148,40 +149,40 @@ comp:MV3:chromium:latest:
   extends: .compliance
   variables:
     BROWSER: chromium latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    EXTENSION: adblock-chrome-*-mv3.zip
 
 comp:MV3:edge:latest:
   extends: .compliance
   variables:
     BROWSER: edge latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv3.zip
+    EXTENSION: adblock-chrome-*-mv3.zip
 
 comp:MV2:chromium:latest:
   extends: .compliance
   variables:
     BROWSER: chromium latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    EXTENSION: adblock-chrome-*-mv2.zip
 
 comp:MV2:edge:latest:
   extends: .compliance
   variables:
     BROWSER: edge latest
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    EXTENSION: adblock-chrome-*-mv2.zip
 
 comp:MV2:firefox:latest:
   extends: .compliance
   variables:
     BROWSER: firefox latest
-    EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+    EXTENSION: adblock-firefox-*-mv2.xpi
 
 comp:MV2:chromium:oldest:
   extends: .compliance
   variables:
     BROWSER: chromium 77.0.3865.0
-    EXTENSION: adblockchrome-${CI_COMMIT_SHORT_SHA}-mv2.zip
+    EXTENSION: adblock-chrome-*-mv2.zip
 # https://eyeo.atlassian.net/browse/EE-542
 # comp:MV2:firefox:oldest:
 #   extends: .compliance
 #   variables:
 #     BROWSER: firefox 75.0
-#     EXTENSION: adblockfirefox-${CI_COMMIT_SHORT_SHA}-mv2.xpi
+#     EXTENSION: adblock-firefox-*-mv2.xpi

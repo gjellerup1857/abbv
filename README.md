@@ -107,3 +107,7 @@ Pipeline jobs use self-managed runners from Google Cloud Platform (GCP). The
 the setup of the runner is defined in [the devops runner project](https://gitlab.com/eyeo/devops/terraform/projects/gitlab-runners/terraform-adblock-inc-runner/), and the runner status can be checked
 [here](https://gitlab.com/groups/eyeo/extensions/-/runners). Access to GCP
 resources like the GCloud console can be granted by devops as well.
+
+## Contributing
+
+Please see [contributing](./CONTRIBUTING.md)
