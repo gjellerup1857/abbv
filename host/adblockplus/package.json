@@ -165,6 +165,7 @@
     "prettier": "3.2.5",
     "stylelint": "14.9.1",
     "stylelint-config-eyeo": "1.0.3",
+    "typedoc": "0.26.6",
     "wdio-lambdatest-service": "2.1.2"
   },
   "overrides": {

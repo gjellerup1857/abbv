@@ -4,7 +4,7 @@
   "repository": "",
   "license": "GPL-3.0",
   "scripts": {
-    "docs": "",
+    "docs": "typedoc",
     "lint": "eslint --ext .ts ./",
     "test": "jest -t state:"
   },
@@ -13,6 +13,7 @@
     "ts-essentials": "10.0.2"
   },
   "devDependencies": {
+    "typedoc": "0.26.6",
     "jest-extended": "4.0.2"
   }
 }

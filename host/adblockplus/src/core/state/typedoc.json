@@ -1,0 +1,5 @@
+{
+  "entryPoints": [ "background", "shared" ],
+  "out": "docs",
+  "skipErrorChecking": true
+}

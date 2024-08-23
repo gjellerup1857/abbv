@@ -61,6 +61,14 @@ To run the tests, change to the main directory of the core utility and execute:
 $ npm run test
 ```
 
+## Docs
+
+To generate the documentation, change to the main directory of the core utility and execute:
+
+```bash
+$ npm run docs
+```
+
 ## ESLint
 
 To run the linter, change to the main directory of the core utility and execute:
@@ -71,8 +79,9 @@ $ npm run lint
 
 ## Dependencies
 
-The State Core Utility has the following dependencies:
+In addition to what the AdblockPlus host provides, the State Core Utility has the following dependencies:
 
 * rxjs
 * ts-essentials
 * jest-extended
+* typedoc

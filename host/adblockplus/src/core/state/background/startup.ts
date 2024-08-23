@@ -26,8 +26,18 @@ import {
 
 const readyStream = new BehaviorSubject(false);
 
+/**
+ * A promise that resolves to true once the state core utility is ready to
+ * work with.
+ */
 export const ready = lastValueFrom(readyStream);
 
+/**
+ * Starts the state core utility. Will resolve once it is finished attaching
+ * listeners and hydrating the store and is ready to work with.
+ *
+ * @param store The store that holds the state
+ */
 export async function start(store: Store): Promise<void> {
   // Get defaults for managed installations
   await hydrateFromManagedStorage(store);
