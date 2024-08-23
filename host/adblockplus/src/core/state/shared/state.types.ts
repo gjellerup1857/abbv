@@ -19,9 +19,13 @@ import { type BehaviorSubject } from "rxjs";
 
 /**
  * Due to type restrictions of the storage area we use to persist state data,
- * state values can only be of certain types. However, using a union of
- * allowed types here will not confuse TypeScript, so we have to go with
+ * state values can only be of certain types. However, restricting
+ * allowed types here will confuse TypeScript, so we have to go with
  * `any` instead.
+ *
+ * The correct type definition technically is
+ * `type StateValue = Primitive | StateValue[] | Record<string, StateValue>`, which itself isn't
+ * a valid TypeScript type because of the circular reference.
  *
  * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/StorageArea/set#parameters
  */

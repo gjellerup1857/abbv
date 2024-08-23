@@ -123,6 +123,8 @@ browser.runtime.sendMessage({
 });
 ```
 
+Note that modifying state through the messaging system will bypass TypeScript's type checking, so take extra caution when doing that.
+
 ## Tests
 
 To run the tests, change to the main directory of the core utility and execute:
