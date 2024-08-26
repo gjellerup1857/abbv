@@ -23,14 +23,14 @@ import webpackMerge from "webpack-merge";
 import webpackMain from "webpack";
 import { sentryWebpackPlugin } from "@sentry/webpack-plugin";
 
-const sentryWpPlugin = sentryWebpackPlugin({
-  org: "eyeo",
-  project: "adblock-plus",
-  telemetry: false,
-  authToken: process.env.SENTRY_AUTH_TOKEN
-});
+// const sentryWpPlugin = sentryWebpackPlugin({
+//   org: "eyeo",
+//   project: "adblock-plus",
+//   telemetry: false,
+//   authToken: process.env.SENTRY_AUTH_TOKEN
+// });
 
-console.log({ authToken: process.env.SENTRY_AUTH_TOKEN });
+// console.log({ authToken: process.env.SENTRY_AUTH_TOKEN });
 
 export default function webpack({
   webpackInfo,
@@ -87,17 +87,22 @@ export default function webpack({
                   defaults: true,
                   silent: true,
                   prefix: "webpackDotenvPlugin."
-                }),
-                sourceMapType === "source-map" ??
-                  sentryWebpackPlugin({
-                    org: "eyeo",
-                    project: "adblock-plus",
-                    telemetry: false,
-                    release: {
-                      name: addonVersion
-                    },
-                    authToken: process.env.SENTRY_AUTH_TOKEN
-                  })
+                })
+                // sourceMapType === "source-map"
+                //   ? sentryWebpackPlugin({
+                //       authToken: process.env.SENTRY_AUTH_TOKEN,
+                //       debug: true,
+                //       org: "eyeo",
+                //       project: "adblock-plus",
+                //       telemetry: false,
+                //       release: {
+                //         name: addonVersion
+                //       },
+                //       sourcemaps: {
+                //         assets: "dist/release/**/*.js.map"
+                //       }
+                //     })
+                //   : null
               ],
               externals: {
                 perf_hooks: "self"

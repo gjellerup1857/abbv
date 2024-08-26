@@ -15,7 +15,20 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "dotenv/config";
 import path from "path";
+import { sentryWebpackPlugin } from "@sentry/webpack-plugin";
+
+const sentryWpPlugin = sentryWebpackPlugin({
+  debug: true,
+  telemetry: false,
+  org: "eyeo",
+  project: "adblock-plus",
+  telemetry: false,
+  authToken: process.env.SENTRY_AUTH_TOKEN
+});
+
+console.log({ sentryWpPlugin });
 
 const tmplLoaderPath = path.resolve(
   "build",
@@ -88,5 +101,6 @@ export default {
     alias: {
       "wp-template-loader": tmplLoaderPath
     }
-  }
+  },
+  plugins: [sentryWebpackPlugin]
 };

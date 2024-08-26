@@ -187,7 +187,8 @@ async function getBuildOutput(opts) {
   ];
   const filename = `${filenameParts.join("-")}${opts.archiveType}`;
 
-  return zip.dest(`./dist/release/${filename}`);
+  return gulp.dest(`./dist/release`);
+  // return zip.dest(`./dist/release/${filename}`);
 }
 
 async function getFilenameVersion(opts) {
