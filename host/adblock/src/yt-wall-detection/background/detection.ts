@@ -176,7 +176,7 @@ const processYouTubeWallDetectedMessage = async (
     isAllowListed ? "1" : "0",
   );
   if (sender && sender.page && shouldAllowList()) {
-    adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true);
+    adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true, "auto");
     browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
     if (shouldShowDialogForLanguages()) {

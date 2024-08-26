@@ -20,6 +20,7 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
+import { createFilterMetaData } from "../../utilities/background/bg-functions";
 import { Prefs } from "~/alias/prefs";
 import { initialize } from "~/alias/subscriptionInit";
 import ServerMessages from "~/servermessages";
@@ -130,7 +131,12 @@ const domainPauseClosedTabHandler = function (tabId) {
 // Returns: undefined if activeTab and newValue were specified; otherwise if activeTab
 // is specified it returns true if domain paused, false otherwise; finally it returns
 // the complete storedDomainPauses if activeTab is not specified
-const adblockIsDomainPaused = function (activeTab, newValue, sessionOnly = false) {
+const adblockIsDomainPaused = function (
+  activeTab,
+  newValue,
+  sessionOnly = false,
+  origin = "popup",
+) {
   // get stored domain pauses
   let storedDomainPauses = sessionStorageGet(domainPausedKey);
 
@@ -157,10 +163,12 @@ const adblockIsDomainPaused = function (activeTab, newValue, sessionOnly = false
   if (newValue === true) {
     // add a domain pause
     const ruleDuration = Prefs.get("smart_allowlist_duration_ms");
-    ewe.filters.add([`@@${activeDomain}$document`], {
+    const metadata = {
+      ...createFilterMetaData(origin),
       expiresAt: Date.now() + ruleDuration,
       autoExtendMs: ruleDuration,
-    });
+    };
+    ewe.filters.add([`@@${activeDomain}$document`], metadata);
 
     // Only keep a record of the paused tabs if it's session only, otherwise,
     // the rule will expire automatically. This is to prevent the smart

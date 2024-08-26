@@ -188,7 +188,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       case "domain_pause_adblock":
         ServerMessages.recordGeneralMessage("cm_domain_pause_clicked");
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true);
+        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true, false, "context");
         updateButtonUIAndContextMenus(tab);
         break;
       case "resume_blocking_ads_domain":
