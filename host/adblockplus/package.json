@@ -70,7 +70,7 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#04a8ddcc2d09c44f151630d98e5a388e9fcd8d3e",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#16fe490ad963d619ef0c02c9729349fe38d6d3ca",
     "@eyeo/snippets": "1.4.1",
     "@eyeo/webext-ad-filtering-solution": "1.11.0",
     "@sentry/browser": "8.2.1",
