@@ -171,10 +171,6 @@ async function getBuildOptions(isDevenv, isSource) {
 }
 
 async function getBuildOutput(opts) {
-  if (opts.isDevenv) {
-    return gulp.dest(targetDir);
-  }
-
   const filenameTarget =
     opts.channel === "release" ? opts.target : `${opts.target}${opts.channel}`;
   const filenameVersion = await getFilenameVersion(opts);
@@ -187,8 +183,12 @@ async function getBuildOutput(opts) {
   ];
   const filename = `${filenameParts.join("-")}${opts.archiveType}`;
 
-  return gulp.dest(`./dist/release`);
+  return gulp.dest(`./dist/release/temp/`);
   // return zip.dest(`./dist/release/${filename}`);
+}
+
+function zipOutput() {
+  return zip.src("./dist/release/temp/**/*").pipe(gulp.dest("./dist/release"));
 }
 
 async function getFilenameVersion(opts) {
@@ -204,16 +204,16 @@ async function getFilenameVersion(opts) {
 
 async function buildDevenv() {
   const options = await getBuildOptions(true);
-  const output = await getBuildOutput(options);
 
-  return merge(await getBuildSteps(options)).pipe(output);
+  return merge(await getBuildSteps(options)).pipe(gulp.dest(targetDir));
 }
 
 async function buildPacked() {
   const options = await getBuildOptions(false);
+  const buildSteps = await getBuildSteps(options);
   const output = await getBuildOutput(options);
 
-  return merge(await getBuildSteps(options)).pipe(output);
+  return merge(buildSteps).pipe(output);
 }
 
 function cleanDir() {

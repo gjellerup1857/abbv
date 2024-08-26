@@ -90,6 +90,7 @@ export default function webpack({
                       },
                       sourcemaps: {
                         assets: "dist/release/**/*.js"
+                        // filesToDeleteAfterUpload: ["dist/release/**/*.js.map"]
                       }
                     })
                   : null
