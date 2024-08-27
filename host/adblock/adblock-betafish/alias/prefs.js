@@ -312,6 +312,13 @@ defaults.yt_allowlist_language_codes = ["fr", "pt"];
 defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
 
 /**
+ * Language codes that should only show an On Page Dialog once the YT ad wall is shown
+ *
+ * @type {Array of string}
+ */
+defaults.yt_dialog_only_language_codes = ["de", "it", "zh"];
+
+/**
  * Start date (as a number) to start auto allowing YT
  *
  * @type {Number}
@@ -323,7 +330,7 @@ defaults.yt_allowlist_start_date = 0;
  *
  * @type {Number}
  */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 6, 1, 0, 0).getTime(); // July 1st, 2024
+defaults.yt_allowlist_hard_end_date = new Date(2024, 9, 1, 0, 0).getTime(); // October 1st, 2024
 
 /**
  * Milliseconds that the smart allowlist rule should be active for
