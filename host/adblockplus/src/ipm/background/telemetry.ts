@@ -49,8 +49,19 @@ async function processResponse(response: Response): Promise<void> {
 
   // If the server responded with anything else, we assume it's a command.
   try {
-    const command = JSON.parse(body);
-    executeIPMCommand(command);
+    let commands = JSON.parse(body);
+
+    if (!Array.isArray(commands)) {
+      commands = [commands];
+    }
+
+    if (commands.length > 1000) {
+      throw new Error("Too many commands were received.");
+    }
+
+    for (const command of commands) {
+      await executeIPMCommand(command);
+    }
   } catch (error) {
     logError("[Telemetry]: Error parsing IPM response.", error);
   }

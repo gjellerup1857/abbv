@@ -116,7 +116,7 @@ async function openNewTab(ipmId: string): Promise<void> {
   if (!isNewTabBehavior(behavior)) {
     logger.debug("[new-tab]: Invalid command behavior.");
     registerEvent(ipmId, CreationError.invalidBehavior);
-    dismissCommand(ipmId);
+    void dismissCommand(ipmId);
     return;
   }
 
@@ -124,7 +124,7 @@ async function openNewTab(ipmId: string): Promise<void> {
   if (!(await doesLicenseStateMatch(behavior))) {
     logger.debug("[new-tab]: License state mismatch.");
     registerEvent(ipmId, CreationError.licenseStateMismatch);
-    dismissCommand(ipmId);
+    void dismissCommand(ipmId);
     return;
   }
 
@@ -134,7 +134,7 @@ async function openNewTab(ipmId: string): Promise<void> {
   if (targetUrl === null) {
     logger.debug("[new-tab]: Invalid target URL.");
     registerEvent(ipmId, CreationError.invalidURL);
-    dismissCommand(ipmId);
+    void dismissCommand(ipmId);
     return;
   }
 
@@ -155,7 +155,7 @@ async function openNewTab(ipmId: string): Promise<void> {
   }
 
   registerEvent(ipmId, CreationSuccess.created);
-  dismissCommand(ipmId);
+  void dismissCommand(ipmId);
 }
 
 /**
@@ -274,7 +274,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   const { installType } = await browser.management.getSelf();
   if ((installType as unknown) === "admin") {
     registerEvent(ipmId, CreationRejection.admin);
-    dismissCommand(ipmId);
+    await dismissCommand(ipmId);
     return;
   }
 
@@ -283,7 +283,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   if (!isNewTabBehavior(behavior)) {
     logger.debug("[new-tab]: Invalid command behavior.");
     registerEvent(ipmId, CreationError.invalidBehavior);
-    dismissCommand(ipmId);
+    await dismissCommand(ipmId);
     return;
   }
 

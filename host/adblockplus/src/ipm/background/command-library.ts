@@ -86,7 +86,7 @@ export function setCommandActor(
  *
  * @param ipmId - IPM ID
  */
-export function dismissCommand(ipmId: string): void {
+export async function dismissCommand(ipmId: string): Promise<void> {
   const command = getCommand(ipmId);
   if (!command) {
     return;
@@ -97,7 +97,7 @@ export function dismissCommand(ipmId: string): void {
   // deletion here.
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete commandStorage[command.ipm_id];
-  void Prefs.set(commandStorageKey, commandStorage);
+  await Prefs.set(commandStorageKey, commandStorage);
 }
 
 /**
@@ -178,7 +178,7 @@ function retryExecuteCommands(commandName: CommandName): void {
     }
 
     unexecutableCommands.delete(command);
-    executeIPMCommand(command, isInitialization);
+    void executeIPMCommand(command, isInitialization);
   }
 }
 
@@ -187,10 +187,10 @@ function retryExecuteCommands(commandName: CommandName): void {
  *
  * @param command The command from the IPM server
  */
-function storeCommand(command: Command): void {
+async function storeCommand(command: Command): Promise<void> {
   const storage = Prefs.get(commandStorageKey);
   storage[command.ipm_id] = command;
-  void Prefs.set(commandStorageKey, storage);
+  await Prefs.set(commandStorageKey, storage);
 }
 
 /**
@@ -200,10 +200,10 @@ function storeCommand(command: Command): void {
  * @param isInitialization Whether the command is being restored when the
  *   module initializes
  */
-export function executeIPMCommand(
+export async function executeIPMCommand(
   command: unknown,
   isInitialization: boolean = false
-): void {
+): Promise<void> {
   if (!isCommand(command)) {
     logger.error("[ipm]: Invalid command received.");
     return;
@@ -243,7 +243,7 @@ export function executeIPMCommand(
       return;
     }
 
-    storeCommand(command);
+    await storeCommand(command);
   }
 
   void actor.handleCommand(command.ipm_id);
@@ -278,7 +278,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
 
   for (const commandId of commandIds) {
     try {
-      dismissCommand(commandId);
+      await dismissCommand(commandId);
 
       if (getCommand(commandId) !== null) {
         throw new Error("Command was not successfully deleted.");
@@ -296,7 +296,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
     ipmId,
     success ? DeleteEventType.sucess : DeleteEventType.error
   );
-  dismissCommand(ipmId);
+  await dismissCommand(ipmId);
 }
 
 /**
@@ -310,6 +310,6 @@ export async function start(): Promise<void> {
   // Reinitialize commands from storage
   const commandStorage = Prefs.get(commandStorageKey);
   for (const command of Object.values(commandStorage)) {
-    executeIPMCommand(command, true);
+    void executeIPMCommand(command, true);
   }
 }

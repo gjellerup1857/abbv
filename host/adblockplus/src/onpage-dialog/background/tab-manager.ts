@@ -105,7 +105,7 @@ function dismissDialog(dialog: Dialog): void {
   unassignedDialogs.delete(dialog.id);
 
   if (typeof dialog.ipmId === "string") {
-    dismissCommand(dialog.ipmId);
+    void dismissCommand(dialog.ipmId);
   }
 }
 
