@@ -93,7 +93,7 @@ export default function webpack({
                         // filesToDeleteAfterUpload: ["dist/release/**/*.js.map"]
                       }
                     })
-                  : null
+                  : undefined
               ],
               externals: {
                 perf_hooks: "self"
