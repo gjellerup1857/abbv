@@ -1,5 +1,7 @@
 # Unreleased
 
+- Upgraded to SDK version 1.12.0
+
 # 4.5.1 - 2024-08-13
 
 This release contains only minor updates and under-the-hood changes.

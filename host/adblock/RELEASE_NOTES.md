@@ -1,5 +1,7 @@
 # Unreleased
 
+- Upgraded to SDK version 1.12.0
+
 # 6.8.0 - 2024-08-14
 
 - Changed the pause button to do 7-day smart allowlisting.
