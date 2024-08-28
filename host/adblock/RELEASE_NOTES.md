@@ -1,7 +1,13 @@
 # Unreleased
 
-- Upgraded to SDK version 1.12.0
 - Updated snippets to 1.5.0
+
+# 6.9.0 - 2024-08-28
+
+- Updated webext-ad-filtering-solution to 1.12.0
+- Fixed an issue with the metadata on allow listed rules created via the popup menu
+- Fixed an issue with the YouTube Channel allow listing feature
+- Continued the YouTube Ad Wall vs. Allowlist Uninstall User Test (Phase 2 & 3)
 
 # 6.8.0 - 2024-08-14
 
