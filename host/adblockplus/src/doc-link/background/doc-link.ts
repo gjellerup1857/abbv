@@ -15,11 +15,11 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { port } from "../../core/messaging/background";
+import { isMessage, type Message } from "../../core/messaging/shared";
 import { info } from "../../info/background";
-import { port } from "../../core/api/background";
-import { isMessage, type Message } from "../../core/api/shared";
-import { type DocLinkMessage, stateKey } from "./doc-link.types";
 import { store } from "../../store/background";
+import { type DocLinkMessage, stateKey } from "./doc-link.types";
 
 /**
  * Reads the documentation link preference and substitutes placeholders.

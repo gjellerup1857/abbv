@@ -16,7 +16,7 @@
  */
 
 import browser from "webextension-polyfill";
-import { type StateValue, type StateData } from "../shared";
+import { type StateData, type StateValue } from "../shared";
 
 /* ######################### !! ATTENTION !! ############################ */
 /* Note that this is a temporary solution. The State Core Utility should  */

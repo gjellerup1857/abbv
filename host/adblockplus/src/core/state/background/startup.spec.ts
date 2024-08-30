@@ -16,9 +16,9 @@
  */
 
 import "jest-extended";
-import { start, ready } from "./startup";
-import * as storageAdapter from "./storage-adapter";
 import * as messagingAdapter from "./messaging-adapter";
+import { ready, start } from "./startup";
+import * as storageAdapter from "./storage-adapter";
 
 describe("state:startup", () => {
   beforeEach(() => {

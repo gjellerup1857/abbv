@@ -15,13 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BehaviorSubject } from "rxjs";
 import * as storage from "./storage";
 import {
   hydrateFromManagedStorage,
   hydrateFromStorage,
   listenForStateChanges
 } from "./storage-adapter";
-import { BehaviorSubject } from "rxjs";
 
 describe("state:storageAdapter", () => {
   describe("hydrateFromStorage", () => {

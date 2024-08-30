@@ -16,16 +16,16 @@
  */
 
 import { BehaviorSubject } from "rxjs";
-import { port } from "../../core/api/background";
+import { port } from "../../core/messaging/background";
+import { info } from "../../info/background";
 import { store } from "../../store/background";
 import {
-  start,
   getBrowserName,
   getDocLink,
   handleDocLinkMessage,
-  isDocLinkMessage
+  isDocLinkMessage,
+  start
 } from "./doc-link";
-import { info } from "../../info/background";
 
 describe("docLink", () => {
   const mockSubject = new BehaviorSubject("__doc-link-template__");

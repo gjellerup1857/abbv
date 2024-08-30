@@ -16,14 +16,14 @@
  */
 
 import { BehaviorSubject } from "rxjs";
-import { port } from "../../api/background";
+import { port } from "../../messaging/background";
+import { MessageName, type StateMessage } from "../shared";
 import {
   addMessageListeners,
   handleGetStateMessage,
   handleSetStateMessage,
   isStateMessage
 } from "./messaging-adapter";
-import { MessageName, type StateMessage } from "../shared";
 
 describe("state:messagingAdapter", () => {
   describe("addMessageListeners", () => {

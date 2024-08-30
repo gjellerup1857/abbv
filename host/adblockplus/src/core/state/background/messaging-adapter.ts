@@ -15,8 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { port } from "../../api/background";
-import { isMessage, type Message } from "../../api/shared";
+import { port } from "../../messaging/background";
+import { isMessage, type Message } from "../../messaging/shared";
 import { MessageName, type StateMessage, type Store } from "../shared";
 
 /**
