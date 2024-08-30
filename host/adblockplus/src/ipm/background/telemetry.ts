@@ -89,7 +89,7 @@ export async function sendPing(): Promise<void> {
  *
  * Will schedule pings.
  */
-export async function start(): Promise<void> {
+export function start(): void {
   void setListener(scheduleName, () => {
     void sendPing();
   });

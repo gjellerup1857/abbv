@@ -208,7 +208,7 @@ export async function start()
   await initNotifications(firstRun);
   premium.start();
   startOptionLinkListener();
-  void startTelemetry();
+  startTelemetry();
   void initializeCDP();
   void initializeEyeometryMACCounting();
   startUnloadCleanup();
