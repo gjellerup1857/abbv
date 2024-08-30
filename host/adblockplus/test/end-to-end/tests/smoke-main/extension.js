@@ -58,6 +58,12 @@ module.exports = function()
 
   it("resets settings", async function()
   {
+    // At least one additional tab should be open when the extension reloads
+    // For some reson it can't be "about:blank"
+    await browser.newWindow("https://example.com");
+    const safeHandle = await browser.getWindowHandle();
+    await switchToABPOptionsTab();
+
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickAbpFiltersFLTrashButton();
@@ -67,7 +73,11 @@ module.exports = function()
     expect(await advancedPage.getFlTableEmptyPlaceholderText()).to.equal(
       "You have not added any filter lists to Adblock Plus. Filter lists " +
       "you add will be shown here.");
+
     await browser.executeScript("browser.runtime.reload();", []);
+
+    // Workaround for `no such window: target window already closed` error
+    await browser.switchToWindow(safeHandle);
 
     // After reloading the extenstion, under slow conditions on MV3 the options
     // page may take a long time to load
