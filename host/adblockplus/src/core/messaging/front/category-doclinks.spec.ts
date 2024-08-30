@@ -15,31 +15,25 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type MessageEmitter } from "../shared";
+import * as doclinks from "./category-doclinks";
+import * as utils from "./utils";
 
-/**
- * Observed web extension API message sender object due to outdated type package
- */
-export interface BrowserMessageSenderWithOrigin
-  extends browser.Runtime.MessageSender {
-  origin?: string;
-}
+const mockReturnValue = Symbol("return value");
 
-/**
- * Message emitter in background context
- */
-export type BackgroundMessageEmitter = MessageEmitter<MessageSender>;
+jest.mock("./messaging");
+jest.mock("./utils");
 
-/**
- * Message sender
- */
-export interface MessageSender {
-  /**
-   * Sender frame ID
-   */
-  frameId: browser.Runtime.MessageSender["frameId"];
-  /**
-   * Sender tab information
-   */
-  tab: browser.Runtime.MessageSender["tab"];
-}
+describe("Messaging category: doclinks", () => {
+  it("doclinks.get", async () => {
+    (utils.send as jest.Mock).mockImplementation(async () => mockReturnValue);
+
+    const link = "foo";
+    const value = await doclinks.get(link);
+
+    expect(utils.send).toHaveBeenCalledWith("app.get", {
+      what: "doclink",
+      link
+    });
+    expect(value).toStrictEqual(mockReturnValue);
+  });
+});

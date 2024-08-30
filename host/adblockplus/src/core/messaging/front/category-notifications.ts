@@ -15,24 +15,27 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { app } from "./api";
+import {
+  type DisplayMethod,
+  type GetOptions,
+  type Notification
+} from "./category-notifications.types";
+import { send } from "./utils";
 
-describe("app", () => {
-  describe("get", () => {
-    it("should send the correct type", () => {
-      const sendRuntimeMessageSpy = jest.spyOn(browser.runtime, "sendMessage");
+/**
+ * Retrieves notification that can be displayed in the given manner
+ *
+ * @param displayMethod - Method with which notification can be displayed
+ * @returns notification that can be displayed in the given manner
+ */
+export async function get(displayMethod: DisplayMethod): Promise<Notification> {
+  const options: GetOptions = { displayMethod };
+  return await send("notifications.get", options);
+}
 
-      const what = "applicationVersion";
-      void app.get(what);
-
-      expect(sendRuntimeMessageSpy).toHaveBeenCalledTimes(1);
-      expect(sendRuntimeMessageSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: "app.get"
-        })
-      );
-
-      sendRuntimeMessageSpy.mockRestore();
-    });
-  });
-});
+/**
+ * Marks active notification as seen
+ */
+export async function seen(): Promise<void> {
+  await send("notifications.seen");
+}

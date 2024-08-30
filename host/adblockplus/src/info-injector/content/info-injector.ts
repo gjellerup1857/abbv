@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 import { injectionOrigins, type InjectionInfo } from "../shared";
 import { datasetKey, nodeId } from "./info-injector.types";
 
@@ -34,7 +34,7 @@ function getDocumentReference(): Document {
  * @returns The info that we want to inject
  */
 async function getInfo(): Promise<InjectionInfo> {
-  return await api.info.getInjectionInfo();
+  return await messaging.info.getInjectionInfo();
 }
 
 /**

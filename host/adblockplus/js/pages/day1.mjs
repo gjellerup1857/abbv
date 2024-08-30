@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {convertDoclinks} from "../common.mjs";
 import {$} from "../dom.mjs";
 import {
@@ -51,7 +51,7 @@ function initPopupDummy()
 
 function initTitle()
 {
-  api.stats.getBlockedTotal()
+  messaging.stats.getBlockedTotal()
     .then((blockedTotal) =>
     {
       blockedTotal = blockedTotal.toLocaleString();

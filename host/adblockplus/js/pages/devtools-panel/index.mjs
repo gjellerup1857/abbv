@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {initI18n, setElementText} from "../../../src/i18n/index.ts";
 import records from "./records.mjs";
 
@@ -26,7 +26,7 @@ const {getMessage} = browser.i18n;
 initI18n();
 
 const onFilterChangedByRow = new WeakMap();
-const promisedPlatform = api.app.get("platform");
+const promisedPlatform = messaging.app.get("platform");
 const maxTitleLength = 1000;
 
 let lastFilterQuery = null;
@@ -364,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () =>
     container.dataset.filterType = event.target.value;
   }, false);
 
-  api.addListener((message) =>
+  messaging.addMessageListener((message) =>
   {
     if (message.type !== "requests.respond")
       return;
@@ -398,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () =>
     }
   });
 
-  api.requests.listen(
+  messaging.requests.listen(
     ["hits", "reset"],
     browser.devtools.inspectedWindow.tabId
   );

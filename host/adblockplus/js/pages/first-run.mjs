@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {convertDoclinks} from "../common.mjs";
 import {
   initI18n,
@@ -27,24 +27,24 @@ import "../../src/first-run/ui/first-run.css";
 
 function openOptions()
 {
-  api.app.open("options");
+  messaging.app.open("options");
 }
 
 function initLinks()
 {
   Promise.all([
-    api.doclinks.get("acceptable_ads_criteria"),
-    api.doclinks.get("acceptable_ads_opt_out")
+    messaging.doclinks.get("acceptable_ads_criteria"),
+    messaging.doclinks.get("acceptable_ads_opt_out")
   ]).then(([urlCriteria, urlOptOut]) =>
   {
     setElementLinks("control-description", urlCriteria, urlOptOut, openOptions);
   });
 
-  api.doclinks.get("terms").then((url) =>
+  messaging.doclinks.get("terms").then((url) =>
   {
     setElementLinks("fair-description", url);
   });
-  api.doclinks.get("eyeo").then((url) =>
+  messaging.doclinks.get("eyeo").then((url) =>
   {
     const year = new Date().getFullYear().toString();
     const notice = document.getElementById("copyright-notice");
@@ -55,7 +55,7 @@ function initLinks()
 
 function initWarnings()
 {
-  api.subscriptions.getInitIssues()
+  messaging.subscriptions.getInitIssues()
     .then((issues) =>
     {
       const {dataCorrupted, reinitialized} = issues;
@@ -65,11 +65,11 @@ function initWarnings()
       if (dataCorrupted)
       {
         warnings.push("dataCorrupted");
-        api.doclinks.get("adblock_plus").then((url) =>
+        messaging.doclinks.get("adblock_plus").then((url) =>
         {
           setElementLinks("dataCorrupted-reinstall", url);
         });
-        api.doclinks.get("help_center").then((url) =>
+        messaging.doclinks.get("help_center").then((url) =>
         {
           setElementLinks(
             "dataCorrupted-support",
@@ -96,7 +96,7 @@ function initWarnings()
 
 function initApplication()
 {
-  api.app.get("application").then((application) =>
+  messaging.app.get("application").then((application) =>
   {
     document.documentElement.dataset.application = application;
   });

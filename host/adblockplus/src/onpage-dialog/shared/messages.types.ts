@@ -16,7 +16,7 @@
  */
 
 import { type LocaleInfo } from "../../i18n/shared";
-import { type Message } from "../../core/api/shared";
+import { type Message } from "~/core/messaging/shared";
 import { type DialogContent } from "./dialog.types";
 
 /**

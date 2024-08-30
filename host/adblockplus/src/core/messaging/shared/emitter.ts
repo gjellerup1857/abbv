@@ -15,8 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Message } from "./api.types";
 import { type MessageListener } from "./emitter.types";
+import { type Message } from "./messaging.types";
 
 /**
  * Message emitter

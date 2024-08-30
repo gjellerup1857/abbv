@@ -18,7 +18,7 @@
 import { getInstallationId } from "../../id/background";
 import { info } from "../../info/background";
 import { type InjectionInfo, injectionOrigins } from "../shared";
-import { addTrustedMessageTypes, port } from "../../core/api/background";
+import { addTrustedMessageTypes, port } from "~/core/messaging/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getPremiumState } from "../../premium/background";
 

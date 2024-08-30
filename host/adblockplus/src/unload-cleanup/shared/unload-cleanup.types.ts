@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Message } from "../../core/api/shared";
+import { type Message } from "~/core/messaging/shared";
 
 /**
  * An enum with all CSS `display` values we want to support.

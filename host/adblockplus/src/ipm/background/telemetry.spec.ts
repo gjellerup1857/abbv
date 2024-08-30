@@ -17,7 +17,7 @@
 
 import { sendPing } from "./telemetry";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
-import { type Info } from "./../../info/background/info.types";
+import { type Info } from "./../../info/shared";
 
 jest.mock("../../info/background", (): { info: Info } => {
   return {

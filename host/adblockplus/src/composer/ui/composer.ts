@@ -22,7 +22,7 @@
 // @ts-nocheck
 
 import "./composer.css";
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 import { closeCurrentTab } from "../../polyfills/ui";
 import { getErrorMessage } from "../../../js/common.mjs";
 import { initI18n, stripTagsUnsafe } from "../../i18n";
@@ -165,7 +165,7 @@ function init(): void {
     closeDialog();
   });
 
-  api.messageEmitter.addListener((msg) => {
+  messaging.messageEmitter.addListener((msg) => {
     switch (msg.type) {
       case "composer.dialog.init":
         targetPageId = msg.sender;

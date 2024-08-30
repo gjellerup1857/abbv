@@ -17,7 +17,7 @@
 
 import {bind, wire} from "hyperhtml";
 
-import api from "../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {convertDoclinks} from "../common.mjs";
 import {$} from "../dom.mjs";
 import {initI18n} from "../../src/i18n/index.ts";
@@ -27,7 +27,7 @@ import "../../src/updates/ui/updates.css";
 import "../io-element.mjs";
 import "../landing.mjs";
 
-const localeInfo = api.app.get("localeInfo");
+const localeInfo = messaging.app.get("localeInfo");
 
 async function addUpdates(container, updates)
 {
@@ -73,7 +73,7 @@ async function addUpdates(container, updates)
           ${{i18n: "updates_link"}}
         </a>
       </p>`;
-      api.doclinks.get(update.doclink).then((url) =>
+      messaging.doclinks.get(update.doclink).then((url) =>
       {
         $("a", link).href = url;
       });
@@ -135,7 +135,7 @@ function initUpdates()
 
 function initVersion()
 {
-  api.app.get("addonVersion").then((addonVersion) =>
+  messaging.app.get("addonVersion").then((addonVersion) =>
   {
     $("#version").textContent = `v${addonVersion}`;
   });
@@ -143,7 +143,7 @@ function initVersion()
 
 function initContribute()
 {
-  api.app.getInfo().then(({store}) =>
+  messaging.app.getInfo().then(({store}) =>
   {
     document.body.dataset.store = store;
     let contributeSubtitleId = "updates_contribute_subtitle";
@@ -152,7 +152,7 @@ function initContribute()
 
     const contributeSubtitle = browser.i18n.getMessage(contributeSubtitleId);
     $("#contribute-subtitle").textContent = contributeSubtitle;
-    api.doclinks.get(`${store}_review`).then((url) =>
+    messaging.doclinks.get(`${store}_review`).then((url) =>
     {
       $("#contribute-rate a").href = url;
     });

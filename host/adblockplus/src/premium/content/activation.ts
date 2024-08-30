@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 
 import {
   type PaymentAcknowledgedPayload,
@@ -58,7 +58,7 @@ function onMessage(event: MessageEvent<PaymentSuccessPayload>): void {
  */
 async function activateLicense(userId: string, origin: string): Promise<void> {
   try {
-    const isSuccess = await api.premium.activate(userId);
+    const isSuccess = await messaging.premium.activate(userId);
     if (!isSuccess) {
       throw new Error("Error in background page");
     }

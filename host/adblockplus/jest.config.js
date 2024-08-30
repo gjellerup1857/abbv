@@ -11,6 +11,9 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: "coverage",
   coverageReporters: ["json", "html", "text"],
+  moduleNameMapper: {
+    "^~/(.*)$": "<rootDir>/src/$1"
+  },
   resetMocks: true,
   restoreMocks: true,
   setupFiles: [

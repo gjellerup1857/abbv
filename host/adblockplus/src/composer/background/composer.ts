@@ -25,7 +25,7 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { type Frame } from "./composer.types";
 
-import { addTrustedMessageTypes, port } from "../../core/api/background";
+import { addTrustedMessageTypes, port } from "~/core/messaging/background";
 import { getPage, pageEmitter } from "../../core/pages/background";
 import { SessionStorage } from "../../../adblockpluschrome/lib/storage/session.js";
 import { TabSessionStorage } from "../../../adblockpluschrome/lib/storage/tab-session.js";

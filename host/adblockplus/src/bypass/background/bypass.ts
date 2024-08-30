@@ -15,12 +15,15 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { addTrustedMessageTypes, port } from "../../core/api/background";
+import {
+  type MessageSender,
+  addTrustedMessageTypes,
+  port
+} from "../../core/messaging/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getAuthPayload, getPremiumState } from "../../premium/background";
 
-import { type MessageSender } from "../../core/api/background";
-import { type Message } from "../../core/api/shared";
+import { type Message } from "~/core/messaging/shared";
 import { type PremiumGetAuthPayloadOptions } from "./bypass.types";
 
 /**

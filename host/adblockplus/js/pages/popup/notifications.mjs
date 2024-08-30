@@ -15,12 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {$} from "../../dom.mjs";
 import IOElement from "../../io-element.mjs";
 import {setPref} from "./utils.mjs";
 
-api.notifications.get("popup")
+messaging.notifications.get("popup")
   .then((notification) =>
   {
     if (notification)
@@ -28,7 +28,7 @@ api.notifications.get("popup")
       window.dispatchEvent(
         new CustomEvent("extension:notification", {detail: notification})
       );
-      api.notifications.seen();
+      messaging.notifications.seen();
     }
   });
 

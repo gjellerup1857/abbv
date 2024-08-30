@@ -15,40 +15,27 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Message object, as passed from/to background page
- */
-export interface Message {
-  type: string;
-}
+import {
+  type CtalinkQueryParams,
+  type GetCtalinkOptions
+} from "./category-app.types";
+import { send } from "./utils";
 
 /**
- * Message object for "*.listen" types
+ * Retrieves a CTA link
+ *
+ * @param link - CTA link name
+ * @param queryParams - Extra query parameters that should be added to the CTA link
+ * @returns CTA link
  */
-export interface ListenMessage extends Message {
-  /**
-   * List of event names to listen to
-   */
-  filter: string[];
-  /**
-   * ID of tab for which to listen to events
-   */
-  tabId?: number;
-}
-
-/**
- * Options for activating Premium license
- */
-export interface PremiumActivateOptions {
-  /**
-   * Premium user ID
-   */
-  userId: string;
-}
-
-/**
- * Options for adding/removing Premium subscription
- */
-export interface PremiumSubscriptionsAddRemoveOptions {
-  subscriptionType: "cookies-premium" | "annoyances";
+export async function get(
+  link: string,
+  queryParams: CtalinkQueryParams = {}
+): Promise<string> {
+  const options: GetCtalinkOptions = {
+    what: "ctalink",
+    link,
+    queryParams
+  };
+  return await send("app.get", options);
 }

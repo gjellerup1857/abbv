@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 import { type ExtensionPanelWithSearch } from "./devtools.types";
 
 /**
@@ -57,7 +57,7 @@ function unsetPanelWindow(): void {
  * Initializes developer tools
  */
 async function start(): Promise<void> {
-  const isEnabled = await api.prefs.get("show_devtools_panel");
+  const isEnabled = await messaging.prefs.get("show_devtools_panel");
   if (!isEnabled) {
     return;
   }

@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { port } from "../../../core/api/background";
+import { port } from "~/core/messaging/background";
 import { ReadyState } from "./ready-state.types";
 
 /**

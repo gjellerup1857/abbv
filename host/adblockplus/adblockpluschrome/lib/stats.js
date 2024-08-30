@@ -19,7 +19,7 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {installHandler, port} from "../../src/core/api/background";
+import {installHandler, port} from "~/core/messaging/background";
 import {getPage} from "../../src/core/pages/background";
 import {TabSessionStorage} from "./storage/tab-session.js";
 import {setBadge} from "./browserAction.js";

@@ -23,8 +23,8 @@ import {
   type EventHandler,
   type EventHandlerInstall
 } from "./events.types";
-import { isListenMessage } from "../shared";
-import { isTrustedSender } from "./port";
+import { type EventMessage, isListenMessage } from "../shared";
+import { isTrustedSender } from "./messaging";
 
 /**
  * Cleanup functions by tab ID
@@ -99,7 +99,8 @@ function listen(
 
     // Add message response listener
     const onResponse = (...args: unknown[]): void => {
-      uiPort.postMessage({ type: `${type}.respond`, action, args });
+      const message: EventMessage = { type: `${type}.respond`, action, args };
+      uiPort.postMessage(message);
     };
     eventEmitter.on(name, onResponse);
 

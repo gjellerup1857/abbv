@@ -18,13 +18,14 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import {showOptions} from "../../lib/pages/options.js";
-import {installHandler, port} from "../../src/core/api/background";
 import {
+  installHandler,
+  port,
   toSerializableFilter,
   toSerializableFilterError,
   toSerializableRecommendation,
   toSerializableSubscription
-} from "../../src/core/api/background";
+} from "../../src/core/messaging/background";
 import {EventEmitter} from "./events.js";
 import {filterTypes} from "./requestBlocker.js";
 

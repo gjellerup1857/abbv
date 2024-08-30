@@ -19,7 +19,7 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {port} from "../../src/core/api/background";
+import {port} from "~/core/messaging/background";
 import {Prefs} from "./prefs.js";
 import {info} from "../../src/info/background";
 

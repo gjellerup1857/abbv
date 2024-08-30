@@ -15,12 +15,22 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type {
-  ListenProps,
-  MessageProps,
-  Port,
-  PortEventListener
-} from "./api.types";
+import {
+  type ConnectListener,
+  type DisconnectListener,
+  type BackgroundMessageListener
+} from "../background";
+import {
+  type Message,
+  MessageEmitter,
+  getMessageResponse,
+  isMessage
+} from "../shared";
+import {
+  type FrontMessageEmitter,
+  type ListenOptions,
+  type Port
+} from "./messaging.types";
 
 /**
  * The browser.runtime port.
@@ -30,17 +40,22 @@ let port: Port;
 /**
  * A set of connection listeners
  */
-const connectListeners = new Set<PortEventListener>();
+const connectListeners = new Set<ConnectListener>();
 
 /**
  * A set of disconnection listeners
  */
-const disconnectListeners = new Set<PortEventListener>();
+const disconnectListeners = new Set<DisconnectListener>();
 
 /**
  * A set of message listeners
  */
-const messageListeners = new Set<PortEventListener>();
+const messageListeners = new Set<BackgroundMessageListener>();
+
+/**
+ * Message emitter for use in front context
+ */
+export const messageEmitter: FrontMessageEmitter = new MessageEmitter();
 
 /**
  * Adds a connect listener to the appropriate set.
@@ -49,7 +64,7 @@ const messageListeners = new Set<PortEventListener>();
  *
  * @param listener supplied callback to be fired on connect
  */
-export function addConnectListener(listener: PortEventListener): void {
+export function addConnectListener(listener: ConnectListener): void {
   connectListeners.add(listener);
   listener();
 }
@@ -59,7 +74,7 @@ export function addConnectListener(listener: PortEventListener): void {
  *
  * @param listener supplied callback to be fired on disconnectconnect
  */
-export function addDisconnectListener(listener: PortEventListener): void {
+export function addDisconnectListener(listener: DisconnectListener): void {
   disconnectListeners.add(listener);
 }
 
@@ -68,14 +83,14 @@ export function addDisconnectListener(listener: PortEventListener): void {
  *
  * @param listener supplied callback to be fired on recieving a message
  */
-export function addMessageListener(listener: PortEventListener): void {
+export function addMessageListener(listener: BackgroundMessageListener): void {
   messageListeners.add(listener);
 }
 
 /**
  * Connects the port and sets message and disconnect listeners
  */
-export const connect = (): Port | null => {
+const connect = (): Port | null => {
   // We're only establishing one connection per page, for which we need to
   // ignoresubsequent connection attempts
   if (port) {
@@ -96,7 +111,7 @@ export const connect = (): Port | null => {
     return port;
   }
 
-  port.onMessage.addListener((message: MessageProps) => {
+  port.onMessage.addListener((message: Message) => {
     onMessage(message);
   });
 
@@ -116,7 +131,7 @@ export const connect = (): Port | null => {
  * @param props.filter Filter strings to be acted upon.
  * @param ...options Other properties that may be passed, depending on type
  */
-export function listen({ type, filter, ...options }: ListenProps): void {
+export function listen({ type, filter, ...options }: ListenOptions): void {
   addConnectListener(() => {
     if (port) {
       port.postMessage({
@@ -149,7 +164,7 @@ function onDisconnect(): void {
  *
  * @param message props including type, passed on to the message listeners
  */
-function onMessage(message: MessageProps): void {
+function onMessage(message: Message): void {
   if (!message.type.endsWith(".respond")) {
     return;
   }
@@ -164,6 +179,47 @@ function onMessage(message: MessageProps): void {
  *
  * @param listener disconnect listener to remove
  */
-export function removeDisconnectListener(listener: PortEventListener): void {
+export function removeDisconnectListener(listener: DisconnectListener): void {
   disconnectListeners.delete(listener);
 }
+
+/**
+ * Initializes front messaging API
+ */
+function start(): void {
+  // Establish connection to background page to receive events
+  connect();
+
+  // Firefox 55 erroneously sends messages from the content script to the
+  // devtools panel:
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1383310
+  // As a workaround, listen for messages only if this isn't the devtools panel.
+  // Note that Firefox processes API access lazily, so browser.devtools will
+  // always exist but will have undefined as its value on other pages.
+  if (typeof browser.devtools === "undefined") {
+    // Listen for messages from the background page.
+    // We're disabling the requirement for always returning a promise, because we
+    // need to be careful what we return from this listener function. It may be
+    // harmful for us to return a truthy value (e.g. a Promise), since the browser
+    // may misinterpret it as being an actual value, causing unexpected behavior.
+    /* eslint-disable-next-line @typescript-eslint/promise-function-async */
+    browser.runtime.onMessage.addListener((message: unknown, sender) => {
+      if (!isMessage(message)) {
+        return;
+      }
+
+      const responses = messageEmitter.dispatch(message, sender);
+      const response = getMessageResponse(responses);
+      if (typeof response === "undefined") {
+        return;
+      }
+
+      return Promise.resolve(response);
+    });
+  }
+}
+
+// There are numerous bundles in which the messaging API is being used, and
+// there's no bootstrapping mechanism them that we could easily hook into for
+// them. Therefore we're initializing the module automatically for now.
+start();

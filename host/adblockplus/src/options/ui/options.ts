@@ -15,13 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 
 /**
  * Initializes options page
  */
 async function start(): Promise<void> {
-  const os = await api.app.get("os");
+  const os = await messaging.app.get<string>("os");
 
   const iframe = document.getElementById("content");
   if (!(iframe instanceof HTMLIFrameElement)) {
@@ -34,7 +34,7 @@ async function start(): Promise<void> {
 
   // Load the mobile version of the options page on Android.
   const frameUrl =
-    iframe.getAttribute("data-src-" + os) ?? iframe.getAttribute("data-src");
+    iframe.getAttribute(`data-src-${os}`) ?? iframe.getAttribute("data-src");
   if (!frameUrl) {
     return;
   }

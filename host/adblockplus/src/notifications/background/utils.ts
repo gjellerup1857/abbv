@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Info } from "../../info/background/info.types";
+import { type Info } from "../../info/shared";
 
 export function applyLinkTemplating(url: string, info?: Info): string {
   let newUrl = url;

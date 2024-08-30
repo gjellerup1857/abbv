@@ -15,15 +15,35 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Message } from "./api.types";
+import { type MessageEmitter } from "../shared";
 
 /**
- * Function to be called when a particular message is received.
- *
- * @param message - Message
- * @param sender - Message sender
- * @return The callback can return undefined (no response),
- *         a value (response to be sent to sender immediately)
- *         or a promise (asynchronous response).
+ * Message emitter in front context
  */
-export type MessageListener<T> = (message: Message, sender: T) => unknown;
+export type FrontMessageEmitter = MessageEmitter<browser.Runtime.MessageSender>;
+
+/**
+ * Options for listening to events on port
+ */
+export interface ListenOptions {
+  /**
+   * List of events to listen to
+   */
+  filter: string[];
+
+  /**
+   * ID of tab for which to listen to events
+   * (only supported for "requests.listen")
+   */
+  tabId?: number;
+
+  /**
+   * Namespace
+   */
+  type: string;
+}
+
+/**
+ * Port to access the browser runtime. Null if not set yet.
+ */
+export type Port = browser.Runtime.Port | null;

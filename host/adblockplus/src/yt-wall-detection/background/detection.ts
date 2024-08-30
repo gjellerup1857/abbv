@@ -21,7 +21,7 @@ import {
   type MessageSender,
   addTrustedMessageTypes,
   port
-} from "../../core/api/background";
+} from "../../core/messaging/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import {
   type Dialog,
@@ -30,7 +30,7 @@ import {
   eventEmitter as dialogEmitter,
   showOnpageDialog
 } from "../../onpage-dialog/background";
-import { type Message } from "../../core/api/shared";
+import { type Message } from "~/core/messaging/shared";
 import { detectedMessageType, isEnabled } from "../shared";
 
 /**

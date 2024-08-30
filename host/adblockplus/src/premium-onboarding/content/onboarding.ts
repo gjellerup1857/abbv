@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 
 /**
  * Handles clicks on page
@@ -39,7 +39,7 @@ function onClick(event: Event): void {
   event.stopPropagation();
   event.preventDefault();
 
-  void api.app.open("premium-onboarding", { replaceTab: true });
+  void messaging.app.open("premium-onboarding", { replaceTab: true });
 }
 
 /**

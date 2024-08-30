@@ -23,11 +23,14 @@ import {
   ANNOYANCE_SUBSCRIPTION_TYPE,
   COOKIES_PREMIUM_SUBSCRIPTION_TYPE,
   premiumTypes,
-  type PremiumSubscriptionType
+  type PremiumSubscriptionType,
+  type PremiumSubscriptionsState
 } from "../shared";
-import { port } from "../../core/api/background";
-import { isPremiumSubscriptionsAddRemoveOptions } from "../../core/api/shared";
-import { type Message } from "../../core/api/shared";
+import { port } from "~/core/messaging/background";
+import {
+  type Message,
+  isPremiumSubscriptionsAddRemoveOptions
+} from "../../core/messaging/shared";
 
 /**
  * Returns a list of premium subscriptions.
@@ -80,10 +83,7 @@ async function removePremiumSubscriptions(): Promise<void> {
 export function computePremiumState(
   premiumSubscriptions: ewe.Recommendation[],
   activeSubscriptions: ewe.Subscription[]
-): {
-  [ANNOYANCE_SUBSCRIPTION_TYPE]: boolean;
-  [COOKIES_PREMIUM_SUBSCRIPTION_TYPE]: boolean;
-} {
+): PremiumSubscriptionsState {
   const annoyanceSubscriptionId = premiumSubscriptions.find(
     (sub) => sub.type === ANNOYANCE_SUBSCRIPTION_TYPE
   )?.id;

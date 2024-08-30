@@ -17,6 +17,6 @@
 
 export * from "./events";
 export * from "./events.types";
-export * from "./port";
-export * from "./port.types";
+export * from "./messaging";
+export * from "./messaging.types";
 export * from "./serializable";

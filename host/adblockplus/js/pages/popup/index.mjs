@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {getSourceAttribute} from "../../common.mjs";
 import {$} from "../../dom.mjs";
 import {initI18n} from "../../../src/i18n/index.ts";
@@ -30,7 +30,7 @@ import {
 import {
   ANNOYANCE_SUBSCRIPTION_TYPE,
   COOKIES_PREMIUM_SUBSCRIPTION_TYPE
-} from "../../../src/premium-subscriptions/shared/premium-subscriptions.ts";
+} from "../../../src/premium-subscriptions/shared/index.ts";
 import "../../../src/popup/ui/popup.css";
 import "../../io-circle-toggle.mjs";
 import "./notifications.mjs";
@@ -46,7 +46,7 @@ initI18n();
 // "application" is used to hide all Edge specific things (i.e. 3rd parts links)
 //
 // "store" is used to specify the extension rating redirect link
-api.app.getInfo().then(info =>
+messaging.app.getInfo().then(info =>
 {
   // this won't ever change during ABP lifecycle, which is why
   // it's set ASAP as data-platform attribute, on the most top element,
@@ -101,7 +101,7 @@ activeTab.then(tab =>
   options.textContent = "";
   options.addEventListener("click", () =>
   {
-    api.app.open("options").then(
+    messaging.app.open("options").then(
       // force closing popup which is not happening in Firefox
       // @link https://issues.adblockplus.org/ticket/7017
       () => window.close()
@@ -148,10 +148,10 @@ async function setupPremium()
   setupPremiumBanners();
   updateToggles();
 
-  const premium = await api.premium.get();
+  const premium = await messaging.premium.get();
   setPremiumState(premium.isActive);
 
-  api.addListener((msg) =>
+  messaging.addMessageListener((msg) =>
   {
     if (msg.type !== "premium.respond" || msg.action !== "changed")
       return;
@@ -160,13 +160,16 @@ async function setupPremium()
     setPremiumState(msg.args[0].isActive);
   });
 
-  api.premium.listen(["changed"]);
+  messaging.premium.listen(["changed"]);
 }
 
 async function setupPremiumBanners()
 {
   const source = getSourceAttribute(document.body);
-  const premiumUpgradeUrl = await api.ctalinks.get("premium-upgrade", {source});
+  const premiumUpgradeUrl = await messaging.ctalinks.get(
+    "premium-upgrade",
+    {source}
+  );
   $("#premium-upgrade").setAttribute("href", premiumUpgradeUrl);
   document.querySelectorAll("[data-link='premium']").forEach((element) =>
   {
@@ -181,16 +184,16 @@ function setPremiumState(premiumIsActive)
 
 function setupStats(tab)
 {
-  api.stats.getBlockedPerPage(tab).then((blockedPage) =>
+  messaging.stats.getBlockedPerPage(tab).then((blockedPage) =>
   {
     updateBlockedPerPage(blockedPage);
   });
-  api.stats.getBlockedTotal().then((blockedTotal) =>
+  messaging.stats.getBlockedTotal().then((blockedTotal) =>
   {
     updateBlockedTotal(blockedTotal);
   });
 
-  api.addListener((msg) =>
+  messaging.addMessageListener((msg) =>
   {
     if (msg.type !== "stats.respond")
       return;
@@ -209,7 +212,7 @@ function setupStats(tab)
     }
   });
 
-  api.stats.listen(["blocked_per_page", "blocked_total"]);
+  messaging.stats.listen(["blocked_per_page", "blocked_total"]);
 }
 
 function setupFooter()
@@ -261,11 +264,11 @@ async function setupPremiumToggles()
     const value = annoyanceToggle.getAttribute("checked") !== null;
     if (value)
     {
-      api.premium.add(ANNOYANCE_SUBSCRIPTION_TYPE);
+      messaging.premium.add(ANNOYANCE_SUBSCRIPTION_TYPE);
     }
     else
     {
-      api.premium.remove(ANNOYANCE_SUBSCRIPTION_TYPE);
+      messaging.premium.remove(ANNOYANCE_SUBSCRIPTION_TYPE);
     }
   });
 
@@ -280,15 +283,15 @@ async function setupPremiumToggles()
     }
     else
     {
-      api.premium.remove(COOKIES_PREMIUM_SUBSCRIPTION_TYPE);
+      messaging.premium.remove(COOKIES_PREMIUM_SUBSCRIPTION_TYPE);
     }
   });
 }
 
 async function updateToggles()
 {
-  const isPremiumEnabled = await api.premium.get();
-  const premiumSubscriptionsState = await api
+  const isPremiumEnabled = await messaging.premium.get();
+  const premiumSubscriptionsState = await messaging
     .premium.getPremiumSubscriptionsState();
 
   const annoyanceSubActive = isPremiumEnabled &&
@@ -337,7 +340,7 @@ function setupCookieModal()
 
   acceptButton.addEventListener("click", async() =>
   {
-    api.premium.add(COOKIES_PREMIUM_SUBSCRIPTION_TYPE);
+    messaging.premium.add(COOKIES_PREMIUM_SUBSCRIPTION_TYPE);
     modalContainer.classList.remove("visible");
   });
 }

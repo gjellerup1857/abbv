@@ -15,8 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as api from "../../core/api/front";
-import { type Message, isMessage } from "../../core/api/shared";
+import * as messaging from "~/core/messaging/front";
+import { type Message, isMessage } from "~/core/messaging/shared";
 import { prepareElementForUnload } from "../../unload-cleanup/content";
 import { DisplayValue } from "../../unload-cleanup/shared";
 import { type ResizeMessage, type ShowMessage } from "../shared";
@@ -149,7 +149,7 @@ function start(): void {
   browser.runtime.onMessage.addListener(handleMessage);
 
   // Clean up after extension unloads
-  api.addDisconnectListener((): void => {
+  messaging.addDisconnectListener((): void => {
     stop();
   });
 }

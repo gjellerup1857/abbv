@@ -16,3 +16,4 @@
  */
 
 export * from "./premium-subscriptions";
+export * from "./premium-subscriptions.types";

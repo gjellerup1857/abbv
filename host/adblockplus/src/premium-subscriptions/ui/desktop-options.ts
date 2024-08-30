@@ -16,11 +16,13 @@
  */
 
 import { type EventEmitter } from "../../../adblockpluschrome/lib/events";
-import api, { type MessageProps } from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
+import { type Message, isEventMessage } from "~/core/messaging/shared";
 import { $, $$ } from "../../../js/dom.mjs";
 import { premiumTypes } from "../shared";
 
 import { isCollectionSubscription } from "../../polyfills/ui";
+import { isPremiumState } from "../../premium/shared";
 
 /**
  * Sets the premium current state to a given list item in the page
@@ -105,7 +107,7 @@ async function onCollectionItemUpdated(item: unknown): Promise<void> {
       return;
     }
 
-    const { isActive: premiumIsActive } = await api.premium.get();
+    const { isActive: premiumIsActive } = await messaging.premium.get();
     updateListItem(listItem, premiumIsActive);
 
     if (item.recommended === "cookies-premium") {
@@ -119,28 +121,27 @@ async function onCollectionItemUpdated(item: unknown): Promise<void> {
  *
  * @param message message - message received from browser.runtime
  */
-function onApiMessage(message?: MessageProps): void {
-  if (!message) {
+function onApiMessage(message: Message): void {
+  if (
+    !isEventMessage(message) ||
+    message.type !== "premium.respond" ||
+    !isPremiumState(message.args[0])
+  ) {
     return;
   }
 
-  switch (message.type) {
-    case "premium.respond": {
-      const premiumIsActive = message.args[0].isActive;
-      updateListItems(premiumIsActive);
-      break;
-    }
-  }
+  const premiumIsActive = message.args[0].isActive;
+  updateListItems(premiumIsActive);
 }
 
 /**
  * Initializes premium-subscriptions in the options page
  */
 export async function start(optionsPageEmitter: EventEmitter): Promise<void> {
-  const { isActive: premiumIsActive } = await api.premium.get();
+  const { isActive: premiumIsActive } = await messaging.premium.get();
   updateListItems(premiumIsActive);
 
   optionsPageEmitter.on("collectionItem.updated", onCollectionItemUpdated);
 
-  api.addListener(onApiMessage);
+  messaging.addMessageListener(onApiMessage);
 }

@@ -16,11 +16,12 @@
  */
 
 import {
+  type EventMessage,
   type ListenMessage,
   type Message,
   type PremiumActivateOptions,
   type PremiumSubscriptionsAddRemoveOptions
-} from "./api.types";
+} from "./messaging.types";
 
 /**
  * Determines message response based on a list of responeses
@@ -29,6 +30,7 @@ import {
  * identify the first valid one, so that we can then return it.
  *
  * @param responses - Message responses
+ *
  * @returns message response (if any)
  */
 export function getMessageResponse(responses: unknown[]): unknown {
@@ -40,9 +42,20 @@ export function getMessageResponse(responses: unknown[]): unknown {
 }
 
 /**
+ * Checks whether given candidate is event message
+ *
+ * @param candidate - Candidate
+ *
+ * @returns whether candidate is event message
+ */
+export function isEventMessage(candidate: unknown): candidate is EventMessage {
+  return isMessage(candidate) && "action" in candidate && "args" in candidate;
+}
+
+/**
  * Checks whether given candidate is a message
  *
- * @param candidate - Message candidate
+ * @param candidate - Candidate
  *
  * @returns whether candidate is message
  */

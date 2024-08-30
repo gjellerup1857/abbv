@@ -20,7 +20,7 @@ import {
   type MessageSender,
   addTrustedMessageTypes,
   port
-} from "../../core/api/background";
+} from "../../core/messaging/background";
 import { displayValueList, isGetClassNameMessage } from "../shared";
 import { className } from "./unload-cleanup.types";
 

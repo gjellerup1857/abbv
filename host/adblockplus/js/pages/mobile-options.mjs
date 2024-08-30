@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {convertDoclinks, getDoclink, getErrorMessage} from "../common.mjs";
 import {initI18n} from "../../src/i18n/index.ts";
 
@@ -397,11 +397,11 @@ import "../../src/mobile-options/ui/mobile-options.css";
     }
   }
 
-  api.addListener(onMessage);
+  messaging.addMessageListener(onMessage);
 
-  api.app.listen(["addSubscription", "showPageOptions"]);
-  api.filters.listen(["added", "removed"]);
-  api.subscriptions.listen(["added", "changed", "removed"]);
+  messaging.app.listen(["addSubscription", "showPageOptions"]);
+  messaging.filters.listen(["added", "removed"]);
+  messaging.subscriptions.listen(["added", "changed", "removed"]);
 
   /* Initialization */
 

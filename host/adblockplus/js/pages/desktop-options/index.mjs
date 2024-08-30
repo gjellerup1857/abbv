@@ -24,7 +24,7 @@ import {
   getRawItemTitle,
   loadLanguageNames
 } from "./titles.mjs";
-import api from "../../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import * as premiumSubscriptions
   from "../../../src/premium-subscriptions/ui/index.ts";
 import {premiumTypes} from "../../../src/premium-subscriptions/shared/index.ts";
@@ -628,7 +628,7 @@ async function loadResources()
   {
     await loadLanguageNames();
 
-    const recommendations = await api.app.get("recommendations");
+    const recommendations = await messaging.app.get("recommendations");
     for (const recommendation of recommendations)
     {
       const subscription = {
@@ -726,7 +726,7 @@ function hasPrivacyConflict()
 const setAcceptableAds = async(options = {}) =>
 {
   const {firstLoad} = options;
-  const subscriptions = await api.subscriptions.get();
+  const subscriptions = await messaging.subscriptions.get();
 
   const activeSubscriptionUrls = subscriptions.map(
     ({disabled, url}) => !disabled && url
@@ -1333,7 +1333,7 @@ function onDOMLoaded()
     setElementLinks("visit-forum", url);
   });
 
-  api.app.getInfo().then(({application, manifestVersion, store}) =>
+  messaging.app.getInfo().then(({application, manifestVersion, store}) =>
   {
     document.documentElement.dataset.application = application;
     document.documentElement.dataset.manifestVersion = manifestVersion;
@@ -1346,7 +1346,7 @@ function onDOMLoaded()
     }
     else
     {
-      api.doclinks.get(`${store}_review`).then((url) =>
+      messaging.doclinks.get(`${store}_review`).then((url) =>
       {
         $("#support-us a[data-i18n='options_rating_button']").href = url;
       });
@@ -1432,7 +1432,7 @@ function hideNotification()
 
 async function populateFilters()
 {
-  const filters = await api.filters.get();
+  const filters = await messaging.filters.get();
   loadCustomFilters([].concat(...filters));
   isCustomFiltersLoaded = true;
 }
@@ -1452,10 +1452,10 @@ async function populateLists()
     additionalSubscriptionUrls,
     subscriptions
   ] = await Promise.all([
-    api.app.get("acceptableAdsUrl"),
-    api.app.get("acceptableAdsPrivacyUrl"),
-    api.prefs.get("additional_subscriptions"),
-    api.subscriptions.get()
+    messaging.app.get("acceptableAdsUrl"),
+    messaging.app.get("acceptableAdsPrivacyUrl"),
+    messaging.prefs.get("additional_subscriptions"),
+    messaging.subscriptions.get()
   ]);
 
   acceptableAdsUrl = url;
@@ -1594,7 +1594,7 @@ async function setupPremium()
   setupPremiumBanners();
   setupPremiumInRecommended();
 
-  const premium = await api.premium.get();
+  const premium = await messaging.premium.get();
   premiumIsActive = premium.isActive;
   updatePremiumStateInPage();
 
@@ -1608,8 +1608,8 @@ async function setupPremiumBanners()
   const upgradeDescription = $("#premium-upgrade-description");
 
   const source = getSourceAttribute(premiumUpgradeBanner);
-  const manageUrl = await api.ctalinks.get("premium-manage", {source});
-  const upgradeUrl = await api.ctalinks.get("premium-upgrade", {source});
+  const manageUrl = await messaging.ctalinks.get("premium-manage", {source});
+  const upgradeUrl = await messaging.ctalinks.get("premium-upgrade", {source});
 
   $$(".premium-manage.banner a").forEach(cta =>
   {
@@ -1624,7 +1624,7 @@ async function setupPremiumInRecommended()
   const upgradeCTA = $(".recommended-features .upgrade.button");
 
   const source = getSourceAttribute(upgradeCTA);
-  const upgradeUrl = await api.ctalinks.get("premium-upgrade", {source});
+  const upgradeUrl = await messaging.ctalinks.get("premium-upgrade", {source});
 
   upgradeCTA.setAttribute("href", upgradeUrl);
 }
@@ -1786,7 +1786,7 @@ function onPrefMessage(key, value, initial)
     checkbox.setAttribute("aria-checked", value);
 }
 
-api.addListener((message) =>
+messaging.addMessageListener((message) =>
 {
   switch (message.type)
   {
@@ -1860,9 +1860,9 @@ api.addListener((message) =>
   }
 });
 
-api.app.listen(["addSubscription", "focusSection"]);
-api.filters.listen(["added", "changed", "removed"]);
-api.prefs.listen([
+messaging.app.listen(["addSubscription", "focusSection"]);
+messaging.filters.listen(["added", "changed", "removed"]);
+messaging.prefs.listen([
   "elemhide_debug",
   "notifications_ignoredcategories",
   "recommend_language_subscriptions",
@@ -1872,8 +1872,13 @@ api.prefs.listen([
   "ui_warn_tracking",
   "data_collection_opt_out"
 ]);
-api.premium.listen(["changed"]);
-api.subscriptions.listen(["added", "changed", "filtersDisabled", "removed"]);
+messaging.premium.listen(["changed"]);
+messaging.subscriptions.listen([
+  "added",
+  "changed",
+  "filtersDisabled",
+  "removed"
+]);
 
 onDOMLoaded();
 

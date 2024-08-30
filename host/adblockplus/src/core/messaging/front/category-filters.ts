@@ -15,10 +15,24 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "./api";
+import { type SerializableFilter } from "../shared";
+import * as messaging from "./messaging";
+import { send } from "./utils";
 
-export * from "./api";
-export * from "./api.port";
-export * from "./api.types";
+/**
+ * Retrieves custom filters
+ *
+ * @returns custom filters
+ */
+export async function get(): Promise<SerializableFilter[]> {
+  return await send("filters.get");
+}
 
-export default api;
+/**
+ * Listen to filter-related events
+ *
+ * @param filter - Event names
+ */
+export function listen(filter: string[]): void {
+  messaging.listen({ type: "filters", filter });
+}

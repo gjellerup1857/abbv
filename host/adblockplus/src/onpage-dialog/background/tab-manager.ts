@@ -19,7 +19,11 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { type Tabs } from "webextension-polyfill";
 
-import { addTrustedMessageTypes, port } from "../../core/api/background";
+import {
+  type MessageSender,
+  addTrustedMessageTypes,
+  port
+} from "../../core/messaging/background";
 import { TabSessionStorage } from "../../../adblockpluschrome/lib/storage/tab-session";
 import { EventEmitter } from "../../../adblockpluschrome/lib/events";
 import { getLocaleInfo } from "../../i18n/background";
@@ -34,8 +38,7 @@ import {
   recordEvent
 } from "../../ipm/background";
 import * as logger from "../../logger/background";
-import { type MessageSender } from "../../core/api/background";
-import { type Message, isMessage } from "../../core/api/shared";
+import { type Message, isMessage } from "~/core/messaging/shared";
 import { type TabRemovedEventData } from "../../polyfills/background";
 import { type HideMessage, type StartInfo, isPingMessage } from "../shared";
 import { isDialog, isDialogBehavior, isDialogContent } from "./dialog";

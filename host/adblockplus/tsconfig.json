@@ -6,6 +6,9 @@
     "forceConsistentCasingInFileNames": true,
     "module": "es2020",
     "moduleResolution": "node",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "removeComments": true,
     "skipLibCheck": true,
     "strict": true,

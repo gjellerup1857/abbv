@@ -19,12 +19,15 @@ import {
   addTrustedMessageTypes,
   installHandler,
   port
-} from "../../core/api/background";
+} from "../../core/messaging/background";
 import { EventEmitter } from "../../../adblockpluschrome/lib/events";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import * as scheduledEmitter from "../../core/scheduled-event-emitter/background/scheduled-event-emitter";
 
-import { type Message, isPremiumActivateOptions } from "../../core/api/shared";
+import {
+  type Message,
+  isPremiumActivateOptions
+} from "../../core/messaging/shared";
 import { ScheduleType } from "../../core/scheduled-event-emitter/background/scheduled-event-emitter.types";
 import { type EventEmitterCallback } from "../../polyfills/background";
 import { type PremiumState } from "../shared";

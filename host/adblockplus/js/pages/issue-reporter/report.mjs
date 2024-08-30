@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../../../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {$, $$} from "../../dom.mjs";
 
 const reportData = new DOMParser().parseFromString(
@@ -37,7 +37,7 @@ function getOriginalTabId()
   return tabId;
 }
 
-api.addListener((message) =>
+messaging.addMessageListener((message) =>
 {
   if (message.type !== "requests.respond" || message.action !== "hits")
     return;
@@ -101,7 +101,7 @@ function collectRequests(tabId)
   }).then((tab) =>
   {
     dataGatheringTabId = tab.id;
-    api.requests.listen(["hits"], dataGatheringTabId);
+    messaging.requests.listen(["hits"], dataGatheringTabId);
 
     function minimumTimeMet()
     {
@@ -252,7 +252,7 @@ async function retrieveWindowInfo(tabId)
 
 function retrieveSubscriptions()
 {
-  return api.subscriptions.get({
+  return messaging.subscriptions.get({
     ignoreDisabled: true,
     disabledFilters: true
   }).then(subscriptions =>

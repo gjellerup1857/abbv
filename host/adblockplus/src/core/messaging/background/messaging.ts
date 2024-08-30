@@ -27,7 +27,7 @@ import {
   type BackgroundMessageEmitter,
   type BrowserMessageSenderWithOrigin,
   type MessageSender
-} from "./port.types";
+} from "./messaging.types";
 
 /**
  * Message emitter instance for use in background context

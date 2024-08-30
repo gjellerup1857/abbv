@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {getErrorMessage} from "./common.mjs";
 import {$} from "./dom.mjs";
 import {stripTagsUnsafe} from "../src/i18n/index.ts";
@@ -562,7 +562,7 @@ function replaceFilter(filter, currentTarget)
 // delegate the error handling
 function setupPort()
 {
-  api.addListener((message) =>
+  messaging.addMessageListener((message) =>
   {
     if (message.type === "filters.respond" && message.action === "changed")
     {

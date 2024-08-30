@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isMessage } from "../../core/api/shared";
+import { isMessage } from "~/core/messaging/shared";
 import { type GetClassNameMessage } from "./unload-cleanup.types";
 
 /**

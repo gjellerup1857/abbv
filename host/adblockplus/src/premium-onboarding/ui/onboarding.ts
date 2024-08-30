@@ -17,7 +17,7 @@
 
 import { initI18n } from "../../i18n";
 import { $, $$ } from "../../../js/dom.mjs";
-import api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 import { closeCurrentTab } from "../../polyfills/ui";
 
 import "../../components/ui/io-checkbox.css";
@@ -50,7 +50,7 @@ async function initCtas(): Promise<void> {
   $("#cta-enable-none").addEventListener("click", finish);
   $("#cta-finish").addEventListener("click", closeCurrentTab);
 
-  const upgradeUrl = await api.ctalinks.get("premium-upgrade", {
+  const upgradeUrl = await messaging.ctalinks.get("premium-upgrade", {
     source: "onboarding"
   });
   $("#cta-upgrade").setAttribute("href", upgradeUrl);
@@ -60,7 +60,7 @@ async function initCtas(): Promise<void> {
  * Initializes feature choices
  */
 async function initFeatureChoices(): Promise<void> {
-  const recommendations = await api.subscriptions.getRecommendations();
+  const recommendations = await messaging.subscriptions.getRecommendations();
   for (const recommendation of recommendations) {
     const checkbox = $(
       `.feature io-checkbox[data-feature="${recommendation.type}"]`
@@ -92,7 +92,7 @@ function initOptionsPageLink(): void {
  * Initializes Premium state
  */
 async function initPremiumState(): Promise<void> {
-  const state = await api.premium.get();
+  const state = await messaging.premium.get();
   if (!state.isActive) {
     return;
   }
@@ -121,9 +121,9 @@ function onFeatureChanged(event: Event): void {
   }
 
   if (element.checked) {
-    void api.subscriptions.add(url);
+    void messaging.subscriptions.add(url);
   } else {
-    void api.subscriptions.remove(url);
+    void messaging.subscriptions.remove(url);
   }
   finish();
 }
@@ -136,7 +136,7 @@ function onFeatureChanged(event: Event): void {
 function openOptionsPage(event: Event): void {
   event.preventDefault();
 
-  void api.app.open("options");
+  void messaging.app.open("options");
 }
 
 /**

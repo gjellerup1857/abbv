@@ -19,12 +19,13 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {installHandler, port} from "../../src/core/api/background";
 import {
+  installHandler,
+  port,
   toSerializableBlockableItem,
   toSerializableFilter,
   toSerializableSubscription
-} from "../../src/core/api/background";
+} from "../../src/core/messaging/background";
 import {pageEmitter} from "../../src/core/pages/background";
 import {compareVersions} from "../../src/version/shared";
 import {TabSessionStorage} from "./storage/tab-session.js";

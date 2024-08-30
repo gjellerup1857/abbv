@@ -15,4 +15,5 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export * from "./state";
 export * from "./state.types";

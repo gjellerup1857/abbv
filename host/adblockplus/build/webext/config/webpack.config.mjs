@@ -77,6 +77,9 @@ export default {
     global: false
   },
   resolve: {
+    alias: {
+      "~": path.resolve("", "./src/")
+    },
     modules: [
       path.resolve("adblockpluschrome/lib"),
       path.resolve("lib"),

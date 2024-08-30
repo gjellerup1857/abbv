@@ -24,7 +24,7 @@ const ewe = require("@eyeo/webext-ad-filtering-solution");
 const {
   isTrustedSender,
   port: messagingPort
-} = require("../../src/core/api/background");
+} = require("../../src/core/messaging/background");
 const {getPage} = require("../../src/core/pages/background");
 const {
   SessionStorage

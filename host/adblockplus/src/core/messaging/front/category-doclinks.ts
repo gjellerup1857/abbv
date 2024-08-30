@@ -15,8 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./api";
-export * from "./api.types";
-export * from "./emitter";
-export * from "./emitter.types";
-export * from "./serializable.types";
+import { type GetDoclinkOptions } from "./category-app.types";
+import { send } from "./utils";
+
+/**
+ * Retrieves documentation link for given link ID
+ *
+ * @param link - Link ID
+ * @returns documentation link
+ */
+export async function get(link: string): Promise<string> {
+  const options: GetDoclinkOptions = { what: "doclink", link };
+  return await send("app.get", options);
+}

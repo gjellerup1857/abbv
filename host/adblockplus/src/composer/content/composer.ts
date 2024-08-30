@@ -21,7 +21,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import * as api from "../../core/api/front";
+import * as messaging from "~/core/messaging/front";
 
 // The page ID for the popup filter selection dialog (top frame only).
 let blockelementPopupId = null;
@@ -364,7 +364,7 @@ function startPickingElement(): void {
   document.addEventListener("keydown", keyDown, true);
   /* eslint-enable @typescript-eslint/no-misused-promises */
 
-  api.addDisconnectListener(onDisconnect);
+  messaging.addDisconnectListener(onDisconnect);
 }
 
 // Used to hide/show blocked elements on composer.content.preview
@@ -490,7 +490,7 @@ function deactivateBlockElement(popupAlreadyClosed): void {
     overlays[0].parentNode.removeChild(overlays[0]);
   }
 
-  api.removeDisconnectListener(onDisconnect);
+  messaging.removeDisconnectListener(onDisconnect);
 }
 
 function onDisconnect(): void {
@@ -523,7 +523,7 @@ function initializeComposer(): void {
     true
   );
 
-  api.messageEmitter.addListener((message) => {
+  messaging.messageEmitter.addListener((message) => {
     switch (message.type) {
       case "composer.content.preview":
         void previewBlockedElements(message.active);

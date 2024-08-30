@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import api from "../src/core/api/front/index.ts";
+import * as messaging from "~/core/messaging/front/index.ts";
 import {$, $$} from "./dom.mjs";
 import IOElement from "./io-element.mjs";
 
@@ -139,7 +139,7 @@ class IOPopupFooter extends IOElement
     for (const anchor of anchors)
     {
       const doclink = anchor.dataset.doclink.replace("%store%", store);
-      api.doclinks.get(doclink).then((url) =>
+      messaging.doclinks.get(doclink).then((url) =>
       {
         anchor.target = anchor.target || "_blank";
         anchor.href = url;
