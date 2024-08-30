@@ -1,6 +1,7 @@
 # Unreleased
 
 - Upgraded to SDK version 1.12.0
+- Updated snippets to 1.5.0
 
 # 4.5.1 - 2024-08-13
 
