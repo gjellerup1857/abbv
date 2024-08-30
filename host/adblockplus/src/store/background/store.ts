@@ -16,9 +16,8 @@
  */
 
 import { BehaviorSubject } from "rxjs";
-import { type Store } from "../../core/state/shared";
 
-export const store: Store = {
+export const store = {
   /**
    * Address on adblockplus.org to be opened for documentation links.
    *
@@ -26,5 +25,10 @@ export const store: Store = {
    */
   documentationLink: new BehaviorSubject(
     "https://adblockplus.org/redirect?link=%LINK%&lang=%LANG%"
-  )
+  ),
+
+  /**
+   * The interval in which to ping the IPM server, in ms. Defaults to 24 hours.
+   */
+  ipmPingInterval: new BehaviorSubject(24 * 60 * 60 * 1000)
 };

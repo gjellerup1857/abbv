@@ -17,6 +17,8 @@
 
 import { error as logError } from "../../logger/background";
 
+import { start as startStateHandling } from "~/core/state/background";
+import { store } from "~/store/background";
 import { start as startContentFiltering } from "../../../adblockpluschrome/lib/contentFiltering.js";
 import { start as startDebug } from "../../../adblockpluschrome/lib/debug.js";
 import { start as startDevTools } from "../../../adblockpluschrome/lib/devtools.js";
@@ -25,26 +27,26 @@ import { start as startMessageResponder } from "../../../adblockpluschrome/lib/m
 import { start as startStats } from "../../../adblockpluschrome/lib/stats.js";
 import { start as startTabSessionStorage } from "../../../adblockpluschrome/lib/storage/tab-session";
 import { start as startSubscriptionInit } from "../../../adblockpluschrome/lib/subscriptionInit.js";
-import {
-  start as startErrorReporting,
-  reportError
-} from "../../error-reporter/background";
 import { start as startUninstall } from "../../../adblockpluschrome/lib/uninstall.js";
 import { start as startInit } from "../../../lib/init.js";
 import { start as startRecommendedLanguage } from "../../../lib/recommendLanguage.js";
 import { start as startAllowListing } from "../../allowlisting/background";
 import { start as startBypass } from "../../bypass/background";
 import { start as startComposer } from "../../composer/background";
+import { start as startPages } from "../../core/pages/background";
+import {
+  reportError,
+  start as startErrorReporting
+} from "../../error-reporter/background";
+import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startIPM } from "../../ipm/background";
 import { start as startNewTab } from "../../new-tab/background";
 import { start as startOnPageDialog } from "../../onpage-dialog/background";
 import { start as startPremiumOnboarding } from "../../premium-onboarding/background";
 import { start as startPremiumSubscriptions } from "../../premium-subscriptions/background";
 import { start as startReadyState } from "../../testing/ready-state/background";
-import { start as startYTWallDetection } from "../../yt-wall-detection/background";
-import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startUpdateCampaign } from "../../update-campaign/background";
-import { start as startPages } from "../../core/pages/background";
+import { start as startYTWallDetection } from "../../yt-wall-detection/background";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -58,6 +60,7 @@ async function bootstrap(): Promise<void> {
     startTabSessionStorage();
     startDevTools();
     startDebug();
+    await startStateHandling(store);
     void startIPM().catch(reportAndLogError);
     startReadyState();
     startFilterConfiguration();

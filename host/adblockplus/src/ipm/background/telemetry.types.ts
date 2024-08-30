@@ -20,9 +20,9 @@
  */
 export const scheduleName = "ipm_ping_schedule";
 /**
- * The name for the Prefs storage key of the interval duration.
+ * The name for the state storage key of the interval duration.
  */
-export const intervalKey = "ipm_ping_interval";
+export const intervalKey = "ipmPingInterval";
 /**
  * The name for the Prefs storage key of the IPM server URL.
  */

@@ -15,17 +15,18 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { store } from "~/store/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import {
+  hasSchedule,
   ScheduleType,
   setListener,
-  setSchedule,
-  hasSchedule
+  setSchedule
 } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommand } from "./command-library";
-import { getPayload, clearEvents } from "./data-collection";
 import { error as logError } from "../../logger/background";
-import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
+import { executeIPMCommand } from "./command-library";
+import { clearEvents, getPayload } from "./data-collection";
+import { intervalKey, scheduleName, serverUrlKey } from "./telemetry.types";
 
 /**
  * Processes a response from the IPM server. Will request command execution
@@ -94,11 +95,10 @@ export async function start(): Promise<void> {
   });
 
   if (!hasSchedule(scheduleName)) {
-    await Prefs.untilLoaded;
     void sendPing();
     void setSchedule(
       scheduleName,
-      Prefs.get(intervalKey),
+      store[intervalKey].value,
       ScheduleType.interval
     );
   }

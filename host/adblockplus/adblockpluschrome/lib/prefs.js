@@ -258,13 +258,6 @@ defaults.sentry_user_id = "";
 defaults.ipm_server_url = "https://ipm.adblockplus.dev/api/stats";
 
 /**
- * The interval in which to ping the IPM server, in ms. Defaults to 24 hours.
- *
- * @type {number}
- */
-defaults.ipm_ping_interval = 24 * 60 * 60 * 1000;
-
-/**
  * List of user events
  *
  * @type {array}
