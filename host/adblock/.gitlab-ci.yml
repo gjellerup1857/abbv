@@ -40,6 +40,7 @@ stages:
   - build
   - check_filesizes
   - compliance
+  - end-to-end
 
 ################################################################################
 # Build
@@ -122,15 +123,18 @@ check_filesizes:firefox_mv2:
     EXTENSION: adblock-firefox-*-mv2.xpi
 
 ################################################################################
-# Ad filtering tests
+# Compliance tests
 ################################################################################
 
-.compliance:
-  stage: compliance
+.docker:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
   needs: ["build"]
+
+.compliance:
+  stage: compliance
+  extends: .docker
   before_script:
     - apk add bash git
     - cd $[[ inputs.hostpath ]]
@@ -186,3 +190,34 @@ comp:MV2:chromium:oldest:
 #   variables:
 #     BROWSER: firefox 75.0
 #     EXTENSION: adblock-firefox-*-mv2.xpi
+
+################################################################################
+# End-to-end tests
+################################################################################
+
+.end-to-end:
+  stage: end-to-end
+  extends: .docker
+  before_script:
+    - cd $[[ inputs.hostpath ]]
+  script:
+    - docker build -t end-to-end -f test/end-to-end/Dockerfile .
+    - docker run --cpus=2 --shm-size=2g -t -e BROWSER -e MANIFEST_VERSION end-to-end
+
+end-to-end:MV2:firefox:
+  extends: .end-to-end
+  variables:
+    BROWSER: firefox
+    MANIFEST_VERSION: 2
+
+end-to-end:MV2:edge:
+  extends: .end-to-end
+  variables:
+    BROWSER: edge
+    MANIFEST_VERSION: 2
+
+end-to-end:MV3:chromium:
+  extends: .end-to-end
+  variables:
+    BROWSER: chromium
+    MANIFEST_VERSION: 3

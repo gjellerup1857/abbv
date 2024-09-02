@@ -12,6 +12,7 @@ tests/firefox-snapshots/
 /dist/
 /testpages.adblockplus.org/
 .env
+/browser-snapshots/
 
 # Editor/IDE
 .vscode/

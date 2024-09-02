@@ -113,6 +113,27 @@ Optional environment variables:
 - BROWSER: Browser and version to run. The default is "chromium latest".
 - IMAGE_NAME: Name of the docker container. The default is "compliance".
 
+### End-to-end tests
+
+End-to-end tests load the release build of the AdBlock extension in the browser
+to run the end to end test suites.
+
+Prerequisite: Do the release builds as described in
+[building the extension](#building-the-extension) section.
+
+Local run:
+
+```sh
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
+```
+
+Docker run:
+
+```sh
+docker build -t end-to-end -f test/end-to-end/Dockerfile .
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
+```
+
 ## Code Style
 
 We use a standard code style enforced by [eslint](https://eslint.org) for JavaScript and [Prettier](https://prettier.io) for HTML, CSS and JSON. We use [HTMLhint](https://github.com/htmlhint/HTMLHint) for HTML accessibility and standards checking. To use these tools, install [Node.js](https://nodejs.org) and run the following command in the project directory:
