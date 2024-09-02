@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "@eyeo/snippets": "1.5.0",
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#a5bc012dab932841797ba0ffee5603d89d198ad9",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#f96884d68305c9f388d13492ca6134de57fa4757",
     "@eyeo/webext-ad-filtering-solution": "1.12.0",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
