@@ -81,9 +81,7 @@ async function getBuildOptions(isDevenv, isSource) {
     manifestVersion: args.manifest_version,
   };
 
-  // eslint-disable-next-line no-nested-ternary
-  opts.sourceMapType =
-    opts.target == "chrome" ? (isDevenv == true ? "inline-source-map" : false) : "source-map";
+  opts.sourceMapType = "source-map";
 
   if (args.config) {
     configParser.setConfig(await import(url.pathToFileURL(args.config)));
