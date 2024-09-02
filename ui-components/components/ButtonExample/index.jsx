@@ -11,7 +11,7 @@ import React from 'react';
  * @param {ButtonProps} props - The props for the button.
  * @returns {JSX.Element} A styled button.
  */
-export const Button = ({ children, onClick }) => {
+export const ButtonExample = ({ children, onClick }) => {
   return (
     <button style={{ borderStyle: "dotted", borderWidth: "1px" }} onClick={onClick}>
       {children}
