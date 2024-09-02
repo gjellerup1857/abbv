@@ -9,6 +9,8 @@
     --theme-accent-dark: var(--gray2);
     --theme-accent-light: var(--gray5);
     --theme-text-accent: var(--red2);
+    --theme-button-primary: var(--red2);
+    --theme-button-secondary: var(--white);
 
     ::selection {
       background: var(--theme-link-color);
@@ -26,6 +28,8 @@
     --theme-accent-dark: var(--gray2);
     --theme-accent-light: var(--gray3);
     --theme-text-accent: var(--blue2);
+    --theme-button-primary: var(--blue2);
+    --theme-button-secondary: var(--gray6);
 
     ::selection {
       background: var(--theme-link-color);
@@ -37,12 +41,14 @@
   [data-extension='adblock'] [data-theme='solarized'] {
     --theme-primary: var(--solarized-teal2);
     --theme-secondary: var(--solarized-teal1);
-    --theme-text-primary  : var(--solarized-gray1);
+    --theme-text-primary: var(--solarized-gray1);
     --theme-text-secondary: var(--solarized-gray1);
     --theme-link-color: var(--solarized-teal4);
     --theme-accent-dark: var(--solarized-gray1);
     --theme-accent-light: var(--solarized-teal3);
     --theme-text-accent: var(--solarized-teal5);
+    --theme-button-primary: var(--red2);
+    --theme-button-secondary: var(--solarized-gray1);
 
     ::selection {
       background: var(--theme-link-color);
@@ -60,6 +66,8 @@
     --theme-accent-dark: var(--solarized-gray1l);
     --theme-accent-light: var(--solarized-gray0l);  /* double check this one */
     --theme-text-accent: var(--solarized-teal2);
+    --theme-button-primary: var(--red2);
+    --theme-button-secondary: var(--solarized-gray1l);
 
     ::selection {
       background: var(--theme-link-color);
@@ -77,6 +85,8 @@
     --theme-accent-dark: var(--purple3);
     --theme-accent-light: var(--white);
     --theme-text-accent: var(--white);
+    --theme-button-primary: var(--blue3);
+    --theme-button-secondary: var(--purple1);
 
     ::selection {
       background: var(--theme-link-color);
@@ -94,6 +104,8 @@
     --theme-accent-dark: var(--watermelon);
     --theme-accent-light: var(--watermelon);
     --theme-text-accent: var(--white);
+    --theme-button-primary: var(--white);
+    --theme-button-secondary: var(--red1);
 
     ::selection {
       background: var(--theme-link-color);
@@ -111,6 +123,8 @@
     --theme-accent-dark: var(--ocean);
     --theme-accent-light: var(--white);
     --theme-text-accent: var(--blue1);
+    --theme-button-primary: var(--white);
+    --theme-button-secondary: var(--blue1);
 
     ::selection {
       background: var(--theme-link-color);
@@ -128,6 +142,8 @@
     --theme-accent-dark: var(--sunshine);
     --theme-accent-light: var(--sunshine);
     --theme-text-accent: var(--white);
+    --theme-button-primary: var(--white);
+    --theme-button-secondary: var(--yellow1);
 
     ::selection {
       background: var(--theme-link-color);
