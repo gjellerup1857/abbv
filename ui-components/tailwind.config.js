@@ -19,6 +19,8 @@ export default {
         "theme-accent-dark": "var(--theme-accent-dark)",
         "theme-accent-light": "var(--theme-accent-light)",
         "theme-text-accent": "var(--theme-text-accent)",
+        "theme-button-primary": "var(--theme-button-primary)",
+        "theme-button-secondary": "var(--theme-button-secondary)",
       },
     },
   },
