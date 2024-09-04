@@ -13,7 +13,7 @@
     - Icon
     - Color override
     - Aria label
-    - Additional classes
+    - Disabled
 */
 import PropTypes from 'prop-types';
 
@@ -42,10 +42,15 @@ export const Button = ({
   icon,
   onClick,
   text,
-  kind = 'filled',
   ariaLabel = text,
+  disabled = false,
+  kind = 'filled',
 }) => {
-  const defaultButtonStyles = ['px-4 py-2', 'rounded-md']; // add hover
+  const defaultButtonStyles = ['px-4 py-2', 'rounded-md'];
+  const defaultWrapperStyles = ['flex justify-center'];
+
+  const disabledStyles = disabled ? ['opacity-50', 'pointer-events-none'] : [];
+  const disabledWrapperStyles = disabled ? ['cursor-not-allowed'] : [];
   const kindStyles = {
     filled: ['bg-theme-button-primary', 'text-theme-button-secondary'],
     outline: ['text-theme-button-primary', 'border', 'border-theme-button-primary'],
@@ -55,11 +60,12 @@ export const Button = ({
   };
 
   const customStyles = colorOverrides ?? kindStyles[kind];
-  const buttonStyles = [...defaultButtonStyles, ...customStyles].join(' ');
+  const buttonStyles = [...defaultButtonStyles, ...customStyles, ...disabledStyles].join(' ');
+  const wrapperStyles = [...defaultWrapperStyles, ...disabledWrapperStyles].join(' ');
 
   return (
-    <div className="flex justify-center">
-      <button aria-label={ ariaLabel } className={ buttonStyles } onClick={ onClick }>
+    <div className={ wrapperStyles }>
+      <button aria-label={ ariaLabel } className={ buttonStyles } disabled={ disabled } onClick={ onClick }>
         <span>{ icon } { text }</span>
       </button>
     </div>
