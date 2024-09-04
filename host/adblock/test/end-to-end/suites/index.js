@@ -15,18 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env node */
-/* eslint-env mocha */
-/* eslint-disable no-console */
-
-import { findUrl } from "../utils.js";
+import smokeTests from "./smoke.js";
 
 export default () => {
-  describe("Installation", function () {
-    it("opens the install url", async function () {
-      const installUrl = "getadblock.com/en/installed";
-
-      await findUrl(this.driver, installUrl);
-    });
-  });
+  describe("Smoke Tests", smokeTests);
 };

@@ -127,11 +127,21 @@ Local run:
 MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
 ```
 
+By default browsers run headless. Setting the enviornment variable
+`FORCE_HEADFUL=true` will trigger a headful run instead.
+
 Docker run:
 
 ```sh
 docker build -t end-to-end -f test/end-to-end/Dockerfile .
 docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
+```
+
+To access the screenshots for failing tests run the following command, which
+copies them to the `test/end-to-end/screenshots` folder:
+
+```shell
+docker cp $(docker ps -aqf ancestor=end-to-end | head -n 1):/adblock/test/end-to-end/screenshots ./test/end-to-end
 ```
 
 ## Code Style

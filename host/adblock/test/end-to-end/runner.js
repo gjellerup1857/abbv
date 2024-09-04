@@ -15,18 +15,18 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env node */
-/* eslint-env mocha */
 /* eslint-disable no-console */
 
 import path from "path";
 import fs from "fs";
 
 import AdmZip from "adm-zip";
-import { BROWSERS } from "@eyeo/get-browser-binary";
+import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 
-import { findUrl } from "./utils.js";
+import { findUrl } from "./utils/driver.js";
 import defineTestSuites from "./suites/index.js";
+
+const screenshotsPath = path.join(process.cwd(), "test", "end-to-end", "screenshots");
 
 async function extractExtension(browser) {
   const manifestVersion = process.env.MANIFEST_VERSION || "3";
@@ -67,20 +67,51 @@ async function startBrowser() {
     path.join(process.cwd(), "dist", "devenv", "helper-extension"),
     adblockPath,
   ];
-  const options = { headless: true, extensionPaths };
+  const headless = process.env.FORCE_HEADFUL !== "true";
+  const options = { headless, extensionPaths };
   const driver = await BROWSERS[browser].getDriver(version, options);
 
   const cap = await driver.getCapabilities();
-  console.log(`Browser used for tests: ${cap.getBrowserName()} ${cap.getBrowserVersion()}`);
+  const browserVersion = cap.getBrowserVersion();
+  console.log(`Browser used for tests: ${cap.getBrowserName()} ${browserVersion}`);
 
-  return driver;
+  return [driver, browser, browserVersion, getMajorVersion(browserVersion)];
 }
 
 describe("AdBlock end-to-end tests", function () {
   before(async function () {
-    this.driver = await startBrowser();
+    await fs.promises.mkdir(screenshotsPath, { recursive: true });
 
-    await findUrl(this.driver, "options.html");
+    [this.driver, this.browser, this.fullBrowserVersion, this.majorBrowserVersion] =
+      await startBrowser();
+
+    this.optionsHandle = (await findUrl(this.driver, "options.html")).handle;
+
+    const { origin } = await this.driver.executeAsyncScript(async (callback) => {
+      if (typeof browser !== "undefined" && browser.management !== "undefined") {
+        const info = await browser.management.getSelf();
+        callback(info.optionsUrl ? { origin: location.origin } : {});
+      } else {
+        callback({});
+      }
+    });
+    if (!origin) {
+      throw new Error("Origin was not found");
+    }
+
+    this.origin = origin;
+  });
+
+  afterEach(async function () {
+    if (this.currentTest.state !== "failed") {
+      return;
+    }
+
+    const data = await this.driver.takeScreenshot();
+    const base64Data = data.replace(/^data:image\/png;base64,/, "");
+    const title = this.currentTest.title.replaceAll(" ", "_");
+
+    await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
   });
 
   after(async function () {

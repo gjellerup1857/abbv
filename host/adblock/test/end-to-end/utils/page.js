@@ -15,18 +15,20 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function findUrl(driver, expectedUrl, timeout = 5000) {
-  return driver.wait(
-    async () => {
-      for (const handle of await driver.getAllWindowHandles()) {
-        await driver.switchTo().window(handle);
-        const url = await driver.getCurrentUrl();
-        if (url.includes(expectedUrl)) {
-          return true;
-        }
-      }
-    },
-    timeout,
-    `${expectedUrl} was not found`,
-  );
+import webdriver from "selenium-webdriver";
+
+import { waitForDisplayed } from "./driver.js";
+
+const { By } = webdriver;
+
+export async function initPopupPage({ driver, origin }, tabId) {
+  await driver.switchTo().newWindow("tab");
+  await driver.navigate().to(`${origin}/adblock-button-popup.html?tabId=${tabId}`);
+}
+
+export async function initFiltersPage({ driver, optionsHandle }) {
+  await driver.switchTo().window(optionsHandle);
+  await driver.findElement(By.css('[href="#filters"]')).click();
+  // Wait until a filterlist is displayed
+  await waitForDisplayed({ driver }, '[name="easylist"]');
 }
