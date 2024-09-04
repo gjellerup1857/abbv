@@ -1,0 +1,5 @@
+node_modules
+docs
+browser-snapshots
+test/bundle/package-lock.json
+scriptsOutput
