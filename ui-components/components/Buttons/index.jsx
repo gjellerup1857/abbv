@@ -49,7 +49,7 @@ export const Button = ({
   const kindStyles = {
     filled: ['bg-theme-button-primary', 'text-theme-button-secondary'],
     outline: ['text-theme-button-primary', 'border', 'border-theme-button-primary'],
-    text: ['text-theme-button-primary'],
+    text: ['text-theme-accent-dark'],
     link: ['text-theme-link-color', 'inline'],
     punched: ['bg-theme-accent-dark', 'text-theme-secondary'],
   };
