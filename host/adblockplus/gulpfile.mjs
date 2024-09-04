@@ -142,10 +142,18 @@ async function getBuildOptions(isDevenv, isSource)
     manifestVersion: args.manifest_version
   };
 
-  opts.sourceMapType = opts.target == "chrome" ?
-                        isDevenv == true ?
-                        "inline-source-map" : false :
-                        "source-map";
+  // Chromium versions older than 99 don't support source map files for
+  // extensions yet, so we shouldn't include them for Manifest v2 builds
+  // https://issues.chromium.org/issues/40632287
+  if (opts.target === "chrome" && opts.manifestVersion === 2)
+  {
+    opts.sourceMapType = (isDevenv) ? "inline-source-map" : false;
+  }
+  else
+  {
+    opts.sourceMapType = "source-map";
+  }
+
   if (args.config)
     configParser.setConfig(await import(url.pathToFileURL(args.config)));
   else
