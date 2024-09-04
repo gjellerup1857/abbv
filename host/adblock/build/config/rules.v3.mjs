@@ -20,11 +20,13 @@ export default {
     copy: [
       {
         dest: "data/rules/abp",
-        src: "node_modules/@adblockinc/rules/dist/rules/abp/*",
+        package: "@adblockinc/rules",
+        src: "dist/rules/abp/*",
       },
       {
         dest: "data/rules/dnr",
-        src: "node_modules/@adblockinc/rules/dist/rules/dnr/*",
+        package: "@adblockinc/rules",
+        src: "dist/rules/dnr/*",
       },
     ],
     rename: [],

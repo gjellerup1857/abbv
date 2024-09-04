@@ -33,9 +33,10 @@ function addEnvFileToList(sourceFiles)
 
 export default async function sourceDistribution(filename)
 {
-  const sourceFiles = await lsFiles();
+  const repoRootPath = "../..";
+  const sourceFiles = await lsFiles(repoRootPath);
   addEnvFileToList(sourceFiles);
-  return gulp.src(sourceFiles, {base: "."})
+  return gulp.src(sourceFiles, {base: repoRootPath})
     .pipe(tar(`${filename}.tar`))
     .pipe(gzip())
     .pipe(gulp.dest(process.cwd()));

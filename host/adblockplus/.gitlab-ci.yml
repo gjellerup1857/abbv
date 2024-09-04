@@ -26,16 +26,12 @@ spec:
 ---
 default:
   image: node:18.17.1
-  before_script:
-    # enable unsafe-perm to avoid problems with running npm as root
-    # see https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/193
-    - export npm_config_unsafe_perm=true
   cache:  # Cache modules using lock file
     key:
       files:
-        - $[[ inputs.hostpath ]]/package-lock.json
+        - package-lock.json
     paths:
-      - $[[ inputs.hostpath ]]/.npm/
+      - .npm/
   tags:
     - "GCP"
   interruptible: true
@@ -74,31 +70,30 @@ stages:
   stage: build
   before_script:
     # Update dependencies
-    - cd $[[ inputs.hostpath ]]
     - npm ci --cache .npm --prefer-offline
 
 lint:
   extends: .build
   script:
-    - npm run lint
+    - npm run -w $[[ inputs.hostpath ]] lint
 
 build:
   extends: .build
   script:
     # Create .env file from CI variables
-    - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> .env
-    - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> .env
-    - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> .env
-    - echo "SENTRY_DSN=\"$ADBLOCKPLUS_SENTRY_DSN\"" >> .env
-    - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> .env
+    - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "SENTRY_DSN=\"$ADBLOCKPLUS_SENTRY_DSN\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> $[[ inputs.hostpath ]]/.env
     # Create source archive
-    - npm run build:source
+    - npm run -w $[[ inputs.hostpath ]] build:source
     # Create MV2 extension builds
-    - npm run build:release chrome -- -m 2 --unhandled-rejections=strict
-    - npm run build:release firefox -- -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release chrome -- -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release firefox -- -m 2 --unhandled-rejections=strict
     # Create MV3 extension builds
-    - npm run build:release chrome -- -m 3 --unhandled-rejections=strict
-    - npm run build:release chrome -- -m 3 -c development --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release chrome -- -m 3 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release chrome -- -m 3 -c development --unhandled-rejections=strict
   artifacts:
     name: "adblockplus-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -121,19 +116,19 @@ buildfromsource:
     - cd /tmp/source
     - npm ci --cache .npm --prefer-offline
     # Create MV2 extension builds from source archive
-    - npm run build:release chrome -- -m 2 --unhandled-rejections=strict
-    - npm run build:release firefox -- -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release chrome -- -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release firefox -- -m 2 --unhandled-rejections=strict
     # Create MV3 extension builds from source archive
-    - npm run build:release chrome -- -m 3 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release chrome -- -m 3 --unhandled-rejections=strict
   after_script:
     # We cannot refer to artifacts in directories outside of the project
-    - cp -r /tmp/source $[[ inputs.hostpath ]]/source
+    - cp -r /tmp/source/$[[ inputs.hostpath ]]/dist/release $[[ inputs.hostpath ]]/dist/source
   artifacts:
     name: "adblockplus-source-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv2.zip
-      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-chrome-*-mv3.zip
-      - $[[ inputs.hostpath ]]/source/dist/release/adblockplus-firefox-*-mv2.xpi
+      - $[[ inputs.hostpath ]]/dist/source/adblockplus-chrome-*-mv2.zip
+      - $[[ inputs.hostpath ]]/dist/source/adblockplus-chrome-*-mv3.zip
+      - $[[ inputs.hostpath ]]/dist/source/adblockplus-firefox-*-mv2.xpi
   rules:
     - !reference [.release-or-main, rules]
 
@@ -202,19 +197,19 @@ checkbuildsizes:MV3:chrome:
   extends: .checkbuildsizes
   variables:
     REPOSITORY_BUILD: dist/release/adblockplus-chrome-*-mv3.zip
-    SOURCE_BUILD: source/dist/release/adblockplus-chrome-*-mv3.zip
+    SOURCE_BUILD: dist/source/adblockplus-chrome-*-mv3.zip
 
 checkbuildsizes:MV2:chrome:
   extends: .checkbuildsizes
   variables:
     REPOSITORY_BUILD: dist/release/adblockplus-chrome-*-mv2.zip
-    SOURCE_BUILD: source/dist/release/adblockplus-chrome-*-mv2.zip
+    SOURCE_BUILD: dist/source/adblockplus-chrome-*-mv2.zip
 
 checkbuildsizes:MV2:firefox:
   extends: .checkbuildsizes
   variables:
     REPOSITORY_BUILD: dist/release/adblockplus-firefox-*-mv2.xpi
-    SOURCE_BUILD: source/dist/release/adblockplus-firefox-*-mv2.xpi
+    SOURCE_BUILD: dist/source/adblockplus-firefox-*-mv2.xpi
 
 ################################################################################
 # Compliance tests
@@ -303,12 +298,12 @@ comp:MV2:firefox:oldest:
 unit:legacy:
   extends: .unit
   script:
-    - npm run $ unit.legacy
+    - npm run -w $[[ inputs.hostpath ]] $ unit.legacy
 
 unit:standard:
   extends: .unit
   script:
-    - npm run $ unit.standard
+    - npm run -w $[[ inputs.hostpath ]] $ unit.standard
 
 ################################################################################
 # UI tests

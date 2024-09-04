@@ -56,9 +56,21 @@ async function editManifest(data, version, channel, target)
 
   if ("declarative_net_request" in data)
   {
-    const rules = await getJSON(
-      "./node_modules/@adblockinc/rules/dist/manifest/adblockplus.json"
-    );
+    let rulesPath =
+        "node_modules/@adblockinc/rules/dist/manifest/adblockplus.json";
+
+    if (!fs.existsSync(rulesPath))
+    {
+      rulesPath =
+        "../../node_modules/@adblockinc/rules/dist/manifest/adblockplus.json";
+    }
+
+    if (!fs.existsSync(rulesPath))
+    {
+      throw new Error("@adblockinc/rules not found. Maybe npm install?");
+    }
+
+    const rules = await getJSON(rulesPath);
     data.declarative_net_request = rules;
   }
 

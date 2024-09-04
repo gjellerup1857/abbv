@@ -55,11 +55,11 @@ export async function hasTag(tag)
   return tags.includes(tag);
 }
 
-export async function lsFiles()
+export async function lsFiles(directory)
 {
   const fileString = await execFile(
     "git",
-    ["ls-files", "--recurse-submodules"]
+    ["ls-files", "--recurse-submodules", directory]
   );
   return fileString.split(EOL);
 }

@@ -1,9 +1,6 @@
 # dist directories for generated files
 /dist/
 
-# external dependencies
-/node_modules/
-
 /skin/icons/toolbar/*.png
 /allure-report/
 /test/end-to-end/allure-results/

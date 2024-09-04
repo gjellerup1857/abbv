@@ -23,7 +23,8 @@ const common = {
     copy: [
       {
         dest: "tests",
-        src: ["node_modules/mocha/mocha.js", "node_modules/mocha/mocha.css"],
+        package: "mocha",
+        src: ["mocha.js", "mocha.css"],
       },
     ],
   },

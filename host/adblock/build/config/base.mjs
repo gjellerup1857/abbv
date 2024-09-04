@@ -180,7 +180,8 @@ export default {
     rename: [
       {
         dest: "data/rules/index.json",
-        src: "node_modules/@adblockinc/rules/dist/index/adblock.json",
+        package: "@adblockinc/rules",
+        src: "dist/index/adblock.json",
       },
       {
         dest: "adblock-errorreporting.js",
@@ -616,7 +617,8 @@ export default {
       },
       {
         dest: "vendor/@eyeo/webext-ad-filtering-solution/content.js",
-        src: "node_modules/@eyeo/webext-ad-filtering-solution/dist/ewe-content.js",
+        package: "@eyeo/webext-ad-filtering-solution",
+        src: "dist/ewe-content.js",
       },
     ],
   },

@@ -35,8 +35,7 @@
     "prettier": "prettier --check .",
     "prettier-fix": "prettier --write .",
     "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
-    "postinstall": "npm run build-rule-index",
-    "build-rule-index": "npm explore @adblockinc/rules -- npm install && npm explore @adblockinc/rules -- npm run build adblock",
+    "postinstall": "npx @adblockinc/rules adblock",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
     "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --"
   },

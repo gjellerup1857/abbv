@@ -1,0 +1,10 @@
+{
+  "name": "extensions",
+  "private": true,
+  "description": "Extensions monorepo",
+  "workspaces": [
+    "host/*",
+    "fragment/*",
+    "core/*"    
+  ]
+}

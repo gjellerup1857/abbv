@@ -45,7 +45,7 @@ async function mustBuildUI(lastUIBuildTime)
   );
   matches.push(
     "./package.json",
-    "./package-lock.json"
+    "../../package-lock.json"
   );
 
   return await new Promise((resolve, reject) =>

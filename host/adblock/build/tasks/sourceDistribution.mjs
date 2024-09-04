@@ -31,10 +31,11 @@ function addFilesToList(sourceFiles) {
 }
 
 export default async function sourceDistribution(filename) {
-  const sourceFiles = await lsFiles();
+  const repoRootPath = "../..";
+  const sourceFiles = await lsFiles(repoRootPath);
   addFilesToList(sourceFiles);
   return gulp
-    .src(sourceFiles, { base: ".", cwd: "." })
+    .src(sourceFiles, { base: repoRootPath, cwd: "." })
     .pipe(tar(`${filename}.tar`))
     .pipe(gzip())
     .pipe(gulp.dest(process.cwd()));

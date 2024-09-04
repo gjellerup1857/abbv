@@ -1,7 +1,7 @@
 FROM registry.gitlab.com/eyeo/docker/get-browser-binary:node18
 
 # Doing early `npm install` to cache those files on further image builds
-COPY package*.json .npmrc adblockplus/
+COPY package*.json adblockplus/
 RUN cd adblockplus/ && npm install
 
 ARG BROWSER=chrome

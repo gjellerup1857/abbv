@@ -29,18 +29,30 @@ default:
   cache: # Cache modules using lock file
     key:
       files:
-        - $[[ inputs.hostpath ]]/package-lock.json
+        - package-lock.json
     paths:
-      - $[[ inputs.hostpath ]]/.npm/
+      - .npm/
   tags:
     - "GCP"
   interruptible: true
 
 stages:
   - build
-  - check_filesizes
+  - checkfilesizes
   - compliance
   - end-to-end
+
+# Pipeline rules
+.release-or-main:
+  rules:
+    # Do not trigger merge request pipelines
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    # Run automatically on release and main branch
+    - if: $CI_COMMIT_BRANCH == "adblock-release" || $CI_COMMIT_BRANCH == "main"
+    # Run manually on all other branches
+    - when: manual
+      allow_failure: true
 
 ################################################################################
 # Build
@@ -49,26 +61,25 @@ stages:
 .build:
   stage: build
   before_script:
-    - cd $[[ inputs.hostpath ]]
     - npm ci --cache .npm --prefer-offline
 
 build:
   extends: .build
   script:
     # Create .env file from CI variables
-    - echo "CDP_AGGREGATE_URL=\"$ADBLOCK_CDP_AGGREGATE_URL\"" >> .env
-    - echo "CDP_BEARER=\"$ADBLOCK_CDP_BEARER\"" >> .env
-    - echo "CDP_PING_URL=\"$ADBLOCK_CDP_PING_URL\"" >> .env
-    - echo "EYEOMETRY_BEARER=\"$ADBLOCK_EYEOMETRY_BEARER\"" >> .env
-    - echo "EYEOMETRY_URL=\"$ADBLOCK_EYEOMETRY_URL\"" >> .env
+    - echo "CDP_AGGREGATE_URL=\"$ADBLOCK_CDP_AGGREGATE_URL\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "CDP_BEARER=\"$ADBLOCK_CDP_BEARER\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "CDP_PING_URL=\"$ADBLOCK_CDP_PING_URL\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "EYEOMETRY_BEARER=\"$ADBLOCK_EYEOMETRY_BEARER\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "EYEOMETRY_URL=\"$ADBLOCK_EYEOMETRY_URL\"" >> $[[ inputs.hostpath ]]/.env
     # Create source archive
-    - npm run build:source
+    - npm run -w $[[ inputs.hostpath ]] build:source
     # Create MV2 extension builds
-    - npm run build:release -- -t chrome -m 2 --unhandled-rejections=strict
-    - npm run build:release -- -t firefox -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t chrome -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t firefox -m 2 --unhandled-rejections=strict
     # Create MV3 extension builds
-    - npm run build:release -- -t chrome -m 3 --unhandled-rejections=strict
-    - npm run build:release -- -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t chrome -m 3 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -79,20 +90,49 @@ build:
       - $[[ inputs.hostpath ]]/dist/release/adblock-firefox-*-mv2.xpi
       - $[[ inputs.hostpath ]]/dist/release/adblockbeta-chrome-*-mv3.zip
 
+buildfromsource:
+  stage: build
+  needs: ["build"]
+  before_script:
+    - cd $[[ inputs.hostpath ]]
+  script:
+    # We need to generate the builds outside of the git repo to avoid any
+    # implicit dependencies to git in our build scripts
+    - mkdir /tmp/source
+    - tar xvf dist/release/adblock-*.tar.gz -C /tmp/source
+    - cd /tmp/source
+    - npm ci --cache .npm --prefer-offline
+    # Create MV2 extension builds from source archive
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t chrome -m 2 --unhandled-rejections=strict
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t firefox -m 2 --unhandled-rejections=strict
+    # Create MV3 extension builds from source archive
+    - npm run -w $[[ inputs.hostpath ]] build:release -- -t chrome -m 3 --unhandled-rejections=strict
+  after_script:
+    # We cannot refer to artifacts in directories outside of the project
+    - cp -r /tmp/source/$[[ inputs.hostpath ]]/dist/release $[[ inputs.hostpath ]]/dist/source
+  artifacts:
+    name: "adblockplus-source-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
+    paths:
+      - $[[ inputs.hostpath ]]/dist/source/adblock-chrome-*-mv2.zip
+      - $[[ inputs.hostpath ]]/dist/source/adblock-chrome-*-mv3.zip
+      - $[[ inputs.hostpath ]]/dist/source/adblock-firefox-*-mv2.xpi
+  rules:
+    - !reference [.release-or-main, rules]
+
 lint:
   extends: .build
   script:
-    - npm run lint
-    - npm run prettier
-    - npm run html-hint
+    - npm run -w $[[ inputs.hostpath ]] lint
+    - npm run -w $[[ inputs.hostpath ]] prettier
+    - npm run -w $[[ inputs.hostpath ]] html-hint
 
 ################################################################################
 # Check filesizes
 ################################################################################
 
-.check_filesizes:
+.checkfilesizes:
   image: alpine:latest
-  stage: check_filesizes
+  stage: checkfilesizes
   before_script:
     - cd $[[ inputs.hostpath ]]
   script:
@@ -107,20 +147,63 @@ lint:
       exit 0;
       fi
 
-check_filesizes:chrome_mv2:
-  extends: .check_filesizes
+checkfilesizes:chrome_mv2:
+  extends: .checkfilesizes
   variables:
     EXTENSION: adblock-chrome-*-mv2.zip
 
-check_filesizes:chrome_mv3:
-  extends: .check_filesizes
+checkfilesizes:chrome_mv3:
+  extends: .checkfilesizes
   variables:
     EXTENSION: adblock-chrome-*-mv3.zip
 
-check_filesizes:firefox_mv2:
-  extends: .check_filesizes
+checkfilesizes:firefox_mv2:
+  extends: .checkfilesizes
   variables:
     EXTENSION: adblock-firefox-*-mv2.xpi
+
+# ################################################################################
+# Check build sizes
+# ################################################################################
+
+.checkbuildsizes:
+  stage: checkfilesizes
+  before_script:
+    - cd $[[ inputs.hostpath ]]
+    - if [ ! -f $SOURCE_BUILD ] || [ ! -f $REPOSITORY_BUILD ]; then
+      echo "File not found" &&
+      exit 1;
+      fi
+  script:
+    - if((`stat -c%s $REPOSITORY_BUILD`!=`stat -c%s $SOURCE_BUILD`)); then
+      echo "Build from source archive and build from the repository are not the same size" &&
+      ls -l $REPOSITORY_BUILD &&
+      ls -l $SOURCE_BUILD &&
+      exit 1;
+      else
+      echo "Build from source archive and build from the repository are the same size" &&
+      exit 0;
+      fi
+  rules:
+    - !reference [.release-or-main, rules]
+
+checkbuildsizes:MV3:chrome:
+  extends: .checkbuildsizes
+  variables:
+    REPOSITORY_BUILD: dist/release/adblock-chrome-*-mv3.zip
+    SOURCE_BUILD: dist/source/adblock-chrome-*-mv3.zip
+
+checkbuildsizes:MV2:chrome:
+  extends: .checkbuildsizes
+  variables:
+    REPOSITORY_BUILD: dist/release/adblock-chrome-*-mv2.zip
+    SOURCE_BUILD: dist/source/adblock-chrome-*-mv2.zip
+
+checkbuildsizes:MV2:firefox:
+  extends: .checkbuildsizes
+  variables:
+    REPOSITORY_BUILD: dist/release/adblock-firefox-*-mv2.xpi
+    SOURCE_BUILD: dist/source/adblock-firefox-*-mv2.xpi
 
 ################################################################################
 # Compliance tests
