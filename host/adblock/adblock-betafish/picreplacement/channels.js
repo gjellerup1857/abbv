@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global settings, getSettings, browser */
 
-import { contentTypes } from "adblockpluscore/lib/contentTypes";
+import { contentTypes } from "@eyeo/webext-ad-filtering-solution/adblockpluscore/lib/contentTypes";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events";
 import { SKINNYTALL, SKINNYWIDE, TALL, WIDE } from "./image-sizes-map";
