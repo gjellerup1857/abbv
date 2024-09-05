@@ -46,7 +46,7 @@ export const Button = ({
   disabled = false,
   kind = 'filled',
 }) => {
-  const defaultButtonStyles = ['px-4 py-2', 'rounded-md'];
+  const defaultButtonStyles = ['flex justify-center', 'px-4 py-2', 'rounded-md'];
   const defaultWrapperStyles = ['flex justify-center'];
 
   const disabledStyles = disabled ? ['opacity-50', 'pointer-events-none'] : [];
@@ -66,8 +66,8 @@ export const Button = ({
 
   return (
     <div className={ wrapperStyles }>
-      <button aria-label={ ariaLabel } className={ buttonStyles } disabled={ disabled } onClick={ onClick }>
-        <span>{ icon } { text }</span>
+      <button type="button" aria-label={ ariaLabel } className={ buttonStyles } disabled={ disabled } onClick={ onClick }>
+        <span className="flex justify-center gap-x-2">{ icon } <span>{ text }</span></span>
       </button>
     </div>
   );
