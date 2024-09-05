@@ -40,7 +40,7 @@ export function isStateMessage(candidate: unknown): candidate is StateMessage {
  * @param store The store to look up the value from
  * @returns The current value for the given state property
  */
-export function handleGetStateMessage(message: Message, store: Store): any {
+export function handleReadStateMessage(message: Message, store: Store): any {
   if (!isStateMessage(message)) {
     return;
   }
@@ -57,7 +57,10 @@ export function handleGetStateMessage(message: Message, store: Store): any {
  * @param store The store to update the value for
  * @returns `true` if the attempt to update was successful, `false` if not
  */
-export function handleSetStateMessage(message: Message, store: Store): boolean {
+export function handleModifyStateMessage(
+  message: Message,
+  store: Store
+): boolean {
   if (!isStateMessage(message)) {
     return false;
   }
@@ -80,8 +83,10 @@ export function handleSetStateMessage(message: Message, store: Store): boolean {
  * @param store The store to operate on
  */
 export function addMessageListeners(store: Store): void {
-  port.on(MessageName.read, (message) => handleGetStateMessage(message, store));
+  port.on(MessageName.read, (message) =>
+    handleReadStateMessage(message, store)
+  );
   port.on(MessageName.modify, (message) =>
-    handleSetStateMessage(message, store)
+    handleModifyStateMessage(message, store)
   );
 }

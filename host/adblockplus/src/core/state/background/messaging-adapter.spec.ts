@@ -20,8 +20,8 @@ import { port } from "../../messaging/background";
 import { MessageName, type StateMessage } from "../shared";
 import {
   addMessageListeners,
-  handleGetStateMessage,
-  handleSetStateMessage,
+  handleReadStateMessage,
+  handleModifyStateMessage,
   isStateMessage
 } from "./messaging-adapter";
 
@@ -42,7 +42,7 @@ describe("state:messagingAdapter", () => {
     });
   });
 
-  describe("handleGetStateMessage", () => {
+  describe("handleReadStateMessage", () => {
     // the message type
     const type = MessageName.read;
 
@@ -56,7 +56,7 @@ describe("state:messagingAdapter", () => {
         key: "foo"
       };
 
-      const result = handleGetStateMessage(message, store);
+      const result = handleReadStateMessage(message, store);
       expect(result).toBe(value);
     });
 
@@ -70,7 +70,7 @@ describe("state:messagingAdapter", () => {
         key: "__no_such_key__"
       };
 
-      const result = handleGetStateMessage(message, store);
+      const result = handleReadStateMessage(message, store);
       expect(result).toBeUndefined();
     });
 
@@ -84,12 +84,12 @@ describe("state:messagingAdapter", () => {
         invalid: "property"
       };
 
-      const result = handleGetStateMessage(message, store);
+      const result = handleReadStateMessage(message, store);
       expect(result).toBeUndefined();
     });
   });
 
-  describe("handleSetStateMessage", () => {
+  describe("handleModifyStateMessage", () => {
     // the message type
     const type = MessageName.modify;
 
@@ -104,7 +104,7 @@ describe("state:messagingAdapter", () => {
         value: newValue
       };
 
-      handleSetStateMessage(message, store);
+      handleModifyStateMessage(message, store);
       expect(store.foo.value).toBe(newValue);
     });
 
@@ -118,7 +118,7 @@ describe("state:messagingAdapter", () => {
         key: "foo"
       };
 
-      handleSetStateMessage(message, store);
+      handleModifyStateMessage(message, store);
       expect(store.foo.value).toBe(oldValue);
     });
 
@@ -132,7 +132,7 @@ describe("state:messagingAdapter", () => {
         key: "foo"
       } as unknown as StateMessage;
 
-      handleSetStateMessage(message, store);
+      handleModifyStateMessage(message, store);
       expect(store.foo.value).toBe(oldValue);
     });
 
@@ -155,9 +155,9 @@ describe("state:messagingAdapter", () => {
         value: "__value__"
       };
 
-      expect(handleSetStateMessage(message1, store)).toBeFalse();
-      expect(handleSetStateMessage(message2, store)).toBeTrue();
-      expect(handleSetStateMessage(message3, store)).toBeFalse();
+      expect(handleModifyStateMessage(message1, store)).toBeFalse();
+      expect(handleModifyStateMessage(message2, store)).toBeTrue();
+      expect(handleModifyStateMessage(message3, store)).toBeFalse();
     });
   });
 
