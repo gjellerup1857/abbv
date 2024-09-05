@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { featureFlags } from "../src/featureFlags";
+import { featureFlags } from "./featureFlags";
 
 describe("featureFlags", () => {
   it("should have the correct flags", () => {
