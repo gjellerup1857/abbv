@@ -68,14 +68,41 @@ async function startBrowser() {
     adblockPath,
   ];
   const headless = process.env.FORCE_HEADFUL !== "true";
-  const options = { headless, extensionPaths };
+  const extraArgs =
+    browser === "firefox" ? ["-width=1400", "-height=1000"] : ["--window-size=1400,1000"];
+  const options = { headless, extensionPaths, extraArgs };
   const driver = await BROWSERS[browser].getDriver(version, options);
 
   const cap = await driver.getCapabilities();
   const browserVersion = cap.getBrowserVersion();
-  console.log(`Browser used for tests: ${cap.getBrowserName()} ${browserVersion}`);
+  console.log(`Browser: ${cap.getBrowserName()} ${browserVersion}`);
 
   return [driver, browser, browserVersion, getMajorVersion(browserVersion)];
+}
+
+async function getExtensionInfo(driver) {
+  const info = await driver.executeAsyncScript(async (callback) => {
+    if (typeof browser !== "undefined" && browser.management !== "undefined") {
+      let { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
+      const origin = optionsUrl ? location.origin : null;
+      callback({ name: shortName, version, permissions, origin });
+    } else {
+      callback({});
+    }
+  });
+  if (!info.origin) {
+    throw new Error("Origin was not found");
+  }
+
+  info.manifestVersion = 2;
+  if (
+    info.permissions.includes("declarativeNetRequest") ||
+    info.permissions.includes("declarativeNetRequestWithHostAccess")
+  ) {
+    info.manifestVersion = 3;
+  }
+
+  return info;
 }
 
 describe("AdBlock end-to-end tests", function () {
@@ -87,17 +114,8 @@ describe("AdBlock end-to-end tests", function () {
 
     this.optionsHandle = (await findUrl(this.driver, "options.html")).handle;
 
-    const { origin } = await this.driver.executeAsyncScript(async (callback) => {
-      if (typeof browser !== "undefined" && browser.management !== "undefined") {
-        const info = await browser.management.getSelf();
-        callback(info.optionsUrl ? { origin: location.origin } : {});
-      } else {
-        callback({});
-      }
-    });
-    if (!origin) {
-      throw new Error("Origin was not found");
-    }
+    const { name, version, manifestVersion, origin } = await getExtensionInfo(this.driver);
+    console.log(`Extension: ${name} ${version} MV${manifestVersion}`);
 
     this.origin = origin;
   });

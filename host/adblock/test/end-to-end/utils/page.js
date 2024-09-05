@@ -17,18 +17,20 @@
 
 import webdriver from "selenium-webdriver";
 
-import { waitForDisplayed } from "./driver.js";
+import { getDisplayedElement, openNewTab } from "./driver.js";
 
 const { By } = webdriver;
 
 export async function initPopupPage({ driver, origin }, tabId) {
-  await driver.switchTo().newWindow("tab");
-  await driver.navigate().to(`${origin}/adblock-button-popup.html?tabId=${tabId}`);
+  const tabIdParam = tabId ? `?tabId=${tabId}` : "";
+  const url = `${origin}/adblock-button-popup.html${tabIdParam}`;
+  await openNewTab(driver, url);
+  await getDisplayedElement(driver, ".header-logo");
 }
 
 export async function initFiltersPage({ driver, optionsHandle }) {
   await driver.switchTo().window(optionsHandle);
   await driver.findElement(By.css('[href="#filters"]')).click();
   // Wait until a filterlist is displayed
-  await waitForDisplayed({ driver }, '[name="easylist"]');
+  await getDisplayedElement(driver, '[name="easylist"]', 8000);
 }

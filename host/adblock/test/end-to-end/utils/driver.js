@@ -47,7 +47,7 @@ export async function findUrl(driver, expectedUrl, timeout = 5000) {
 
 // Gets the ID of current tab using the browser.tabs WebExtension API.
 // This is mainly used to work with the popup when it is open in a tab.
-export async function getTabId({ driver, optionsHandle }) {
+export async function getTabId(driver, optionsHandle) {
   const currentHandle = await driver.getWindowHandle();
   const url = await driver.getCurrentUrl();
   const queryOptions = { url };
@@ -72,15 +72,22 @@ export async function getTabId({ driver, optionsHandle }) {
   return tabId;
 }
 
-export function waitForDisplayed({ driver }, cssText, timeout = 5000) {
-  return driver.wait(
+export async function getDisplayedElement(driver, cssText, timeout = 5000) {
+  let elem;
+  await driver.wait(
     async () => {
       try {
-        const elem = driver.findElement(By.css(cssText));
+        elem = await driver.findElement(By.css(cssText));
         return await elem.isDisplayed();
       } catch (e) {}
     },
     timeout,
     `Element "${cssText}" was not displayed after ${timeout}ms`,
   );
+  return elem;
+}
+
+export async function openNewTab(driver, url) {
+  await driver.switchTo().newWindow("tab");
+  await driver.navigate().to(url);
 }
