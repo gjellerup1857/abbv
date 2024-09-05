@@ -173,3 +173,9 @@ describe('Icon button', () => {
     expect(button).not.toHaveTextContent(defaultProps.text);
   });
 });
+
+describe('Error states', () => {
+  it('throws if neither text nor an icon is provided', () => {
+    expect(() => renderButton({ text: null, icon: null })).toThrowError('Buttons must have either an icon or text');
+  });
+})

@@ -46,6 +46,11 @@ export const Button = ({
   disabled = false,
   kind = 'filled',
 }) => {
+
+  if (!icon && !text) {
+    throw new Error('Buttons must have either an icon or text');
+  }
+
   const defaultButtonStyles = ['flex justify-center', 'px-4 py-2', 'rounded-md'];
   const defaultWrapperStyles = ['flex justify-center'];
 
