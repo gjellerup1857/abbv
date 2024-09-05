@@ -1,5 +1,10 @@
 # Contributing
 
+## Testing
+
+Almost all code contributions should contain appropriate automated tests to ensure the reliability and maintainability of our codebase. Whether you're fixing a bug, adding a new feature, or refactoring existing code, appropriate unit and/or integration tests are expected to be added or updated. This practice helps catch potential issues early and ensures that changes do not inadvertently break existing functionality. 
+If creating tests is not easy or you encounter any problems doing it, please create a Jira ticket describing the issue in the EXT project or reach out to the Extensions Host team on Slack.
+
 ## Release notes
 
 We want to simplify the process of submitting changes to the various web stores. Therefore, any commit that has any impact on the user facing deployable things (found in `hosts/`) should have release notes. This means adding items to the `Unreleased` section in relevant `hosts/*/RELEASE_NOTES.md` files.
