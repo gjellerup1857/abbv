@@ -53,7 +53,7 @@ export const Button = ({
   const disabledWrapperStyles = disabled ? ['cursor-not-allowed'] : [];
 
   const kindStyles = {
-    filled: ['bg-theme-button-primary', 'text-theme-button-secondary', 'hover:drop-shadow-md', 'hover:bg-theme-link-color'],
+    filled: ['bg-theme-button-primary', 'text-theme-button-secondary', 'border', 'border-theme-button-primary', 'hover:drop-shadow-md', 'hover:bg-theme-link-color', 'hover:border-theme-link-color',],
     outline: ['text-theme-button-primary', 'border', 'border-theme-button-primary', 'hover:bg-theme-button-primary', 'hover:text-theme-button-secondary'],
     text: ['text-theme-accent-dark', 'hover:text-theme-link-color'],
     link: ['text-theme-link-color', 'inline', 'hover:text-theme-text-accent'],
