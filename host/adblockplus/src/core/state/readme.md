@@ -35,6 +35,17 @@ export const store = {
 
 When setting up the store, provide the keys that you need, and a BehaviorSubject with the default value for that key.
 
+#### The `Store` Type
+
+The type definitions provide a type for the store, with the name `Store`. It is used throughout the code, and you can use it as well, but: Don't set this type when declaring the store. Doing so will remove most of type support, including type checks when modifying state, and autocompletion.
+
+So, **don't** do this: `export const store: Store = { /* … */ };`.   
+Instead, just write `export const store = { /* … */ };`.
+
+#### Data Types for Values
+
+Due to limitations of the storage engine we use to persist data on disk, you can only have primitives, Arrays and Objects as values for the store. Technically, the type definition of a valid value is `type StateValue = Primitive | StateValue[] | Record<string, StateValue>`.
+
 ### Mutability
 
 In order to make sure that non-primitive state values are immutable, they need to be marked as read-only. To do this, use the `DeepReadOnly` helper type provided by `ts-essentials`.
