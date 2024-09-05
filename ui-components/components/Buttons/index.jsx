@@ -1,22 +1,4 @@
-/*
-  Required inputs
-    - onClick
-
-  Kinds of button (optional)
-    - Filled (primary color)
-    - Outline (secondary color)
-    - Text-only (secondary color, block display)
-    - Link button (same as text-only but inline)
-    - Punched (secondary color, text bg color)
-
-  Other Optional inputs
-    - Icon
-    - Color override
-    - Aria label
-    - Disabled
-*/
 import PropTypes from 'prop-types';
-
 
 /**
  * Buttons allow users to take actions, and you can use them to direct a
