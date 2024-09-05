@@ -21,7 +21,7 @@
 export default async function postData(url = "", payload = {}) {
   return fetch(url, {
     method: "POST",
-    cache: "no-cache",
+    cache: "no-store",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });

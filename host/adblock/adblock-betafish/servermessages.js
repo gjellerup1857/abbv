@@ -156,7 +156,14 @@ const ServerMessages = (function serverMessages() {
     if (Prefs.get("data_collection_opt_out")) {
       return;
     }
-
+    let extensionInstallTimestamp = "unknown";
+    const { blockage_stats: blockageStats } = await browser.storage.local.get("blockage_stats");
+    if (blockageStats && blockageStats.start) {
+      extensionInstallTimestamp = new Date(blockageStats.start).toLocaleString();
+    }
+    const allPermissions = await browser.permissions.getAll();
+    const allURLSPermission =
+      allPermissions.origins && allPermissions.origins.includes("<all_urls>") ? "1" : "0";
     const payload = {
       u: await getUserId(),
       f: flavor,
@@ -165,11 +172,13 @@ const ServerMessages = (function serverMessages() {
       t: queryType,
       v: browser.runtime.getManifest().version,
       error: errorMsg,
+      extensionInstallTimestamp,
+      allURLSPermission,
     };
     const eventWithPayload = { event: msg, payload };
-    fetch("https://192.241.161.10/v2/record_log.php", {
+    fetch("https://logbackup.getadblock.com/v2/record_log.php", {
       method: "POST",
-      cache: "no-cache",
+      cache: "no-store",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(eventWithPayload),
     });

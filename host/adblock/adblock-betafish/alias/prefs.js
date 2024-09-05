@@ -282,6 +282,13 @@ defaults.ipm_server_url = "https://ipm.adblock.dev/api/stats";
 defaults.ping_server_url = "https://ping.getadblock.com/stats/";
 
 /**
+ * The URL of the backup Ping server.
+ *
+ * @type {string}
+ */
+defaults.backup_ping_server_url = "https://ping-retry.getadblock.com/stats/";
+
+/**
  * Whether to send ad wall related log event messages
  *
  * @type {boolean}

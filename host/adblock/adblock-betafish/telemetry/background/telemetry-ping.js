@@ -19,13 +19,16 @@
 /* global browser */
 
 import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
-import ServerMessages from "../../servermessages";
+import ServerMessages from "~/servermessages";
 import TelemetryBase from "./telemetry-base";
-import postData from "../../fetch-util";
-import { Prefs } from "../../alias/prefs";
-import { log, chromeStorageSetHelper } from "../../utilities/background/bg-functions";
+import postData from "~/fetch-util";
+import { Prefs } from "~/alias/prefs";
+import { chromeStorageSetHelper } from "~/utilities/background/bg-functions";
+import * as logger from "~/utilities/background";
 
 export const telemetryNotifier = new EventEmitter();
+
+const backupPingURLPref = "backup_ping_server_url";
 
 class Telemetry extends TelemetryBase {
   // Called just after we ping the server, to schedule our next ping.
@@ -59,8 +62,39 @@ class Telemetry extends TelemetryBase {
     });
   }
 
+  shouldRetrySendPingData(pingData, resolve, reject, retryCount = 0) {
+    // eslint-disable-next-line no-param-reassign
+    retryCount += 1;
+    if (retryCount < 2) {
+      this.retrySendPingData(pingData, resolve, reject, retryCount);
+    } else {
+      reject();
+    }
+  }
+
+  async retrySendPingData(pingData, resolve, reject, retryCount = 0) {
+    try {
+      const response = await postData(Prefs.get(backupPingURLPref), pingData);
+      if (!response || !response.ok) {
+        logger.error("Retry ping server returned error");
+        logger.error("Retry ping server URL:", Prefs.get(backupPingURLPref));
+        logger.error("error: ", response && response.statusText);
+        this.shouldRetrySendPingData(pingData, resolve, reject, retryCount);
+        return;
+      }
+      logger.debug("retry ping success");
+      telemetryNotifier.emit("ping.complete");
+      resolve(pingData);
+    } catch (e) {
+      logger.error("Error during retry ping");
+      logger.error("Retry ping server URL:", Prefs.get(backupPingURLPref));
+      logger.error("error: ", e);
+      this.shouldRetrySendPingData(pingData, resolve, reject, retryCount);
+    }
+  }
+
   sendPingData(pingData) {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       if (Prefs.get("data_collection_opt_out")) {
         return;
       }
@@ -70,14 +104,24 @@ class Telemetry extends TelemetryBase {
         // to help us determine why there's been a drop in ping requests
         // See https://gitlab.com/adblockinc/ext/adblock/adblock/-/issues/136
         .catch((error) => {
+          logger.error("network error during ping");
+          logger.error("ping server URL: ", Prefs.get(this.hostURLPref));
+          logger.error("error: ", error);
+          // retry any ping requests that fail for network errors
+          this.retrySendPingData(pingData, resolve, reject);
           void ServerMessages.sendMessageToBackupLogServer("fetch_error", error.toString());
-          log("ping server returned error: ", error);
         });
-      if (response && response.ok) {
-        telemetryNotifier.emit("ping.complete");
-      } else {
-        log("Ping server returned error: ", response && response.statusText);
+      if (!response) {
+        logger.error("no response from ping");
+        return;
       }
+      if (!response.ok) {
+        logger.error("Ping server returned error: ", response.statusText);
+        this.retrySendPingData(pingData, resolve, reject);
+        return;
+      }
+      logger.debug("ping success");
+      telemetryNotifier.emit("ping.complete");
       resolve(pingData);
     });
   }
