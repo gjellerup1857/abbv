@@ -1,9 +1,24 @@
 default:
+  image: node:18.17.1
+  cache: # Cache modules using lock file
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
   tags:
     - "GCP"
+  interruptible: true
 
 stages:
+  - test
   - children
+
+unittests:
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm test --workspaces --if-present
 
 .child:
   stage: children

@@ -37,8 +37,7 @@
     "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
     "postinstall": "npx @adblockinc/rules adblock",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
-    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --",
-    "check-feature-flags": "node checkFeatureFlags.mjs"
+    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --"
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
@@ -85,7 +84,6 @@
     "npm": "9"
   },
   "dependencies": {
-    "@core/feature-flags": "*",
     "@eyeo/snippets": "1.5.0",
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#f96884d68305c9f388d13492ca6134de57fa4757",
     "@eyeo/webext-ad-filtering-solution": "1.12.0",

@@ -1,6 +1,7 @@
 {
-  "name": "@core/feature-flags",
+  "name": "@eyeo/example",
   "type": "module",
+  "main": "example.js",
   "scripts": {
     "test": "vitest run"
   },
