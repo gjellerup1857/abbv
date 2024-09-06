@@ -28,10 +28,15 @@ npm test -w core/example
   - If your core module needs a build step, this might need some consideration.
 - What do we name things?
   - Everything in the monorepo should fall under the `@eyeo` namespace.
+- What does running this in terms of our gitlab pipelines look like? 
+  - If the core module tests everything it needs to efficiently with the `npm
+    test` command, then this is already covered in the gitlab config.
+  - If the core module needs anything more, consider adding a child pipeline for
+    it.
+
 
 ## Open questions
 
 - "What do we name things?" probably needs a bit more guidance.
 - What meta do we want to add around these core utilities? Some might only be
   usable in some contexts (browser vs node)
-- What does running this in terms of our gitlab pipelines look like? 
