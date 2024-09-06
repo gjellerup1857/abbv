@@ -35,6 +35,7 @@ jest.mock("../../info/background", (): { info: Info } => {
 
 jest.mock("../../../adblockpluschrome/lib/prefs", () => {
   const prefsData: Record<string, any> = {
+    ipm_commands: {},
     ipm_server_url: "https://example.com",
     data_collection_opt_out: false,
     premium_license: {

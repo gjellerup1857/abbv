@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { commandStorageKey, setCommandActor } from "./command-library";
+import { getStoredCommandIds, setCommandActor } from "./command-library";
 import {
   type Command,
   type CommandHandler,
@@ -31,7 +31,6 @@ import {
 import * as logger from "../../logger/background";
 import { validateParams } from "./param-validator";
 import type { ParamDefinitionList } from "./param-validator.types";
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 /**
  * List of delete-commands parameter definitions
@@ -96,7 +95,7 @@ function getBehavior(command: Command): DeleteBehavior | null {
   let commandIds;
 
   if (commands === deleteAllKey) {
-    commandIds = Object.keys(Prefs.get(commandStorageKey));
+    commandIds = getStoredCommandIds();
   } else {
     commandIds = commands.split(",").map((id) => id.trim());
   }

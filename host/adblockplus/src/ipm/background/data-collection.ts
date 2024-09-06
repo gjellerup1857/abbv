@@ -18,6 +18,7 @@
 import * as browser from "webextension-polyfill";
 
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { getStoredCommandIds } from "./command-library";
 import {
   type CommandName,
   CommandVersion,
@@ -28,6 +29,7 @@ import {
   DataType,
   type DeviceData,
   type EventData,
+  type IpmData,
   LicenseState,
   type PayloadData,
   PlatformStatus,
@@ -75,7 +77,7 @@ function getLocalTimeStamp(): string {
 }
 
 /**
- * Returns an object with base attributes that all telemetry objects share.
+ * Returns an object with base attributes that all MoEngage telemetry objects share.
  *
  * @returns The base attributes
  */
@@ -153,16 +155,28 @@ async function getUserData(): Promise<UserData> {
 }
 
 /**
- * Creates a payload object to send to the IPM.
+ * Gets data about stored commands that will be consumed by the IPM server.
  *
- * @returns A payload object to send to the IPM
+ * @returns an object containing stored commands data
+ */
+function getIpmData(): IpmData {
+  return {
+    active: getStoredCommandIds().map((id) => ({ id }))
+  };
+}
+
+/**
+ * Creates the payload to send to the IPM server.
+ *
+ * @returns An object containing the payload
  */
 export async function getPayload(): Promise<PayloadData> {
   await Prefs.untilLoaded;
   const user = await getUserData();
   const device = await getDeviceData();
   const events = Prefs.get(eventStorageKey);
-  return { user, device, events };
+  const ipm = getIpmData();
+  return { user, device, events, ipm };
 }
 
 /**
