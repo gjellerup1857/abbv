@@ -1,15 +1,10 @@
 {
   "name": "@core/feature-flags",
-  "version": "1.0.1",
   "type": "module",
-  "main": "dist/featureFlags.js",
-  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "devDependencies": {
-    "typescript": "^4.0.0",
     "vitest": "^2.0.5"
   }
 }

@@ -1,6 +1,8 @@
 export const featureFlags = {
   featureA: true,
   featureB: false,
-  featureC: "potato",
+  featureC: "Potato",
   featureD: ["yes", "please"],
 };
+
+export const text = "Hello world";
