@@ -22,6 +22,7 @@ unittests:
 
 .child:
   stage: children
+  needs: []
   rules:
     # Do not trigger merge request event pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
