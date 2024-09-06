@@ -18,7 +18,7 @@
 import {equal} from "assert";
 import {greet} from "@eyeo/example";
 
-describe("Testing dom.js API", () =>
+describe("Core Utility Import", () =>
 {
   it("can use an imported core utility", function() {
     equal(greet("Adblock Plus"), "Hello Adblock Plus");
