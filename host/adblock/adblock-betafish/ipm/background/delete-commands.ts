@@ -15,14 +15,12 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setCommandActor } from "./command-library";
-import { commandStorageKey } from "./command-library.types";
+import { getStoredCommandIds, setCommandActor } from "./command-library";
 import { Command, CommandHandler, CommandName, Content } from "./command-library.types";
 import { deleteAllKey, DeleteBehavior, DeleteCommand, DeleteParams } from "./delete-commands.types";
 import * as logger from "../../utilities/background";
 import { validateParams } from "./param-validator";
 import { ParamDefinitionList } from "./param-validator.types";
-import { Prefs } from "../../alias/prefs";
 
 /**
  * List of delete-commands parameter definitions
@@ -77,7 +75,7 @@ function getBehavior(command: Command): DeleteBehavior | null {
   let commandIds;
 
   if (commands === deleteAllKey) {
-    commandIds = Object.keys(Prefs.get(commandStorageKey));
+    commandIds = getStoredCommandIds();
   } else {
     commandIds = commands.split(",").map((id) => id.trim());
   }

@@ -18,7 +18,7 @@
 import { CommandName } from "./command-library.types";
 
 /**
- * The types of data sent to the IPM server
+ * The types of data sent to the IPM server required by MoEngage
  */
 export enum DataType {
   /**
@@ -36,7 +36,7 @@ export enum DataType {
 }
 
 /**
- * The base attributes that are being sent to the IPM server
+ * The base attributes that are being sent to the IPM server required by MoEngage
  */
 export interface BaseAttributes {
   /**
@@ -201,6 +201,23 @@ export interface UserData {
 }
 
 /**
+ * Atributes related to a specific IPM command
+ */
+interface IpmInfo {
+  id: string;
+}
+
+/**
+ * The stored commands attributes that are being sent to the IPM server
+ */
+export interface IpmData {
+  /**
+   * List of attributes of IPM commands that are waiting to be triggered
+   */
+  active: IpmInfo[];
+}
+
+/**
  * The payload that is being sent to the IPM server
  */
 export interface PayloadData {
@@ -209,6 +226,8 @@ export interface PayloadData {
   device: DeviceData;
 
   events: EventData[];
+
+  ipm: IpmData;
 }
 
 /**

@@ -125,6 +125,16 @@ function getCommand(ipmId: string): Command | null {
 }
 
 /**
+ * Retrieves a list of stored IPM command IDs
+ *
+ * @returns An array with command IDs or empty array if there's no commands
+ */
+export function getStoredCommandIds(): string[] {
+  const commandStorage = Prefs.get(commandStorageKey);
+  return Object.keys(commandStorage);
+}
+
+/**
  * Retrieves command content for given IPM ID
  *
  * @param ipmId - IPM ID
