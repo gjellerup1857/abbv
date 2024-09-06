@@ -24,7 +24,7 @@ import {
   Scope
 } from "@sentry/browser";
 import { getUUID } from "../../id/shared/uuid";
-import { info } from "../../info/background/info";
+import { info } from "../../info/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 export const SENTRY_USER_ID = "sentry_user_id";
