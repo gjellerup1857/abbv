@@ -170,6 +170,116 @@ Until we decide about adding a library or otherwise more structured component sh
 
 These should, at minimum, display the various themed views and list the expected props.
 
+### Tests
+
+All components should have unit tests associated with them. These can be placed in the `/tests` directory and named `Component.test.jsx`. (Note the `.jsx` — plain `.js` will throw.)
+
+#### Tools for Running Tests
+
+Running 
+
+```bash
+npm run test
+```
+
+or `vitest` directly 
+
+```bash
+vitest
+```
+
+starts a test watcher, which will rerun on file change.
+
+Other commands for filtering, etc., are listed in [the vitest CLI guide](https://vitest.dev/guide/cli.html).
+
+#### Tools for Writing Tests
+
+For unit tests, we use [vitest](https://vitest.dev) with [React Testing Library](https://testing-library.com/docs/react-testing-library) and [@testing-library/jest-dom](https://github.com/testing-library/jest-dom).
+
+**Vitest** provides the test APIs like [expect](https://vitest.dev/api/expect.html) and the [mocking functions](https://vitest.dev/api/vi.html#vi-fn).
+
+**React Testing Library** provides [rendering](https://testing-library.com/docs/react-testing-library/api/#render), [events](https://testing-library.com/docs/dom-testing-library/api-events) and [querying](https://testing-library.com/docs/queries/about/) functions.
+
+**jest-dom** provides [custom matchers for DOM assertions](https://www.npmjs.com/package/@testing-library/jest-dom#custom-matchers), like `toBeVisible`, `toContainElement`, `toHaveClass`, etc. Despite being called `jest-dom` it also works with Vitest.
+
+#### Tips and Best Practices
+
+This is a mostly unorganized series of good ideas. Feel free to add your own.
+
+##### Creating a render function
+
+Creating a set of default props and a function to render the component with these and any overwrites can make your tests easier to read and reduce repetition. Consider this example from `‌ui-components/tests/Buttons.test.jsx`
+
+```jsx
+
+let button;
+const defaultProps = {
+  text: buttonText,
+  onClick: clickFn,
+};
+
+const renderButton = (propsToSet = {}) => {
+  const props = {
+    ...defaultProps,
+    ...propsToSet
+  };
+
+  const baseButton = <Button {...props} />
+  render(baseButton);
+  button = screen.getByRole('button');
+}
+
+```
+
+Now when variations on the button are created, only the salient information needs to be included in the function:
+
+```
+renderButton({ kind: 'text' });
+renderButton({ icon: <Icon /> });
+```
+
+##### Put values you are asserting against into variables as opposed to defining inline
+
+Not only can this save us from repetition and uncaught mistakes, but it also makes it easier for readers of tests to understand the meaning of any given value. Remember: tests are great forms of documentation!
+
+This is also supported by the `defaultProps` additions above, since it makes it easy to write tests like:
+
+```jsx
+expect(button).toHaveTextContent(defaultProps.text);
+```
+
+
+##### Test with indicative data as much as possible
+
+A third step in making tests useful as possible for readers is to use real data or mocks that look like the expected data as much as possible.
+
+##### Name tests clearly
+
+Remember, most people will be interacting with your tests through the command line report and may not be familiar with implementation details. Being clear about what is being tested and what is expected to happen can help your coworkers.
+
+```jsx
+// ✅
+
+describe('My cool component disabled', () => {
+  beforeEach(() => {
+    renderComponent({ disabled: true})
+  })
+  
+  it('is not focusable when disabled', () => {
+    expect(component).not.toBeFocused();
+  })
+
+  it('is not callable when disabled', () => {
+    // ..
+  })
+})
+
+```
+
+##### Do not put too many expectations in one function
+
+When a test block fails, the fewer assertions, the easier it is to understand what is failing. It is also easier to write a descriptive test name.
+
 ### Theming
 
 The goal of theming is to make it possible for a component to be styled correctly just by being instantiated in a host context that provides `data-extension` and `data-theme` attributes further up in the tree. 
