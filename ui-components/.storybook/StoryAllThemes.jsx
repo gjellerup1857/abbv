@@ -27,7 +27,7 @@ export default function StoryAllThemes({ themes }) {
             <div
               data-extension={extension.toLowerCase()}
               data-theme={name.toLowerCase()}
-              className="flex items-center justify-center gap-2 px-10 py-5 bg-theme-secondary"
+              className="flex items-center justify-center gap-2 px-10 py-5 bg-theme-primary border-8 border-theme-secondary rounded"
             >
               <Story/>
             </div>
