@@ -1,2 +1,5 @@
 /node_modules/
 .vite/**
+
+*storybook.log
+storybook-static/
