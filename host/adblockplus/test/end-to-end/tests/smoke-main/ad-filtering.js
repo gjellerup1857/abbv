@@ -83,6 +83,12 @@ module.exports = function()
     ({optionsUrl} = this.test.parent.parent);
   });
 
+  beforeEach(async function()
+  {
+    // This filter no longer exists in easylist
+    await addFiltersToABP("/awe2.js");
+  });
+
   it("uses sitekey to allowlist content", async function()
   {
     if (process.env.MANIFEST_VERSION === "3")
