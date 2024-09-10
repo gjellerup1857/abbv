@@ -21,16 +21,45 @@ import { getDisplayedElement, openNewTab } from "./driver.js";
 
 const { By } = webdriver;
 
-export async function initPopupPage({ driver, origin }, tabId) {
+export async function initPopupPage(driver, origin, tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
   const url = `${origin}/adblock-button-popup.html${tabIdParam}`;
   await openNewTab(driver, url);
-  await getDisplayedElement(driver, ".header-logo");
+  await getDisplayedElement(driver, ".header-logo", 5000);
 }
 
-export async function initFiltersPage({ driver, optionsHandle }) {
+export async function initOptionsFiltersTab(driver, optionsHandle) {
   await driver.switchTo().window(optionsHandle);
   await driver.findElement(By.css('[href="#filters"]')).click();
   // Wait until a filterlist is displayed
   await getDisplayedElement(driver, '[name="easylist"]', 8000);
+}
+
+export async function initOptionsCustomizeTab(driver, optionsHandle) {
+  await driver.switchTo().window(optionsHandle);
+  await driver.findElement(By.css('[href="#customize"]')).click();
+}
+
+export async function addCustomFilter(driver, filterText) {
+  const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
+
+  // Remove textarea content
+  await driver.executeScript(() => {
+    document.getElementById("txtFiltersAdvanced").value = "";
+  });
+
+  // The edit button functionality may take some time to be ready.
+  // Retrying as a workaround
+  let saveButton;
+  await driver.wait(async () => {
+    await editButton.click();
+    try {
+      saveButton = await getDisplayedElement(driver, "#btnSaveAdvancedFilters", 500);
+      return true;
+    } catch (e) {}
+  });
+
+  const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
+  await filtersAdvancedElem.sendKeys(filterText);
+  await saveButton.click();
 }

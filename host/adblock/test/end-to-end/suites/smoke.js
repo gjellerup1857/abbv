@@ -18,19 +18,39 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
+import adFiltering from "./ad-filtering.js";
 import { findUrl, getTabId, getDisplayedElement, openNewTab } from "../utils/driver.js";
-import { initPopupPage, initFiltersPage } from "../utils/page.js";
+import { initPopupPage, initOptionsFiltersTab } from "../utils/page.js";
 
 const { By } = webdriver;
 
 export default () => {
+  const installUrl = "getadblock.com/en/installed";
+
+  async function cleanupOpenTabs(driver, optionsHandle) {
+    for (const handle of await driver.getAllWindowHandles()) {
+      await driver.switchTo().window(handle);
+
+      let url = "";
+      try {
+        url = await driver.getCurrentUrl();
+      } catch (e) {}
+
+      if (handle !== optionsHandle && !url.includes(installUrl)) {
+        driver.close();
+      }
+    }
+  }
+
   beforeEach(async function () {
-    await this.driver.switchTo().window(this.optionsHandle);
+    const { driver, optionsHandle } = this;
+
+    await cleanupOpenTabs(driver, optionsHandle);
+    await driver.switchTo().window(optionsHandle);
   });
 
   it("opens the install url", async function () {
-    const { driver, browser, fullBrowserVersion } = this;
-    const installUrl = "getadblock.com/en/installed";
+    const { driver, browserName, fullBrowserVersion, majorBrowserVersion, optionsHandle } = this;
     const { url } = await findUrl(driver, installUrl);
 
     let userId;
@@ -43,15 +63,15 @@ export default () => {
       } catch (err) {}
     });
 
-    await driver.switchTo().window(this.optionsHandle);
+    await driver.switchTo().window(optionsHandle);
     const appVersion = await driver.executeScript(() => {
       return browser.runtime.getManifest().version;
     });
 
     // to be extracted to checkInstallUninstallUrl
-    let browserVersion = `${this.majorBrowserVersion}.0.0.0`;
+    let browserVersion = `${majorBrowserVersion}.0.0.0`;
     let applicationVersion = browserVersion;
-    if (this.browser === "firefox") {
+    if (browserName === "firefox") {
       applicationVersion = fullBrowserVersion;
       const navigatorText = await driver.executeScript(() => {
         return navigator.userAgent;
@@ -85,9 +105,9 @@ export default () => {
         ap: "firefox",
         p: "gecko",
       },
-    }[this.browser];
+    }[browserName];
     if (!expectedParams) {
-      throw new Error(`Browser name not recognized: ${this.browser}`);
+      throw new Error(`Browser name not recognized: ${browserName}`);
     }
 
     const params = new URLSearchParams(new URL(url).search);
@@ -97,7 +117,7 @@ export default () => {
   });
 
   it("displays total ad block count", async function () {
-    const { driver, optionsHandle } = this;
+    const { driver, optionsHandle, origin } = this;
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const maxAdsBlocked = 15;
@@ -106,6 +126,7 @@ export default () => {
       const countElem = await getDisplayedElement(
         driver,
         "popup-detail-stats > div:nth-child(2) .count-numbers",
+        2000,
       );
       return parseInt(await countElem.getText(), 10);
     };
@@ -128,32 +149,27 @@ export default () => {
 
     await openNewTab(driver, url);
     const tabId = await getTabId(driver, optionsHandle);
-    await initPopupPage(this, tabId);
+    await initPopupPage(driver, origin, tabId);
 
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
-    await driver.close();
 
     await findUrl(driver, url);
     await driver.navigate().refresh();
-    await initPopupPage(this, tabId);
+    await initPopupPage(driver, origin, tabId);
 
     await waitForAdsBlockedToBeInRange(blockedFirst, maxAdsBlocked);
-    await driver.close();
-
-    await findUrl(driver, url);
-    await driver.close();
   });
 
   it("resets settings", async function () {
-    const { driver, origin, browser } = this;
+    const { driver, optionsHandle, origin, browserName } = this;
 
     await driver.switchTo().newWindow("tab");
     const safeHandle = await driver.getWindowHandle();
 
-    await initFiltersPage(this);
+    await initOptionsFiltersTab(driver, optionsHandle);
 
     const filterLists = ["easylist", "anticircumvent"];
-    if (this.browser !== "firefox") {
+    if (browserName !== "firefox") {
       filterLists.push("acceptable_ads"); // disabled by default on Firefox
     }
 
@@ -186,7 +202,7 @@ export default () => {
     await driver.switchTo().window(safeHandle);
 
     // Only Firefox triggers the updated page
-    if (browser === "firefox") {
+    if (browserName === "firefox") {
       await findUrl(driver, "getadblock.com/en/update");
       await driver.close();
       await driver.switchTo().window(safeHandle);
@@ -209,7 +225,7 @@ export default () => {
     // Updating to the new options handle
     this.optionsHandle = await driver.getWindowHandle();
 
-    await initFiltersPage(this);
+    await initOptionsFiltersTab(driver, this.optionsHandle);
     for (const filterList of filterLists) {
       let text;
       await driver.wait(async () => {
@@ -220,4 +236,6 @@ export default () => {
       expect(text).toMatch(/updated/);
     }
   });
+
+  describe("Ad Filtering", adFiltering);
 };

@@ -175,14 +175,14 @@ module.exports = function()
     {
       expect(await testPages.getAwe2FilterText()).to.include(
         "awe2.js blocking filter should block this");
-    }, timeout, "awe2.js blocking filter was not applied");
+    }, timeout, "awe2.js blocking filter was applied");
     expect(await testPages.getBanneradsFilterText()).to.include(
       "first bannerads/* blocking filter should block this");
     await waitForAssertion(async() =>
     {
       expect(await testPages.getSearchAdDivText()).to.include(
         "search-ad id hiding filter should hide this");
-    }, timeout, "awe2.js blocking filter was not applied");
+    }, timeout, "search-ad id hiding filter was applied");
     expect(await testPages.getAdContainerDivText()).to.include(
       "AdContainer class hiding filter should hide this");
     await switchToABPOptionsTab();

@@ -72,7 +72,7 @@ export async function getTabId(driver, optionsHandle) {
   return tabId;
 }
 
-export async function getDisplayedElement(driver, cssText, timeout = 5000) {
+export async function getDisplayedElement(driver, cssText, timeout = 500) {
   let elem;
   await driver.wait(
     async () => {
@@ -90,4 +90,22 @@ export async function getDisplayedElement(driver, cssText, timeout = 5000) {
 export async function openNewTab(driver, url) {
   await driver.switchTo().newWindow("tab");
   await driver.navigate().to(url);
+}
+
+export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
+  return driver.wait(
+    async () => {
+      try {
+        await getDisplayedElement(driver, "#sitekey-fail-1");
+        return false;
+      } catch (err) {
+        if (err.name === "TimeoutError") {
+          return true;
+        }
+        throw err;
+      }
+    },
+    timeout,
+    `Element "${cssText}" was still displayed after ${timeout}ms`,
+  );
 }

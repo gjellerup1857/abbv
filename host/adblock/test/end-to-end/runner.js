@@ -109,7 +109,7 @@ describe("AdBlock end-to-end tests", function () {
   before(async function () {
     await fs.promises.mkdir(screenshotsPath, { recursive: true });
 
-    [this.driver, this.browser, this.fullBrowserVersion, this.majorBrowserVersion] =
+    [this.driver, this.browserName, this.fullBrowserVersion, this.majorBrowserVersion] =
       await startBrowser();
 
     this.optionsHandle = (await findUrl(this.driver, "options.html")).handle;
@@ -118,6 +118,7 @@ describe("AdBlock end-to-end tests", function () {
     console.log(`Extension: ${name} ${version} MV${manifestVersion}`);
 
     this.origin = origin;
+    this.manifestVersion = manifestVersion;
   });
 
   afterEach(async function () {
