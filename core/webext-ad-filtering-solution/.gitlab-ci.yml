@@ -1,7 +1,19 @@
+spec:
+  inputs:
+    hostpath:
+      type: string
+      description: "Path to the the webext directory."
+      default: "."
+    parent_pipeline_source:
+      type: string
+      description: "Value of CI_PIPELINE_SOURCE in the parent pipeline"
+
+---
+
 default:
   interruptible: true
   tags:
-    - runner-webext-dev
+    - GCP
 
 variables:
   npm_config_audit: "false"
@@ -80,13 +92,13 @@ build:src:
   before_script:
     - npm install
   script:
-    - npm run build
-    - DOCS_ERROR=$(npm run docs 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
-    - npm run docs-core
+    - npm run -w $[[ inputs.hostpath ]] build
+    - DOCS_ERROR=$(npm run -w $[[ inputs.hostpath ]] docs 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
+    - npm run -w $[[ inputs.hostpath ]] docs-core
   artifacts:
     paths:
-      - dist/
-      - public/
+      - $[[ inputs.hostpath ]]/dist/
+      - $[[ inputs.hostpath ]]/public/
     expire_in: 1 week
 
 lint:
@@ -95,7 +107,7 @@ lint:
   before_script:
     - npm install
   script:
-    - npm run lint
+    - npm run -w $[[ inputs.hostpath ]] lint
 
 typechecks:
   image: node:18-bullseye-slim
@@ -104,7 +116,7 @@ typechecks:
   before_script:
     - npm install
   script:
-    - npm run types:check
+    - npm run -w $[[ inputs.hostpath ]] types:check
 
 # Publishes the docs to https://eyeo.gitlab.io/adblockplus/abc/webext-ad-filtering-solution
 # and https://eyeo.gitlab.io/adblockplus/abc/webext-ad-filtering-solution/core/index.html
@@ -115,10 +127,10 @@ pages:
   needs: ["build:src"]
   script:
     # Check that docs folder exists
-    - "[ -d \"public\" ]"
+    - "[ -d \"$[[ inputs.hostpath ]]/public\" ]"
   artifacts:
     paths:
-      - public
+      - $[[ inputs.hostpath ]]/public
   rules:
     # Only publishes docs pushed to master
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
@@ -128,6 +140,7 @@ build:basic-image:
   extends: .docker-image
   needs: []
   script:
+    - cd $[[ inputs.hostpath ]]
     - docker build -t $BASIC_IMAGE -f test/dockerfiles/basic.Dockerfile .
     - docker push $BASIC_IMAGE
 
@@ -136,6 +149,7 @@ build:functional-image:
   extends: .docker-image
   needs: ["build:src"]
   script:
+    - cd $[[ inputs.hostpath ]]
     - docker build -t $FUNCTIONAL_IMAGE -f test/dockerfiles/functional.Dockerfile --build-arg SKIP_BUILD=1 --build-arg BROWSER=chromium .
     - docker push $FUNCTIONAL_IMAGE
 
@@ -256,12 +270,12 @@ func:v2:firefox:oldest:
 func:v2:windows:edge:
   extends: .functional-windows
   script:
-    - npm test -- v2 edge latest --timeout=10000
+    - npm test -w $[[ inputs.hostpath ]] -- v2 edge latest --timeout=10000
 
 func:v2:windows:edge:incognito:
   extends: .functional-windows
   script:
-    - npm test -- v2 edge latest --incognito --timeout=10000 --verbose
+    - npm test -w $[[ inputs.hostpath ]] -- v2 edge latest --incognito --timeout=10000 --verbose
 
 # Functional tests - MV3
 func:v3:chromium:latest:
@@ -423,12 +437,14 @@ fuzz:v3:edge:latest:
   before_script:
     - apk add bash git zip
   script:
+    - cd $[[ inputs.hostpath ]]
     - TERMINAL="t" TESTS_TO_INCLUDE="filters/wildcard-domain,filters/remove,filters/remove-extended,filters/remove-on-DOM-mutation,filters/remove-extended-inversion,$MV3_ONLY_TESTS" ./test/scripts/compliance.sh
   after_script:
+    - cd $[[ inputs.hostpath ]]
     - docker cp $(docker ps -aqf ancestor=$COMPLIANCE_IMAGE):/testpages.adblockplus.org/test/screenshots .
   artifacts:
     paths:
-      - screenshots/
+      - $[[ inputs.hostpath ]]/screenshots/
     when: always
     expire_in: 1 day
   rules:
@@ -469,6 +485,7 @@ int:scripts:
   extends: .basic-image
   stage: integration
   script:
+    - cd $[[ inputs.hostpath ]]
     - docker run $DOCKER_OPTIONS --entrypoint test/dockerfiles/integration-entrypoint.sh $BASIC_IMAGE
   rules:
     - !reference [.avoid-flaky-run, rules]
@@ -477,7 +494,7 @@ int:bundle:
   image: node:18-bullseye-slim
   stage: integration
   script:
-    - npm run test-bundle
+    - npm run -w $[[ inputs.hostpath ]] test-bundle
   needs: ["build:src"]
   rules:
     - !reference [.avoid-flaky-run, rules]
@@ -487,6 +504,7 @@ int:bundle:
   extends: .functional
   stage: performance
   script:
+    - cd $[[ inputs.hostpath ]]
     - docker run $DOCKER_OPTIONS --entrypoint npm $FUNCTIONAL_IMAGE run test-performance $PARAMS
 
 perf:v2:chromium:

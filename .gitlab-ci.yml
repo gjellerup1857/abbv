@@ -45,3 +45,8 @@ adblockplus:
   extends: .child
   variables:
     HOSTPATH: host/adblockplus
+
+webext-sdk:
+  extends: .child
+  variables:
+    HOSTPATH: core/webext-ad-filtering-solution
