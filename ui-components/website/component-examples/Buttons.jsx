@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Button } from '@components'
+import { Button, buttonKinds } from '@components'
 import { themeNames } from './Themes';
-
-const buttonKinds = ['filled', 'outline', 'text', 'link', 'punched'];
 
 export const Buttons = () => {
   const [showSorryButton, setShowSorryButton] = useState(false);

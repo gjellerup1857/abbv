@@ -1,5 +1,5 @@
 import { fn } from '@storybook/test';
-import { Button } from '@components';
+import { Button, buttonKinds } from '@components';
 import { getArgsFromJSDoc } from '../helpers.js';
 
 export default {
@@ -12,18 +12,17 @@ export default {
   },
 };
 
-const kinds = ['filled', 'outline', 'text', 'punched', 'link',];
 const generateKinds = (args) => {
   return (
     <>
       <div className="flex items-center gap-2 mb-4">
         {
-          kinds.map((el) => (<Button {...args} kind={ el } key={ el } />))
+          buttonKinds.map((el) => (<Button {...args} kind={ el } key={ el } />))
         }
       </div>
       <div className="flex items-center gap-2 mb-4">
         {
-          kinds.map((el) => (<Button {...args} disabled kind={ el } key={ `disabled-${el}` } />))
+          buttonKinds.map((el) => (<Button {...args} disabled kind={ el } key={ `disabled-${el}` } />))
         }
       </div>
     </>

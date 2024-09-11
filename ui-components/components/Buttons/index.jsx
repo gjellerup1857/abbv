@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 
+export const buttonKinds = ['filled', 'outline', 'text', 'punched', 'link',];
+
 /**
  * Buttons allow users to take actions, and you can use them to direct a
  * user's attention or warn them of outcomes.
@@ -64,7 +66,7 @@ Button.propTypes = {
   colorOverrides: PropTypes.arrayOf(PropTypes.string),
   disabled: PropTypes.bool,
   icon: PropTypes.element,
-  kind: PropTypes.oneOf(['filled', 'outline', 'text', 'link', 'punched']),
+  kind: PropTypes.oneOf(buttonKinds),
   onClick: PropTypes.func.isRequired,
   text: PropTypes.string,
 };
