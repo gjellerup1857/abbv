@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
  * user's attention or warn them of outcomes.
  *
  * @param {Object} props - The props for the Button component.
- * @param {string[]} [props.colorOverrides] - Classes to override the default theme
+ * @param {Array<string>} [props.colorOverrides] - Classes to override the default theme
  *    colors of a button. Use only if switching to a defined kind absolutely
  *    will not work.
  * @param {JSX.Element} [props.icon] - An Icon component. Either text or an icon
@@ -28,7 +28,6 @@ export const Button = ({
   disabled = false,
   kind = 'filled',
 }) => {
-
   if (!icon && !text) {
     throw new Error('Buttons must have either an icon or text');
   }
@@ -61,10 +60,11 @@ export const Button = ({
 };
 
 Button.propTypes = {
-  colorOverrides: PropTypes.arrayOf(PropTypes.string),
-  icon: PropTypes.element,
-  onClick: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired,
-  kind: PropTypes.oneOf(['filled', 'outline', 'text', 'link', 'punched']),
   ariaLabel: PropTypes.string,
+  colorOverrides: PropTypes.arrayOf(PropTypes.string),
+  disabled: PropTypes.bool,
+  icon: PropTypes.element,
+  kind: PropTypes.oneOf(['filled', 'outline', 'text', 'link', 'punched']),
+  onClick: PropTypes.func.isRequired,
+  text: PropTypes.string,
 };
