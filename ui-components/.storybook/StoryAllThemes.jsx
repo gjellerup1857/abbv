@@ -2,7 +2,6 @@ import React from 'react';
 import { Story } from '@storybook/blocks';
 import PropTypes from 'prop-types';
 
-
 /**
  * Renders the first story in all available themes for each extension.
  * @param {Array<{ extension: string, name: string }>} themes - List of theme objects.
@@ -27,7 +26,7 @@ export default function StoryAllThemes({ themes }) {
             <div
               data-extension={extension.toLowerCase()}
               data-theme={name.toLowerCase()}
-              className="flex items-center justify-center gap-2 px-10 py-5 bg-theme-primary border-8 border-theme-secondary rounded"
+              className="flex items-center justify-center gap-2 px-10 py-5 bg-theme-secondary rounded"
             >
               <Story/>
             </div>
