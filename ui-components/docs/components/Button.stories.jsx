@@ -1,6 +1,8 @@
 import { fn } from '@storybook/test';
-import { Button, buttonKinds } from '@components';
+import { Button, buttonKinds, Icon } from '@components';
 import { getArgsFromJSDoc } from '../helpers.js';
+
+const icon = <Icon name="circle" size="sm" ariaHidden />;
 
 export default {
   title: 'Components/Button',
@@ -22,7 +24,17 @@ const generateKinds = (args) => {
       </div>
       <div className="flex items-center gap-2 mb-4">
         {
-          buttonKinds.map((el) => (<Button {...args} disabled kind={ el } key={ `disabled-${el}` } />))
+          buttonKinds.map((el) => (<Button {...args} kind={ el } key={ el } icon={ icon } />))
+        }
+      </div>
+      <div className="flex items-center gap-2 mb-4">
+        {
+          buttonKinds.map((el) => (<Button {...args} text="" kind={ el } key={ el } icon={ icon } />))
+        }
+      </div>
+      <div className="flex items-center gap-2 mb-4">
+        {
+          buttonKinds.map((el) => (<Button {...args} disabled kind={ el } key={ `disabled-${el}` } icon={ icon } />))
         }
       </div>
     </>
