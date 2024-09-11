@@ -1,7 +1,6 @@
 import { fn } from '@storybook/test';
-import { Button } from '@components';
+import { Button, buttonKinds } from '@components';
 import { getArgsFromJSDoc } from '../helpers.js';
-
 
 export default {
   title: 'Components/Button',
@@ -13,16 +12,25 @@ export default {
   },
 };
 
+const generateKinds = (args) => {
+  return (
+    <>
+      <div className="flex items-center gap-2 mb-4">
+        {
+          buttonKinds.map((el) => (<Button {...args} kind={ el } key={ el } />))
+        }
+      </div>
+      <div className="flex items-center gap-2 mb-4">
+        {
+          buttonKinds.map((el) => (<Button {...args} disabled kind={ el } key={ `disabled-${el}` } />))
+        }
+      </div>
+    </>
+  )
+};
+
 export const AllVariants = {
-  render: (args) => (
-    <div className="flex items-center gap-2">
-      <Button {...args} />
-      <Button {...args} kind="outline" />
-      <Button {...args} kind="text" />
-      <Button {...args} kind="link" />
-      <Button {...args} kind="punched" />
-    </div>
-  ),
+  render: generateKinds,
 }
 
 /**
@@ -37,9 +45,7 @@ export const Filled = {
 };
 
 /**
- * Outline buttons are the default and most common buttons in product
- * interfaces. In general, use the outline style for buttons that aren’t
- * for primary actions.
+ * Outline buttons usually serve as a secondary action button.
  */
 export const Outline = {
   args: {
@@ -48,6 +54,9 @@ export const Outline = {
   }
 };
 
+/**
+ * Text buttons have no outline or background. Often used for icon-only buttons.
+ */
 export const Text = {
   args: {
     kind: 'text',
@@ -55,16 +64,24 @@ export const Text = {
   }
 };
 
-export const Link = {
+/**
+ * Punched buttons give a the impression that the text is punched out of the button color.
+ * It is often used for text buttons inline with icon-only buttons, such as in the popup header.
+ */
+export const Punched = {
   args: {
-    kind: 'link',
+    kind: 'punched',
     text: 'Update now',
   }
 };
 
-export const Punched = {
+/**
+ * Link buttons are used in running text when an action that is not a navigation action is taken.
+ * For instance, opening a tab from the popup, as opposed to moving to another page within the popup.
+ */
+export const Link = {
   args: {
-    kind: 'punched',
+    kind: 'link',
     text: 'Update now',
   }
 };
