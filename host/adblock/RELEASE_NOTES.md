@@ -1,8 +1,13 @@
 # Unreleased
 
-- Updated snippets to 1.5.0
 - We no longer test the MV2 build of our extensions on Chrome 129 and later,
   since it disables MV2 extensions by defaults.
+
+# 6.9.1 - 2024-08-28
+
+- Updated snippets to 1.5.0, now AdBlock supports: `hide-if-canvas-contains`
+- Added fallback mechanism for telemetry request
+- Included sourcemaps in Manifest v3 Chromium builds
 
 # 6.9.0 - 2024-08-28
 
