@@ -96,7 +96,7 @@ class IPMTelemetry extends TelemetryBase {
     void clearEvents();
     const response = await postData(Prefs.get(this.hostURLPref), pingData).catch((error) => {
       logger.error("ipm ping error", error);
-      ServerMessages.recordGeneralMessage("ipm ping error", undefined, { error });
+      ServerMessages.recordGeneralMessage("ipm_ping_error", undefined, { error });
     });
     IPMTelemetry.processResponse(response);
   }
