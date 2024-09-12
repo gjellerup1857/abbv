@@ -5,6 +5,8 @@
   "workspaces": [
     "host/*",
     "fragment/*",
-    "core/*"    
+    "core/*",
+    "ui-components/*"
   ]
 }
+
