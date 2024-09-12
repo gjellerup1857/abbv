@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./scratchpad/**/*.{js,ts,jsx,tsx}",
     "./styles/**/*.{js,ts,jsx,tsx}",
 
     // Tailwind support for Storybook and Docs directories
