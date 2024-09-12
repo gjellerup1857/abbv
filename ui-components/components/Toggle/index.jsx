@@ -1,14 +1,16 @@
 /*
   Required inputs
     - onClick
+    - name
 
-  Kinds of Toggles (optional)
-    - TBD
+  Kinds of Toggles
+    - Large
+    - Small
 
   Other Optional inputs
     - Color override
-    - Aria label
     - Additional classes
+    - TBD
 */
 import PropTypes from 'prop-types';
 import React, { useState } from "react";
@@ -17,18 +19,8 @@ import React, { useState } from "react";
  * Toggle Switches/Buttons allow users to enable or disable a setting, subscribe to a filter list.
  *
  * @param {Object} props - The props for the Toggle Switch component.
- * @param {string[]} [props.colorOverrides] - Classes to override the default theme
- *    colors of a Toggle Switch. Use only if switching to a defined kind absolutely
- *    will not work.
- * @param {JSX.Element} [props.icon] - An Icon component. Either text or an icon
- *    is required.
  * @param {Function} props.onClick - The function to call when the Toggle Switch is clicked.
- * @param {string} props.text - Text for the Toggle Switch. Either text or an icon
- *    is required.
- * @param {'filled'|'outline'|'text'|'link'|'punched'} [props.kind='filled'] -
- *    Type of Toggle Switch to display.
- * @param {string} [props.ariaLabel] - Aria label for the Toggle Switch. By default,
- *    uses the same text shown on the Toggle Switch.
+ * ... TO DO
  * @returns {JSX.Element} The Toggle Switch component.
  */
 
@@ -103,4 +95,4 @@ ToggleSwitch.propTypes = {
   checked: PropTypes.bool,
   onClick: PropTypes.func,
   ariaLabel: PropTypes.string,
-};
+}; // TODO - complete
