@@ -20,6 +20,7 @@ import webdriver from "selenium-webdriver";
 
 import { findUrl, getDisplayedElement, openNewTab, waitForNotDisplayed } from "../utils/driver.js";
 import { initOptionsCustomizeTab, addCustomFilter } from "../utils/page.js";
+import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
 
@@ -46,7 +47,7 @@ export default () => {
   }
 
   it("uses sitekey to allowlist content", async function () {
-    const { driver, manifestVersion, optionsHandle } = this;
+    const { driver, manifestVersion } = this;
     const url = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
 
     const getTestpagesFilters = async () => {
@@ -82,7 +83,7 @@ export default () => {
     await getDisplayedElement(driver, "#sitekey-fail-1");
 
     const filters = await getTestpagesFilters();
-    await driver.switchTo().window(optionsHandle);
+    await driver.switchTo().window(getOptionsHandle());
     await addFiltersToAdBlock(driver, filters);
 
     await findUrl(driver, url);
@@ -100,7 +101,7 @@ export default () => {
       await getDisplayedElement(driver, "#inframe-image");
     }
 
-    await driver.switchTo().window(optionsHandle);
+    await driver.switchTo().window(getOptionsHandle());
     await removeAllFiltersFromAdBlock();
   });
 
@@ -121,7 +122,7 @@ export default () => {
   });
 
   it("uses snippets to block ads", async function () {
-    const { driver, optionsHandle } = this;
+    const { driver } = this;
     const filter = "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
     const url = "https://adblockinc.gitlab.io/QA-team/adblocking/snippets/snippets-testpage.html";
 
@@ -129,7 +130,7 @@ export default () => {
     const snippetElem = await getDisplayedElement(driver, "#snippet-filter");
     expect(await snippetElem.getText()).toEqual("This should be hidden by a snippet");
 
-    await initOptionsCustomizeTab(driver, optionsHandle);
+    await initOptionsCustomizeTab(driver, getOptionsHandle());
     await addCustomFilter(driver, filter);
 
     await findUrl(driver, url);
@@ -137,10 +138,10 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    const { driver, optionsHandle } = this;
+    const { driver } = this;
     const filter = "@@adblockinc.gitlab.io$document";
 
-    await initOptionsCustomizeTab(driver, optionsHandle);
+    await initOptionsCustomizeTab(driver, getOptionsHandle());
     await addCustomFilter(driver, filter);
 
     await openNewTab(driver, blockHideUrl);
@@ -168,7 +169,7 @@ export default () => {
       "AdContainer class hiding filter should hide this",
     );
 
-    await initOptionsCustomizeTab(driver, optionsHandle);
+    await initOptionsCustomizeTab(driver, getOptionsHandle());
     await addCustomFilter(driver, "/awe2.js");
 
     await findUrl(driver, blockHideUrl);

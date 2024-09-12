@@ -17,9 +17,11 @@
 
 import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement, openNewTab } from "./driver.js";
+import { getDisplayedElement, openNewTab, findUrl } from "./driver.js";
 
 const { By } = webdriver;
+
+export const installUrl = "getadblock.com/en/installed";
 
 export async function initPopupPage(driver, origin, tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
@@ -62,4 +64,20 @@ export async function addCustomFilter(driver, filterText) {
   const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
   await filtersAdvancedElem.sendKeys(filterText);
   await saveButton.click();
+}
+
+export async function getUserId(driver) {
+  await findUrl(driver, installUrl);
+
+  let userId;
+  await driver.wait(async () => {
+    try {
+      userId = await driver.executeScript(() => {
+        return document.getElementById("adblockUserId").textContent;
+      });
+      return true;
+    } catch (err) {}
+  });
+
+  return userId;
 }

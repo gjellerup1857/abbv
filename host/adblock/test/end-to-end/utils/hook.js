@@ -15,16 +15,32 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { beforeEachTasks } from "../utils/hook.js";
-import smoke from "./smoke.js";
-import uninstall from "./uninstall.js";
+import { installUrl } from "./page.js";
 
-export default () => {
-  beforeEach(async function () {
-    await beforeEachTasks(this.driver);
-  });
+let optionsHandle;
+export function setOptionsHandle(handle) {
+  optionsHandle = handle;
+}
+export function getOptionsHandle() {
+  return optionsHandle;
+}
 
-  describe("Smoke Tests - Main", smoke);
-  // Needs to be the last suite to run because the extension gets uninstalled
-  describe("Smoke Tests - Uninstall", uninstall);
-};
+async function cleanupOpenTabs(driver) {
+  for (const handle of await driver.getAllWindowHandles()) {
+    await driver.switchTo().window(handle);
+
+    let url = "";
+    try {
+      url = await driver.getCurrentUrl();
+    } catch (e) {}
+
+    if (handle !== optionsHandle && !url.includes(installUrl)) {
+      driver.close();
+    }
+  }
+}
+
+export async function beforeEachTasks(driver) {
+  await cleanupOpenTabs(driver);
+  await driver.switchTo().window(optionsHandle);
+}

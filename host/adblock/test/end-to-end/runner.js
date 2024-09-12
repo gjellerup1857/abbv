@@ -24,6 +24,7 @@ import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 
 import { findUrl } from "./utils/driver.js";
+import { setOptionsHandle } from "./utils/hook.js";
 import defineTestSuites from "./suites/index.js";
 
 const screenshotsPath = path.join(process.cwd(), "test", "end-to-end", "screenshots");
@@ -112,7 +113,8 @@ describe("AdBlock end-to-end tests", function () {
     [this.driver, this.browserName, this.fullBrowserVersion, this.majorBrowserVersion] =
       await startBrowser();
 
-    this.optionsHandle = (await findUrl(this.driver, "options.html")).handle;
+    const { handle } = await findUrl(this.driver, "options.html");
+    setOptionsHandle(handle);
 
     const { name, version, manifestVersion, origin } = await getExtensionInfo(this.driver);
     console.log(`Extension: ${name} ${version} MV${manifestVersion}`);
