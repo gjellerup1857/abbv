@@ -63,9 +63,9 @@ class TestPages extends BasePage
     return $("#custom-hiding-id");
   }
 
-  get awe2Filter()
+  get popadsFilter()
   {
-    return $("#awe2-blocking-filter");
+    return $("#popads-blocking-filter");
   }
 
   get ecosiaAdPill()
@@ -188,10 +188,10 @@ class TestPages extends BasePage
     return await (await this.banneradsFilter).getText();
   }
 
-  async getAwe2FilterText()
+  async getPopadsFilterText()
   {
-    await (await this.awe2Filter).waitForEnabled({timeout: 4000});
-    return await (await this.awe2Filter).getText();
+    await (await this.popadsFilter).waitForEnabled({timeout: 4000});
+    return await (await this.popadsFilter).getText();
   }
 
   async getSearchAdDivText()

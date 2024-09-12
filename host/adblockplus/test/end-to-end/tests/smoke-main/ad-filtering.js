@@ -83,12 +83,6 @@ module.exports = function()
     ({optionsUrl} = this.test.parent.parent);
   });
 
-  beforeEach(async function()
-  {
-    // This filter no longer exists in easylist
-    await addFiltersToABP("/awe2.js");
-  });
-
   it("uses sitekey to allowlist content", async function()
   {
     if (process.env.MANIFEST_VERSION === "3")
@@ -131,9 +125,9 @@ module.exports = function()
     await waitForAssertion(async() =>
     {
       browser.refresh();
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
-    }, timeout, "awe2.js blocking filter was not applied");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
+    }, timeout, "pop_ads.js blocking filter was not applied");
     expect(await testPages.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked");
     expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
@@ -173,9 +167,9 @@ module.exports = function()
     const timeout = 5000;
     await waitForAssertion(async() =>
     {
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js blocking filter should block this");
-    }, timeout, "awe2.js blocking filter was applied");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js blocking filter should block this");
+    }, timeout, "pop_ads.js blocking filter was applied");
     expect(await testPages.getBanneradsFilterText()).to.include(
       "first bannerads/* blocking filter should block this");
     await waitForAssertion(async() =>
@@ -198,11 +192,11 @@ module.exports = function()
     await waitForNewWindow(testData.allowlistingUrl);
     await waitForAssertion(async() =>
     {
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
       expect(await testPages.getBanneradsFilterText()).to.include(
         "bannerads/* was blocked");
-    }, timeout, "awe2.js or bannerads/* was not blocked");
+    }, timeout, "pop_ads.js or bannerads/* was not blocked");
     expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
   });

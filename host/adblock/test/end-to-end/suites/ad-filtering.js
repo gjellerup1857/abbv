@@ -108,12 +108,9 @@ export default () => {
   it("blocks and hides ads", async function () {
     const { driver } = this;
 
-    // This filter no longer exists in easylist
-    await addFiltersToAdBlock(driver, "/awe2.js");
-
     await openNewTab(driver, blockHideUrl);
-    const awe2Elem = await getDisplayedElement(driver, "#awe2-blocking-filter");
-    expect(await awe2Elem.getText()).toEqual("awe2.js was blocked");
+    const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
+    expect(await popadsElem.getText()).toEqual("pop_ads.js was blocked");
     const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
     expect(await banneradsElem.getText()).toEqual("bannerads/* was blocked");
 
@@ -147,10 +144,12 @@ export default () => {
     await openNewTab(driver, blockHideUrl);
     await driver.wait(
       async () => {
-        const awe2Elem = await getDisplayedElement(driver, "#awe2-blocking-filter");
+        const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
         const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
         try {
-          expect(await awe2Elem.getText()).toEqual("awe2.js blocking filter should block this");
+          expect(await popadsElem.getText()).toEqual(
+            "pop_ads.js blocking filter should block this",
+          );
           expect(await banneradsElem.getText()).toEqual(
             "first bannerads/* blocking filter should block this",
           );
@@ -170,15 +169,15 @@ export default () => {
     );
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await addCustomFilter(driver, "/awe2.js");
+    await addCustomFilter(driver, "");
 
     await findUrl(driver, blockHideUrl);
     await driver.wait(
       async () => {
-        const awe2Elem = await getDisplayedElement(driver, "#awe2-blocking-filter");
+        const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
         const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
         try {
-          expect(await awe2Elem.getText()).toEqual("awe2.js was blocked");
+          expect(await popadsElem.getText()).toEqual("pop_ads.js was blocked");
           expect(await banneradsElem.getText()).toEqual("bannerads/* was blocked");
           return true;
         } catch (e) {

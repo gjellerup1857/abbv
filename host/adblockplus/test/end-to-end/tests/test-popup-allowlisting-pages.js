@@ -98,10 +98,10 @@ describe("test popup allowlisting and disallowlisting pages", function()
     await switchToABPOptionsTab({switchToFrame: false});
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
-    await waitForCondition("getAwe2FilterText", 3000, testPage, true, 200,
-                           "awe2.js blocking filter should block this");
-    expect(await testPage.getAwe2FilterText()).to.include(
-      "awe2.js blocking filter should block this");
+    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
+                           "pop_ads.js blocking filter should block this");
+    expect(await testPage.getPopadsFilterText()).to.include(
+      "pop_ads.js blocking filter should block this");
     // skip for FF, popup.html does not close
     if (!isFirefox())
     {

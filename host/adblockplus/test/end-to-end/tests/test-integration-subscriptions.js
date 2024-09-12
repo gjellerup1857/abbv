@@ -105,8 +105,8 @@ describe("test subscriptions as part of the integration tests", function()
         await browser.refresh();
       }
     }
-    expect(await testPages.getAwe2FilterText()).to.include(
-      "awe2.js blocking filter should block this");
+    expect(await testPages.getPopadsFilterText()).to.include(
+      "pop_ads.js blocking filter should block this");
     expect(await testPages.getBanneradsFilterText()).to.include(
       "first bannerads/* blocking filter should block this");
     expect(await testPages.getSearchAdDivText()).to.include(
@@ -131,14 +131,14 @@ describe("test subscriptions as part of the integration tests", function()
     }
     try
     {
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
     }
     catch (Exception)
     {
       await browser.pause(1000);
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
     }
     expect(await testPages.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked");
@@ -179,8 +179,8 @@ describe("test subscriptions as part of the integration tests", function()
         await browser.refresh();
       }
     }
-    expect(await testPages.getAwe2FilterText()).to.include(
-      "awe2.js blocking filter should block this");
+    expect(await testPages.getPopadsFilterText()).to.include(
+      "pop_ads.js blocking filter should block this");
     expect(await testPages.getBanneradsFilterText()).to.include(
       "first bannerads/* blocking filter should block this");
     expect(await testPages.getSearchAdDivText()).to.include(
@@ -211,14 +211,14 @@ describe("test subscriptions as part of the integration tests", function()
     lastTest = true;
     try
     {
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
     }
     catch (Exception)
     {
       await browser.pause(1000);
-      expect(await testPages.getAwe2FilterText()).to.include(
-        "awe2.js was blocked");
+      expect(await testPages.getPopadsFilterText()).to.include(
+        "pop_ads.js was blocked");
     }
     expect(await testPages.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked");

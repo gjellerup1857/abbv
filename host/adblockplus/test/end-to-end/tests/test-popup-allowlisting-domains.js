@@ -49,8 +49,8 @@ describe("test popup allowlisting and disallowlisting", function()
     await browser.newWindow(testData.blockHideUrl);
     await testPage.switchToTab("Blocking and hiding");
     const tabId = await getTabId({title: "Blocking and hiding"});
-    expect(await testPage.getAwe2FilterText()).to.include(
-      "awe2.js was blocked");
+    expect(await testPage.getPopadsFilterText()).to.include(
+      "pop_ads.js was blocked");
     expect(await testPage.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked");
     expect(await testPage.
@@ -66,10 +66,10 @@ describe("test popup allowlisting and disallowlisting", function()
     await switchToABPOptionsTab({switchToFrame: false});
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
-    await waitForCondition("getAwe2FilterText", 3000, testPage, true, 200,
-                           "awe2.js blocking filter should block this");
-    expect(await testPage.getAwe2FilterText()).to.include(
-      "awe2.js blocking filter should block this");
+    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
+                           "pop_ads.js blocking filter should block this");
+    expect(await testPage.getPopadsFilterText()).to.include(
+      "pop_ads.js blocking filter should block this");
     expect(await testPage.getBanneradsFilterText()).to.include(
       "first bannerads/* blocking filter should block this");
     expect(await testPage.getSearchAdDivText()).to.include(
@@ -93,8 +93,8 @@ describe("test popup allowlisting and disallowlisting", function()
     await popupPage.clickRefreshButton();
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
-    expect(await testPage.getAwe2FilterText()).to.include(
-      "awe2.js was blocked");
+    expect(await testPage.getPopadsFilterText()).to.include(
+      "pop_ads.js was blocked");
     expect(await testPage.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked");
     expect(await testPage.
@@ -170,10 +170,10 @@ describe("test popup allowlisting and disallowlisting", function()
     {
       expect(await doesTabExist(popupUrl)).to.be.false;
     }
-    await waitForCondition("getAwe2FilterText", 3000, testPage, true, 200,
-                           "awe2.js blocking filter should block this");
-    expect(await testPage.getAwe2FilterText()).to.include(
-      "awe2.js blocking filter should block this");
+    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
+                           "pop_ads.js blocking filter should block this");
+    expect(await testPage.getPopadsFilterText()).to.include(
+      "pop_ads.js blocking filter should block this");
     tabId = await getTabId({title: "Blocking and hiding"});
     await testPage.switchToTab("Blocking and hiding");
     await popupPage.init(globalOrigin, tabId);
