@@ -17,7 +17,7 @@
     "build:release": "npm run $ build.release",
     "lint": "npm run $ lint",
     "test": "echo 'No unit test setup yet'",
-    "test:end-to-end": "",
+    "test:end-to-end": "npm run $ test.end-to-end",
 
     "$": "npm-dollar",
     "build:source": "gulp source",
@@ -25,25 +25,24 @@
     "eslint:legacy": "npm run $ lint.js.legacy",
     "eslint:standard": "npm run $ lint.js.standard",
     "postinstall": "npx @adblockinc/rules adblock",
-    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
 
-    "build:dev:ff": "npm run $ build.devenv.firefox",
+    "build:dev:all": "npm run build",
     "build:dev:chrome": "npm run $ build.devenv.chrome.mv3",
     "build:dev:edge": "npm run $ build.devenv.chrome.mv2",
-    "build:dev:all": "npm run build",
-    "build:release:ff": "npm run $ build.release.firefox",
-    "build:release:chrome": "npm run $ build.release.chrome.mv3",
-    "build:release:edge": "npm run $ build.release.chrome.mv2",
+    "build:dev:ff": "npm run $ build.devenv.firefox",
     "build:release:all": "npm run build:release",
     "build:release:beta": "npm run $ build.release.chrome.beta",
-    "json-bundle": "node build/jsonBundle.cjs",
-    "eslint-fix": "npm run $ lint-fix.js",
+    "build:release:chrome": "npm run $ build.release.chrome.mv3",
+    "build:release:edge": "npm run $ build.release.chrome.mv2",
+    "build:release:ff": "npm run $ build.release.firefox",
     "eslint:standard-fix": "eslint --fix --ignore-path .gitignore src/",
     "eslint:legacy-fix": "eslint --fix --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
+    "eslint-fix": "npm run $ lint-fix.js",
+    "html-hint": "npm run $ lint.html",
+    "json-bundle": "node build/jsonBundle.cjs",
     "prettier": "npm run $ lint.prettier",
-    "prettier-fix": "npm run $ lint-fix.prettier",
-    "html-hint": "npm run $ lint.html"
+    "prettier-fix": "npm run $ lint-fix.prettier"
   },
   "$": {
     "build": {
@@ -78,6 +77,12 @@
     "lint-fix": {
       "js": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
       "prettier": "prettier --write ."
+    },
+    "test": {
+      "end-to-end": [
+        "npm run test:end-to-end:build",
+        "mocha test/end-to-end/runner.js --timeout 100000 --"
+      ]
     }
   },
   "devDependencies": {
