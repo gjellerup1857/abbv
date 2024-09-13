@@ -15,7 +15,7 @@
   "scripts": {
     "build": "npm run $ build.devenv",
     "build:release": "npm run $ build.release",
-    "lint": "npm run eslint && npm run prettier && npm run html-hint",
+    "lint": "npm run $ lint",
     "test": "",
     "test:end-to-end": "",
 
@@ -25,25 +25,25 @@
     "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
 
-    "build:dev:ff": "gulp devenv -m 2 -t firefox",
-    "build:dev:chrome": "gulp devenv -m 3 -t chrome",
-    "build:dev:edge": "gulp devenv -m 2 -t chrome",
-    "build:dev:all": "gulp devenv -m 3 -t chrome && gulp devenv -m 2 -t firefox && gulp devenv -m 2 -t chrome",
-    "build:release:ff": "gulp build -m 2 -t firefox",
-    "build:release:chrome": "gulp build -m 3 -t chrome",
-    "build:release:edge": "gulp build -m 2 -t chrome",
-    "build:release:all": "gulp build -m 3 -t chrome && gulp build -m 2 -t chrome && gulp build -m 2 -t firefox",
-    "build:release:beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
-    "eslint": "eslint --ext .js,.mjs adblock-betafish/ src/",
+    "build:dev:ff": "npm run $ build.devenv.firefox",
+    "build:dev:chrome": "npm run $ build.devenv.chrome.mv3",
+    "build:dev:edge": "npm run $ build.devenv.chrome.mv2",
+    "build:dev:all": "npm run build",
+    "build:release:ff": "npm run $ build.release.firefox",
+    "build:release:chrome": "npm run $ build.release.chrome.mv3",
+    "build:release:edge": "npm run $ build.release.chrome.mv2",
+    "build:release:all": "npm run build:release",
+    "build:release:beta": "npm run $ build.release.chrome.beta",
+    "eslint": "npm run $ lint.js",
     "eslint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
     "eslint:standard": "eslint --ignore-path .gitignore src/",
     "json-bundle": "node build/jsonBundle.cjs",
-    "eslint-fix": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
+    "eslint-fix": "npm run $ lint-fix.js",
     "eslint:standard-fix": "eslint --fix --ignore-path .gitignore src/",
     "eslint:legacy-fix": "eslint --fix --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
-    "prettier": "prettier --check .",
-    "prettier-fix": "prettier --write .",
-    "html-hint": "htmlhint adblock-betafish/ -R ./rules/"
+    "prettier": "npm run $ lint.prettier",
+    "prettier-fix": "npm run $ lint-fix.prettier",
+    "html-hint": "npm run $ lint.html"
   },
   "$": {
     "build": {
@@ -55,6 +55,7 @@
         "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.devenv firefox 2; fi"
       },
       "release": {
+        "beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
         "chrome": {
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
@@ -65,6 +66,15 @@
     "create": {
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "release": "gulp build -c release -t $1 -m $2 --unhandled-rejections=strict"
+    },
+    "lint": {
+      "html": "htmlhint adblock-betafish/ -R ./rules/",
+      "js": "eslint --ext .js,.mjs adblock-betafish/ src/",
+      "prettier": "prettier --check ."
+    },
+    "lint-fix": {
+      "js": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
+      "prettier": "prettier --write ."
     }
   },
   "devDependencies": {
