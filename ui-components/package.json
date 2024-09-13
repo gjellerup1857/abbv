@@ -7,14 +7,13 @@
     "homepage": "https://gitlab.com/eyeo/extensions/extensions/-/blob/main/ui-components/README.md",
     "main": "index.jsx",
     "type": "module",
-    "types": "index.d.ts",
+    "types": "dist/types/index.d.ts",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "vite build && npx tsc",
         "test": "vitest",
         "lint": "eslint .",
         "preview": "vite preview",
-        "generate-types": "npx tsc",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"
     },

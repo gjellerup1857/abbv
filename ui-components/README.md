@@ -5,7 +5,7 @@ Hello and welcome to our very under construction UI component library. The goal 
 The notes below cover:
 
 * [background & goals](#general-background-and-goals)
-* [deciding what kind of component you need](#the-six-ways) 
+* [deciding what kind of component you need](#the-six-ways)
 * [understanding what kinds of components should be in this library ](#is-this-the-right-place-for-my-component)
 * [how to add a component to this library](#creating-a-component)
 * [how to work with themes to provide a component for fragments and hosts](#working-alongside-host-code-adblock), including [how to do all of this incrementally as we go](#aligning-themed-css)
@@ -21,14 +21,14 @@ The primary goal of our component and theming system is to produce UI components
 ```js
 // ⛔️ do not do this!
 
-if (extension == 'adblock' && theme == dark) { 
-  // apply CSS class or do other nefarious things or whatever 
+if (extension == 'adblock' && theme == dark) {
+  // apply CSS class or do other nefarious things or whatever
 }
 ```
 
 There are roughly six ways to achieve this. This repo is the right place for options 1 to 3.
 
-### The Six Ways 
+### The Six Ways
 
 *These are adapted from a more specific comment, but should be helpful here.*
 
@@ -41,12 +41,12 @@ This approach combines [CSS variables](https://developer.mozilla.org/en-US/docs/
   [data-extension='adblock'][data-theme='watermelon'],
   [data-extension='adblock'] [data-theme='watermelon'] {
     --theme-primary: var(--red2);
-    ‌--theme-text-accent: underline 
+    ‌--theme-text-accent: underline
 		// more variables
   }
-  
+
   // in Tailwind config
-  
+
   theme: {
    extend: {
      colors: {
@@ -57,15 +57,15 @@ This approach combines [CSS variables](https://developer.mozilla.org/en-US/docs/
       "theme-text-accent": "var(--theme-text-accent)",
      }
    },
- }, 
-  
+ },
+
   // in Link component
-  
+
   <a class="decoration-theme-text-accent" ..> .. </a>
 
 ```
 
-This is not ideal in the case of the link decoration because it leads to variable growth and it not highly reusable. It does work well for the colors because they are constrained in number, while widespread in use, especially with Tailwind using them to feel a large number of color-based classes. 
+This is not ideal in the case of the link decoration because it leads to variable growth and it not highly reusable. It does work well for the colors because they are constrained in number, while widespread in use, especially with Tailwind using them to feel a large number of color-based classes.
 
 #### 2: Add to theme as conventional CSS.
 
@@ -136,7 +136,7 @@ In very complex cases, this might be the right answer, but see if the previous o
 
 #### 6: Work with design to make the distinction unnecessary.
 
-If all the options are annoying, we can collaborate with our coworkers to update the design not to need a specific kind of variation. Talk to your designers or PMs! 
+If all the options are annoying, we can collaborate with our coworkers to update the design not to need a specific kind of variation. Talk to your designers or PMs!
 
 ## Is this the right place for my component?
 
@@ -162,7 +162,7 @@ This repo is organized to serve two parallel purposes: to contain the components
 
 ### Generating Types
 
-*Someone should write something here.*
+Types are automatically generated from the JSDoc comments added to the component source files. Therefore, it's essential to provide thorough documentation. The types will be created during the build process when running `npm run build`.
 
 ### Creating an Example
 
@@ -176,13 +176,13 @@ All components should have unit tests associated with them. These can be placed 
 
 #### Tools for Running Tests
 
-Running 
+Running
 
 ```bash
 npm run test
 ```
 
-or `vitest` directly 
+or `vitest` directly
 
 ```bash
 vitest
@@ -264,7 +264,7 @@ describe('My cool component disabled', () => {
   beforeEach(() => {
     renderComponent({ disabled: true})
   })
-  
+
   it('is not focusable when disabled', () => {
     expect(component).not.toBeFocused();
   })
@@ -282,7 +282,7 @@ When a test block fails, the fewer assertions, the easier it is to understand wh
 
 ### Theming
 
-The goal of theming is to make it possible for a component to be styled correctly just by being instantiated in a host context that provides `data-extension` and `data-theme` attributes further up in the tree. 
+The goal of theming is to make it possible for a component to be styled correctly just by being instantiated in a host context that provides `data-extension` and `data-theme` attributes further up in the tree.
 
 Hopefully, you will not need to create a theme variable to do your work, but will be able to use one that already exists. Especially as time goes on.
 
@@ -290,14 +290,14 @@ Hopefully, you will not need to create a theme variable to do your work, but wil
 
 The word *theme* can be used in slightly different ways throughout discussions of UI work. This in part reflects that different systems use the word differently: for Tailwind, a theme is the portion of the configuration file where we ["define[our] project’s color palette, type scale, fonts, breakpoints, border radius values, and more"](https://tailwindcss.com/docs/theme), whereas in current Adblock code, *theme* refers to the collection of properties — almost entirely to colors — that drive various views of the site.
 
-In this new UI architecture, we are using *theme* to refer to colors and properties, defined using methods 1 or 2, which are used to allow the same components to appear differently in different contexts, by which we mean not only Adblock themes but also as an Adblock or ABP component.  
+In this new UI architecture, we are using *theme* to refer to colors and properties, defined using methods 1 or 2, which are used to allow the same components to appear differently in different contexts, by which we mean not only Adblock themes but also as an Adblock or ABP component.
 
 
 #### How to theme
 
 Themes are created in the following manner:
 
-##### 1: Adding a CSS variable with an extension and theme selector and theme name to the correct css file. 
+##### 1: Adding a CSS variable with an extension and theme selector and theme name to the correct css file.
 
 For example:
 
@@ -338,33 +338,40 @@ For example:
 
 The goal here is to slowly move to using Tailwind-generated CSS classes throughout the new architecture. To achieve that, all new components should be using the new themed classes and other Tailwind classes. But what about the old CSS?
 
-> As components are replaced, please be sure to check the old CSS and remove classes that are no longer being used. 
+> As components are replaced, please be sure to check the old CSS and remove classes that are no longer being used.
 
 ### Working Alongside Host Code: Adblock
 
 #### Aligning Themed CSS
 
-As the new theme styles use `data-*` attributes, the new CSS should not conflict with the old CSS. 
+As the new theme styles use `data-*` attributes, the new CSS should not conflict with the old CSS.
 
 However, as discussed in https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/36#what-is-the-use-of-the-code-in-this-state-with-all-these-comments, through this project we are also constraining the variable-ized values that exist in the legacy CSS. In order to support moving forward while achieving a large change incrementally, the legacy CSS files have been organized to leave indications of the work still to be done as UI components are created and then integrated into host and fragment components.
 
-The idea is that as we slowly replace current components with new ones, we have pointers as to which theme values to use for the new components and how much that changes the design. 
+The idea is that as we slowly replace current components with new ones, we have pointers as to which theme values to use for the new components and how much that changes the design.
 
 In most cases, we should be able to add new components alongside old CSS and not have to change too much to keep them aligned. Changing the `dark_theme` `‌--extension-name-bg-color-hovered` from `‌--dark-gray1` to `--gray2` should not be a big deal, but by looking at the CSS, the developer can see that it has changed and should therefore double check that it is not illegible. And then the value can either be removed from the CSS — because it will no longer be used — or updated to match across old and new implementations.º
 
-But sometimes changes will be bigger, and the organization and comments in this shows where we are deviating, so that we can make good choices. For instance, to be more semantically aligned across themes, within the `dark` theme `‌--popup-link-text: var(--red4);` should be changed to `‌--popup-link-text: var(--blue3);`. This is reflected in the CSS for whoever picks up the link component and they can confirm it makes sense and share with design. 
+But sometimes changes will be bigger, and the organization and comments in this shows where we are deviating, so that we can make good choices. For instance, to be more semantically aligned across themes, within the `dark` theme `‌--popup-link-text: var(--red4);` should be changed to `‌--popup-link-text: var(--blue3);`. This is reflected in the CSS for whoever picks up the link component and they can confirm it makes sense and share with design.
 
 In other cases, the outcome may be that we contract some instances but also reflect new categories in the `ui-components`.
 
 Consider the `Button`.
 
 As the start of implementation, the developer may expect the `Button` to have five `kind` options,ºº which align with the majority of cases and design best practices. However, we have some buttons where the color used is not the themed button color, so the developer also knows that providing a `colorOverride` prop to the new Button component will allow us to:
- 
+
 1. Notice where we are using a button outside the theme
 2. Proceed with our work in parallel to working with design to determine whether we need another button kind / have found an unexpected case that can be converted to the default. For instance, we might decide that the premium yellow is important in Adblock and so there should be a `premium` kind of button that has that yellow included. But the `ancillary` buttons can be replaced by the `outline` variant.
 
-The ultimate goal is that as we complete the move to the new UI framework, these files will get smaller and smaller, until they disappear. While the information could possibly be captured elsewhere, keeps it exactly where the decisions will be made. 
+The ultimate goal is that as we complete the move to the new UI framework, these files will get smaller and smaller, until they disappear. While the information could possibly be captured elsewhere, keeps it exactly where the decisions will be made.
 
-### Working Alongside Host Code: ABP
+### Working Alongside Host Code: AB
 
-*Content still to come.*
+To integrate `ui-components` in AB you need to do the following steps:
+
+1. Make sure you have built the `ui-components` package before you start.
+2. Uncomment all the code marked with a `TODO (ui-components):`
+3. Make sure you have the `ui-components` package installed in AB
+4. Start changing code in `host/adblock/adblock-betafish/button/react-components`
+
+Note: After we ship our first page in React with `ui-components` in AB, we should update the above steps.

@@ -65,16 +65,14 @@ export default function webpack({
                   },
                   {
                     test: /\.(js|jsx)$/,
-                    exclude: (path) => {
-                      // Exclude paths that are not our UI components or our react code from the extension.
-                      const isExtReactCode = /button\/react-components/.test(path);
-                      const isExtUIComponents = /node_modules\/@eyeo\/ext-ui-components/.test(path);
-                      return !isExtReactCode && !isExtUIComponents;
-                    },
+                    include: [/button\/react-components/, /node_modules\/@eyeo\/ext-ui-components/],
                     use: {
                       loader: "babel-loader",
                       options: {
-                        presets: ["@babel/preset-env", "@babel/preset-react"],
+                        presets: [
+                          "@babel/preset-env",
+                          ["@babel/preset-react", { runtime: "automatic" }],
+                        ],
                       },
                     },
                   },

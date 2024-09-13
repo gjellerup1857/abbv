@@ -3,5 +3,10 @@ import { Button } from "@eyeo/ext-ui-components";
 
 export function App() {
   const [count, setCount] = useState(0);
-  return <Button onClick={() => setCount(count + 1)}>Button clicks {count}</Button>;
+  return (
+    <div>
+      <h1 className="text-red-500 font-extrabold">React App</h1>
+      <Button onClick={() => setCount(count + 1)} text={`Button clicks ${count}`} />
+    </div>
+  );
 }
