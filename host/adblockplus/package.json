@@ -7,35 +7,58 @@
     "npm": "9"
   },
   "scripts": {
-    "$": "npm-dollar",
-    "build:dev": "gulp devenv -t",
-    "build:release": "gulp build -c release -t",
-    "build:source": "gulp source",
-    "dist": "npm run $ create.dist",
+    "build": "npm run $ build.devenv",
+    "build:release": "npm run $ build.release",
     "lint": "npm run $ lint",
-    "eslint": "eslint --ext .ts,.js,.mjs,.cjs --ignore-path .gitignore ./",
+    "test": "",
+    "test:end-to-end": "",
+
+    "$": "npm-dollar",
+    "build:source": "gulp source",
+    "postinstall": "npx @adblockinc/rules adblockplus",
     "eslint:standard": "eslint --ext .ts --ignore-path .gitignore src/",
     "eslint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockpluschrome/ ./",
+    "test:end-to-end": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
+    "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
+
+    "dist": "npm run $ create.dist",
+    "eslint": "eslint --ext .ts,.js,.mjs,.cjs --ignore-path .gitignore ./",
     "eslint:adblockpluschrome": "eslint --ext .js,.cjs --ignore-path .gitignore adblockpluschrome/",
     "start": "http-server ./dist/devenv/local/",
     "test": "npm run $ unit",
     "csv-export": "node build/locale-sync/csv/main.js -e",
     "csv-import": "node build/locale-sync/csv/main.js -i && node build/locale-sync/normalize.js",
+
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
-    "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
-    "test:end-to-end": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
     "test:end-to-end-mv3": "MANIFEST_VERSION=3 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.mv3.js --suite",
     "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && wdio run local-test.conf.js --suite",
     "test:end-to-end-old-browsers": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run old-browsers-test.conf.js --suite",
     "test:generate-and-open-report": "allure generate test/end-to-end/allure-results && allure open",
-    "test:generate-report": "allure generate test/end-to-end/allure-results",
-    "postinstall": "npx @adblockinc/rules adblockplus"
+    "test:generate-report": "allure generate test/end-to-end/allure-results"
   },
   "$": {
+    "build": {
+      "devenv": {
+        "chrome": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.devenv chrome 2; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.devenv chrome 3; fi"
+        },
+        "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.devenv firefox 2; fi"
+      },
+      "release": {
+        "chrome": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
+        },
+        "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.release firefox 2; fi"
+      }
+    },
     "create": {
+      "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "dist": {
         "icons": "node build/icons-generation/index.js"
-      }
+      },
+      "release": "gulp build -c release -t $1 -m $2 --unhandled-rejections=strict"
     },
     "crowdin": {
       "download-translations": [

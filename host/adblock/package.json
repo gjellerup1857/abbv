@@ -13,31 +13,59 @@
   },
   "homepage": "https://gitlab.com/adblockinc/ext/adblock/adblock/-/blob/main/README.md",
   "scripts": {
-    "build:dev": "npx gulp devenv",
-    "build:dev:ff": "npx gulp devenv -m 2 -t firefox",
-    "build:dev:chrome": "npx gulp devenv -m 3 -t chrome",
-    "build:dev:edge": "npx gulp devenv -m 2 -t chrome",
-    "build:dev:all": "npx gulp devenv -m 3 -t chrome && npx gulp devenv -m 2 -t firefox && npx gulp devenv -m 2 -t chrome",
-    "build:release": "npx gulp build",
-    "build:release:ff": "npx gulp build -m 2 -t firefox",
-    "build:release:chrome": "npx gulp build -m 3 -t chrome",
-    "build:release:edge": "npx gulp build -m 2 -t chrome",
-    "build:release:all": "npx gulp build -m 3 -t chrome && npx gulp build -m 2 -t chrome && npx gulp build -m 2 -t firefox",
-    "build:release:beta": "npx gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
-    "build:source": "npx gulp source",
+    "build": "npm run $ build.devenv",
+    "build:release": "npm run $ build.release",
+    "lint": "npm run eslint && npm run prettier && npm run html-hint",
+    "test": "",
+    "test:end-to-end": "",
+
+    "$": "npm-dollar",
+    "build:source": "gulp source",
+    "postinstall": "npx @adblockinc/rules adblock",
+    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --",
+    "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
+
+    "build:dev:ff": "gulp devenv -m 2 -t firefox",
+    "build:dev:chrome": "gulp devenv -m 3 -t chrome",
+    "build:dev:edge": "gulp devenv -m 2 -t chrome",
+    "build:dev:all": "gulp devenv -m 3 -t chrome && gulp devenv -m 2 -t firefox && gulp devenv -m 2 -t chrome",
+    "build:release:ff": "gulp build -m 2 -t firefox",
+    "build:release:chrome": "gulp build -m 3 -t chrome",
+    "build:release:edge": "gulp build -m 2 -t chrome",
+    "build:release:all": "gulp build -m 3 -t chrome && gulp build -m 2 -t chrome && gulp build -m 2 -t firefox",
+    "build:release:beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
+    "eslint": "eslint --ext .js,.mjs adblock-betafish/ src/",
+    "eslint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
+    "eslint:standard": "eslint --ignore-path .gitignore src/",
     "json-bundle": "node build/jsonBundle.cjs",
-    "lint": "eslint --ext .js,.mjs adblock-betafish/ src/",
-    "lint:standard": "eslint --ignore-path .gitignore src/",
-    "lint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
-    "lint-fix": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
-    "lint:standard-fix": "eslint --fix --ignore-path .gitignore src/",
-    "lint:legacy-fix": "eslint --fix --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
+    "eslint-fix": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
+    "eslint:standard-fix": "eslint --fix --ignore-path .gitignore src/",
+    "eslint:legacy-fix": "eslint --fix --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
     "prettier": "prettier --check .",
     "prettier-fix": "prettier --write .",
-    "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
-    "postinstall": "npx @adblockinc/rules adblock",
-    "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
-    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --"
+    "html-hint": "htmlhint adblock-betafish/ -R ./rules/"
+  },
+  "$": {
+    "build": {
+      "devenv": {
+        "chrome": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.devenv chrome 2; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.devenv chrome 3; fi"
+        },
+        "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.devenv firefox 2; fi"
+      },
+      "release": {
+        "chrome": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
+        },
+        "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.release firefox 2; fi"
+      }
+    },
+    "create": {
+      "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
+      "release": "gulp build -c release -t $1 -m $2 --unhandled-rejections=strict"
+    }
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
@@ -87,6 +115,7 @@
     "npm": "9"
   },
   "dependencies": {
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#f96884d68305c9f388d13492ca6134de57fa4757",
     "@eyeo/ext-ui-components": "file:../../ui-components",
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#c72ec5a7e52a659185f13bf3798de50ad23d08bf",
     "@eyeo/snippets": "1.5.0",
@@ -103,6 +132,7 @@
     "merge-stream": "2.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "npm-dollar": "2.2.1",
     "rollup-plugin-cleanup": "3.2.1",
     "ts-loader": "9.3.1",
     "typescript": "4.7.3",
