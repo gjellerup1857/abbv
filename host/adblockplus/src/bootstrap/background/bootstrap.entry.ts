@@ -45,6 +45,7 @@ import { start as startYTWallDetection } from "../../yt-wall-detection/backgroun
 import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startUpdateCampaign } from "../../update-campaign/background";
 import { start as startPages } from "../../core/pages/background";
+import * as Sentry from "@sentry/browser";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -53,8 +54,12 @@ function reportAndLogError(e: Error): void {
 
 async function bootstrap(): Promise<void> {
   startErrorReporting();
+  console.log("Sending message");
+  Sentry.captureMessage("Something went wrong");
+  Sentry.captureException(new Error("This is my fake error message"));
   try {
     startPages();
+    console.log("Sending message");
     startTabSessionStorage();
     startDevTools();
     startDebug();

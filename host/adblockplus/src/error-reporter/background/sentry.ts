@@ -20,6 +20,8 @@ import {
   defaultStackParser,
   getDefaultIntegrations,
   makeFetchTransport,
+  captureException,
+  captureMessage,
   type ErrorEvent as SentryErrorEvent,
   Scope
 } from "@sentry/browser";
@@ -97,7 +99,7 @@ export async function initialize(
       }
     },
     integrations,
-    sampleRate: sampleRate ?? 0.01,
+    sampleRate: 1,
     beforeSend(event) {
       console.warn("Event", event);
       lastEvent = event;
@@ -108,7 +110,9 @@ export async function initialize(
   scope = new Scope();
   scope.setClient(client);
   client.init();
-
+  console.log("Sending message");
+  captureMessage("Something went wrong");
+  captureException(new Error("This is my fake error message"));
   self.addEventListener("error", (event) => {
     reportError(event.error);
   });
