@@ -16,13 +16,13 @@
     "$": "npm-dollar",
     "build:source": "gulp source",
     "postinstall": "npx @adblockinc/rules adblockplus",
+    "eslint": "npm run $ lint.js",
     "eslint:standard": "eslint --ext .ts --ignore-path .gitignore src/",
     "eslint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockpluschrome/ ./",
     "test:end-to-end": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
     "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
 
     "dist": "npm run $ create.dist",
-    "eslint": "npm run $ lint.js",
     "eslint:adblockpluschrome": "eslint --ext .js,.cjs --ignore-path .gitignore adblockpluschrome/",
     "start": "http-server ./dist/devenv/local/",
     "test": "npm run $ unit",
@@ -73,7 +73,7 @@
     "lint": {
       "html": "prettier -c --parser html ./src/**/*.html",
       "css": "stylelint ./src/**/*.css --ignore-path .gitignore",
-      "js": "eslint --ext .ts,.js,.mjs,.cjs --ignore-path .gitignore ./",
+      "js": "eslint --ext .cjs,.js,.mjs,.ts --ignore-path .gitignore ./",
       "ts": "tsc --noEmit",
       "locale": "node build/locale-linter ./locale/**/*.json"
     },

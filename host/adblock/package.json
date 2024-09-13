@@ -21,6 +21,9 @@
 
     "$": "npm-dollar",
     "build:source": "gulp source",
+    "eslint": "npm run $ lint.js",
+    "eslint:legacy": "npm run $ lint.js.legacy",
+    "eslint:standard": "npm run $ lint.js.standard",
     "postinstall": "npx @adblockinc/rules adblock",
     "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
@@ -34,9 +37,6 @@
     "build:release:edge": "npm run $ build.release.chrome.mv2",
     "build:release:all": "npm run build:release",
     "build:release:beta": "npm run $ build.release.chrome.beta",
-    "eslint": "npm run $ lint.js",
-    "eslint:legacy": "eslint --ext .js,.mjs --ignore-path .gitignore --ignore-pattern /adblockplusui/ adblock-betafish/",
-    "eslint:standard": "eslint --ignore-path .gitignore src/",
     "json-bundle": "node build/jsonBundle.cjs",
     "eslint-fix": "npm run $ lint-fix.js",
     "eslint:standard-fix": "eslint --fix --ignore-path .gitignore src/",
@@ -69,7 +69,10 @@
     },
     "lint": {
       "html": "htmlhint adblock-betafish/ -R ./rules/",
-      "js": "eslint --ext .js,.mjs adblock-betafish/ src/",
+      "js": {
+        "legacy": "eslint --ext .js,.mjs,.ts adblock-betafish/ src/",
+        "standard": "eslint --ext .ts adblock-betafish/ src/"
+      },
       "prettier": "prettier --check ."
     },
     "lint-fix": {
