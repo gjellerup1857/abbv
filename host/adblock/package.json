@@ -16,7 +16,7 @@
     "build": "npm run $ build.devenv",
     "build:release": "npm run $ build.release",
     "lint": "npm run $ lint",
-    "test": "",
+    "test": "echo 'No unit test setup yet'",
     "test:end-to-end": "",
 
     "$": "npm-dollar",

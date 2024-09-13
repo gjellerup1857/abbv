@@ -10,7 +10,7 @@
     "build": "npm run $ build.devenv",
     "build:release": "npm run $ build.release",
     "lint": "npm run $ lint",
-    "test": "",
+    "test": "npm run $ test.unit",
     "test:end-to-end": "",
 
     "$": "npm-dollar",
@@ -25,7 +25,6 @@
     "dist": "npm run $ create.dist",
     "eslint:adblockpluschrome": "eslint --ext .js,.cjs --ignore-path .gitignore adblockpluschrome/",
     "start": "http-server ./dist/devenv/local/",
-    "test": "npm run $ unit",
     "csv-export": "node build/locale-sync/csv/main.js -e",
     "csv-import": "node build/locale-sync/csv/main.js -i && node build/locale-sync/normalize.js",
 
@@ -77,9 +76,11 @@
       "ts": "tsc --noEmit",
       "locale": "node build/locale-linter ./locale/**/*.json"
     },
-    "unit": {
-      "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
-      "standard": "jest"
+    "test": {
+      "unit": {
+        "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
+        "standard": "jest"
+      }
     },
     "xtm": {
       "create": "node build/locale-sync/xtm --create",
