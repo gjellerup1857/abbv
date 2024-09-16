@@ -108,10 +108,10 @@ Prerequisite: Do the release builds as described in
 Local run:
 
 ```sh
-MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
+npm run test:end-to-end {2|3} {chrome|firefox|edge}
 ```
 
-By default browsers run headless. Setting the enviornment variable
+By default browsers run headless. Setting the environment variable
 `FORCE_HEADFUL=true` will trigger a headful run instead.
 
 Docker run:

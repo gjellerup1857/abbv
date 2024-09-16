@@ -76,8 +76,9 @@
     },
     "test": {
       "end-to-end": [
-        "npm run test:end-to-end:build",
-        "mocha test/end-to-end/runner.js --timeout 100000 --"
+        "export BROWSER=\"$1\"",
+        "export MANIFEST_VERSION=\"$2\"",
+        "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000"
       ]
     }
   },

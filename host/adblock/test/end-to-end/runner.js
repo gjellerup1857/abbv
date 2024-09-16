@@ -56,8 +56,16 @@ async function extractExtension(browser) {
   return unpackedPath;
 }
 
+function getBrowserName() {
+  if (process.env.BROWSER === "chrome") {
+    return "chromium";
+  }
+
+  return process.env.BROWSER || "chromium";
+}
+
 async function startBrowser() {
-  const browser = process.env.BROWSER || "chromium";
+  const browser = getBrowserName();
   const version = "latest";
 
   const { versionNumber } = await BROWSERS[browser].installBrowser(version);

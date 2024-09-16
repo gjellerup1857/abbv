@@ -26,9 +26,9 @@
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
     "test:end-to-end": "npm run $ test.end-to-end.mv2",
     "test:end-to-end-local": "npm run $ test.end-to-end.local",
-    "test:end-to-end-mv3": "npm run $ test.end-to-end.chrome.mv3",
-    "test:end-to-end-old-browsers": "npm run $ test.end-to-end.chrome.mv2",
-    "test:end-to-end:build": "npm run $ test.end-to-end-prepare",
+    "test:end-to-end-mv3": "npm run $ test.end-to-end.mv3",
+    "test:end-to-end-old-browsers": "npm run $ test.end-to-end.mv2-old",
+    "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
     "test:generate-and-open-report": "allure generate test/end-to-end/allure-results && allure open",
     "test:generate-report": "allure generate test/end-to-end/allure-results"
   },
@@ -77,26 +77,34 @@
     "test": {
       "end-to-end": {
         "local": [
+          "export BROWSER=\"$1\"",
+          "export MANIFEST_VERSION=\"$2\"",
           "npm run test:end-to-end:build",
           "cd test/end-to-end",
-          "wdio run local-test.conf.js --suite"
+          "wdio run local-test.conf.js --suite \"$3\""
         ],
         "mv2": [
-          "MANIFEST_VERSION=2 npm run test:end-to-end:build",
+          "export BROWSER=\"$1\"",
+          "export MANIFEST_VERSION=2",
+          "npm run test:end-to-end:build",
           "cd test/end-to-end",
-          "wdio run test.conf.js --suite",
-          "wdio run old-browsers-test.conf.js --suite"
+          "wdio run test.conf.js --suite \"$3\""
+        ],
+        "mv2-old": [
+          "export BROWSER=\"$1\"",
+          "export MANIFEST_VERSION=2",
+          "npm run test:end-to-end:build",
+          "cd test/end-to-end",
+          "wdio run old-browsers-test.conf.js --suite \"$3\""
         ],
         "mv3": [
-          "MANIFEST_VERSION=3 npm run test:end-to-end:build",
+          "export BROWSER=\"$1\"",
+          "export MANIFEST_VERSION=3",
+          "npm run test:end-to-end:build",
           "cd test/end-to-end",
-          "wdio run test.conf.mv3.js --suite"
+          "wdio run test.conf.mv3.js --suite \"$3\""
         ]
       },
-      "end-to-end-prepare": [
-        "rm -rf allure-report test/end-to-end/allure-results",
-        "node test/end-to-end/helper-extension/build.mjs"
-      ],
       "unit": {
         "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
         "standard": "jest"

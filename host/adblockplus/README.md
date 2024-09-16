@@ -144,7 +144,7 @@ Example:
 
 ```sh
 npm run build:release {chrome|firefox} {2|3}
-MANIFEST_VERSION={2|3} BROWSER={chrome|firefox|edge} npm run test:end-to-end-local all
+npm run test:end-to-end-local {chrome|firefox|edge} {2|3} all
 ```
 
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
