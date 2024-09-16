@@ -19,7 +19,7 @@ import webdriver from "selenium-webdriver";
 
 import { getDisplayedElement, openNewTab, findUrl } from "./driver.js";
 
-const { By } = webdriver;
+const { By, Key } = webdriver;
 
 export const installUrl = "getadblock.com/en/installed";
 
@@ -42,7 +42,7 @@ export async function initOptionsCustomizeTab(driver, optionsHandle) {
   await driver.findElement(By.css('[href="#customize"]')).click();
 }
 
-export async function addCustomFilter(driver, filterText) {
+export async function setCustomFilters(driver, filters) {
   const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
 
   // Remove textarea content
@@ -62,7 +62,10 @@ export async function addCustomFilter(driver, filterText) {
   });
 
   const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
-  await filtersAdvancedElem.sendKeys(filterText);
+  for (const filter of filters) {
+    await filtersAdvancedElem.sendKeys(filter);
+    await filtersAdvancedElem.sendKeys(Key.RETURN);
+  }
   await saveButton.click();
 }
 

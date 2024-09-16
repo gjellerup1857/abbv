@@ -83,6 +83,13 @@ module.exports = function()
     ({optionsUrl} = this.test.parent.parent);
   });
 
+  beforeEach(async function()
+  {
+    // This filter no longer exists in easylist
+    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
+    await addFiltersToABP("/pop_ads.js");
+  });
+
   it("uses sitekey to allowlist content", async function()
   {
     if (process.env.MANIFEST_VERSION === "3")

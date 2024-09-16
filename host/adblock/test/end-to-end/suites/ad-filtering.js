@@ -19,7 +19,7 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import { findUrl, getDisplayedElement, openNewTab, waitForNotDisplayed } from "../utils/driver.js";
-import { initOptionsCustomizeTab, addCustomFilter } from "../utils/page.js";
+import { initOptionsCustomizeTab, setCustomFilters } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
@@ -108,6 +108,10 @@ export default () => {
   it("blocks and hides ads", async function () {
     const { driver } = this;
 
+    // This filter no longer exists in easylist
+    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
+    await addFiltersToAdBlock(driver, "/pop_ads.js");
+
     await openNewTab(driver, blockHideUrl);
     const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
     expect(await popadsElem.getText()).toEqual("pop_ads.js was blocked");
@@ -128,7 +132,7 @@ export default () => {
     expect(await snippetElem.getText()).toEqual("This should be hidden by a snippet");
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await addCustomFilter(driver, filter);
+    await setCustomFilters(driver, [filter]);
 
     await findUrl(driver, url);
     await waitForNotDisplayed(driver, "#snippet-filter");
@@ -136,10 +140,10 @@ export default () => {
 
   it("allowlists websites", async function () {
     const { driver } = this;
-    const filter = "@@adblockinc.gitlab.io$document";
+    const filters = ["@@adblockinc.gitlab.io$document", "/pop_ads.js"];
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await addCustomFilter(driver, filter);
+    await setCustomFilters(driver, filters);
 
     await openNewTab(driver, blockHideUrl);
     await driver.wait(
@@ -169,7 +173,9 @@ export default () => {
     );
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await addCustomFilter(driver, "");
+    // This filter no longer exists in easylist
+    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
+    await setCustomFilters(driver, ["/pop_ads.js"]);
 
     await findUrl(driver, blockHideUrl);
     await driver.wait(
