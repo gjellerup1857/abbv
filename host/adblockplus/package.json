@@ -43,7 +43,7 @@
       },
       "release": {
         "chrome": {
-          "development": "gulp build -c development -t chrome -m 3 --unhandled-rejections=strict",
+          "devbuild": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then gulp build -c development -t chrome -m 3 --unhandled-rejections=strict; fi",
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
         },
