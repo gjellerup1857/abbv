@@ -15,12 +15,10 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
-    "build:dev:all": "npm run build",
     "build:dev:chrome": "npm run $ build.devenv.chrome.mv3",
     "build:dev:edge": "npm run $ build.devenv.chrome.mv2",
     "build:dev:ff": "npm run $ build.devenv.firefox",
     "build:release": "npm run $ build.release",
-    "build:release:all": "npm run build:release",
     "build:release:beta": "npm run $ build.release.chrome.beta",
     "build:release:chrome": "npm run $ build.release.chrome.mv3",
     "build:release:edge": "npm run $ build.release.chrome.mv2",
@@ -52,8 +50,8 @@
         "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.devenv firefox 2; fi"
       },
       "release": {
-        "beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta",
         "chrome": {
+          "beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict",
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
         },
