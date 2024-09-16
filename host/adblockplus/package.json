@@ -9,6 +9,7 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
+    "build:local": "npm run $ create.devenv local 2",
     "build:release": "npm run $ build.release",
     "build:source": "gulp source",
     "csv-export": "node build/locale-sync/csv/main.js -e",
@@ -20,7 +21,7 @@
     "eslint:standard": "eslint --ext .ts --ignore-path .gitignore src/",
     "lint": "npm run $ lint",
     "postinstall": "npx @adblockinc/rules adblockplus",
-    "start": "http-server ./dist/devenv/local/",
+    "start": "http-server ./dist/devenv/local-mv2/",
     "test": "npm run $ test.unit",
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
     "test:end-to-end": "npm run $ test.end-to-end.mv2",

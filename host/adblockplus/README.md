@@ -267,19 +267,17 @@ In order to build the extension you need to first
 the following command for the type of build you'd like to generate:
 
 ```sh
-npm run build {chrome|firefox|local} {2|3}
-npm run build:release {chrome|firefox|local} {2|3}
+npm run build {chrome|firefox} {2|3}
+npm run build:release {chrome|firefox} {2|3}
+npm run build:local
 npm run build:source
 ```
-
-Targets:
-- **chrome**: Chromium-based browsers
-- **firefox**: Firefox
-- **local**: [Local test environment](#testing)
 
 **`build`:** Creates unpacked extension in _dist/devenv/\<target\>/_. It
 can be loaded under _chrome://extensions/_ in Chromium-based browsers, and under
 _about:debugging_ in Firefox.
+
+**`build:local`:** Creates [local test environment](#testing).
 
 **`build:release`:** Creates the following extension build files in
 _dist/release/_ that can be published to the various extension stores:
