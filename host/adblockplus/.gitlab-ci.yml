@@ -300,12 +300,12 @@ comp:MV2:firefox:oldest:
 unit:legacy:
   extends: .unit
   script:
-    - npm run -w $[[ inputs.workspacepath ]] $ unit.legacy
+    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.legacy
 
 unit:standard:
   extends: .unit
   script:
-    - npm run -w $[[ inputs.workspacepath ]] $ unit.standard
+    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.standard
 
 ################################################################################
 # UI tests
