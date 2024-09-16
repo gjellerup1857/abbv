@@ -15,9 +15,9 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
-    "build:dev:chrome": "npm run $ build.devenv.chrome.mv3",
-    "build:dev:edge": "npm run $ build.devenv.chrome.mv2",
-    "build:dev:ff": "npm run $ build.devenv.firefox",
+    "build:chrome": "npm run $ build.devenv.chrome.mv3",
+    "build:edge": "npm run $ build.devenv.chrome.mv2",
+    "build:ff": "npm run $ build.devenv.firefox",
     "build:release": "npm run $ build.release",
     "build:release:beta": "npm run $ build.release.chrome.beta",
     "build:release:chrome": "npm run $ build.release.chrome.mv3",
