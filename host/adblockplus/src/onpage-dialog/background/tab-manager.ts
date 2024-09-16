@@ -380,16 +380,18 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.rejected;
   }
 
-  // Ignore and dismiss dialog if the given tab already contains a dialog
-  if (await assignedDialogs.has(tabId)) {
+  const stats = getStats(dialog.id);
+  const shouldDialogBeShown = await shouldBeShown(tab, dialog, stats);
+
+  // Ignore and dismiss dialog that should be shown in a given tab,
+  // if such tab already contains a dialog
+  if (shouldDialogBeShown && (await assignedDialogs.has(tabId))) {
     logger.debug("[onpage-dialog]: Tab already contains dialog");
     return ShowOnpageDialogResult.rejected;
   }
 
-  const stats = getStats(dialog.id);
-
   // Ignore if on-page dialog should not be shown for this tab
-  if (!(await shouldBeShown(tab, dialog, stats))) {
+  if (!shouldDialogBeShown) {
     logger.debug("[onpage-dialog]: Don't show");
     return ShowOnpageDialogResult.ignored;
   }
