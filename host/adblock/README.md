@@ -59,7 +59,7 @@ development environment. For that run one of the following commands:
 - `npm run build`\
   _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
 
-This will create a _devenv.\*_ directory in the project directory. You can load
+This will create a _dist/devenv/\*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
 Chromium-based browsers, and under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development

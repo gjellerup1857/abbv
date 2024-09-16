@@ -56,9 +56,9 @@ unpacked loaded in development mode for testing (same as devenv builds below).
 To simplify the process of testing your changes you can create an unpacked
 development environment. For that run one of the following command:
 
-    npm run -w host/adblock build:dev:firefox
+    npm run -w host/adblock build firefox 2
 
-This will create a _host/adblock/devenv.firefox_ directory in the project directory. You can load
+This will create a _host/adblock/devenv/firefox-mv2_ directory in the project directory. You can load
 the directory as an unpacked extension under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development
 environment, and reload the extension in the browser.

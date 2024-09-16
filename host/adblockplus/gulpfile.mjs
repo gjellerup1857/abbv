@@ -61,7 +61,7 @@ argumentParser.addArgument("--partial", {
 
 const args = argumentParser.parseKnownArgs()[0];
 
-const targetDir = `./dist/devenv/${args.target}`;
+const targetDir = `./dist/devenv/${args.target}-mv${args.manifest_version}`;
 
 const buildTasks = [
   tasks.buildUI,
