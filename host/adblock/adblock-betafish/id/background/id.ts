@@ -16,9 +16,9 @@
  */
 import * as browser from "webextension-polyfill";
 
-import { chromeStorageSetHelper } from "../../utilities/background/bg-functions";
-
 const userIdStorageKey = "userid";
+
+let userId: string = "";
 
 /**
  * Generates a 16 character random string
@@ -27,8 +27,10 @@ const userIdStorageKey = "userid";
  */
 // eslint-disable-next-line import/prefer-default-export
 export async function getUserId(): Promise<string> {
+  if (userId) {
+    return userId;
+  }
   const response = await browser.storage.local.get(userIdStorageKey);
-  let userId = "";
   if (!response[userIdStorageKey]) {
     const timeSuffix = Date.now() % 1e8; // 8 digits from end of
     // timestamp
@@ -39,7 +41,7 @@ export async function getUserId(): Promise<string> {
       result.push(alphabet[choice]);
     }
     userId = result.join("") + timeSuffix;
-    chromeStorageSetHelper(userIdStorageKey, userId);
+    await browser.storage.local.set({ [userIdStorageKey]: userId });
   } else {
     userId = response[userIdStorageKey];
   }
