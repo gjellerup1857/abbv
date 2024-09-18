@@ -1,5 +1,8 @@
 # Unreleased
 
+- We no longer test the MV2 build of our extensions on Chrome 129 and later,
+  since it disables MV2 extensions by defaults.
+
 # 4.7 - 2024-09-04
 
 - Upgraded to SDK version 1.12.0

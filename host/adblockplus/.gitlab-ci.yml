@@ -259,10 +259,10 @@ comp:MV3:edge:latest:
     EXTENSION: adblockplus-chrome-*-mv2.zip
     MANIFEST: mv2
 
-comp:MV2:chromium:latest:
+comp:MV2:chromium:last-mv2-version:
   extends: .compliance:MV2
   variables:
-    BROWSER: chromium latest
+    BROWSER: chromium 128.0.6613.0
 
 comp:MV2:edge:latest:
   extends: .compliance:MV2
