@@ -79,10 +79,9 @@ class OneClickAllowAdsTestPage extends BasePage
     return $(".fc-close");
   }
 
-  async isOneClickGFCPaywallDisplayed(reverse = false)
+  get whichExtensionMessage()
   {
-    return await this.
-      waitForDisplayedNoError(this.oneClickGFCPaywall, reverse, 2000);
+    return $("//div[text()='Which of these extensions do you have?']");
   }
 
   async clickOneClickButton(timeoutMs = 1500)
@@ -93,6 +92,20 @@ class OneClickAllowAdsTestPage extends BasePage
   async clickDismissPaywallX(timeoutMs = 1000)
   {
     await this.waitForEnabledThenClick(this.oneClickDismissPaywallX, timeoutMs);
+  }
+
+  async isOneClickGFCPaywallDisplayed(reverse = false)
+  {
+    return await this.
+      waitForDisplayedNoError(this.oneClickGFCPaywall, reverse, 2000);
+  }
+
+  async isWhichExtensionMessageDisplayed(reverse = false)
+  {
+    const frameElement = await $("#fc-whitelist-iframe");
+    await browser.switchToFrame(frameElement);
+    return await this.
+      waitForDisplayedNoError(this.whichExtensionMessage, reverse, 2000);
   }
 }
 
