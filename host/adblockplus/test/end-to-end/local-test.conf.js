@@ -28,8 +28,6 @@ const {suites} = require("./suites.js");
 const {allureEnabled, browserName, screenshotsPath, releasePath, chromeBuild,
        helperExtensionUnpackedPath} = helpers.testConfig;
 
-helpers.localRunChecks();
-
 const browserCapabilities = [];
 const chromiumOptions = {
   args: [

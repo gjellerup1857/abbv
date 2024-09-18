@@ -138,14 +138,12 @@ browsers) or they can be executed using [LambdaTest](https://automation.lambdate
 
 To run the end-to-end tests locally:
 
-- Create a new .env file based on the [.env.e2e.template](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/.env.e2e.template?ref_type=heads).
 - Generate the [release builds](#building-the-extension) of the extension.
 - Run the test:end-to-end-local script.
 
 Example:
 
 ```sh
-cp .env.e2e.template .env.e2e
 npm run build:release {chrome|firefox} -- --manifest-version {2|3}
 MANIFEST_VERSION={2|3} BROWSER={chrome|firefox|edge} npm run test:end-to-end-local all
 ```
@@ -157,9 +155,10 @@ headful mode instead of headless.
 
 To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
 
-- Create a new .env file with your Lambda credentials. You can use the
-[.env.e2e.template](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/.env.e2e.template?ref_type=heads)
-provided as a guide.
+- Create a new .env.e2e file with your Lambda credentials. You can use the
+[.env.e2e.defaults](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/.env.e2e.defaults?ref_type=heads)
+provided as a guide. The values in `.env.e2e.defaults` will be used as default
+values, so you can choose to only copy the values you wish to override.
 - Generate the [release builds](#building-the-extension) of the extension.
 - Additional steps are needed for running the tests with MV3 version of the extension:
   - Install the axios package globally: `npm install -g axios`

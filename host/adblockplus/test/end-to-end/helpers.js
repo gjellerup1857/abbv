@@ -17,7 +17,7 @@
 
 "use strict";
 
-require("dotenv").config({path: "../../.env.e2e"});
+require("dotenv").config({path: ["../../.env.e2e", "../../.env.e2e.defaults"]});
 const fs = require("fs");
 const path = require("path");
 
@@ -599,19 +599,12 @@ async function getTabId({title, urlPattern})
   return tabId;
 }
 
-function localRunChecks()
-{
-  checkEnvFileExists();
-}
-
 function lambdatestRunChecks()
 {
   if (isGitlab)
   {
     return;
   }
-
-  checkEnvFileExists();
 
   if (!process.env.LT_USERNAME || !process.env.LT_ACCESS_KEY)
   {
@@ -621,20 +614,6 @@ Please set the following environment variables in the .env.e2e file:
 LT_USERNAME
 LT_ACCESS_KEY
 https://www.lambdatest.com/support/docs/using-environment-variables-for-authentication-credentials/
------------------------------------------------------------------
-    `);
-    process.exit(1);
-  }
-}
-
-function checkEnvFileExists()
-{
-  if (!fs.existsSync("../../.env.e2e"))
-  {
-    console.error("\x1b[33m%s\x1b[0m", `
------------------------------------------------------------------
-Please create a .env.e2e file in the root of the project.
-You can use the .env.e2e.template file as a template.
 -----------------------------------------------------------------
     `);
     process.exit(1);
@@ -673,7 +652,7 @@ async function uninstallExtension()
 
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
-  executeAsyncScript, testConfig, localRunChecks,
+  executeAsyncScript, testConfig,
   enablePremiumByMockServer, wakeMockServer, lambdatestRunChecks,
   getChromiumExtension, getFirefoxExtension, getHelperExtension,
   getCurrentDate, getTabId, enablePremiumByUI,

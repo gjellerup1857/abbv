@@ -19,7 +19,6 @@ COPY . adblockplus/
 WORKDIR adblockplus/
 
 RUN npm install
-RUN cp .env.e2e.template .env.e2e
 # EDGDEDRIVER_PATH is used by `local-test.conf.js`
 RUN if [ "$BROWSER" = "edge" ]; then \
   echo EDGDEDRIVER_PATH=$(find / -path '*linux64*msedgedriver') >> .env.e2e; \
