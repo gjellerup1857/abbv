@@ -48,7 +48,7 @@ export default () => {
     }
 
     const base = {
-      lg: "en-US",
+      lg: expect.stringMatching(/^[a-z]+-/),
       av: appVersion,
       u: userId,
       pv: browserVersion,

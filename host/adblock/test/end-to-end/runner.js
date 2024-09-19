@@ -108,11 +108,17 @@ async function getExtensionInfo(driver) {
 
 describe("AdBlock end-to-end tests", function () {
   before(async function () {
+    // This section downloads the browser, which could take a long time
+    // depending on the internet connection speed. Best to disable the normal
+    // timeout for this bit.
+    this.timeout(0);
     await fs.promises.mkdir(screenshotsPath, { recursive: true });
 
     [this.driver, this.browserName, this.fullBrowserVersion, this.majorBrowserVersion] =
       await startBrowser();
+  });
 
+  before(async function () {
     const { handle } = await findUrl(this.driver, "options.html");
     setOptionsHandle(handle);
 
