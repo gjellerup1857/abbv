@@ -4,6 +4,10 @@
   since it disables MV2 extensions by defaults.
 - Enable user counting functionality
 
+# 4.7.1 - 2024-09-19
+
+This release contains only minor updates and under-the-hood changes.
+
 # 4.7 - 2024-09-04
 
 - Upgraded to SDK version 1.12.0
