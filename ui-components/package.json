@@ -9,11 +9,10 @@
     "type": "module",
     "types": "dist/types/index.d.ts",
     "scripts": {
-        "dev": "vite",
+        "dev": "storybook dev -p 6006",
         "build": "vite build && npx tsc",
         "test": "vitest",
         "lint": "eslint .",
-        "preview": "vite preview",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"
     },

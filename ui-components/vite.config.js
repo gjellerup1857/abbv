@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 
@@ -7,6 +8,9 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
+      input: {
+         app: 'index.jsx'
+      },
       output: {
         // Customizing the output filename for JavaScript
         entryFileNames: 'index.js',

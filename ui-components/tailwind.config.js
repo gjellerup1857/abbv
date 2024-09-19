@@ -6,7 +6,6 @@ export default {
     "./styles/**/*.{js,ts,jsx,tsx}",
 
     // Tailwind support for Storybook and Docs directories
-    "./website/**/*.{js,ts,jsx,tsx}",
     "./.storybook/**/*.{js,jsx,ts,tsx}",
     "./docs/**/*.{js,jsx,ts,tsx}",
 

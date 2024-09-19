@@ -358,8 +358,8 @@ export const Basic = {
 }
 
 /**
- * This description will appear under the ActiveComponent 
- * title in Storybook.This component will not be shown in theme 
+ * This description will appear under the ActiveComponent
+ * title in Storybook.This component will not be shown in theme
  * variations, like the Basic.
  */
 export const ActiveComponent = {
