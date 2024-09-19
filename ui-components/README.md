@@ -146,31 +146,77 @@ These components should not rely on functions from the core utilities or manage 
 
 If your component is 1, 2, or 3 solution and it is expected to be used as a building block for more complex feature components, it belongs here.
 
-## Creating a Component
-
-### File structure
+## File structure
 
 This repo is organized to serve two parallel purposes: to contain the components ingested by the host directory (and their tests) and to document and display these components. The structure of the repo reflects both
 
 ```
-/
- - /components (here we put the components)
- - /styles (css files)
- - /website (document and display components)
- - /tests (test components)
+├── components <------------------------- // Add your components here
+│   ├── MyComponent.jsx
+│   ├── index.jsx
+├── tests <------------------------------ // Tests go here
+│   ├── MyComponent.test.jsx
+├── docs
+│   ├── assets <--------------------- // Assets go here e.g. images
+│   └── components <----------------- // Storybook components go here
+│       └── MyComponent.stories.jsx
+└── styles
+    ├── adblock-color-themes.css <------- // Adblock color themes
+    ├── extension-theme-abp.css <-------- // ABP theme specific styles
+    └── extension-theme-adblock.css <---- // Adblock theme specific styles
 ```
 
-### Generating Types
+## Component Development Workflow
 
-Types are automatically generated from the JSDoc comments added to the component source files. Therefore, it's essential to provide thorough documentation. The types will be created during the build process when running `npm run build`.
+When developing a new component, follow these steps to ensure consistency, proper documentation, and testing coverage:
 
-### Creating an Example
+1. [Creating a new Component](#creating-a-component)
+2. [Add JSDoc and PropTypes](#add-jsdoc-and-proptypes)
+3. [Write tests](#write-tests)
+4. [Add to Storybook](#add-to-storybook)
+5. [Add to Host/Fragment](#add-to-host)
 
-Until we decide about adding a library or otherwise more structured component showcase (see [EXT-171](https://eyeo.atlassian.net/browse/EXT-171)), add example components in `ui-components/website`.
+### Creating a new Component
 
-These should, at minimum, display the various themed views and list the expected props.
+Create your component inside the `/components` directory.
 
-### Tests
+Ensure the component follows the project’s architecture and style guidelines.
+
+```jsx
+// components/MyComponent.jsx
+import PropTypes from 'prop-types';
+
+/**
+ * This is my brand new awesome component.
+ *
+ * @param {object} props - The component props.
+ * @param {string} text - The text to display.
+ * @param {boolean} [isActive=false] - Whether the component is active.
+ * @returns {JSX.Element}
+ */
+export default function MyComponent(text, isActive = false) {
+  return (
+    <div className={`bg-theme-primary ${isActive ? 'text-theme-accent-dark' : 'text-theme-secondary'}`}>
+      {text}
+    </div>
+  );
+}
+
+MyComponent.propTypes = {
+  text: PropTypes.string.isRequired,
+  isActive: PropTypes.bool,
+};
+```
+
+### Add JSDoc and PropTypes
+
+All components should have JSDoc comments and PropTypes defined. This is essential for generating types and documentation.
+
+JSDoc is used for generating types at the build time and PropTypes are used by Storybook in order to display the component's required props and their types.
+
+> **Important:** Don't forget to add the `@params {object} props - The component props.` to the JSDoc comment, otherwise the types won't be generated properly.
+
+### Write tests
 
 All components should have unit tests associated with them. These can be placed in the `/tests` directory and named `Component.test.jsx`. (Note the `.jsx` — plain `.js` will throw.)
 
@@ -238,7 +284,7 @@ renderButton({ kind: 'text' });
 renderButton({ icon: <Icon /> });
 ```
 
-##### Put values you are asserting against into variables as opposed to defining inline
+> **Note:** Put values you are asserting against into variables as opposed to defining inline
 
 Not only can this save us from repetition and uncaught mistakes, but it also makes it easier for readers of tests to understand the meaning of any given value. Remember: tests are great forms of documentation!
 
@@ -276,9 +322,72 @@ describe('My cool component disabled', () => {
 
 ```
 
-##### Do not put too many expectations in one function
+> **Note:** Do not put too many expectations in one function
 
 When a test block fails, the fewer assertions, the easier it is to understand what is failing. It is also easier to write a descriptive test name.
+
+### Add to Storybook
+
+Create a new file names `MyComponent.stories.jsx` in the `/docs/components` directory.
+
+```jsx
+// docs/components/MyComponent.stories.jsx
+import { MyComponent } from '@components';
+import { getArgsFromJSDoc } from '../helpers';
+
+export default {
+  // The <Group>/<Title> of the component to show in Storybook sidebar
+  title: 'Components/MyComponent',
+  component: MyComponent,
+  // Required for auto-populating props description from JSDoc.
+  argTypes: getArgsFromJSDoc(MyComponent),
+  args: {
+    // Props you want to pass by default to your components
+    text: 'Hello World',
+  },
+};
+
+/**
+ * This description will appear under the Basic title in Storybook. The
+ * first named export will be shown in all Themes.
+ */
+export const Basic = {
+  args: { // overwrite the default args, if needed
+    text: 'Hello basic component',
+  }
+}
+
+/**
+ * This description will appear under the ActiveComponent 
+ * title in Storybook.This component will not be shown in theme 
+ * variations, like the Basic.
+ */
+export const ActiveComponent = {
+  args: {
+    isActive: true,
+  }
+}
+```
+
+### Add to Host/Fragment
+
+Once the component is created, documented, and tested, it can be added to the host or fragment component.
+```jsx
+// e.g. host/adblock/src/OptionsContainer.jsx
+import { MyComponent } from '@eyeo/ext-ui-components';
+
+export default function OptionsContainer() {
+  return (
+    <main>
+      <MyComponent text="Hello World" />
+    </main>
+  );
+}
+```
+
+### Generating Types
+
+Types are automatically generated from the JSDoc comments added to the component source files. Therefore, it's essential to provide thorough documentation. The types will be created during the build process when running `npm run build`.
 
 ### Theming
 
