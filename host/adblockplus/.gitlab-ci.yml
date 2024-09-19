@@ -84,6 +84,8 @@ build:
     - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> $[[ inputs.hostpath ]]/.env
     - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> $[[ inputs.hostpath ]]/.env
     - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "EYEOMETRY_BEARER=\"$ADBLOCKPLUS_EYEOMETRY_BEARER\"" >> $[[ inputs.hostpath ]]/.env
+    - echo "EYEOMETRY_URL=\"$ADBLOCKPLUS_EYEOMETRY_URL\"" >> $[[ inputs.hostpath ]]/.env
     - echo "SENTRY_DSN=\"$ADBLOCKPLUS_SENTRY_DSN\"" >> $[[ inputs.hostpath ]]/.env
     - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> $[[ inputs.hostpath ]]/.env
     # Create source archive

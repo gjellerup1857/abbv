@@ -346,4 +346,12 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      */
     const isOptOut: () => Promise<boolean>;
   }
+
+  declare namespace telemetry {
+    /**
+     * Opt-out from telemetry. Default is `true` (used opted out)
+     * @param value - Pass `true` to opt-out, pass `false` to opt in.
+     */
+    const setOptOut: (optOut: boolean) => Promise<void>;
+  }
 }

@@ -15,14 +15,18 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./command-library";
-export * from "./command-library.types";
-export * from "./data-collection";
-export * from "./data-collection.types";
-export * from "./license";
-export * from "./param-validator";
-export * from "./param-validator.types";
-export { start as startTelemetry } from "./telemetry";
-export { initialize as initializeCDP } from "./cdp";
-export { initialize as initializeEyeometryMACCounting } from "./eyeometry-mac-counting";
-export * from "./url";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { initialize } from "./eyeometry-mac-counting";
+
+describe("Eyeometry-based MAC counting", () => {
+  beforeEach(() => {
+    jest.spyOn(ewe.telemetry, "setOptOut").mockReturnValue(Promise.resolve());
+  });
+
+  it("sets the opt-out value from prefs on initialization", async () => {
+    await Prefs.set("data_collection_opt_out", true);
+    await initialize();
+    expect(ewe.telemetry.setOptOut).toHaveBeenCalledWith(true);
+  });
+});

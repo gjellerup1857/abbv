@@ -20,7 +20,8 @@
 import rulesIndex from "@adblockinc/rules/adblockplus";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {startTelemetry, initializeCDP} from "../../src/ipm/background/index.ts";
+import {startTelemetry, initializeCDP, initializeEyeometryMACCounting} from
+  "../../src/ipm/background/index.ts";
 import * as premium from "../../src/premium/background/index.ts";
 import {startOptionLinkListener} from "../../src/options/background";
 import {info} from "../../src/info/background";
@@ -172,6 +173,16 @@ export async function start()
   if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer)
     addonInfo.cdp = cdp;
 
+  let telemetry = {
+    url: webpackDotenvPlugin.EYEOMETRY_URL,
+    bearer: webpackDotenvPlugin.EYEOMETRY_BEARER
+  };
+
+  if (telemetry.url && telemetry.bearer)
+
+    addonInfo.telemetry = telemetry;
+
+
   const [eweFirstRun] = await Promise.all([
     ewe.start(addonInfo),
     Prefs.untilLoaded.catch(() => { setDataCorrupted(true); }),
@@ -199,6 +210,7 @@ export async function start()
   startOptionLinkListener();
   void startTelemetry();
   void initializeCDP();
+  void initializeEyeometryMACCounting();
   startUnloadCleanup();
   startIPMPingListener();
   setReadyState(ReadyState.started);
