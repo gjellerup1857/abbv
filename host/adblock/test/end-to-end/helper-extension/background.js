@@ -20,7 +20,8 @@
 "use strict";
 
 // Timeout needed by Firefox. Without it the helper extension is not able to
-// open the options page
+// open the options page.
+// Edge also needs the timeout (see https://eyeo.atlassian.net/browse/EXT-245)
 setTimeout(() => {
   chrome.management.getAll((extensions) => {
     for (const extension of extensions) {
@@ -34,4 +35,4 @@ setTimeout(() => {
       }
     }
   });
-}, 1000);
+}, 2000);

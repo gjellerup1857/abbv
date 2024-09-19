@@ -119,7 +119,7 @@ describe("AdBlock end-to-end tests", function () {
   });
 
   before(async function () {
-    const { handle } = await findUrl(this.driver, "options.html");
+    const { handle } = await findUrl(this.driver, "options.html", 6000);
     setOptionsHandle(handle);
 
     const { name, version, manifestVersion, origin } = await getExtensionInfo(this.driver);
