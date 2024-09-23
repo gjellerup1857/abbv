@@ -18,7 +18,8 @@
 import { beforeEachTasks } from "../utils/hook.js";
 import smoke from "./smoke.js";
 import uninstall from "./uninstall.js";
-import optionsPage from "./options-page-aa.js";
+import optionsPageAA from "./options-page-aa.js";
+import optionsPageFL from "./options-page-fl.js";
 
 export default () => {
   beforeEach(async function () {
@@ -26,7 +27,10 @@ export default () => {
   });
 
   describe("Smoke Tests - Main", smoke);
-  describe("Options Page - Acceptable Ads", optionsPage);
+  describe("Options Page", function () {
+    describe("Acceptable Ads", optionsPageAA);
+    describe("Filter Lists", optionsPageFL);
+  });
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);
 };
