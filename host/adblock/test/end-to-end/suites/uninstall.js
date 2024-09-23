@@ -19,13 +19,9 @@ import { expect } from "expect";
 
 import { findUrl } from "../utils/driver.js";
 import { getUserId } from "../utils/page.js";
-import { beforeEachTasks, getOptionsHandle } from "../utils/hook.js";
+import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
-  beforeEach(async function () {
-    await beforeEachTasks(this.driver);
-  });
-
   it("uninstalls the extension", async function () {
     const { driver } = this;
 

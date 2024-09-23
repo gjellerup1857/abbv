@@ -17,7 +17,7 @@
 
 import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement, openNewTab, findUrl } from "./driver.js";
+import { getDisplayedElement, openNewTab, findUrl, waitForNotNullAttribute } from "./driver.js";
 
 const { By, Key } = webdriver;
 
@@ -40,6 +40,14 @@ export async function initOptionsFiltersTab(driver, optionsHandle) {
 export async function initOptionsCustomizeTab(driver, optionsHandle) {
   await driver.switchTo().window(optionsHandle);
   await driver.findElement(By.css('[href="#customize"]')).click();
+}
+
+export async function initOptionsGeneralTab(driver, optionsHandle) {
+  await driver.switchTo().window(optionsHandle);
+  await driver.findElement(By.css('[href="#general"]')).click();
+  await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+  // https://eyeo.atlassian.net/browse/EXT-335
+  await driver.sleep(500);
 }
 
 export async function setCustomFilters(driver, filters) {

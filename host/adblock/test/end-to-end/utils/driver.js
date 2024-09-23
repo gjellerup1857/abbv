@@ -109,3 +109,26 @@ export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
     `Element "${cssText}" was still displayed after ${timeout}ms`,
   );
 }
+
+export async function waitForNotNullAttribute(driver, id, attribute, timeout = 1000) {
+  let value;
+  await driver.wait(
+    async () => {
+      try {
+        // The attribute value of hidden elements is not always returned by
+        // element.getAttribute(). Using a script as a workaround
+        value = await driver.executeScript(
+          (elemId, attr) => {
+            return document.getElementById(elemId)[attr];
+          },
+          id,
+          attribute,
+        );
+        return value !== null;
+      } catch (e) {}
+    },
+    timeout,
+    `Attribute "${attribute}" of element "${id}" was still null after ${timeout}ms`,
+  );
+  return value;
+}
