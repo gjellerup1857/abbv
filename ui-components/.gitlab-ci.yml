@@ -1,0 +1,42 @@
+spec:
+  inputs:
+    workspacepath:
+      type: string
+      description: "Path to the workspace directory"
+      default: "."
+    parent_pipeline_source:
+      type: string
+      description: "Value of CI_PIPELINE_SOURCE in the parent pipeline"
+
+---
+# Select the default gitlab runner
+default:
+  image: node:18.17.1
+  cache:  # Cache modules using lock file
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+  interruptible: true
+
+stages:
+  - test
+
+################################################################################
+# Build
+################################################################################
+
+.build:
+  stage: test
+  before_script:
+    # Update dependencies
+    - npm ci --cache .npm --prefer-offline
+
+################################################################################
+# Test
+################################################################################
+test:
+  extends: .build
+  script:
+    - npm run -w $[[ inputs.workspacepath ]] test

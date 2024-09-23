@@ -97,8 +97,8 @@ describe('Button with optional parameters', () => {
     const ariaLabel = 'important-aardvark';
     renderButton({ ariaLabel });
 
-    expect(button.ariaLabel).toBe(ariaLabel);
-    expect(button.ariaLabel).not.toBe(defaultProps.text);
+    expect(button).toHaveAttribute("aria-label", ariaLabel);
+    expect(button).not.toHaveAttribute("aria-label", defaultProps.text);
   });
 
   it('applies color overrides when used with hex values', () => {
@@ -135,6 +135,7 @@ describe('Button with optional parameters', () => {
 describe('Disabled button', () => {
   beforeEach(() => {
     renderButton({ disabled: true });
+    console.error = vi.fn();
   });
 
   afterEach(() => {
