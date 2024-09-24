@@ -18,8 +18,8 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
-import { waitForNotNullAttribute, getDisplayedElement } from "../utils/driver.js";
-import { initOptionsGeneralTab, initOptionsFiltersTab } from "../utils/page.js";
+import { getDisplayedElement } from "../utils/driver.js";
+import { initOptionsFiltersTab } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
