@@ -3770,21 +3770,5 @@
   "get_around_popups": {
     "message": "有了略過模式，您將能在不停用 AdBlock 的情況下略過那些彈出視窗。",
     "description": "Description of Bypass Mode on the main Premium options page"
-  },
-  "yt_auto_allow_dialog_title": {
-    "description": "偵測到YT廣告牆但未予攔截時OPD上會向使用者顯示的標題文字",
-    "message": "如果您開啟了廣告攔截程式，YouTube就不會播放影片。"
-  },
-  "yt_auto_allow_dialog_body_part_I": {
-    "description": "偵測到YT廣告牆但未予攔截時OPD上會向使用者顯示的上層正文文字",
-    "message": "只有允許其播放廣告，您才能看到您喜歡的YouTube影片。"
-  },
-  "yt_auto_allow_dialog_body_part_II": {
-    "description": "偵測到YT廣告牆但未予攔截時OPD上會向使用者顯示的下層正文文字",
-    "message": "開啟AdBlock功能表並點擊「在此網站上暫停」就能在您造訪該網站當下暫時允許其播放廣告。"
-  },
-  "yt_auto_allow_dialog_button": {
-    "description": "偵測到YT廣告牆但未予攔截時OPD上會向使用者顯示的OPD按鈕正文文字",
-    "message": "了解更多"
   }
 }

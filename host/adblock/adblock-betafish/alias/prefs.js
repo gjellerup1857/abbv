@@ -303,41 +303,11 @@ defaults.send_ad_wall_messages = true;
 defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube/";
 
 /**
- * Language codes that should auto allowing on YouTube
- *
- * @type {Array of string}
- */
-defaults.yt_allowlist_language_codes = ["fr", "pt"];
-
-/**
- * Language codes that should show an On Page Dialog after auto allowing
- * Note:  These locales will be considered as well as the ones in `yt_allowlist_language_codes`,
- *        so they don't need to be duplicated in that preference
- *
- * @type {Array of string}
- */
-defaults.yt_allowlist_with_dialog_language_codes = ["ar", "ja", "nl", "pl", "tr"];
-
-/**
- * Language codes that should only show an On Page Dialog once the YT ad wall is shown
- *
- * @type {Array of string}
- */
-defaults.yt_dialog_only_language_codes = ["de", "it", "zh"];
-
-/**
  * Start date (as a number) to start auto allowing YT
  *
  * @type {Number}
  */
 defaults.yt_allowlist_start_date = 0;
-
-/**
- * Hard end date (as a number) to stop auto allowing YT
- *
- * @type {Number}
- */
-defaults.yt_allowlist_hard_end_date = new Date(2024, 9, 1, 0, 0).getTime(); // October 1st, 2024
 
 /**
  * Milliseconds that the smart allowlist rule should be active for

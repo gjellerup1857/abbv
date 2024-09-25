@@ -3778,21 +3778,5 @@
   "get_around_popups": {
     "message": "バイパスモードを使えば、AdBlockを無効にすることなく、ポップアップを回避することができます。",
     "description": "Description of Bypass Mode on the main Premium options page"
-  },
-  "yt_auto_allow_dialog_title": {
-    "description": "YouTubeの広告ウォールが検出され、YouTubeが自動的に許可リストに追加された場合にユーザーに表示されるOPD上のタイトルテキスト",
-    "message": "YouTubeでは、広告ブロッカーによる動画のスキップができません。"
-  },
-  "yt_auto_allow_dialog_body_part_I": {
-    "description": "YouTubeの広告ウォールが検出され、YouTubeが自動的に許可リストに追加された場合にユーザーに表示されるOPD上の本文上部のテキスト",
-    "message": "そこで今回、自動的にYouTubeでの広告の再生を許可しました。"
-  },
-  "yt_auto_allow_dialog_body_part_II": {
-    "description": "YouTubeの広告ウォールが検出され、YouTubeが自動的に許可リストに追加された場合にユーザーに表示されるOPD上の本文下部のテキスト",
-    "message": "一時的に広告が許可されたので、動画が再生できるようになりました。"
-  },
-  "yt_auto_allow_dialog_button": {
-    "description": "YouTubeの広告ウォールが検出され、YouTubeが自動的に許可リストに追加された場合にユーザーに表示されるOPD上のボタン本体のテキスト",
-    "message": "詳しくはこちら"
   }
 }

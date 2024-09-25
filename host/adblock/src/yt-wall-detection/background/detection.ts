@@ -21,118 +21,19 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { adblockIsDomainPaused } from "~/pause/background";
 import { AdWallMessage } from "~/polyfills/shared";
-import {
-  sevenDaysInMilliSeconds,
-  ytAllowlistHardEndDate,
-  ytAllowlistLanguageCodes,
-  ytAllowlistDialogLanguageCodes,
-  ytAllowlistStartDate,
-  ytDialogOnlyLanguageCodes,
-} from "./detection.types";
-import { determineUserLanguage } from "~/utilities/background/bg-functions";
+import { ytAllowlistStartDate } from "./detection.types";
 import * as logger from "~/utilities/background";
 import { MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
-import { Timing, showOnpageDialog } from "~/onpage-dialog/background";
-import {
-  youTubeAutoAllowlisted,
-  youTubeWallDetected,
-  youTubeNavigation,
-  youTubeDialogShown,
-} from "../shared/index";
-
-let pageLoadedHandler: (tab: browser.Tabs.Tab) => void;
-
-/**
- * Dialog ID
- */
-const dialogId = "yt-wall-detection";
-
-/**
- * Should the extension allowlist YT users in a specific locale/language
- *
- */
-const shouldAllowlistForLanguages = function (): Boolean {
-  const allowlistLanguages = Prefs.get(ytAllowlistLanguageCodes);
-  const dialogLanguages = Prefs.get(ytAllowlistDialogLanguageCodes);
-  const locale = determineUserLanguage();
-  const language = locale.substring(0, 2);
-  return allowlistLanguages.includes(language) || dialogLanguages.includes(language);
-};
-
-/**
- * Does the user's language match one of the locales in the provide perference
- *
- */
-const isUserLanguageMatchPreference = function (preference: string): Boolean {
-  const prefLanguages = Prefs.get(preference);
-  const locale = determineUserLanguage();
-  const language = locale.substring(0, 2);
-  return prefLanguages.includes(language);
-};
-
-/**
- * Should the extension show an On Page Dialog after allowing ads on YT
- *
- */
-const shouldShowDialogAfterAllowlistForLanguages = function (): Boolean {
-  return isUserLanguageMatchPreference(ytAllowlistDialogLanguageCodes);
-};
-
-/**
- * Should the extension show an On Page Dialog when the YT ad wall is detected
- *
- */
-const shouldShowDialogForLanguages = function (): Boolean {
-  return isUserLanguageMatchPreference(ytDialogOnlyLanguageCodes);
-};
-
-/**
- * Should the extension allowlist YT users today?
- *
- */
-const shouldAllowListForToday = function (): Boolean {
-  if (Prefs.get(ytAllowlistStartDate)) {
-    const today = new Date();
-    logger.debug("[yt-detection]: today", today.toLocaleDateString());
-    const startDate = new Date(Prefs.get(ytAllowlistStartDate));
-    logger.debug("[yt-detection]: YT allowlist start date", startDate.toLocaleDateString());
-    const endDate = new Date();
-    endDate.setTime(startDate.getTime() + sevenDaysInMilliSeconds); // Add 7 days to the start date, to determine the end date
-    logger.debug("[yt-detection]: end date (start date + 7)", endDate.toLocaleDateString());
-    const hardEndDate = new Date(Prefs.get(ytAllowlistHardEndDate));
-    logger.debug("[yt-detection]: Prefs hard end date", hardEndDate.toLocaleDateString());
-    return today > startDate && today < endDate && today < hardEndDate;
-  }
-  return false;
-};
-
-/**
- * Should the extension allowlist for this locale and date.
- *
- */
-const shouldAllowList = function (): Boolean {
-  return shouldAllowlistForLanguages() && shouldAllowListForToday();
-};
+import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "../shared/index";
 
 /**
  * capture the allowlist YT start date (the update or install date)
  *
  */
 const captureStartDate = function (): void {
-  if (!shouldAllowlistForLanguages() && !shouldShowDialogForLanguages()) {
-    logger.debug("[yt-detection]: user language not a match");
-    return;
-  }
-  const today = new Date();
-  const hardEndDate = new Date(Prefs.get(ytAllowlistHardEndDate));
-  if (today >= hardEndDate) {
-    Prefs.reset(ytAllowlistStartDate);
-    logger.debug("[yt-detection]: expiration date exceeded");
-    return;
-  }
   if (Prefs.get(ytAllowlistStartDate) === 0) {
     Prefs.set(ytAllowlistStartDate, Date.now());
     logger.debug(
@@ -150,33 +51,6 @@ const captureDateOnUpdate = (details: Browser.Runtime.OnInstalledDetailsType): v
   if (details.reason === "update" || details.reason === "install") {
     captureStartDate();
   }
-};
-
-/**
- * Show the On Page Dialog
- *
- */
-const showOnpageDialogHanlder = (tabId: number, tab: browser.Tabs.Tab): void => {
-  if (tabId !== tab.id) {
-    return;
-  }
-  ext.pages.onLoaded.removeListener(pageLoadedHandler);
-  void showOnpageDialog(tabId, tab, {
-    behavior: {
-      displayDuration: 0,
-      target: Prefs.get("yt_auto_allow_dialog_url"),
-      timing: Timing.immediate,
-    },
-    content: {
-      body: [
-        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_I"),
-        browser.i18n.getMessage("yt_auto_allow_dialog_body_part_II"),
-      ],
-      button: browser.i18n.getMessage("yt_auto_allow_dialog_button"),
-      title: browser.i18n.getMessage("yt_auto_allow_dialog_title"),
-    },
-    id: dialogId,
-  });
 };
 
 /**
@@ -198,21 +72,11 @@ const processYouTubeWallDetectedMessage = async (
     isAllowListed ? "1" : "0",
   );
   if (sender && sender.page) {
-    if (shouldAllowList()) {
-      adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true, "auto");
-      browser.tabs.reload(sender.page.id);
-      ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
-      if (shouldShowDialogAfterAllowlistForLanguages()) {
-        pageLoadedHandler = showOnpageDialogHanlder.bind(null, sender.page.id);
-        ext.pages.onLoaded.addListener(pageLoadedHandler);
-      }
-      browser.tabs.reload(sender.page.id);
-      return;
-    }
-    if (shouldShowDialogForLanguages()) {
-      ServerMessages.recordAdWallMessage(youTubeDialogShown);
-      showOnpageDialogHanlder(sender.page.id, await browser.tabs.get(sender.page.id));
-    }
+    adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true, "auto");
+    browser.tabs.reload(sender.page.id);
+    ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
+    browser.tabs.reload(sender.page.id);
+    return;
   }
 };
 

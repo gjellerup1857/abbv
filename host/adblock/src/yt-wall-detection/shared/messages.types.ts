@@ -18,4 +18,3 @@
 export const youTubeAutoAllowlisted = "yt-auto.allowlisted";
 export const youTubeWallDetected = "yt-site.ad-wall-detected";
 export const youTubeNavigation = "yt-site.navigation";
-export const youTubeDialogShown = "yt-site.dialog-shown";
