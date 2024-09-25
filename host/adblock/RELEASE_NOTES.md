@@ -1,5 +1,9 @@
 # Unreleased
 
+# 6.9.2 - 2024-09-25
+
+This release contains only minor updates and under-the-hood changes.
+
 - We no longer test the MV2 build of our extensions on Chrome 129 and later,
   since it disables MV2 extensions by defaults.
 - Fixed outdated Help Center links
