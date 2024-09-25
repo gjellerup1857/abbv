@@ -53,17 +53,16 @@ export async function initOptionsGeneralTab(driver, optionsHandle) {
 export async function setCustomFilters(driver, filters) {
   const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
 
-  // Remove textarea content
-  await driver.executeScript(() => {
-    document.getElementById("txtFiltersAdvanced").value = "";
-  });
-
   // The edit button functionality may take some time to be ready.
   // Retrying as a workaround
   let saveButton;
   await driver.wait(async () => {
     await editButton.click();
     try {
+      // Remove textarea content
+      await driver.executeScript(() => {
+        document.getElementById("txtFiltersAdvanced").value = "";
+      });
       saveButton = await getDisplayedElement(driver, "#btnSaveAdvancedFilters", 500);
       return true;
     } catch (e) {}

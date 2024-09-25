@@ -96,7 +96,7 @@ export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
   return driver.wait(
     async () => {
       try {
-        await getDisplayedElement(driver, "#sitekey-fail-1");
+        await getDisplayedElement(driver, cssText);
         return false;
       } catch (err) {
         if (err.name === "TimeoutError") {

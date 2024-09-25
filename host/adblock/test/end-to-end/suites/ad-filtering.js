@@ -135,6 +135,7 @@ export default () => {
     await setCustomFilters(driver, [filter]);
 
     await findUrl(driver, url);
+    await driver.navigate().refresh();
     await waitForNotDisplayed(driver, "#snippet-filter");
   });
 
