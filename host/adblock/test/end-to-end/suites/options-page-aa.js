@@ -103,7 +103,7 @@ export default () => {
     }
     await aaCheckbox.click(); // disables AA
 
-    const aaInfo = await getDisplayedElement(driver, "#acceptable_ads_info > span", 2000);
+    const aaInfo = await getDisplayedElement(driver, "#acceptable_ads_info > span", 2000, false);
     expect(await aaInfo.getText()).toEqual(
       "You're no longer subscribed to the Acceptable Ads filter list.",
     );
