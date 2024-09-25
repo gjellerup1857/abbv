@@ -20,7 +20,7 @@ export const ThemeColors = ({ extension, theme }) => {
               title={variable}
               subtitle="Custom color"
               colors={{
-                [variable]: `var(--${variable})`,
+                [variable]: `rgb(var(--${variable}))`,
               }}
             />
           ))
