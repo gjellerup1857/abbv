@@ -71,7 +71,7 @@ async function detectFirstRun(foundSubscriptions, foundStorage)
   {
     const subscriptions = await ewe.subscriptions.getSubscriptions();
     firstRun = !subscriptions.length;
-  }  
+  }
 
   Prefs.currentVersion = info.addonVersion;
 }
@@ -117,7 +117,7 @@ async function addSubscriptionsAndNotifyUser()
     await ewe.subscriptions.addDefaults();
 
   if (reinitialized)
-    addDefaultMV3Subscriptions();  
+    addDefaultMV3Subscriptions();
 
   for (let url of Prefs.additional_subscriptions)
   {
