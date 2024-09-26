@@ -3778,21 +3778,5 @@
   "get_around_popups": {
     "message": "Con la modalità Bypass potrai aggirare alcuni di questi pop-up senza disattivare AdBlock.",
     "description": "Description of Bypass Mode on the main Premium options page"
-  },
-  "yt_auto_allow_dialog_title": {
-    "description": "Testo del titolo su OPD mostrato agli utenti quando la barriera pubblicitaria di YT viene rilevata ma non bloccata",
-    "message": "Quando il blocco degli annunci è attivo, YouTube impedisce la riproduzione dei video."
-  },
-  "yt_auto_allow_dialog_body_part_I": {
-    "description": "Testo del corpo superiore su OPD mostrato agli utenti quando la barriera pubblicitaria di YT viene rilevata ma non bloccata",
-    "message": "Accedi ai tuoi video preferiti su YouTube quando autorizzi gli annunci."
-  },
-  "yt_auto_allow_dialog_body_part_II": {
-    "description": "Testo del corpo inferiore su OPD mostrato agli utenti quando la barriera pubblicitaria di YT viene rilevata ma non bloccata",
-    "message": "Apri il menu di AdBlock e fai clic su 'Interrompi su questo sito' per consentire temporaneamente gli annunci durante la tua visita."
-  },
-  "yt_auto_allow_dialog_button": {
-    "description": "Testo del corpo del pulsante OPD su OPD mostrato agli utenti quando la barriera pubblicitaria di YT viene rilevata ma non bloccata",
-    "message": "Scopri di più"
   }
 }

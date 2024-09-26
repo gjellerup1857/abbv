@@ -45,47 +45,6 @@ let errorCount = 0;
 let processingIntervalId = null;
 
 /**
- * Retrieves requested payload from background page
- *
- * @param {Event} event - "flattr-request-payload" DOM event
- *
- * @returns {Promise<string|null>} payload - Encoded signed Premium license data
- */
-async function getPayload(event) {
-  /* eslint-disable-next-line no-use-before-define */
-  if (!isTrustedEvent(event)) {
-    return null;
-  }
-
-  /* eslint-disable-next-line no-use-before-define */
-  if (!isAuthRequestEvent(event)) {
-    return null;
-  }
-
-  const payload = await browser.runtime.sendMessage({
-    command: "users.isPaying",
-    timestamp: event.detail.timestamp,
-    signature: event.detail.signature,
-  });
-  return payload;
-}
-
-/**
- * Queues up incoming requests
- *
- * @param {Event} event - "flattr-request-payload" DOM event
- */
-function handleFlattrRequestPayloadEvent(event) {
-  if (eventQueue.length >= maxQueuedEvents) {
-    return;
-  }
-
-  eventQueue.push(event);
-  /* eslint-disable-next-line no-use-before-define */
-  startProcessingInterval();
-}
-
-/**
  * Checks whether event contains authentication data
  *
  * @param {Event} event - Event
@@ -115,38 +74,66 @@ function isTrustedEvent(event) {
 }
 
 /**
+ * Retrieves requested payload and additional info from background page
+ *
+ * @param {Event} event - "flattr-request-payload" DOM event
+ *
+ * @returns {Promise<Object>} Object containing payload and extras
+ */
+async function getPayloadAndExtras(event) {
+  return browser.runtime.sendMessage({
+    command: "users.isPaying",
+    timestamp: event.detail.timestamp,
+    signature: event.detail.signature,
+  });
+}
+
+/**
+ * Queues up incoming requests
+ *
+ * @param {Event} event - "flattr-request-payload" DOM event
+ */
+function handleFlattrRequestPayloadEvent(event) {
+  if (eventQueue.length >= maxQueuedEvents) {
+    return;
+  }
+
+  eventQueue.push(event);
+  startProcessingInterval();
+}
+
+/**
  * Processes incoming requests
  *
- * @returns {Promise}
+ * @returns {Promise<void>}
  */
 async function processNextEvent() {
   const event = eventQueue.shift();
-  if (event) {
+  if (event && isTrustedEvent(event) && isAuthRequestEvent(event)) {
     try {
-      const payload = await getPayload(event);
-      if (!payload) {
+      const { payload, extensionInfo } = await getPayloadAndExtras(event);
+
+      if (payload === null && extensionInfo === null) {
         throw new Error("Premium request rejected");
       }
-      let detail = { detail: { payload } };
+
+      let detail = { detail: { payload, extensionInfo } };
       if (typeof cloneInto === "function") {
         // Firefox requires content scripts to clone objects
         // that are passed to the document
         detail = cloneInto(detail, document.defaultView);
       }
       document.dispatchEvent(new CustomEvent("flattr-payload", detail));
-      /* eslint-disable-next-line no-use-before-define */
       stop();
-    } catch (e) {
+    } catch {
       errorCount += 1;
       if (errorCount >= maxErrorThreshold) {
-        /* eslint-disable-next-line no-use-before-define */
         stop();
       }
     }
   }
 
   if (!eventQueue.length) {
-    /* eslint-disable-next-line no-use-before-define */
     stopProcessingInterval();
   }
 }

@@ -22,9 +22,17 @@ import {
 } from "../../core/messaging/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getAuthPayload, getPremiumState } from "../../premium/background";
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { info } from "../../info/background";
+import * as logger from "../../logger/background";
 
 import { type Message } from "~/core/messaging/shared";
-import { type PremiumGetAuthPayloadOptions } from "./bypass.types";
+import type { PremiumGetAuthPayloadOptions } from "./bypass.types";
+import type {
+  AllowlistState,
+  ExtensionInfo,
+  PayloadAndExtensionInfo
+} from "../shared";
 
 /**
  * Algorithm used to verify authenticity of sender
@@ -39,7 +47,7 @@ const algorithm = {
  * Time (in milliseconds) from now for which we consider signatures to be valid
  * based on their associated timestamps
  */
-const signatureExpiration = 60 * 60 * 1000;
+const signatureExpiration = 6 * 60 * 60 * 1000;
 
 /**
  * Converts base64 string into array buffer
@@ -75,71 +83,17 @@ function getAllowData(domain: string, timestamp: number): Uint8Array {
  */
 async function getKey(key: string): Promise<CryptoKey> {
   const abKey = base64ToArrayBuffer(key);
-  const importedKey = await crypto.subtle.importKey(
-    "spki",
-    abKey,
-    algorithm,
-    false,
-    ["verify"]
-  );
-  return importedKey;
+  return await crypto.subtle.importKey("spki", abKey, algorithm, false, [
+    "verify"
+  ]);
 }
 
 /**
- * Handles incoming "premium.getAuthPayload" messages
+ * Checks if the message is a valid premium.getAuthPayload message
  *
- * @param message - "premium.getAuthPayload" message
- * @param sender - Message sender
+ * @param candidate - The message to check
  *
- * @returns requested payload
- */
-async function handleGetAuthPayloadMessage(
-  message: Message,
-  sender: MessageSender
-): Promise<string | null> {
-  if (!isPremiumGetAuthPayloadMessage(message)) {
-    return null;
-  }
-
-  // Check Premium state
-  if (!getPremiumState().isActive) {
-    return null;
-  }
-
-  // Verify timestamp
-  const { signature, timestamp } = message;
-  const validTimestamp = verifyTimestamp(timestamp);
-  if (!validTimestamp) {
-    return null;
-  }
-
-  // Verify signature
-  if (!sender.tab?.url) {
-    return null;
-  }
-  const domain = new URL(sender.tab.url).hostname;
-  if (!domain) {
-    return null;
-  }
-  const validSignature = await verifySignature(domain, timestamp, signature);
-  if (!validSignature) {
-    return null;
-  }
-
-  // Retrieve payload
-  const payload = getAuthPayload();
-  if (!payload) {
-    return null;
-  }
-
-  return payload;
-}
-
-/**
- * Checks whether candidate is message of type "premium.getAuthPayload".
- *
- * @param candidate - Candidate
- * @returns whether candidate is messag eof type "premium.getAuthPayload"
+ * @returns whether the message is a valid premium.getAuthPayload message
  */
 function isPremiumGetAuthPayloadMessage(
   candidate: unknown
@@ -167,18 +121,20 @@ async function verifySignature(
   timestamp: number,
   signature: string
 ): Promise<boolean> {
-  if (typeof signature !== "string") {
-    return false;
-  }
-
   const data = getAllowData(domain, timestamp);
   const abSignature = base64ToArrayBuffer(signature);
-  const authorizedKeys = Prefs.get("bypass_authorizedKeys") as string[];
+  const authorizedKeys = Prefs.get("bypass_authorizedKeys");
+
+  if (!Array.isArray(authorizedKeys)) {
+    logger.error("bypass_authorizedKeys is not an array");
+    return false;
+  }
 
   const promisedValidations = authorizedKeys.map(async (key) => {
     return await verifySignatureWithKey(data, abSignature, key);
   });
   const validations = await Promise.all(promisedValidations);
+
   return validations.some((isValid) => isValid);
 }
 
@@ -221,7 +177,130 @@ function verifyTimestamp(timestamp: number): boolean {
 }
 
 /**
- * Initializes module
+ * Checks if the allowlist is active for the given tab
+ *
+ * @param sender - The message sender
+ *
+ * @returns Whether the allowlist is active
+ */
+async function getAllowlistState(
+  sender: MessageSender
+): Promise<AllowlistState> {
+  const tabId = sender?.tab?.id;
+  if (!tabId) {
+    return {
+      status: false,
+      source: null,
+      oneCA: false
+    };
+  }
+
+  const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
+  let source = null;
+
+  for (const filter of allowlistingFilters) {
+    // eslint-disable-next-line no-await-in-loop
+    const metadata = await ewe.filters.getMetadata(filter);
+    const { origin } = metadata ?? {};
+
+    if (origin === "web") {
+      source = "1ca";
+      break;
+    } else {
+      source = "user";
+      // Don't break here, continue searching in case there's a "web" origin
+    }
+  }
+
+  return {
+    status: allowlistingFilters.length > 0,
+    source,
+    oneCA: true
+  };
+}
+
+/**
+ * Verifies the request
+ *
+ * @param message - The message to verify
+ * @param sender - The message sender
+ *
+ * @returns Whether the request is valid
+ */
+async function verifyRequest(
+  message: PremiumGetAuthPayloadOptions,
+  sender: MessageSender
+): Promise<boolean> {
+  if (!sender?.tab?.url) {
+    return false;
+  }
+
+  try {
+    const { signature, timestamp } = message;
+    const domain = new URL(sender.tab.url).hostname;
+    if (!verifyTimestamp(timestamp)) {
+      return false;
+    }
+
+    return await verifySignature(domain, timestamp, signature);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Gets the extension info
+ *
+ * @param sender - The message sender
+ *
+ * @returns The extension info
+ */
+async function getExtensionInfo(
+  sender: MessageSender
+): Promise<ExtensionInfo | null> {
+  try {
+    const allowlist = await getAllowlistState(sender);
+
+    return {
+      name: info.baseName,
+      version: info.addonVersion,
+      allowlistState: allowlist
+    };
+  } catch (error) {
+    logger.error("Error in getExtensionInfo:", error);
+    return null;
+  }
+}
+
+/**
+ * Handles the premium.getAuthPayload message
+ *
+ * @param message - The message to handle
+ * @param sender - The message sender
+ *
+ * @returns The payload and extension info
+ */
+async function handleGetAuthPayloadMessage(
+  message: Message,
+  sender: MessageSender
+): Promise<PayloadAndExtensionInfo | null> {
+  if (!isPremiumGetAuthPayloadMessage(message)) {
+    return null;
+  }
+
+  if (!(await verifyRequest(message, sender))) {
+    return null;
+  }
+
+  const premiumState = getPremiumState();
+  const payload = premiumState.isActive ? getAuthPayload() : null;
+  const extensionInfo = await getExtensionInfo(sender);
+
+  return { payload, extensionInfo };
+}
+
+/**
+ * Initializes the bypass module
  */
 export function start(): void {
   port.on("premium.getAuthPayload", handleGetAuthPayloadMessage);

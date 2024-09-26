@@ -16,8 +16,11 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, log */
+/* global browser */
 
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import * as info from "info";
+import { log } from "../utilities/background/index";
 import { License } from "./check";
 
 /**
@@ -33,7 +36,7 @@ const algorithm = {
  * Time (in milliseconds) from now for which we consider signatures to be valid
  * based on their associated timestamps
  */
-const signatureExpiration = 60 * 60 * 1000;
+const signatureExpiration = 6 * 60 * 60 * 1000;
 
 /**
  * Converts base64 string into array buffer
@@ -69,8 +72,7 @@ function getAllowData(domain, timestamp) {
  */
 async function getKey(key) {
   const abKey = base64ToArrayBuffer(key);
-  const importedKey = await crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
-  return importedKey;
+  return crypto.subtle.importKey("spki", abKey, algorithm, false, ["verify"]);
 }
 
 /**
@@ -79,41 +81,28 @@ async function getKey(key) {
  * @param {Object} message - "users.isPaying" message
  * @param {Object} sender - Message sender
  *
- * @returns {Promise<string|null>} requested payload
+ * @returns {Promise<Object|null>} Payload and additional information or null if conditions are not met
  */
 async function handleUsersIsPayingMessage(message, sender) {
-  // Check Premium state
-  if (!License.isActiveLicense()) {
-    log("user not active");
-    return null;
-  }
-
-  // Verify timestamp
-  const { signature, timestamp } = message;
-  /* eslint-disable-next-line no-use-before-define */
-  const validTimestamp = verifyTimestamp(timestamp);
-  if (!validTimestamp) {
-    log("invalid Timestamp", timestamp);
+  // Check message contents
+  if (!isValidPremiumAuthMessage(message)) {
     return null;
   }
 
   // Verify signature
-  const domain = new URL(sender.url).hostname;
-  /* eslint-disable-next-line no-use-before-define */
-  const validSignature = await verifySignature(domain, timestamp, signature);
-  if (!validSignature) {
-    log("invalid signature");
+  const isVerified = await verifyRequest(message, sender);
+  if (!isVerified) {
     return null;
   }
 
   // Retrieve payload
-  const payload = License.getBypassPayload();
-  if (!payload) {
+  const extensionInfo = await getExtensionInfo(message, sender);
+  const payload = License.isActiveLicense() ? License.getBypassPayload() : null;
+  if (License.isActiveLicense() && !payload) {
     log("no bypass mode payload");
-    return null;
   }
 
-  return payload;
+  return { payload, extensionInfo };
 }
 
 /**
@@ -170,6 +159,111 @@ function verifyTimestamp(timestamp) {
 
   const timeDiff = Date.now() - timestamp;
   return timeDiff < signatureExpiration;
+}
+
+/**
+ * Checks whether current tab is allowlisted
+ *
+ * @param {Object} sender - Message sender
+ *
+ * @returns {Promise<Object>} Allowlist state object containing status, source, and oneCA
+ */
+async function getAllowlistState(sender) {
+  const tabId = sender.tab.id;
+  if (!tabId) {
+    return {
+      status: false,
+      source: null,
+      oneCA: false,
+    };
+  }
+
+  const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
+  let source = null;
+
+  if (allowlistingFilters.length > 0) {
+    for (const filter of allowlistingFilters) {
+      // eslint-disable-next-line no-await-in-loop
+      const metadata = await ewe.filters.getMetadata(filter);
+      const { origin } = metadata || {};
+
+      if (origin === "web") {
+        source = "1ca";
+        break;
+      } else {
+        source = "user";
+        // Don't break here, continue searching in case there's a "web" origin
+      }
+    }
+  }
+
+  return {
+    status: allowlistingFilters.length > 0,
+    source,
+    oneCA: true,
+  };
+}
+
+/**
+ * Checks whether request is valid
+ *
+ * @param {Object} message - Request message
+ * @param {Object} sender - Message sender
+ *
+ * @returns {Promise<boolean>} whether request is valid
+ */
+async function verifyRequest(message, sender) {
+  const { signature, timestamp } = message;
+  const domain = new URL(sender.url).hostname;
+
+  if (!verifyTimestamp(timestamp)) {
+    log("invalid Timestamp", timestamp);
+    return false;
+  }
+
+  if (!(await verifySignature(domain, timestamp, signature))) {
+    log("invalid signature");
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Checks whether candidate is a valid message for premium authentication.
+ *
+ * @param {Object} candidate - Candidate
+ * @returns {boolean} whether candidate is a valid message for premium authentication
+ */
+function isValidPremiumAuthMessage(candidate) {
+  return (
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "signature" in candidate &&
+    "timestamp" in candidate
+  );
+}
+
+/**
+ * Retrieves additional data to be sent along with the payload
+ *
+ * @param {Object} message - Message containing signature request data
+ * @param {Object} sender - Message sender
+ * @returns {Promise<Object|null>} extensionInfo - Additional data or null if conditions are not met
+ */
+async function getExtensionInfo(message, sender) {
+  try {
+    const allowlist = await getAllowlistState(sender);
+
+    return {
+      name: info.baseName,
+      version: info.addonVersion,
+      allowlistState: allowlist,
+    };
+  } catch (error) {
+    log("error getting extension info", error);
+    return null;
+  }
 }
 
 /**

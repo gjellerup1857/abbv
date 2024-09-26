@@ -15,7 +15,10 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AuthRequestEvent, type TrustedEvent } from "./public-api.types";
+import browser from "webextension-polyfill";
+
+import type { AuthRequestEvent, TrustedEvent } from "./public-api.types";
+import type { PayloadAndExtensionInfo } from "../shared";
 
 /**
  * List of events that are waiting to be processed
@@ -46,31 +49,23 @@ let processingIntervalId: ReturnType<typeof setInterval> | null = null;
 /**
  * Retrieves requested payload from background page
  *
- * @param event - "flattr-request-payload" DOM event
- *
- * @returns payload - Encoded signed Premium license data
+ * @param event - The authentication request event
+ * @returns The payload and extension info
  */
-async function getPayload(event: Event): Promise<string | null> {
-  if (!isTrustedEvent(event)) {
-    return null;
-  }
-
-  if (!isAuthRequestEvent(event)) {
-    return null;
-  }
-
-  const payload = (await browser.runtime.sendMessage({
+async function getPayloadAndExtensionInfo(
+  event: AuthRequestEvent
+): Promise<PayloadAndExtensionInfo | null> {
+  return await browser.runtime.sendMessage({
     type: "premium.getAuthPayload",
     signature: event.detail.signature,
     timestamp: event.detail.timestamp
-  })) as string | null;
-  return payload;
+  });
 }
 
 /**
- * Queues up incoming requests
+ * Handles the flattr-request-payload event
  *
- * @param event - "flattr-request-payload" DOM event
+ * @param event - The flattr-request-payload event to handle
  */
 function handleFlattrRequestPayloadEvent(event: Event): void {
   if (eventQueue.length >= maxQueuedEvents) {
@@ -115,14 +110,16 @@ function isTrustedEvent(event: Event): event is TrustedEvent {
  */
 async function processNextEvent(): Promise<void> {
   const event = eventQueue.shift();
-  if (event) {
+  if (event && isTrustedEvent(event) && isAuthRequestEvent(event)) {
     try {
-      const payload = await getPayload(event);
-      if (!payload) {
+      const result = await getPayloadAndExtensionInfo(event);
+      if (!result || (!result.payload && !result.extensionInfo)) {
         throw new Error("Premium request rejected");
       }
 
-      let detail = { detail: { payload } };
+      const { payload, extensionInfo } = result;
+
+      let detail = { detail: { payload, extensionInfo } };
       if (typeof cloneInto === "function") {
         // Firefox requires content scripts to clone objects
         // that are passed to the document

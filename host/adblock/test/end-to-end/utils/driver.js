@@ -72,18 +72,36 @@ export async function getTabId(driver, optionsHandle) {
   return tabId;
 }
 
-export async function getDisplayedElement(driver, cssText, timeout = 500) {
+// The forceRefresh parameter is a temporary workaround, to be removed when fixing
+// https://eyeo.atlassian.net/browse/EXT-335
+export async function getDisplayedElement(driver, cssText, timeout = 500, forceRefresh = true) {
   let elem;
-  await driver.wait(
-    async () => {
-      try {
-        elem = await driver.findElement(By.css(cssText));
-        return await elem.isDisplayed();
-      } catch (e) {}
-    },
-    timeout,
-    `Element "${cssText}" was not displayed after ${timeout}ms`,
-  );
+  const findElement = async () => {
+    await driver.wait(
+      async () => {
+        try {
+          elem = await driver.findElement(By.css(cssText));
+          return await elem.isDisplayed();
+        } catch (e) {}
+      },
+      timeout,
+      `Element "${cssText}" was not displayed after ${timeout}ms`,
+    );
+  };
+
+  try {
+    await findElement();
+  } catch (err) {
+    if (!forceRefresh) {
+      throw err;
+    }
+
+    // eslint-disable-next-line no-console
+    console.warn(`Element "${cssText}" is not displayed, refreshing the page and retrying...`);
+    await driver.navigate().refresh();
+    await findElement();
+  }
+
   return elem;
 }
 
@@ -96,7 +114,7 @@ export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
   return driver.wait(
     async () => {
       try {
-        await getDisplayedElement(driver, cssText);
+        await getDisplayedElement(driver, cssText, 500, false);
         return false;
       } catch (err) {
         if (err.name === "TimeoutError") {

@@ -3900,21 +3900,5 @@
   "adblock_logo": {
     "message": "AdBlock logo",
     "description": "Text in the alt attribute of an AdBlock logo image."
-  },
-  "yt_auto_allow_dialog_title": {
-    "description": "Title text on OPD shown to users when YT is auto allowlisted after detecting the YT ad wall",
-    "message": "YouTube prevents ad blockers from skipping video ads."
-  },
-  "yt_auto_allow_dialog_body_part_I": {
-    "description": "Upper body text on OPD shown to users when YT is auto allowlisted after detecting the YT ad wall",
-    "message": "That’s why we’ve automatically allowed ads to play on YouTube for this visit."
-  },
-  "yt_auto_allow_dialog_body_part_II": {
-    "description": "Lower body text on OPD shown to users when YT is auto allowlisted after detecting the YT ad wall",
-    "message": "With ads allowed temporarily, you'll have the ability to watch videos now."
-  },
-  "yt_auto_allow_dialog_button": {
-    "description": "OPD button body text on OPD shown to users when YT is auto allowlisted after detecting the YT ad wall",
-    "message": "Learn more"
   }
 }
