@@ -121,7 +121,7 @@ to run the end to end test suites.
 Prerequisite: Do the release builds as described in
 [building the extension](#building-the-extension) section.
 
-Local run:
+#### Local run
 
 ```sh
 MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
@@ -130,11 +130,27 @@ MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
 By default browsers run headless. Setting the enviornment variable
 `FORCE_HEADFUL=true` will trigger a headful run instead.
 
-Docker run:
+Mocha [command line options](https://mochajs.org/#command-line-usage) are
+supported. Example:
+
+```sh
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end -- --grep "Smoke"
+```
+
+Screenshots for failing tests are stored in `test/end-to-end/screenshots`.
+
+#### Docker run
 
 ```sh
 docker build -t end-to-end -f test/end-to-end/Dockerfile .
 docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
+```
+
+To use mocha command line options the `--entrypoint` parameter needs to be set.
+Example:
+
+```sh
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run test:end-to-end -- --grep "Smoke"
 ```
 
 To access the screenshots for failing tests run the following command, which
