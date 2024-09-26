@@ -1,4 +1,49 @@
 @layer base {
+
+  :root {
+    /**
+     * The following is an attempt to use better semantic names for the colors
+     */
+    /* Primary color */
+    --primary: var(--red2);
+    /* Foreground content color to use on primary color */
+    --primary-content: var(--white);
+
+    /* Secondary color */
+    --secondary: var(--blue2);
+    /* Foreground content color to use on secondary color */
+    --secondary-content: var(--white);
+
+    /* Accent color */
+    --accent: var(--sunshine);
+    /* Foreground content color to use on accent color */
+    --accent-content: var(--gray1);
+
+    /*--neutral: var(--white);*/
+    /*--neutral-content: var(--white);*/
+
+    /* Base color of page, used for blank backgrounds */
+    --base-100: var(--white);
+    /* Base color, a little darker */
+    --base-200: var(--gray6);
+    /* Base color, even more darker */
+    --base-300: var(--gray2);
+    /* Foreground content color to use on base color */
+    --base-content: var(--gray1);
+
+    /*--info: var(--white);*/
+    /*--info-content: var(--white);*/
+
+    /*--success: var(--white);*/
+    /*--success-content: var(--white);*/
+
+    /*--warning: var(--white);*/
+    /*--warning-content: var(--white);*/
+
+    /*--error: var(--white);*/
+    /*--error-content: var(--white);*/
+  }
+
   [data-extension='adblock'][data-theme='default'],
   [data-extension='adblock'] [data-theme='default'] {
     --theme-primary: var(--white);
@@ -31,6 +76,11 @@
     --theme-button-primary: var(--blue2);
     --theme-button-secondary: var(--gray6);
 
+    --base-100: var(--gray2);
+    --base-200: var(--gray1);
+    --base-300: var(--gray1);
+    --base-content: var(--white);
+
     ::selection {
       background: var(--theme-link-color);
       color: var(--black);
@@ -49,6 +99,10 @@
     --theme-text-accent: var(--solarized-teal5);
     --theme-button-primary: var(--red2);
     --theme-button-secondary: var(--white);
+
+    --base-100: var(--solarized-teal2);
+    --base-200: var(--solarized-teal1);
+    --base-content: var(--solarized-gray1);
 
     ::selection {
       background: var(--theme-link-color);
@@ -69,6 +123,10 @@
     --theme-button-primary: var(--red2);
     --theme-button-secondary: var(--white);
 
+    --base-100: var(--solarized-yellow3);
+    --base-200: var(--solarized-yellow2);
+    --base-content: var(--solarized-gray2l);
+
     ::selection {
       background: var(--theme-link-color);
       color: var(--black);
@@ -87,6 +145,16 @@
     --theme-text-accent: var(--white);
     --theme-button-primary: var(--blue3);
     --theme-button-secondary: var(--purple1);
+
+    --primary: var(--blue2);
+    --primary-content: var(--white);
+    --secondary: var(--blue2);
+    --secondary-content: var(--white);
+    --accent: var(--blue2);
+    --accent-content: var(--white);
+    --base-100: var(--purple2);
+    --base-200: var(--purple1);
+    --base-content: var(--white);
 
     ::selection {
       background: var(--theme-link-color);
@@ -107,6 +175,16 @@
     --theme-button-primary: var(--white);
     --theme-button-secondary: var(--red1);
 
+    --primary: var(--white);
+    --primary-content: var(--red2);
+    --secondary: var(--red1);
+    --secondary-content: var(--white);
+    --accent: var(--red2);
+    --accent-content: var(--white);
+    --base-100: var(--red2);
+    --base-200: var(--red1);
+    --base-content: var(--white);
+
     ::selection {
       background: var(--theme-link-color);
       color: var(--black);
@@ -126,6 +204,16 @@
     --theme-button-primary: var(--white);
     --theme-button-secondary: var(--blue1);
 
+    --primary: var(--white);
+    --primary-content: var(--black);
+    --secondary: var(--white);
+    --secondary-content: var(--black);
+    --accent: var(--white);
+    --accent-content: var(--black);
+    --base-100: var(--blue2);
+    --base-200: var(--blue1);
+    --base-content: var(--white);
+
     ::selection {
       background: var(--theme-link-color);
       color: var(--black);
@@ -144,6 +232,16 @@
     --theme-text-accent: var(--white);
     --theme-button-primary: var(--white);
     --theme-button-secondary: var(--yellow1);
+
+    --primary: var(--white);
+    --primary-content: var(--black);
+    --secondary: var(--white);
+    --secondary-content: var(--black);
+    --accent: var(--white);
+    --accent-content: var(--black);
+    --base-100: var(--yellow2);
+    --base-200: var(--yellow1);
+    --base-content: var(--white);
 
     ::selection {
       background: var(--theme-link-color);
