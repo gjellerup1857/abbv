@@ -71,5 +71,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-
+@layer components {
+  a, button {
+    /* transition */
+    @apply transition duration-300 ease-in-out;
+  }
+}

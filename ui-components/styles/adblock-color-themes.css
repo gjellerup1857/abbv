@@ -40,8 +40,8 @@
     /*--warning: var(--white);*/
     /*--warning-content: var(--white);*/
 
-    /*--error: var(--white);*/
-    /*--error-content: var(--white);*/
+    --error: var(--red2);
+    --error-content: var(--white);
   }
 
   [data-extension='adblock'][data-theme='default'],

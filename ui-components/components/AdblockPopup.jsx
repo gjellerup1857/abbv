@@ -32,13 +32,13 @@ export default function AdblockPopup() {
         <div
           className="flex items-center justify-between bg-base-200 p-2 mt-2 rounded text-base-content border border-base-300/10">
           Skip Cookie Walls
-          <button className="bg-accent text-accent-content px-2 py-1 rounded text-xs font-semibold">
+          <button className="bg-accent text-accent-content px-2 py-1 rounded text-xs font-semibold hover:bg-accent/80 hover:shadow-lg">
             Learn more
           </button>
         </div>
         <div className="flex items-center justify-between bg-base-200 p-2 mt-2 rounded text-base-content border border-base-300/10">
           Block Distractions
-          <button className="bg-accent text-accent-content px-2 py-1 rounded text-xs font-semibold">
+          <button className="bg-accent text-accent-content px-2 py-1 rounded text-xs font-semibold hover:bg-accent/80 hover:shadow-lg">
             Learn more
           </button>
         </div>
