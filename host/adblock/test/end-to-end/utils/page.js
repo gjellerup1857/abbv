@@ -30,24 +30,48 @@ export async function initPopupPage(driver, origin, tabId) {
   await getDisplayedElement(driver, ".header-logo", 5000);
 }
 
-export async function initOptionsFiltersTab(driver, optionsHandle) {
+async function loadOptionsTab(driver, optionsHandle, id) {
   await driver.switchTo().window(optionsHandle);
-  await driver.findElement(By.css('[href="#filters"]')).click();
+
+  let tabLink;
+  try {
+    tabLink = await driver.findElement(By.css(`[href="#${id}"]`));
+  } catch (err) {
+    if (err.name !== "StaleElementReferenceError") {
+      throw err;
+    }
+    // The options page has stale elements, reloading as a workaround
+    await driver.navigate().refresh();
+    // https://eyeo.atlassian.net/browse/EXT-335
+    await driver.sleep(500);
+    tabLink = await driver.findElement(By.css(`[href="#${id}"]`));
+  }
+
+  await tabLink.click();
+  await driver.wait(
+    async () => {
+      return (await driver.getCurrentUrl()).endsWith(`#${id}`);
+    },
+    1000,
+    `Clicking on "${id}" options tab didn't load the tab url`,
+  );
+}
+
+export async function initOptionsFiltersTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "filters");
   // Wait until a filterlist is displayed
   await getDisplayedElement(driver, '[name="easylist"]', 8000);
 }
 
 export async function initOptionsCustomizeTab(driver, optionsHandle) {
-  await driver.switchTo().window(optionsHandle);
-  await driver.findElement(By.css('[href="#customize"]')).click();
+  await loadOptionsTab(driver, optionsHandle, "customize");
 }
 
 export async function initOptionsGeneralTab(driver, optionsHandle) {
-  await driver.switchTo().window(optionsHandle);
-  await driver.findElement(By.css('[href="#general"]')).click();
+  await loadOptionsTab(driver, optionsHandle, "general");
   await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
   // https://eyeo.atlassian.net/browse/EXT-335
-  await driver.sleep(500);
+  await driver.sleep(1000);
 }
 
 export async function setCustomFilters(driver, filters) {
@@ -90,4 +114,19 @@ export async function getUserId(driver) {
   });
 
   return userId;
+}
+
+export async function getSubscriptionInfo(driver, name) {
+  let text;
+  await driver.wait(async () => {
+    const info = await driver.findElement(By.css(`[name="${name}"] .subscription_info`));
+    text = await info.getText();
+    return text !== "";
+  });
+
+  return text;
+}
+
+export async function clickFilterlist(driver, name) {
+  await driver.findElement(By.css(`[name="${name}"]`)).click();
 }

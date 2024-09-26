@@ -18,47 +18,45 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement } from "../utils/driver.js";
-import { initOptionsFiltersTab } from "../utils/page.js";
+import { waitForNotNullAttribute, getDisplayedElement, findUrl } from "../utils/driver.js";
+import {
+  initOptionsGeneralTab,
+  initOptionsFiltersTab,
+  getSubscriptionInfo,
+  clickFilterlist,
+} from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
+import { getDefaultFilterLists, languageFilterLists } from "../utils/dataset.js";
 
 const { By } = webdriver;
 
 export default () => {
+  it("displays the default state", async function () {
+    const { driver, browserName } = this;
+    const filterLists = getDefaultFilterLists(browserName);
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+
+    for (const { name, inputId, text, enabled } of filterLists) {
+      const flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+      const selector =
+        name === "acceptable_ads_privacy"
+          ? `[name="${name}"] > label`
+          : `[name="${name}"] > label h1`;
+      const flElem = await getDisplayedElement(driver, selector);
+      const flText = await flElem.getText();
+
+      expect({ name, text: flText, enabled: flEnabled }).toEqual({ name, text, enabled });
+    }
+  });
+
   it("shows the built in language filter list dropdown", async function () {
     const { driver } = this;
-    const expectedLanguages = [
-      ["easylist_plus_arabic_plus_french", "Arabic + French + EasyList"],
-      ["easylist_plus_bulgarian", "Bulgarian + EasyList"],
-      ["chinese", "Chinese + EasyList"],
-      ["czech", "Czech & Slovak + EasyList"],
-      ["dutch", "Dutch + EasyList"],
-      ["easylist_plus_french", "French + EasyList"],
-      ["easylist_plus_german", "German + EasyList"],
-      ["easylist_plus_global", "Global + EasyList"],
-      ["israeli", "Hebrew + EasyList"],
-      ["easylist_plus_hungarian", "Hungarian + EasyList"],
-      ["easylist_plus_indian", "IndianList + EasyList"],
-      ["easylist_plus_indonesian", "Indonesian + EasyList"],
-      ["italian", "Italian + EasyList"],
-      ["japanese", "Japanese"],
-      ["easylist_plun_korean", "Korean"],
-      ["latvian", "Latvian + EasyList"],
-      ["easylist_plus_lithuania", "Lithuanian + EasyList"],
-      ["nordic", "Nordic Filters + EasyList"],
-      ["easylist_plus_polish", "Polish"],
-      ["easylist_plus_portuguese", "Portuguese + EasyList"],
-      ["easylist_plus_romanian", "Romanian + EasyList"],
-      ["russian", "Russian & Ukrainian + EasyList"],
-      ["easylist_plus_spanish", "Spanish"],
-      ["turkish", "Turkish"],
-      ["easylist_plus_vietnamese", "Vietnamese + EasyList"],
-    ];
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
     const dropdown = await getDisplayedElement(driver, "#language_select");
 
-    const actualLanguages = [];
+    const actualLanguageLists = [];
     for (const option of await dropdown.findElements(By.css("option"))) {
       const id = await option.getAttribute("value");
       if (!id) {
@@ -66,9 +64,122 @@ export default () => {
       }
 
       const text = await option.getText();
-      actualLanguages.push([id, text]);
+      actualLanguageLists.push({ id, text });
     }
 
-    expect(actualLanguages).toEqual(expectedLanguages);
+    expect(actualLanguageLists).toEqual(languageFilterLists);
+  });
+
+  it("updates all filter lists", async function () {
+    const { driver, browserName } = this;
+    const filterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
+
+    const checkSubscriptionsInfo = async (updatedWhen, timeout) => {
+      await driver.wait(
+        async () => {
+          try {
+            for (const { name } of filterLists) {
+              const text = await getSubscriptionInfo(driver, name);
+              expect(text).toMatch(new RegExp(`updated.*${updatedWhen}`));
+            }
+            return true;
+          } catch (e) {}
+        },
+        timeout,
+        `Filter lists were not updated "${updatedWhen}" after ${timeout}ms`,
+        500,
+      );
+    };
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await checkSubscriptionsInfo("ago", 20000);
+
+    const updateNow = await getDisplayedElement(driver, "#btnUpdateNow");
+    await updateNow.click();
+    await checkSubscriptionsInfo("right now", 10000);
+
+    await checkSubscriptionsInfo("seconds ago", 20000);
+  });
+
+  it("goes to a filter list source page", async function () {
+    const { driver, manifestVersion } = this;
+    const aaUrl =
+      manifestVersion === 2
+        ? "https://easylist-downloads.adblockplus.org/exceptionrules.txt"
+        : "https://easylist-downloads.adblockplus.org/v3/full/exceptionrules.txt";
+
+    const enableAdvancedUser = async () => {
+      let advancedUserEnabled = await waitForNotNullAttribute(
+        driver,
+        "enable_show_advanced_options",
+        "checked",
+      );
+      if (!advancedUserEnabled) {
+        const advancedUser = await getDisplayedElement(
+          driver,
+          "span:has(> #enable_show_advanced_options)",
+        );
+        await advancedUser.click();
+        // after clicking on advancedUser the page seems to reload itself
+        await driver.sleep(1000);
+        await driver.wait(
+          async () => {
+            advancedUserEnabled = await waitForNotNullAttribute(
+              driver,
+              "enable_show_advanced_options",
+              "checked",
+            );
+            return advancedUserEnabled;
+          },
+          1000,
+          "The advanced user was not enabled after clicking",
+        );
+      }
+    };
+
+    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await enableAdvancedUser();
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    const showLinks = await getDisplayedElement(driver, "#btnShowLinks");
+    await showLinks.click();
+
+    const aaLink = await getDisplayedElement(
+      driver,
+      '[name="acceptable_ads"] > label a.filter-list-link',
+    );
+    await aaLink.click();
+
+    await findUrl(driver, aaUrl);
+  });
+
+  it("disables and reenables a filter list", async function () {
+    const { driver } = this;
+    const flName = "anticircumvent";
+    const flId = "adblockFilterList_2";
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    let flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
+    expect(flEnabled).toEqual(true);
+
+    await clickFilterlist(driver, flName);
+    flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
+    expect(flEnabled).toEqual(false);
+    let text = await getSubscriptionInfo(driver, flName);
+    expect(text).toEqual("Unsubscribed.");
+
+    // Clicking right after unsubscribed may be ineffective
+    await driver.sleep(500);
+    await clickFilterlist(driver, flName);
+    flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
+    expect(flEnabled).toEqual(true);
+    await driver.wait(
+      async () => {
+        text = await getSubscriptionInfo(driver, flName);
+        return text === "updated right now";
+      },
+      1000,
+      `${flName} info was not updated when reenabling it`,
+    );
   });
 };

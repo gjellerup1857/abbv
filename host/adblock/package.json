@@ -37,7 +37,7 @@
     "html-hint": "htmlhint adblock-betafish/ -R ./rules/",
     "postinstall": "npx @adblockinc/rules adblock",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js",
-    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 100000 --"
+    "test:end-to-end": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 120000 --"
   },
   "devDependencies": {
     "@babel/core": "7.18.9",
