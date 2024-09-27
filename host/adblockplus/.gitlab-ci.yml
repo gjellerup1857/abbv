@@ -90,12 +90,8 @@ build:
     - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> $[[ inputs.workspacepath ]]/.env
     # Create source archive
     - npm run -w $[[ inputs.workspacepath ]] build:source
-    # Create MV2 extension builds
-    - npm run -w $[[ inputs.workspacepath ]] build:release chrome -- -m 2 --unhandled-rejections=strict
-    - npm run -w $[[ inputs.workspacepath ]] build:release firefox -- -m 2 --unhandled-rejections=strict
-    # Create MV3 extension builds
-    - npm run -w $[[ inputs.workspacepath ]] build:release chrome -- -m 3 --unhandled-rejections=strict
-    - npm run -w $[[ inputs.workspacepath ]] build:release chrome -- -m 3 -c development --unhandled-rejections=strict
+    # Create extension builds
+    - npm run -w $[[ inputs.workspacepath ]] build:release
   artifacts:
     name: "adblockplus-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -117,11 +113,8 @@ buildfromsource:
     - tar xvf dist/release/adblockplus-*.tar.gz -C /tmp/source
     - cd /tmp/source
     - npm ci --cache .npm --prefer-offline
-    # Create MV2 extension builds from source archive
-    - npm run -w $[[ inputs.workspacepath ]] build:release chrome -- -m 2 --unhandled-rejections=strict
-    - npm run -w $[[ inputs.workspacepath ]] build:release firefox -- -m 2 --unhandled-rejections=strict
-    # Create MV3 extension builds from source archive
-    - npm run -w $[[ inputs.workspacepath ]] build:release chrome -- -m 3 --unhandled-rejections=strict
+    # Create extension builds from source archive
+    - npm run -w $[[ inputs.workspacepath ]] build:release
   after_script:
     # We cannot refer to artifacts in directories outside of the project
     - cp -r /tmp/source/$[[ inputs.workspacepath ]]/dist/release $[[ inputs.workspacepath ]]/dist/source
@@ -300,12 +293,12 @@ comp:MV2:firefox:oldest:
 unit:legacy:
   extends: .unit
   script:
-    - npm run -w $[[ inputs.workspacepath ]] $ unit.legacy
+    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.legacy
 
 unit:standard:
   extends: .unit
   script:
-    - npm run -w $[[ inputs.workspacepath ]] $ unit.standard
+    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.standard
 
 ################################################################################
 # UI tests

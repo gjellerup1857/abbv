@@ -34,7 +34,7 @@ argumentParser.addArgument(["-m", "--manifest-version"], {
 argumentParser.addArgument(["--basename"]);
 
 const args = argumentParser.parseKnownArgs()[0];
-let targetDir = `devenv.${args.target}`;
+let targetDir = `./dist/devenv/${args.target}-mv${args.manifest_version}`;
 if (args.outputDirectory) {
   targetDir = `${args.outputDirectory}`;
 }

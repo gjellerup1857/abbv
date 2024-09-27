@@ -76,7 +76,6 @@ const processYouTubeWallDetectedMessage = async (
     browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
     browser.tabs.reload(sender.page.id);
-    return;
   }
 };
 

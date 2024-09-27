@@ -29,11 +29,6 @@ const adWallSelector = "ytd-enforcement-message-view-model";
 const userAvatarSelector = "button#avatar-btn";
 
 /**
- * Boolean to indicate if the initial message has been sent
- */
-let initialMessageSent = false;
-
-/**
  * Checks whether given candidate is a DOM element
  *
  * @param candidate - Candidate
