@@ -65,6 +65,10 @@
   --yellow2: 255 174 0; ; /* #ffae00 */
   --sunshine: 255 215 128; ; /* #ffd780 */
 
+  /** Common colors in all themes */
+  --error: var(--red2);
+  --error-content: var(--black);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

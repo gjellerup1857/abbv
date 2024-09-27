@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -9,7 +9,7 @@ export default {
     "./.storybook/**/*.{js,jsx,ts,tsx}",
     "./docs/**/*.{js,jsx,ts,tsx}",
 
-    // Paths outside of the package root
+    // Paths outside the package root
     "../host/adblock/adblock-betafish/**/*.{jsx,tsx}", // Include React components from host/adblock
     "!../host/adblock/node_modules/**", // Exclude node_modules from host/adblock
   ],
@@ -28,8 +28,15 @@ export default {
         "theme-text-accent": "rgb(var(--theme-text-accent))",
         "theme-button-primary": "rgb(var(--theme-button-primary))",
         "theme-button-secondary": "rgb(var(--theme-button-secondary))",
+
+        // Error color
+        "error": "rgb(var(--error))",
+        // Foreground content color to use on error color
+        "error-content": "rgb(var(--error-content))",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

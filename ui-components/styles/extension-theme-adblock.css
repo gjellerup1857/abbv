@@ -7,3 +7,14 @@
     @apply m-0 text-base;
   }
 }
+
+@layer components {
+  /**
+   * Checkbox styling
+   */
+  [data-extension="adblock"] {
+    input[type="checkbox"] {
+      @apply rounded-full;
+    }
+  }
+}
