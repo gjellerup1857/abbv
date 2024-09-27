@@ -242,8 +242,10 @@ const start = async function () {
 
   const info = await browser.runtime.sendMessage({ command: "getCurrentTabInfo", tabId });
 
-  const popupMenuTheme =
-    (info.settings && info.settings.color_themes.popup_menu) ?? "default_theme";
+  let popupMenuTheme = "default_theme";
+  if (info.settings && info.settings.color_themes && info.settings.color_themes.popup_menu) {
+    popupMenuTheme = info.settings.color_themes.popup_menu;
+  }
 
   if (info) {
     const text = await browser.action.getBadgeText({ tabId: info.id });

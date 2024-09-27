@@ -176,7 +176,7 @@ Global Styles
      custom properties, but might be further differentiated
      in future themes */
   /* TODO: At the least, these should bottom out into semantic color variables */
-  --options-page-accent-text: var(--popup-main-text-color);
+  --options-page-accent-text: var(--main-text-color);
   --speech-bubble-border-color: var(--bottom-line-color);
   --mab-feedback-button-border: var(--help-icon-color);
   --header-social-icons: var(--active-tab-color);

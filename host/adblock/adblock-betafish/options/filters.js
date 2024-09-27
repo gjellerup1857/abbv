@@ -29,7 +29,7 @@
 const FANBOY_ANNOYANCE_URL = "https://fanboy.co.nz/fanboy-annoyance.txt";
 
 function fixFanboyFilter(item, adblockId) {
-  if (item?.url === FANBOY_ANNOYANCE_URL) {
+  if (item && item.url === FANBOY_ANNOYANCE_URL) {
     // eslint-disable-next-line no-param-reassign
     item.adblockId = "annoyances";
     return { item, adblockId: "annoyances" };
