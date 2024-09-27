@@ -72,8 +72,8 @@
 }
 
 @layer components {
-  a, button {
-    /* transition */
-    @apply transition duration-300 ease-in-out;
+  /* Add transition to elements that are interactable */
+  a, button, input[type="checkbox"] {
+    @apply transition duration-200 ease-in-out;
   }
 }

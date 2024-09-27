@@ -100,6 +100,8 @@
     --theme-button-primary: var(--red2);
     --theme-button-secondary: var(--white);
 
+    --secondary: var(--solarized-teal4);
+    --secondary-content: var(--solarized-teal2);
     --base-100: var(--solarized-teal2);
     --base-200: var(--solarized-teal1);
     --base-content: var(--solarized-gray1);
@@ -123,6 +125,8 @@
     --theme-button-primary: var(--red2);
     --theme-button-secondary: var(--white);
 
+    --secondary: var(--solarized-teal4);
+    --secondary-content: var(--solarized-teal2);
     --base-100: var(--solarized-yellow3);
     --base-200: var(--solarized-yellow2);
     --base-content: var(--solarized-gray2l);

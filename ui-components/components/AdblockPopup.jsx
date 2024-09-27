@@ -6,7 +6,7 @@ export default function AdblockPopup() {
         Adblock
       </header>
       <div className="flex items-center gap-2 bg-base-100 rounded mb-3 px-4 py-2 cursor-pointer hover:bg-secondary/70 hover:text-secondary-content">
-        <span className="bg-secondary text-secondary-content px-2 py-1 rounded text-sm font-bold">
+        <span className="bg-secondary text-secondary-content px-2 py-1 rounded text-xs font-bold">
           New
         </span>
         Block Floating Videos
