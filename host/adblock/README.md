@@ -37,11 +37,12 @@ Copy the `.env.defaults` file in the root directory to a `.env` file and fill in
 
 Run one of the following commands in the project directory:
 
-- `npm run build:release -- -t {chrome|firefox} -m {2|3}`
-- `npm run build:release:{beta|chrome|edge|ff}`\
+- `npm run build:release {chrome|firefox} {2|3}`
+- `npm run build:release:{chrome|edge|ff}`\
   _equivalent to running the first command with the appropriate arguments already pre-set_
-- `npm run build:release:all`\
+- `npm run build:release`\
   _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
+- `npm run build:beta`
 
 This will create a build in the _dist/release/_ directory with a name in the
 form _adblock-chrome-\*.zip_ or _adblock-firefox-\*.xpi_ . These builds are
@@ -53,13 +54,13 @@ loaded in development mode for testing (same as development environment below).
 To simplify the process of testing your changes you can create an unpacked
 development environment. For that run one of the following commands:
 
-- `npm run build:dev -- -t {chrome|firefox} -m {2|3}`
-- `npm run build:dev:{chrome|edge|ff}`\
+- `npm run build {chrome|firefox} {2|3}`
+- `npm run build:{chrome|edge|ff}`\
   _equivalent to running the first command with the appropriate arguments already pre-set_
-- `npm run build:dev:all`\
+- `npm run build`\
   _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
 
-This will create a _devenv.\*_ directory in the project directory. You can load
+This will create a _dist/devenv/\*_ directory in the project directory. You can load
 the directory as an unpacked extension under _chrome://extensions_ in
 Chromium-based browsers, and under _about:debugging_ in Firefox. After making
 changes to the source code re-run the command to update the development
@@ -72,22 +73,6 @@ source code, and from which extension builds can be generated, run the following
 command:
 
 `npm run build:source`
-
-### Other Build options
-
-Two other build options are provided to aid in testing of the extension.
-
-`--ext-version` - specifiying this parameter at build time will override the version specified in the `build/config/base.mjs` file. Most information about the format of the version in the manifest.json file can be found [here](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/version/format).
-
-`--ext-id` - specifiying this parameter at build time will override the Firefox / Mozilla extension id specified in the `build/manifest.json` file. More information about the format and when to provide the Extension / Add-on ID can be found [here](https://extensionworkshop.com/documentation/develop/extensions-and-the-add-on-id/).
-
-`--outputDirectory` - specifiying this parameter at build time will override the default build directory (a _devenv.\*_ directory in the project directory) This option is only applicable to developer ('devenv') builds.
-
-`--manifest-path` - specifiying this parameter at build time will override the default 'base' manifest file that used during the build process. It can be used for both MV2 and MV3 builds, and it can be used for both development and production builds ('devenv' or 'build' options). This build option can be used to create the AdBlock beta extension. The AdBlock beta version can be built with the included `build/beta_manifest.base.json` file.
-
-For example, the following command will create a manifest V2 development build of the AdBlock beta extension for Chrome:
-
-`npm run build:dev -- -t chrome -m 2 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --outputDirectory ./devenv.chrome.beta/`
 
 ## Testing
 
@@ -121,20 +106,36 @@ to run the end to end test suites.
 Prerequisite: Do the release builds as described in
 [building the extension](#building-the-extension) section.
 
-Local run:
+#### Local run
 
 ```sh
 MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
 ```
 
-By default browsers run headless. Setting the enviornment variable
+By default browsers run headless. Setting the environment variable
 `FORCE_HEADFUL=true` will trigger a headful run instead.
 
-Docker run:
+Mocha [command line options](https://mochajs.org/#command-line-usage) are
+supported. Example:
+
+```sh
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end -- --grep "Smoke"
+```
+
+Screenshots for failing tests are stored in `test/end-to-end/screenshots`.
+
+#### Docker run
 
 ```sh
 docker build -t end-to-end -f test/end-to-end/Dockerfile .
 docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
+```
+
+To use mocha command line options the `--entrypoint` parameter needs to be set.
+Example:
+
+```sh
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run test:end-to-end -- --grep "Smoke"
 ```
 
 To access the screenshots for failing tests run the following command, which
@@ -156,7 +157,7 @@ Specifically, the standard JavaScript code style we've adopted is the [Airbnb Ja
 
 The following npm commands are then available:
 
-- `npm run lint` runs eslint and prints out all JavaScript violations.
+- `npm run lint` runs all linters and prints out all violations.
 - `npm run lint-fix` runs eslint and automatically fixes JavaScript style violations in place (be sure to commit before running this command in case you need to revert the changes eslint makes).
 - `npm run prettier` runs prettier on HTML, CSS, and JSON files in the adblock-betafish directory and list all files that need to be Prettier.
 - `npm run prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.

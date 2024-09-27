@@ -18,27 +18,30 @@
 import { expect } from "expect";
 
 import { waitForNotNullAttribute, getDisplayedElement } from "../utils/driver.js";
-import { initOptionsGeneralTab, initOptionsFiltersTab } from "../utils/page.js";
+import { initOptionsGeneralTab, initOptionsFiltersTab, clickFilterlist } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
-  after(async function () {
-    const { driver, browserName } = this;
-    const expectAAEnabled = browserName !== "firefox";
+  let expectAAEnabled;
+  before(function () {
+    // By default AA is enabled on Chrome and disabled on Firefox
+    expectAAEnabled = this.browserName !== "firefox";
+  });
 
-    await initOptionsGeneralTab(driver, getOptionsHandle());
-    const aaEnabled = await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+  after(async function () {
+    const { driver } = this;
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    const aaEnabled = await waitForNotNullAttribute(driver, "adblockFilterList_0", "checked");
+
     // Cleanup setting the AA default state
     if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
-      const aaCheckbox = await getDisplayedElement(driver, "span:has(> #acceptable_ads)");
-      await aaCheckbox.click();
+      await clickFilterlist(driver, "acceptable_ads");
     }
   });
 
   it("displays AA default state", async function () {
-    const { driver, browserName } = this;
-    // By default AA is enabled on Chrome and disabled on Firefox
-    const expectAAEnabled = browserName !== "firefox";
+    const { driver } = this;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.wait(async () => {

@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./index.html",
     "./components/**/*.{js,ts,jsx,tsx}",
@@ -9,7 +9,7 @@ export default {
     "./.storybook/**/*.{js,jsx,ts,tsx}",
     "./docs/**/*.{js,jsx,ts,tsx}",
 
-    // Paths outside of the package root
+    // Paths outside the package root
     "../host/adblock/adblock-betafish/**/*.{jsx,tsx}", // Include React components from host/adblock
     "!../host/adblock/node_modules/**", // Exclude node_modules from host/adblock
   ],
@@ -29,7 +29,7 @@ export default {
         "theme-button-primary": "rgb(var(--theme-button-primary))",
         "theme-button-secondary": "rgb(var(--theme-button-secondary))",
 
-        // The following is an attempt to use better semantic names for the colors
+        // The following is an attempt to use better semantic names for colors
         "primary": "rgb(var(--primary))",
         "primary-content": "rgb(var(--primary-content))",
         "secondary": "rgb(var(--secondary))",
@@ -48,10 +48,12 @@ export default {
         // "success-content": "rgb(var(--success-content))",
         // "warning": "rgb(var(--warning))",
         // "warning-content": "rgb(var(--warning-content))",
-        // "error": "rgb(var(--error))",
-        // "error-content": "rgb(var(--error-content))",
+        "error": "rgb(var(--error))",
+        "error-content": "rgb(var(--error-content))",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }

@@ -20,8 +20,16 @@ import webdriver from "selenium-webdriver";
 
 import adFiltering from "./ad-filtering.js";
 import { findUrl, getTabId, getDisplayedElement, openNewTab } from "../utils/driver.js";
-import { initPopupPage, initOptionsFiltersTab, installUrl, getUserId } from "../utils/page.js";
+import {
+  initPopupPage,
+  initOptionsFiltersTab,
+  installUrl,
+  getUserId,
+  getSubscriptionInfo,
+  clickFilterlist,
+} from "../utils/page.js";
 import { setOptionsHandle, getOptionsHandle } from "../utils/hook.js";
+import { getDefaultFilterLists } from "../utils/dataset.js";
 
 const { By } = webdriver;
 
@@ -131,20 +139,17 @@ export default () => {
 
   it("resets settings", async function () {
     const { driver, origin, browserName } = this;
+    const enabledFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
     await driver.switchTo().newWindow("tab");
     const safeHandle = await driver.getWindowHandle();
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
 
-    const filterLists = ["easylist", "anticircumvent"];
-    if (browserName !== "firefox") {
-      filterLists.push("acceptable_ads"); // disabled by default on Firefox
-    }
-
-    let filterList;
-    for (filterList of filterLists) {
-      await driver.findElement(By.css(`[name="${filterList}"]`)).click();
+    // Disable the initially enabled filterlists
+    let name;
+    for ({ name } of enabledFilterLists) {
+      await clickFilterlist(driver, name);
     }
 
     let alert;
@@ -157,7 +162,7 @@ export default () => {
           throw err;
         }
         // the last filterlist didn't trigger the alert, retrying
-        await driver.findElement(By.css(`[name="${filterList}"]`)).click();
+        await clickFilterlist(driver, name);
       }
     });
     expect(await alert.getText()).toEqual(
@@ -194,13 +199,8 @@ export default () => {
     setOptionsHandle(await driver.getWindowHandle());
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    for (const filterList of filterLists) {
-      let text;
-      await driver.wait(async () => {
-        const info = driver.findElement(By.css(`[name="${filterList}"] .subscription_info`));
-        text = await info.getText();
-        return text != "";
-      });
+    for ({ name } of enabledFilterLists) {
+      const text = await getSubscriptionInfo(driver, name);
       expect(text).toMatch(/updated/);
     }
   });

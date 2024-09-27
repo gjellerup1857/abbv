@@ -123,10 +123,9 @@ that you want to test.
 ### Unit testing
 
 The `./test/unit` folder contains various mocha unit tests files
-which can be run via `npm run $ unit.legacy`. For `.ts` files we have jest
-unit tests that can be run via `npm run $ unit.standard`.
+which can be run via `npm run $ test.unit.legacy`. For `.ts` files we have jest
+unit tests that can be run via `npm run $ test.unit.standard`.
 Those can be run together via `npm test`.
-
 
 ### End-to-end testing
 
@@ -229,7 +228,7 @@ Optional environment variables:
 ### Linting
 
 You can lint all files via `npm run lint` or lint only specific file types:
-- JavaScript/TypeScript: `npm run eslint`
+- JavaScript/TypeScript: `npm run $ lint.js`
 - CSS: `npm run $ lint.css`
 - Translation files: `npm run $ lint.locale`
 
@@ -264,58 +263,38 @@ the variables accordingly. This step can be skipped, and is only required if
 you wish to enable the sending of CDP data.
 
 In order to build the extension you need to first
-[update its dependencies](#updating-the-dependencies). You can then run the
-following command for the type of build you'd like to generate:
+[update its dependencies](#updating-the-dependencies). You can then run one of
+the following command for the type of build you'd like to generate:
 
 ```sh
-npm run build:{dev|release} {chrome|firefox|local} [-- <options>]
-```
-
-or
-
-```sh
+npm run build {chrome|firefox} {2|3}
+npm run build:release {chrome|firefox} {2|3}
+npm run build:beta
+npm run build:local
 npm run build:source
 ```
 
-Targets:
-- **chrome**: Chromium-based browsers
-- **firefox**: Firefox
-- **local**: [Local test environment](#testing)
-
-**`build:dev`:** Creates unpacked extension in _dist/devenv/\<target\>/_. It
+**`build`:** Creates unpacked extension in _dist/devenv/\<target\>/_. It
 can be loaded under _chrome://extensions/_ in Chromium-based browsers, and under
 _about:debugging_ in Firefox.
 
-**`build:release`:** Creates the following extension build files in
-_dist/release/_ that can be published to the various extension stores:
+**`build:beta`:** Creates the following extension build file in _dist/release/_
+that can be published to extension stores:
 
-- adblockpluschrome-\*.zip
-- adblockplusfirefox-\*.xpi
+- adblockplus-chromedevelopment-\*.zip
+
+**`build:local`:** Creates [local test environment](#testing).
+
+**`build:release`:** Creates the following extension build files in
+_dist/release/_ that can be published to extension stores:
+
+- adblockplus-chrome-\*.zip
+- adblockplus-firefox-\*.xpi
 
 **`build:source`:** Creates the following source archive file in _dist/release/_
 that can be provided to extension stores for review purposes:
 
 - adblockplus-\*.tar.gz
-
-#### Options
-
-**`--config <*.js file path>`:** Specify a path to a new configuration file
-relative to _adblockpluschrome/gulpfile.js_ (see examples in
-_adblockpluschrome/build/config/_).
-
-**`--manifest-path <*.json file path>`:** Specify a path to a new
-_manifest.json_ file relative to _adblockpluschrome/gulpfile.js_ (see examples
-in _adblockpluschrome/build/tasks/manifest.js_).
-
-**`--manifest-version 3` or `-m 3`:** Generate a build that's compatible with
-WebExtensions Manifest version 3. If omitted, it will generate a build for
-Manifest version 2.
-
-**`--partial true`:** Run a build that will not re-build the icons, the rules
-and the UI. This is useful if your new changes do not touch any of the
-beforementioned parts of the extension, and you can benefit from the faster
-build time. Note that you must have a run a full build once before you can
-succesfully run a partial build.
 
 #### Updating the dependencies
 
@@ -332,7 +311,7 @@ Various files need to be generated before using the UI. When building the UI
 for inclusion in the extension, this is achieved using `npm run dist`.
 
 For usage [in the test environment](#testing), run the
-[`build:dev`](#building-the-extension) script to generate the various bundles
+[`build`](#building-the-extension) script to generate the various bundles
 for all [UI elements](#ui-elements).
 
 Beyond that, this repository contains [various utilities][wiki-utils] that we

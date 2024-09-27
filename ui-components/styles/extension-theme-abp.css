@@ -1,5 +1,16 @@
 @layer base {
-  [data-extension='abp'] {
+  [data-extension="abp"] {
     --extension-font-family: "Source Sans Pro", Arial, sans-serif;
+  }
+}
+
+@layer components {
+  /**
+   * Checkbox styling
+   */
+  [data-extension="abp"] {
+    input[type="checkbox"] {
+      @apply rounded;
+    }
   }
 }
