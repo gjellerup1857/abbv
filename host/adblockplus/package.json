@@ -9,6 +9,7 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
+    "build:beta": "npm run $ create.beta",
     "build:local": "npm run $ create.devenv local 2",
     "build:release": "npm run $ build.release",
     "build:source": "gulp source",
@@ -43,7 +44,6 @@
       },
       "release": {
         "chrome": {
-          "devbuild": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then gulp build -c development -t chrome -m 3 --unhandled-rejections=strict; fi",
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
         },
@@ -51,6 +51,7 @@
       }
     },
     "create": {
+      "beta": "gulp build -c development -t chrome -m 3 --unhandled-rejections=strict",
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "dist": {
         "icons": "node build/icons-generation/index.js"

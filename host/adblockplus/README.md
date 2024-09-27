@@ -269,6 +269,7 @@ the following command for the type of build you'd like to generate:
 ```sh
 npm run build {chrome|firefox} {2|3}
 npm run build:release {chrome|firefox} {2|3}
+npm run build:beta
 npm run build:local
 npm run build:source
 ```
@@ -277,13 +278,18 @@ npm run build:source
 can be loaded under _chrome://extensions/_ in Chromium-based browsers, and under
 _about:debugging_ in Firefox.
 
+**`build:beta`:** Creates the following extension build file in _dist/release/_
+that can be published to extension stores:
+
+- adblockplus-chromedevelopment-\*.zip
+
 **`build:local`:** Creates [local test environment](#testing).
 
 **`build:release`:** Creates the following extension build files in
-_dist/release/_ that can be published to the various extension stores:
+_dist/release/_ that can be published to extension stores:
 
-- adblockpluschrome-\*.zip
-- adblockplusfirefox-\*.xpi
+- adblockplus-chrome-\*.zip
+- adblockplus-firefox-\*.xpi
 
 **`build:source`:** Creates the following source archive file in _dist/release/_
 that can be provided to extension stores for review purposes:

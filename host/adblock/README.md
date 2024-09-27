@@ -38,10 +38,11 @@ Copy the `.env.defaults` file in the root directory to a `.env` file and fill in
 Run one of the following commands in the project directory:
 
 - `npm run build:release {chrome|firefox} {2|3}`
-- `npm run build:release:{beta|chrome|edge|ff}`\
+- `npm run build:release:{chrome|edge|ff}`\
   _equivalent to running the first command with the appropriate arguments already pre-set_
 - `npm run build:release`\
   _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
+- `npm run build:beta`
 
 This will create a build in the _dist/release/_ directory with a name in the
 form _adblock-chrome-\*.zip_ or _adblock-firefox-\*.xpi_ . These builds are

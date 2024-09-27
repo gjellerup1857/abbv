@@ -15,11 +15,11 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
+    "build:beta": "npm run $ create.beta",
     "build:chrome": "npm run $ build.devenv.chrome.mv3",
     "build:edge": "npm run $ build.devenv.chrome.mv2",
     "build:ff": "npm run $ build.devenv.firefox",
     "build:release": "npm run $ build.release",
-    "build:release:beta": "npm run $ build.release.chrome.beta",
     "build:release:chrome": "npm run $ build.release.chrome.mv3",
     "build:release:edge": "npm run $ build.release.chrome.mv2",
     "build:release:ff": "npm run $ build.release.firefox",
@@ -51,7 +51,6 @@
       },
       "release": {
         "chrome": {
-          "beta": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict; fi",
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then $ create.release chrome 2; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then $ create.release chrome 3; fi"
         },
@@ -59,6 +58,7 @@
       }
     },
     "create": {
+      "beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict",
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "release": "gulp build -c release -t $1 -m $2 --unhandled-rejections=strict"
     },
