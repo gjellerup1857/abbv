@@ -1,6 +1,8 @@
 # Unreleased
 
-# Unreleased hotfix
+# 4.7.1.1 - 2024-09-27
+
+This release changes the extension description.
 
 - Removed YouTube mention from extension description.
 
