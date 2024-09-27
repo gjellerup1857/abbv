@@ -70,8 +70,10 @@ const loadTemplate = function () {
 };
 
 const addLogoAndTheme = (info, $template) => {
-  const popupMenuTheme =
-    (info.settings && info.settings.color_themes.popup_menu) ?? "default_theme";
+  let popupMenuTheme = "default_theme";
+  if (info.settings && info.settings.color_themes && info.settings.color_themes.popup_menu) {
+    popupMenuTheme = info.settings.color_themes.popup_menu;
+  }
 
   // default_theme applied in html and does not need to be set
   if (popupMenuTheme !== "default_theme") {

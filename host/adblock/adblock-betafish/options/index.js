@@ -223,8 +223,10 @@ function startSubscriptionSelection(title, url) {
 }
 
 function setSelectedThemeColor() {
-  const optionsTheme =
-    (settings && settings.color_themes && settings.color_themes.options_page) ?? "default_theme";
+  let optionsTheme = "default_theme";
+  if (settings && settings.color_themes && settings.color_themes.options_page) {
+    optionsTheme = settings.color_themes.options_page;
+  }
 
   // default_theme applied in html and does not need to be set
   if (optionsTheme !== "default_theme") {
