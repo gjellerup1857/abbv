@@ -64,14 +64,14 @@ async function detectFirstRun(foundSubscriptions, foundStorage)
   let userFilters = await ewe.filters.getUserFilters();
   firstRun = !foundSubscriptions && !userFilters.length;
 
-  if (firstRun && (foundStorage || Prefs.currentVersion))
-    reinitialized = true;
-
   if (browser.runtime.getManifest().manifest_version === 3)
   {
     const subscriptions = await ewe.subscriptions.getSubscriptions();
     firstRun = !subscriptions.length;
   }
+
+  if (firstRun && (foundStorage || Prefs.currentVersion))
+    reinitialized = true;
 
   Prefs.currentVersion = info.addonVersion;
 }
@@ -90,24 +90,22 @@ function setDataCorrupted(value)
 }
 
 /**
- * In case of the user has zero subscriptions, lets readd the
+ * In case of the user has zero subscriptions,  re-add
+ * three default subscriptions (EasyList, Anti-CV, & AA)
  *
  */
 async function addDefaultMV3Subscriptions()
 {
-  if (reinitialized && browser.runtime.getManifest().manifest_version === 3)
+  const subscriptions = await ewe.subscriptions.getSubscriptions();
+  if (subscriptions.length === 0)
   {
-    const subscriptions = await ewe.subscriptions.getSubscriptions();
-    if (subscriptions.length === 0)
-    {
-      await ewe.subscriptions.add(ewe.subscriptions.ACCEPTABLE_ADS_URL);
-      await ewe.subscriptions.add(
-        "https://easylist-downloads.adblockplus.org/v3/full/easylist.txt"
-      );
-      await ewe.subscriptions.add(
-        "https://easylist-downloads.adblockplus.org/v3/full/abp-filters-anti-cv.txt"
-      );
-    }
+    await ewe.subscriptions.add(ewe.subscriptions.ACCEPTABLE_ADS_URL);
+    await ewe.subscriptions.add(
+      "https://easylist-downloads.adblockplus.org/v3/full/easylist.txt"
+    );
+    await ewe.subscriptions.add(
+      "https://easylist-downloads.adblockplus.org/v3/full/abp-filters-anti-cv.txt"
+    );
   }
 }
 
@@ -116,7 +114,11 @@ async function addSubscriptionsAndNotifyUser()
   if (firstRun || reinitialized)
     await ewe.subscriptions.addDefaults();
 
-  if (reinitialized)
+  // The following is a short term workaround because
+  // the previous call to ewe.subscriptions.addDefaults()
+  // will not re-add the default subscriptions if the user has custom rules
+  // so the subscriptions are added here
+  if (reinitialized && browser.runtime.getManifest().manifest_version === 3)
     addDefaultMV3Subscriptions();
 
   for (let url of Prefs.additional_subscriptions)
