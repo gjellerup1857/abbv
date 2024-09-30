@@ -125,7 +125,7 @@
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#c72ec5a7e52a659185f13bf3798de50ad23d08bf",
     "@eyeo/ext-ui-components": "file:../../ui-components",
-    "@eyeo/snippets": "1.5.0",
+    "@eyeo/snippets": "1.6.0",
     "@eyeo/webext-ad-filtering-solution": "1.12.0",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",

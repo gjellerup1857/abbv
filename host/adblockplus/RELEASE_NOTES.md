@@ -3,6 +3,7 @@
 - We no longer test the MV2 build of our extensions on Chrome 129 and later,
   since it disables MV2 extensions by defaults.
 - Enable user counting functionality
+- Updated snippets to 1.6.0
 
 # Unreleased hotfix
 
