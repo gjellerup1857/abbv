@@ -18,7 +18,12 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
-import { waitForNotNullAttribute, getDisplayedElement, findUrl } from "../utils/driver.js";
+import {
+  waitForNotNullAttribute,
+  getDisplayedElement,
+  findUrl,
+  waitForNotDisplayed,
+} from "../utils/driver.js";
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
@@ -30,14 +35,36 @@ import { getDefaultFilterLists, languageFilterLists } from "../utils/dataset.js"
 
 const { By } = webdriver;
 
+async function checkSubscribedInfo(driver, name, inputId) {
+  const flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+  expect(flEnabled).toEqual(true);
+  await driver.wait(
+    async () => {
+      const text = await getSubscriptionInfo(driver, name);
+      return text === "updated right now" || text === "Subscribed.";
+    },
+    1000,
+    `${name} info was not updated when adding it`,
+  );
+}
+
+async function setFilterListUrl(driver, url) {
+  const customFLElem = await getDisplayedElement(driver, "#txtNewSubscriptionUrl");
+  await customFLElem.click();
+  await customFLElem.sendKeys(url);
+  await driver.findElement(By.id("btnNewSubscriptionUrl")).click();
+}
+
 export default () => {
+  beforeEach(async function () {
+    await initOptionsFiltersTab(this.driver, getOptionsHandle());
+  });
+
   it("displays the default state", async function () {
     const { driver, browserName } = this;
-    const filterLists = getDefaultFilterLists(browserName);
+    const defaultFilterLists = getDefaultFilterLists(browserName);
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-
-    for (const { name, inputId, text, enabled } of filterLists) {
+    for (const { name, inputId, text, enabled } of defaultFilterLists) {
       const flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
       const selector =
         name === "acceptable_ads_privacy"
@@ -53,18 +80,16 @@ export default () => {
   it("shows the built in language filter list dropdown", async function () {
     const { driver } = this;
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
     const dropdown = await getDisplayedElement(driver, "#language_select");
-
     const actualLanguageLists = [];
     for (const option of await dropdown.findElements(By.css("option"))) {
-      const id = await option.getAttribute("value");
-      if (!id) {
+      const name = await option.getAttribute("value");
+      if (!name) {
         continue;
       }
 
       const text = await option.getText();
-      actualLanguageLists.push({ id, text });
+      actualLanguageLists.push({ name, text });
     }
 
     expect(actualLanguageLists).toEqual(languageFilterLists);
@@ -72,13 +97,13 @@ export default () => {
 
   it("updates all filter lists", async function () {
     const { driver, browserName } = this;
-    const filterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
+    const defaultFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
-    const checkSubscriptionsInfo = async (updatedWhen, timeout) => {
+    const checkDefaultSubscriptionsInfo = async (updatedWhen, timeout) => {
       await driver.wait(
         async () => {
           try {
-            for (const { name } of filterLists) {
+            for (const { name } of defaultFilterLists) {
               const text = await getSubscriptionInfo(driver, name);
               expect(text).toMatch(new RegExp(`updated.*${updatedWhen}`));
             }
@@ -91,14 +116,13 @@ export default () => {
       );
     };
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-    await checkSubscriptionsInfo("ago", 20000);
+    await checkDefaultSubscriptionsInfo("ago", 20000);
 
     const updateNow = await getDisplayedElement(driver, "#btnUpdateNow");
     await updateNow.click();
-    await checkSubscriptionsInfo("right now", 10000);
+    await checkDefaultSubscriptionsInfo("right now", 10000);
 
-    await checkSubscriptionsInfo("seconds ago", 20000);
+    await checkDefaultSubscriptionsInfo("seconds ago", 20000);
   });
 
   it("goes to a filter list source page", async function () {
@@ -153,33 +177,77 @@ export default () => {
     await findUrl(driver, aaUrl);
   });
 
-  it("disables and reenables a filter list", async function () {
+  for (const name of ["anticircumvent", "easylist"]) {
+    it(`disables and reenables the ${name} filter list`, async function () {
+      const { driver, browserName } = this;
+      const { inputId } = getDefaultFilterLists(browserName).find((fl) => fl.name === name);
+
+      let flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+      expect(flEnabled).toEqual(true);
+
+      await clickFilterlist(driver, name);
+      flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+      expect(flEnabled).toEqual(false);
+      let text = await getSubscriptionInfo(driver, name);
+      expect(text).toEqual("Unsubscribed.");
+
+      if (name === "easylist") {
+        const mainInfo = await getDisplayedElement(driver, "#easylist_info > b");
+        expect(await mainInfo.getText()).toEqual(
+          "AdBlock uses EasyList to block ads on most websites.",
+        );
+        const otherInfo = await getDisplayedElement(driver, "#easylist_info > span");
+        expect(await otherInfo.getText()).toEqual(
+          'We recommend keeping it on. If you unsubscribed by accident, please select "EasyList" now to block more ads.',
+        );
+      }
+
+      // Clicking right after unsubscribed may be ineffective
+      await driver.sleep(1000);
+      await clickFilterlist(driver, name);
+      await checkSubscribedInfo(driver, name, inputId);
+    });
+  }
+
+  it("adds and removes a language filter list", async function () {
     const { driver } = this;
-    const flName = "anticircumvent";
-    const flId = "adblockFilterList_2";
+    const name = "easylist_plus_vietnamese";
+    const inputId = "languageFilterList_24";
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-    let flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
-    expect(flEnabled).toEqual(true);
+    await getDisplayedElement(driver, "#language_select");
+    await driver.findElement(By.css(`#language_select > option[value="${name}"]`)).click();
+    await checkSubscribedInfo(driver, name, inputId);
 
-    await clickFilterlist(driver, flName);
-    flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
-    expect(flEnabled).toEqual(false);
-    let text = await getSubscriptionInfo(driver, flName);
-    expect(text).toEqual("Unsubscribed.");
+    // Clicking right after subscribed may be ineffective
+    await driver.sleep(1000);
+    await clickFilterlist(driver, name);
+    await waitForNotDisplayed(driver, `[name="${name}"]`);
+  });
 
-    // Clicking right after unsubscribed may be ineffective
-    await driver.sleep(500);
-    await clickFilterlist(driver, flName);
-    flEnabled = await waitForNotNullAttribute(driver, flId, "checked");
-    expect(flEnabled).toEqual(true);
-    await driver.wait(
-      async () => {
-        text = await getSubscriptionInfo(driver, flName);
-        return text === "updated right now";
-      },
-      1000,
-      `${flName} info was not updated when reenabling it`,
-    );
+  it("adds and removes a filter list via URL", async function () {
+    const { driver } = this;
+    const subscriptionUrl = "https://abptestpages.org/en/abp-testcase-subscription.txt";
+    const name = `url:${subscriptionUrl}`;
+    const inputId = "customFilterList_1";
+
+    await setFilterListUrl(driver, subscriptionUrl);
+    await checkSubscribedInfo(driver, name, inputId);
+
+    await clickFilterlist(driver, name);
+    await driver.findElement(By.css(`[name="${name}"] a.remove_filterList`)).click();
+    await waitForNotDisplayed(driver, `[name="${name}"]`);
+  });
+
+  it("displays an error for invalid filter list via URL", async function () {
+    const { driver } = this;
+    const invalidSubscriptionUrl = "invalid.txt";
+    const name = `url:${invalidSubscriptionUrl}`;
+
+    await setFilterListUrl(driver, invalidSubscriptionUrl);
+
+    const alert = await driver.switchTo().alert();
+    expect(await alert.getText()).toEqual("Failed to fetch this filter!");
+    await alert.accept();
+    await waitForNotDisplayed(driver, `[name="${name}"]`);
   });
 };

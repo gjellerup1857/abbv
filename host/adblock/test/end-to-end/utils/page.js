@@ -81,18 +81,15 @@ export async function setCustomFilters(driver, filters) {
   // Retrying as a workaround
   let saveButton;
   await driver.wait(async () => {
-    await editButton.click();
     try {
-      // Remove textarea content
-      await driver.executeScript(() => {
-        document.getElementById("txtFiltersAdvanced").value = "";
-      });
-      saveButton = await getDisplayedElement(driver, "#btnSaveAdvancedFilters", 500);
+      await editButton.click();
+      saveButton = await getDisplayedElement(driver, "#btnSaveAdvancedFilters", 500, false);
       return true;
     } catch (e) {}
   });
 
   const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
+  await filtersAdvancedElem.clear();
   for (const filter of filters) {
     await filtersAdvancedElem.sendKeys(filter);
     await filtersAdvancedElem.sendKeys(Key.RETURN);
