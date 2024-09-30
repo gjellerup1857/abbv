@@ -11,7 +11,7 @@
     "scripts": {
         "dev": "storybook dev -p 6006",
         "build": "vite build && npx tsc",
-        "test": "vitest --reporter=verbose",
+        "test": "vitest run --reporter=verbose",
         "lint": "eslint .",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"
