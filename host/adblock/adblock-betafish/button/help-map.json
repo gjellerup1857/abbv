@@ -204,7 +204,7 @@
         "content": [
           {
             "text": "learn_more_to_resolve",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000055822-how-do-i-remove-adware-or-malware-from-my-computer-"
+            "linkURL": "https://helpcenter.getadblock.com/hc/en-us/articles/9738502334611-How-to-remove-malware-or-adware-from-your-device"
           }
         ]
       }
@@ -374,7 +374,7 @@
           },
           {
             "text": "try_manual_update",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000055734-how-do-i-manually-update-my-filter-lists-"
+            "linkURL": "https://helpcenter.getadblock.com/hc/en-us/articles/9738461969043-How-do-I-manually-update-my-filter-lists"
           }
         ]
       },
@@ -444,11 +444,11 @@
         "content": [
           {
             "text": "edit_filter_lists",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000066909-which-filter-lists-should-i-use-"
+            "linkURL": "https://helpcenter.getadblock.com/hc/en-us/articles/9738523403027-Introduction-to-Filter-Lists"
           },
           {
             "text": "learn_more_filter_lists",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000161377-how-to-use-custom-filters"
+            "linkURL": "https://helpcenter.getadblock.com/hc/en-us/articles/9738501334035-How-to-use-custom-filters"
           }
         ]
       },
@@ -676,7 +676,7 @@
           },
           {
             "text": "additional_troubleshooting",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000061205-a-web-page-doesn-t-work-or-looks-wrong-with-adblock-on"
+            "linkURL": "https://helpcenter.getadblock.com/hc/en-us/sections/9738470244883-A-Web-Page-Doesn-t-Work-With-AdBlock-On"
           }
         ]
       }
@@ -882,35 +882,6 @@
       {
         "text": "done",
         "action": "finishFlowAction"
-      }
-    ]
-  },
-  "showDCHelpPanel": {
-    "title": "seeing_distractions_title",
-    "sections": [
-      {
-        "content": [
-          {
-            "text": "premium_filters_details",
-            "linkURL": "https://help.getadblock.com/support/solutions/articles/6000250028-about-distraction-control"
-          }
-        ]
-      },
-      {
-        "content": [
-          {
-            "text": "premium_filters_options",
-            "linkURL": "/options.html#premiumfilters"
-          }
-        ]
-      },
-      {
-        "content": [
-          {
-            "text": "premium_filters_help",
-            "linkURL": "https://help.getadblock.com/"
-          }
-        ]
       }
     ]
   }
