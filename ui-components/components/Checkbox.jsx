@@ -12,7 +12,6 @@ import { useState } from 'react';
  * @param {string} [props.id] - The id of the `input` element.
  * @param {boolean} [props.invalid] - Sets whether the element is in an invalid state.
  * @returns {JSX.Element}
- * @constructor
  */
 export const Checkbox = ({
   checked = false,
