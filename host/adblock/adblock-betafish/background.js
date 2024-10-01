@@ -51,7 +51,7 @@ import { setUninstallURL } from "./alias/uninstall";
 
 import DataCollectionV2 from "./datacollection.v2";
 import LocalDataCollection from "./localdatacollection";
-import ServerMessages from "./servermessages";
+import ServerMessages from "~/servermessages";
 import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
 import * as prefs from "./prefs/background";
@@ -668,18 +668,25 @@ async function checkUpdateProgress() {
   return { inProgress, filterError };
 }
 
-initialize.then(async () => {
-  await startContentFiltering();
-  await getUserId();
-  TELEMETRY.start();
-  setUninstallURL();
-  await IPMTelemetry.untilLoaded();
-  IPMTelemetry.start();
-  await startTelemetryOptOutListener();
-  await startCdpOptOutListener();
-  revalidateAllowlistingStates();
-  prefs.migrateUserData();
-});
+initialize
+  .then(async () => {
+    await startContentFiltering();
+    await getUserId();
+    TELEMETRY.start();
+    setUninstallURL();
+    await IPMTelemetry.untilLoaded();
+    IPMTelemetry.start();
+    await startTelemetryOptOutListener();
+    await startCdpOptOutListener();
+    revalidateAllowlistingStates();
+    prefs.migrateUserData();
+  })
+  .catch((e) => {
+    // Send anonymous event to the log server in case there was an error with
+    // initializing the extension.
+    ServerMessages.recordAnonymousErrorMessage("initialization_error", null);
+    throw e;
+  });
 
 // Create the "blockage stats" for the uninstall logic ...
 browser.runtime.onInstalled.addListener((details) => {

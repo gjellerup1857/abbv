@@ -30,6 +30,7 @@ import {
   setReadyState,
   ReadyState,
 } from "../../adblock-betafish/testing/ready-state/background/index.ts";
+import ServerMessages from "~/servermessages";
 
 let firstRun;
 let reinitialized = false;
@@ -104,6 +105,53 @@ async function addSubscriptions() {
   if (firstRun || reinitialized) {
     await ewe.subscriptions.addDefaults();
   }
+
+  // Attempt to fix the issue where the user has no subscriptions we expect them to have
+  // at least the default subscriptions.
+  // See: https://eyeo.atlassian.net/browse/EXT-373
+  const isMV3 = browser.runtime.getManifest().manifest_version === 3;
+  if (isMV3) {
+    const subscriptions = await ewe.subscriptions.getSubscriptions();
+    if (subscriptions.length === 0) {
+      let errorMsg;
+
+      try {
+        // Enable default subscriptions: EasyList, Anti-CV and Acceptable Ads
+        await ewe.subscriptions.addDefaults(null, true);
+      } catch (e) {
+        errorMsg = e.message;
+      }
+
+      const [newSubscriptions, enabledRulesets, userFilters, dynamicRules] = await Promise.all([
+        ewe.subscriptions.getSubscriptions(),
+        browser.declarativeNetRequest.getEnabledRulesets(),
+        ewe.filters.getUserFilters(),
+        browser.declarativeNetRequest.getDynamicRules(),
+      ]);
+      const enabledSubscriptions = newSubscriptions.filter((subscription) => subscription.enabled);
+      const lastErrorMsg = (browser.runtime.lastError || {}).message;
+      const params = {
+        subs: newSubscriptions.length,
+        enabledSubs: enabledSubscriptions.length,
+        enabledRulesets: enabledRulesets.length,
+        totalUserFilters: userFilters.length,
+        dynamicRules: dynamicRules.length,
+        dataCorrupted: isDataCorrupted(),
+        firstRun,
+        reinitialized,
+        errorMsg,
+        lastErrorMsg,
+      };
+
+      // send a message to the log server with debug metadata
+      console.warn("Something is wrong with subscriptions, reset to defaults", params);
+      ServerMessages.recordGeneralMessage("zero_subs_reset", null, params);
+
+      // reset the reinitialized flag to be later used in communicating with the user
+      reinitialized = true;
+    }
+  }
+
   // Remove "acceptable ads" if Gecko
   if (firstRun) {
     for (let url of Prefs.additional_subscriptions) {
