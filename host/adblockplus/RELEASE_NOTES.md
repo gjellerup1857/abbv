@@ -4,6 +4,7 @@
   since it disables MV2 extensions by defaults.
 - Enable user counting functionality
 - Updated snippets to 1.6.0
+- Upgraded to SDK version 1.15.0
 
 # 4.7.1.1 - 2024-09-27
 
