@@ -1,5 +1,6 @@
 {
   "name": "adblockplus",
+  "private": true,
   "repository": "https://gitlab.com/adblockinc/ext/adblockplus/adblockplus",
   "license": "GPL-3.0",
   "engines": {

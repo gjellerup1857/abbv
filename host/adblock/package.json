@@ -1,6 +1,6 @@
 {
   "name": "AdBlock",
-  "version": "6.9.2",
+  "private": true,
   "description": "AdBlock",
   "repository": {
     "type": "git",
