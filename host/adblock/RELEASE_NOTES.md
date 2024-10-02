@@ -1,8 +1,17 @@
 # Unreleased
 
+- Updated snippets to 1.7.0
+
+# 6.9.3 - 2024-10-02
+
+This release contains minor updates and attempts to fix an issue when no subscriptions are enabled (due to corrupted data).
+
 - Updated webext-ad-filtering-solution to 1.15.0
 - Attempt to fix issue when no subscriptions are enabled (due to corrupted data), restoring to default subscriptions (EXT-373)
-- Updated snippets to 1.7.0
+- Allows querying the extension for basic information about the state of adblocker settings, by trusted partners using the correct credentials. (RL-110)
+- Better ad wall is detected (EXT-333)
+- Fixed outdated Help Center links (EXT-354)
+- Updated snippets to 1.6.0
 
 # 6.9.2 - 2024-09-25
 
@@ -10,8 +19,6 @@ This release contains only minor updates and under-the-hood changes.
 
 - We no longer test the MV2 build of our extensions on Chrome 129 and later,
   since it disables MV2 extensions by defaults.
-- Fixed outdated Help Center links
-- Updated snippets to 1.6.0
 
 # 6.9.1 - 2024-09-18
 
