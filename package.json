@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "lerna run build",
+    "build:release": "lerna run build:release",
     "test": "lerna run test"
   },
   "dependencies": {},
