@@ -137,14 +137,17 @@ browsers) or they can be executed using [LambdaTest](https://automation.lambdate
 
 To run the end-to-end tests locally:
 
-- Generate the [release builds](#building-the-extension) of the extension.
+- Generate all the [release builds](#building-the-extension) of the extension (note: please generate
+all builds even if you plan to run tests on one browser).
 - Run the test:end-to-end-local script.
+
+Note: Browser specified in the command is the browser that tests will be run on, not the browser that 
+we specify in build step.
 
 Example:
 
 ```sh
-npm run build:release {chrome|firefox} -- --manifest-version {2|3}
-MANIFEST_VERSION={2|3} BROWSER={chrome|firefox|edge} npm run test:end-to-end-local all
+npm run test:end-to-end {chrome|edge|firefox} {2|3} [{all|filterlists|smoke}]
 ```
 
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
@@ -162,8 +165,8 @@ values, so you can choose to only copy the values you wish to override.
 - Additional steps are needed for running the tests with MV3 version of the extension:
   - Install the axios package globally: `npm install -g axios`
   - Upload the extension to LambdaTest by running: `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
-- Run the test:end-to-end npm script `npm run test:end-to-end all` or
-`npm run test:end-to-end-mv3 all`.
+- Run the test:end-to-end npm script `npm run test:end-to-end-lamdatest-mv2 all` or
+`npm run test:end-to-end-lambdatest-mv3 all`.
 
 #### Notes
 

@@ -26,10 +26,11 @@
     "start": "http-server ./dist/devenv/local-mv2/",
     "test": "npm run $ test.unit",
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
-    "test:end-to-end": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
+    "test:end-to-end": "npm run $ test.end-to-end",
     "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
     "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && wdio run local-test.conf.js --suite",
-    "test:end-to-end-mv3": "MANIFEST_VERSION=3 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.mv3.js --suite",
+    "test:end-to-end-lambdatest-mv2": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
+    "test:end-to-end-lambdatest-mv3": "MANIFEST_VERSION=3 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.mv3.js --suite",
     "test:end-to-end-old-browsers": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run old-browsers-test.conf.js --suite",
     "test:generate-and-open-report": "allure generate test/end-to-end/allure-results && allure open",
     "test:generate-report": "allure generate test/end-to-end/allure-results"
@@ -80,6 +81,21 @@
       "unit": {
         "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
         "standard": "jest"
+      },
+      "end-to-end":{
+        "chrome": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chrome npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chrome npm run test:end-to-end-local ${3:-filterlists}; fi"
+        },
+        "firefox": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=firefox npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" == \"3\" ]]; then echo \"Firefox tests are not supported with extension in Manifest v3 \"; exit 1; fi"
+        },
+        "edge": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=edge npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" == \"3\" ]]; then echo \"Edge tests are not supported with extension in Manifest v3 \"; exit 1; fi"
+        },
+        "chromium": "if [[ -z \"$1\" || \"$1\" == \"chromium\" ]]; then echo \"Tests are not possible to be run in Chromium in AdBlock Plus. Did you mean Chrome?\"; exit 1; fi"
       }
     },
     "xtm": {

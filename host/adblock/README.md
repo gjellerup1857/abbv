@@ -106,10 +106,13 @@ to run the end to end test suites.
 Prerequisite: Do the release builds as described in
 [building the extension](#building-the-extension) section.
 
+Note: Browser specified in the command is the browser that tests will be run on, not the browser that
+we specify in build step.
+
 #### Local run
 
 ```sh
-MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end
+npm run test:end-to-end {chromium|edge|firefox} {2|3}
 ```
 
 By default browsers run headless. Setting the environment variable
@@ -119,7 +122,7 @@ Mocha [command line options](https://mochajs.org/#command-line-usage) are
 supported. Example:
 
 ```sh
-MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end -- --grep "Smoke"
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end-local -- --grep "Smoke"
 ```
 
 Screenshots for failing tests are stored in `test/end-to-end/screenshots`.

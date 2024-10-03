@@ -12,4 +12,4 @@ ENTRYPOINT test/end-to-end/entrypoint.sh
 
 ENV MANIFEST_VERSION=3
 ENV BROWSER=chromium
-ENTRYPOINT npm run test:end-to-end
+ENTRYPOINT npm run test:end-to-end $BROWSER $MANIFEST_VERSION
