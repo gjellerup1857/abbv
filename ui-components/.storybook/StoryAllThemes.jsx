@@ -1,4 +1,3 @@
-import React from 'react';
 import { Story } from '@storybook/blocks';
 import PropTypes from 'prop-types';
 

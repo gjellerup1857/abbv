@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { DecoratorHelpers } from '@storybook/addon-themes';
 
 const DEFAULT_ELEMENT_SELECTOR = 'html';
