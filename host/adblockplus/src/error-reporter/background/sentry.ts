@@ -30,6 +30,7 @@ import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 export const SENTRY_USER_ID = "sentry_user_id";
 
 let scope: Scope;
+
 /**
  * Report error to Sentry
  *
@@ -39,6 +40,14 @@ export function reportError(error: Error): void {
   if (scope) {
     scope.captureException(error);
   }
+}
+
+/**
+ * Report message to Sentry
+ * @param message - Message to report
+ */
+export function captureMessage(message: string): void {
+  scope.captureMessage(message);
 }
 
 let lastEvent: SentryErrorEvent;

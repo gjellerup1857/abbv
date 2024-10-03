@@ -20,6 +20,7 @@
 import rulesIndex from "@adblockinc/rules/adblockplus";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
+import {captureMessage} from "../../src/error-reporter/background/sentry";
 import {startTelemetry, initializeCDP, initializeEyeometryMACCounting} from
   "../../src/ipm/background/index.ts";
 import * as premium from "../../src/premium/background/index.ts";
@@ -189,6 +190,11 @@ export async function start()
     testStorage().catch(() => { setDataCorrupted(true); })
   ]);
 
+  ewe.debugging.onLogEvent.addListener(({message, level, timeStamp, color}) =>
+  {
+    console.log("Capture message:", message);
+    captureMessage(message);
+  });
   (await ewe.filters.getMigrationErrors()).forEach(console.error);
   (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
   eweFirstRun.warnings.forEach(console.warn);
