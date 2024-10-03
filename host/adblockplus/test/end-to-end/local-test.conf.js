@@ -54,7 +54,7 @@ if (process.env.MANIFEST_VERSION === "3")
 else
 {
   chromiumOptions.extensions =
-    browserName === "chrome" || browserName === "edge" ? [
+    browserName === "chromium" || browserName === "edge" ? [
       helpers.getChromiumExtension(),
       helpers.getHelperExtension()
     ] : [];
@@ -74,7 +74,7 @@ if (process.env.FORCE_HEADFUL !== "true")
 if (browserName === "chrome")
 {
   browserCapabilities.push({
-    browserName: "chrome",
+    browserName: "chromium",
     "goog:chromeOptions": chromiumOptions,
     acceptInsecureCerts: true,
     exclude: [

@@ -40,7 +40,7 @@ const parallelConfig = {
       "LT:Options": {
         "lambda:loadExtension": [mv3BuildCloudUrl]
       },
-      browserName: "Chrome",
+      browserName: "Chromium",
       browserVersion: "latest",
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
