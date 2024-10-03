@@ -98,7 +98,12 @@ async function beforeSequence(expectInstalledTab = true)
   if (process.env.LOCAL_RUN !== "true")
     await browser.setWindowSize(1400, 1000);
 
-  await afterSequence();
+  // beforeSequence() is usually called once at the beggining of test suites
+  // right after extension installation. That may stress the browser for a while
+  // which may lead to a situation where the options page is not found (Firefox)
+  // To mitigate that, `optionsUrl` is passed here to trigger the fallback
+  // mechanism in switchToABPOptionsTab()
+  await afterSequence(optionsUrl);
 
   return {origin, optionsUrl, installedUrl};
 }

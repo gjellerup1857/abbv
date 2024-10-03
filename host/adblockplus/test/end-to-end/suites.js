@@ -20,9 +20,9 @@
 exports.suites = {
   all: ["./tests/**.js"],
   filterlists: [
+    "./tests/test-smoke-*.js",
     "./tests/test-advanced-tab-filter-lists.js",
     "./tests/test-built-in-filter-list-dropdown.js",
-    "./tests/test-smoke-*.js",
     "./tests/test-options-page-acceptable-ads.js"
   ],
   oldbrowsers: [
