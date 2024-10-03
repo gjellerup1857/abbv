@@ -167,5 +167,19 @@
     "webpack": "5.93.0",
     "webpack-merge": "6.0.1",
     "webpack-stream": "6.1.1"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist/devenv"
+        ]
+      },
+      "build:release": {
+        "outputs": [
+          "{projectRoot}/dist/release"
+        ]
+      }
+    }
   }
 }

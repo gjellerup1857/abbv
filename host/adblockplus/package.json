@@ -184,5 +184,19 @@
   },
   "overrides": {
     "stylelint": "14.9.1"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist/devenv"
+        ]
+      },
+      "build:release": {        
+        "outputs": [
+          "{projectRoot}/dist/release"
+        ]
+      }
+    }
   }
 }
