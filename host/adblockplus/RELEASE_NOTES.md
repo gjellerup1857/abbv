@@ -5,6 +5,7 @@
 - Enable user counting functionality
 - Updated snippets to 1.6.0
 - Upgraded to SDK version 1.15.0
+- Updated snippets to 1.7.0
 
 # 4.7.1.1 - 2024-09-27
 

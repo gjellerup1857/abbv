@@ -2,6 +2,7 @@
 
 - Updated webext-ad-filtering-solution to 1.15.0
 - Attempt to fix issue when no subscriptions are enabled (due to corrupted data), restoring to default subscriptions (EXT-373)
+- Updated snippets to 1.7.0
 
 # 6.9.2 - 2024-09-25
 
