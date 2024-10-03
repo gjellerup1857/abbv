@@ -17,7 +17,7 @@
 
 import { expect } from "expect";
 
-import { waitForNotNullAttribute, getDisplayedElement } from "../utils/driver.js";
+import { isCheckboxEnabled, getDisplayedElement } from "../utils/driver.js";
 import { initOptionsGeneralTab, initOptionsFiltersTab, clickFilterlist } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
@@ -30,13 +30,15 @@ export default () => {
 
   after(async function () {
     const { driver } = this;
+    const name = "acceptable_ads";
+    const inputId = "adblockFilterList_0";
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    const aaEnabled = await waitForNotNullAttribute(driver, "adblockFilterList_0", "checked");
+    const aaEnabled = await isCheckboxEnabled(driver, inputId);
 
     // Cleanup setting the AA default state
     if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
-      await clickFilterlist(driver, "acceptable_ads");
+      await clickFilterlist(driver, name, inputId, expectAAEnabled);
     }
   });
 
@@ -45,24 +47,16 @@ export default () => {
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.wait(async () => {
-      const aaEnabled = await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+      const aaEnabled = await isCheckboxEnabled(driver, "acceptable_ads");
       return aaEnabled === expectAAEnabled;
     });
-    const aaPrivacyEnabled = await waitForNotNullAttribute(
-      driver,
-      "acceptable_ads_privacy",
-      "checked",
-    );
+    const aaPrivacyEnabled = await isCheckboxEnabled(driver, "acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(false);
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    const aaFLEnabled = await waitForNotNullAttribute(driver, "adblockFilterList_0", "checked");
+    const aaFLEnabled = await isCheckboxEnabled(driver, "adblockFilterList_0");
     expect(aaFLEnabled).toEqual(expectAAEnabled);
-    const aaFLPrivacyEnabled = await waitForNotNullAttribute(
-      driver,
-      "adblockFilterList_1",
-      "checked",
-    );
+    const aaFLPrivacyEnabled = await isCheckboxEnabled(driver, "adblockFilterList_1");
     expect(aaFLPrivacyEnabled).toEqual(false);
   });
 
@@ -70,15 +64,11 @@ export default () => {
     const { driver } = this;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
-    let aaPrivacyEnabled = await waitForNotNullAttribute(
-      driver,
-      "acceptable_ads_privacy",
-      "checked",
-    );
+    let aaPrivacyEnabled = await isCheckboxEnabled(driver, "acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(false);
     const aaPrivacy = await getDisplayedElement(driver, "label:has(> #acceptable_ads_privacy)");
     await aaPrivacy.click();
-    aaPrivacyEnabled = await waitForNotNullAttribute(driver, "acceptable_ads_privacy", "checked");
+    aaPrivacyEnabled = await isCheckboxEnabled(driver, "acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(true);
     const aaPrivacyHelper = await getDisplayedElement(driver, "#aa-privacy-helper > span", 4000);
     expect(await aaPrivacyHelper.getText()).toEqual(
@@ -86,11 +76,7 @@ export default () => {
     );
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    const aaFLPrivacyEnabled = await waitForNotNullAttribute(
-      driver,
-      "adblockFilterList_1",
-      "checked",
-    );
+    const aaFLPrivacyEnabled = await isCheckboxEnabled(driver, "adblockFilterList_1");
     expect(aaFLPrivacyEnabled).toEqual(true);
   });
 
@@ -98,7 +84,7 @@ export default () => {
     const { driver } = this;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
-    const aaEnabled = await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+    const aaEnabled = await isCheckboxEnabled(driver, "acceptable_ads");
     const aaCheckbox = await getDisplayedElement(driver, "span:has(> #acceptable_ads)");
     if (!aaEnabled) {
       // Enables AA so it can be disabled afterwards to get the info message
@@ -110,15 +96,11 @@ export default () => {
     expect(await aaInfo.getText()).toEqual(
       "You're no longer subscribed to the Acceptable Ads filter list.",
     );
-    const aaPrivacyEnabled = await waitForNotNullAttribute(
-      driver,
-      "acceptable_ads_privacy",
-      "checked",
-    );
+    const aaPrivacyEnabled = await isCheckboxEnabled(driver, "acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(false);
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    const aaFLEnabled = await waitForNotNullAttribute(driver, "adblockFilterList_0", "checked");
+    const aaFLEnabled = await isCheckboxEnabled(driver, "adblockFilterList_0");
     expect(aaFLEnabled).toEqual(false);
   });
 };

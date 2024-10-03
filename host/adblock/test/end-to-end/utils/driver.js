@@ -150,3 +150,7 @@ export async function waitForNotNullAttribute(driver, id, attribute, timeout = 1
   );
   return value;
 }
+
+export function isCheckboxEnabled(driver, inputId) {
+  return waitForNotNullAttribute(driver, inputId, "checked");
+}

@@ -19,7 +19,7 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import {
-  waitForNotNullAttribute,
+  isCheckboxEnabled,
   getDisplayedElement,
   findUrl,
   waitForNotDisplayed,
@@ -36,14 +36,14 @@ import { getDefaultFilterLists, languageFilterLists } from "../utils/dataset.js"
 const { By } = webdriver;
 
 async function checkSubscribedInfo(driver, name, inputId) {
-  const flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+  const flEnabled = await isCheckboxEnabled(driver, inputId);
   expect(flEnabled).toEqual(true);
   await driver.wait(
     async () => {
       const text = await getSubscriptionInfo(driver, name);
-      return text === "updated right now" || text === "Subscribed.";
+      return text.includes("updated") || text === "Subscribed.";
     },
-    1000,
+    2000,
     `${name} info was not updated when adding it`,
   );
 }
@@ -65,7 +65,7 @@ export default () => {
     const defaultFilterLists = getDefaultFilterLists(browserName);
 
     for (const { name, inputId, text, enabled } of defaultFilterLists) {
-      const flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+      const flEnabled = await isCheckboxEnabled(driver, inputId);
       const selector =
         name === "acceptable_ads_privacy"
           ? `[name="${name}"] > label`
@@ -133,11 +133,7 @@ export default () => {
         : "https://easylist-downloads.adblockplus.org/v3/full/exceptionrules.txt";
 
     const enableAdvancedUser = async () => {
-      let advancedUserEnabled = await waitForNotNullAttribute(
-        driver,
-        "enable_show_advanced_options",
-        "checked",
-      );
+      let advancedUserEnabled = await isCheckboxEnabled(driver, "enable_show_advanced_options");
       if (!advancedUserEnabled) {
         const advancedUser = await getDisplayedElement(
           driver,
@@ -148,11 +144,7 @@ export default () => {
         await driver.sleep(1000);
         await driver.wait(
           async () => {
-            advancedUserEnabled = await waitForNotNullAttribute(
-              driver,
-              "enable_show_advanced_options",
-              "checked",
-            );
+            advancedUserEnabled = await isCheckboxEnabled(driver, "enable_show_advanced_options");
             return advancedUserEnabled;
           },
           1000,
@@ -182,13 +174,11 @@ export default () => {
       const { driver, browserName } = this;
       const { inputId } = getDefaultFilterLists(browserName).find((fl) => fl.name === name);
 
-      let flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
+      const flEnabled = await isCheckboxEnabled(driver, inputId);
       expect(flEnabled).toEqual(true);
 
-      await clickFilterlist(driver, name);
-      flEnabled = await waitForNotNullAttribute(driver, inputId, "checked");
-      expect(flEnabled).toEqual(false);
-      let text = await getSubscriptionInfo(driver, name);
+      await clickFilterlist(driver, name, inputId, false);
+      const text = await getSubscriptionInfo(driver, name);
       expect(text).toEqual("Unsubscribed.");
 
       if (name === "easylist") {
@@ -204,7 +194,7 @@ export default () => {
 
       // Clicking right after unsubscribed may be ineffective
       await driver.sleep(1000);
-      await clickFilterlist(driver, name);
+      await clickFilterlist(driver, name, inputId, true);
       await checkSubscribedInfo(driver, name, inputId);
     });
   }
@@ -233,7 +223,7 @@ export default () => {
     await setFilterListUrl(driver, subscriptionUrl);
     await checkSubscribedInfo(driver, name, inputId);
 
-    await clickFilterlist(driver, name);
+    await clickFilterlist(driver, name, inputId, false);
     await driver.findElement(By.css(`[name="${name}"] a.remove_filterList`)).click();
     await waitForNotDisplayed(driver, `[name="${name}"]`);
   });

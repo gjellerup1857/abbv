@@ -17,7 +17,13 @@
 
 import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement, openNewTab, findUrl, waitForNotNullAttribute } from "./driver.js";
+import {
+  getDisplayedElement,
+  openNewTab,
+  findUrl,
+  waitForNotNullAttribute,
+  isCheckboxEnabled,
+} from "./driver.js";
 
 const { By, Key } = webdriver;
 
@@ -124,6 +130,22 @@ export async function getSubscriptionInfo(driver, name) {
   return text;
 }
 
-export async function clickFilterlist(driver, name) {
+// This function assumes initOptionsFiltersTab() being called beforehand
+export async function clickFilterlist(driver, name, id, enabledAfterClick) {
   await driver.findElement(By.css(`[name="${name}"]`)).click();
+
+  // Language filter lists get removed from the UI after disabling them.
+  // In that case no further checks are done here
+  if (!id) {
+    return;
+  }
+
+  const text = enabledAfterClick ? "enabled" : "disabled";
+  await driver.wait(
+    async () => {
+      return (await isCheckboxEnabled(driver, id)) === enabledAfterClick;
+    },
+    1000,
+    `The filterlist "${name}" was not ${text} after clicking`,
+  );
 }

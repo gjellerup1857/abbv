@@ -19,7 +19,13 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import adFiltering from "./ad-filtering.js";
-import { findUrl, getTabId, getDisplayedElement, openNewTab } from "../utils/driver.js";
+import {
+  findUrl,
+  getTabId,
+  getDisplayedElement,
+  openNewTab,
+  isCheckboxEnabled,
+} from "../utils/driver.js";
 import {
   initPopupPage,
   initOptionsFiltersTab,
@@ -141,35 +147,50 @@ export default () => {
     const { driver, origin, browserName } = this;
     const enabledFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
+    const handleDisabledFilterlistsAlert = async () => {
+      let alert;
+      await driver.wait(async () => {
+        try {
+          alert = await driver.switchTo().alert();
+          return true;
+        } catch (err) {
+          if (err.name !== "NoSuchAlertError") {
+            throw err;
+          }
+          throw new Error("No alert was displayed after disabling all filterlists");
+        }
+      });
+      expect(await alert.getText()).toEqual(
+        "AdBlock can't block ads if you disable all the filter lists. We " +
+          "recommend pausing AdBlock instead. Unsubscribe from this list anyway?",
+      );
+
+      await alert.accept();
+    };
+
     await driver.switchTo().newWindow("tab");
     const safeHandle = await driver.getWindowHandle();
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
 
+    let lastInputId;
     // Disable the initially enabled filterlists
-    let name;
-    for ({ name } of enabledFilterLists) {
-      await clickFilterlist(driver, name);
+    const amount = enabledFilterLists.length;
+    for (const [i, { name, inputId }] of enabledFilterLists.entries()) {
+      let id = inputId;
+      if (i + 1 === amount) {
+        // Disabling the last filterlist raises an alert. Passing a null id to
+        // prevent clickFilterlist() doing any checks after clicking
+        id = null;
+        lastInputId = inputId;
+      }
+
+      await clickFilterlist(driver, name, id, false);
     }
 
-    let alert;
-    await driver.wait(async () => {
-      try {
-        alert = await driver.switchTo().alert();
-        return true;
-      } catch (err) {
-        if (err.name !== "NoSuchAlertError") {
-          throw err;
-        }
-        // the last filterlist didn't trigger the alert, retrying
-        await clickFilterlist(driver, name);
-      }
-    });
-    expect(await alert.getText()).toEqual(
-      "AdBlock can't block ads if you disable all the filter lists. We " +
-        "recommend pausing AdBlock instead. Unsubscribe from this list anyway?",
-    );
-    await alert.accept();
+    await handleDisabledFilterlistsAlert();
+    const aaEnabled = await isCheckboxEnabled(driver, lastInputId);
+    expect(aaEnabled).toEqual(false);
 
     await driver.executeScript(() => browser.runtime.reload());
     // Workaround for `target window already closed`
@@ -199,7 +220,7 @@ export default () => {
     setOptionsHandle(await driver.getWindowHandle());
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
-    for ({ name } of enabledFilterLists) {
+    for (const { name } of enabledFilterLists) {
       const text = await getSubscriptionInfo(driver, name);
       expect(text).toMatch(/updated/);
     }
