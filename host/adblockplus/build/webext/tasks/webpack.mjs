@@ -21,6 +21,7 @@ import merge from "merge-stream";
 import webpackStream from "webpack-stream";
 import webpackMerge from "webpack-merge";
 import webpackMain from "webpack";
+import named from "vinyl-named";
 
 export default function webpack({
   webpackInfo,
@@ -29,62 +30,63 @@ export default function webpack({
   sourceMapType
 })
 {
-  return merge(webpackInfo.bundles.map(bundle =>
-    gulp.src(bundle.src)
-    .pipe(webpackStream(
-      {
-        quiet: true,
-        config: webpackMerge.merge(
-          webpackInfo.baseConfig,
-          {
-            devtool: sourceMapType,
-            output: {
-              filename: bundle.dest
-            },
-            resolve: {
-              extensions: [".ts", ".js", ".json", ".wasm"],
-              alias: webpackInfo.alias,
-              symlinks: false
-            },
-            module: {
-              rules: [
-                {
-                  test: /info.?/,
-                  loader: "wp-template-loader",
-                  options: {
-                    data: {addonName, addonVersion}
-                  }
-                },
-                {
-                  test: /\.ts$/,
-                  use: [
-                    {
-                      loader: "ts-loader",
-                      options: {
-                        onlyCompileBundledFiles: true,
-                        // We're running type checks separately due to memory
-                        // and performance problems when running them while
-                        // building the extension
-                        // https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/1441
-                        transpileOnly: true
-                      }
-                    }
-                  ]
+  return merge(
+    webpackInfo.bundles.map(
+      (bundle) => gulp.src(bundle.src).pipe(named(() => bundle.dest))
+    )
+  ).pipe(webpackStream(
+    {
+      quiet: true,
+      config: webpackMerge.merge(
+        webpackInfo.baseConfig,
+        {
+          devtool: sourceMapType,
+          output: {
+            filename: "[name]"
+          },
+          resolve: {
+            extensions: [".ts", ".js", ".json", ".wasm"],
+            alias: webpackInfo.alias,
+            symlinks: false
+          },
+          module: {
+            rules: [
+              {
+                test: /info.?/,
+                loader: "wp-template-loader",
+                options: {
+                  data: {addonName, addonVersion}
                 }
-              ]
-            },
-            plugins: [
-              new Dotenv({
-                systemvars: true,
-                defaults: true,
-                silent: true,
-                prefix: "webpackDotenvPlugin."
-              })
-            ],
-            externals: {
-              perf_hooks: "self"
-            }
-          })
-      }, webpackMain))
-  ));
+              },
+              {
+                test: /\.ts$/,
+                use: [
+                  {
+                    loader: "ts-loader",
+                    options: {
+                      onlyCompileBundledFiles: true,
+                      // We're running type checks separately due to memory
+                      // and performance problems when running them while
+                      // building the extension
+                      // https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/1441
+                      transpileOnly: true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          plugins: [
+            new Dotenv({
+              systemvars: true,
+              defaults: true,
+              silent: true,
+              prefix: "webpackDotenvPlugin."
+            })
+          ],
+          externals: {
+            perf_hooks: "self"
+          }
+        })
+    }, webpackMain));
 }

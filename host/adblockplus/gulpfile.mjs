@@ -274,18 +274,22 @@ async function buildDevenv()
 {
   const options = await getBuildOptions(true);
   const output = await getBuildOutput(options);
+  const steps = await getBuildSteps(options);
 
-  return merge(await getBuildSteps(options))
-    .pipe(output);
+  return new Promise((resolve, reject) =>
+    merge(steps).pipe(output).on("finish", resolve).on("error", reject)
+  );
 }
 
 async function buildPacked()
 {
   const options = await getBuildOptions(false);
   const output = await getBuildOutput(options);
+  const steps = await getBuildSteps(options);
 
-  return merge(await getBuildSteps(options))
-    .pipe(output);
+  return new Promise((resolve, reject) =>
+    merge(steps).pipe(output).on("finish", resolve).on("error", reject)
+  );
 }
 
 function cleanDir()

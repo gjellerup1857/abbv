@@ -21,6 +21,7 @@ import merge from "merge-stream";
 import webpackStream from "webpack-stream";
 import webpackMerge from "webpack-merge";
 import webpackMain from "webpack";
+import named from "vinyl-named";
 
 export default function webpack({
   webpackInfo,
@@ -30,70 +31,68 @@ export default function webpack({
   skipTypeChecks,
 }) {
   return merge(
-    webpackInfo.bundles.map((bundle) =>
-      gulp.src(bundle.src).pipe(
-        webpackStream(
-          {
-            quiet: true,
-            config: webpackMerge.merge(webpackInfo.baseConfig, {
-              devtool: sourceMapType,
-              output: {
-                filename: bundle.dest,
+    webpackInfo.bundles.map((bundle) => gulp.src(bundle.src).pipe(named(() => bundle.dest))),
+  ).pipe(
+    webpackStream(
+      {
+        quiet: true,
+        config: webpackMerge.merge(webpackInfo.baseConfig, {
+          devtool: sourceMapType,
+          output: {
+            filename: "[name]",
+          },
+          resolve: {
+            extensions: [".ts", ".js", ".json", ".wasm", ".jsx"],
+            alias: webpackInfo.alias,
+            symlinks: false,
+          },
+          module: {
+            rules: [
+              {
+                test: /info.?/,
+                loader: "wp-template-loader",
+                options: {
+                  data: { addonName, addonVersion },
+                },
               },
-              resolve: {
-                extensions: [".ts", ".js", ".json", ".wasm", ".jsx"],
-                alias: webpackInfo.alias,
-                symlinks: false,
-              },
-              module: {
-                rules: [
+              {
+                test: /\.ts$/,
+                use: [
                   {
-                    test: /info.?/,
-                    loader: "wp-template-loader",
-                    options: {
-                      data: { addonName, addonVersion },
-                    },
-                  },
-                  {
-                    test: /\.ts$/,
-                    use: [
-                      {
-                        loader: "ts-loader",
-                        options: { transpileOnly: skipTypeChecks },
-                      },
-                    ],
-                  },
-                  {
-                    test: /\.(js|jsx)$/,
-                    include: [/button\/react-components/, /node_modules\/@eyeo\/ext-ui-components/],
-                    use: {
-                      loader: "babel-loader",
-                      options: {
-                        presets: [
-                          "@babel/preset-env",
-                          ["@babel/preset-react", { runtime: "automatic" }],
-                        ],
-                      },
-                    },
+                    loader: "ts-loader",
+                    options: { transpileOnly: skipTypeChecks },
                   },
                 ],
               },
-              plugins: [
-                new Dotenv({
-                  prefix: "webpackDotenvPlugin.",
-                  defaults: true,
-                  silent: true,
-                  systemvars: true,
-                }),
-              ],
-              externals: {
-                perf_hooks: "self",
+              {
+                test: /\.(js|jsx)$/,
+                include: [/button\/react-components/, /node_modules\/@eyeo\/ext-ui-components/],
+                use: {
+                  loader: "babel-loader",
+                  options: {
+                    presets: [
+                      "@babel/preset-env",
+                      ["@babel/preset-react", { runtime: "automatic" }],
+                    ],
+                  },
+                },
               },
-            }),
+            ],
           },
-          webpackMain,
-        ),
-      ),
+          plugins: [
+            new Dotenv({
+              prefix: "webpackDotenvPlugin.",
+              defaults: true,
+              silent: true,
+              systemvars: true,
+            }),
+          ],
+          externals: {
+            perf_hooks: "self",
+          },
+        }),
+      },
+      webpackMain,
     ),
   );
 }
