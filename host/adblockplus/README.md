@@ -147,7 +147,7 @@ we specify in build step.
 Example:
 
 ```sh
-npm run test:end-to-end {chrome|edge|firefox} {2|3} [{all|filterlists|smoke}]
+npm run test:end-to-end {chromium|edge|firefox} {2|3} [{all|filterlists|smoke}]
 ```
 
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
@@ -191,7 +191,7 @@ completed. The report can be generated and opened using the
 Prerequisites: Docker
 
 ```sh
-docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION={2|3} --build-arg BROWSER={chrome|firefox|edge} --build-arg BUILD_EXTENSION={true|false} .
+docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION={2|3} --build-arg BROWSER={chromium|firefox|edge} --build-arg BUILD_EXTENSION={true|false} .
 docker run --cpus=2 --shm-size=2g -it -e SUITE=smoke end-to-end
 ```
 

@@ -83,9 +83,9 @@
         "standard": "jest"
       },
       "end-to-end":{
-        "chrome": {
-          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chrome npm run test:end-to-end-local ${3:-filterlists}; fi",
-          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chrome\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chrome npm run test:end-to-end-local ${3:-filterlists}; fi"
+        "chromium": {
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi"
         },
         "firefox": {
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=firefox npm run test:end-to-end-local ${3:-filterlists}; fi",
@@ -95,7 +95,7 @@
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=edge npm run test:end-to-end-local ${3:-filterlists}; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" == \"3\" ]]; then echo \"Edge tests are not supported with extension in Manifest v3 \"; exit 1; fi"
         },
-        "chromium": "if [[ -z \"$1\" || \"$1\" == \"chromium\" ]]; then echo \"Tests are not possible to be run in Chromium in AdBlock Plus. Did you mean Chrome?\"; exit 1; fi"
+        "chrome": "if [[ -z \"$1\" || \"$1\" == \"chrome\" ]]; then echo \"Tests are not possible to be run in Chrome in AdBlock Plus. Did you mean Chromium?\"; exit 1; fi"
       }
     },
     "xtm": {

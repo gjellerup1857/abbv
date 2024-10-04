@@ -405,8 +405,8 @@ uitests:docker:MV2:edge:
     MANIFEST_VERSION: 2
     BROWSER: edge
 
-uitests:docker:MV3:chrome:
+uitests:docker:MV3:chromium:
   extends: .uitests:docker
   variables:
     MANIFEST_VERSION: 3
-    BROWSER: chrome
+    BROWSER: chromium
