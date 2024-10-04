@@ -17,6 +17,69 @@
       "outputs": [
         "{projectRoot}/dist"
       ]
+    },
+    "build:local": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/devenv/local-mv2"
+      ]
+    },
+    "build:chrome": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/devenv/chrome-mv3"
+      ]
+    },
+    "build:edge": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/devenv/chrome-mv2"
+      ]
+    },
+    "build:ff": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/devenv/firefox-mv2"
+      ]
+    },
+    "build:release:chrome": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/release/*-chrome-*-mv3.zip"
+      ]
+    },
+    "build:release:edge": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/release/*-chrome-*-mv2.zip"
+      ]
+    },
+    "build:release:ff": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/release/*-firefox-*-mv2.xpi"
+      ]
     }
   }
 }
