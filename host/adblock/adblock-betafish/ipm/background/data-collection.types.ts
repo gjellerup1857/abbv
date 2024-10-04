@@ -201,20 +201,32 @@ export interface UserData {
 }
 
 /**
- * Atributes related to a specific IPM command
+ * Atributes related to a specific IPM command in the extension
  */
-interface IpmInfo {
+interface IpmCommand {
   id: string;
 }
 
+/*
+ * Attributes related to a specific IPM capability in the extension
+ */
+interface IpmCapability {
+  name: string;
+  version: number;
+}
+
 /**
- * The stored commands attributes that are being sent to the IPM server
+ * The IPM data in the extension that is being sent to the IPM server
  */
 export interface IpmData {
   /**
    * List of attributes of IPM commands that are waiting to be triggered
    */
-  active: IpmInfo[];
+  active: IpmCommand[];
+  /**
+   * List of IPM capabilities in the extension
+   */
+  capabilities: IpmCapability[];
 }
 
 /**

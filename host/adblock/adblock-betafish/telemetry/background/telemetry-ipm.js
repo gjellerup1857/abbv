@@ -21,7 +21,7 @@
 import * as logger from "../../utilities/background/logger.ts";
 
 import { chromeStorageSetHelper } from "../../utilities/background/bg-functions";
-import { clearEvents, executeIPMCommand, getPayload } from "../../ipm/background/index.ts";
+import { clearEvents, executeIPMCommands, getPayload } from "../../ipm/background/index.ts";
 import postData from "../../fetch-util";
 import { Prefs } from "../../alias/prefs";
 import ServerMessages from "../../servermessages";
@@ -42,11 +42,28 @@ class IPMTelemetry extends TelemetryBase {
     }
     telemetryNotifier.emit("ipm.ping.complete");
 
-    // if the server responded with something, we assume it's a command
-    const responseText = await response.text();
-    if (responseText) {
-      const body = JSON.parse(responseText);
-      executeIPMCommand(body);
+    // If the server responded with an empty body, we're done here.
+    const body = await response.text();
+    if (body.length === 0) {
+      return;
+    }
+
+    // If the server responded with anything else, we assume it's a command or a list of them.
+    try {
+      let commands = JSON.parse(body);
+
+      // adding support to legacy server response, where we receive only one command per ping
+      if (!Array.isArray(commands)) {
+        commands = [commands];
+      }
+
+      if (commands.length > 100) {
+        throw new Error("Too many commands were received.");
+      }
+
+      executeIPMCommands(commands);
+    } catch (error) {
+      logger.error("[Telemetry]: Error parsing IPM response.", error);
     }
   }
 
