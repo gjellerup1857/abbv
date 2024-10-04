@@ -22,7 +22,7 @@ import {
   setSchedule,
   hasSchedule
 } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommand } from "./command-library";
+import { executeIPMCommands } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
 import { error as logError } from "../../logger/background";
 import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
@@ -47,10 +47,20 @@ async function processResponse(response: Response): Promise<void> {
     return;
   }
 
-  // If the server responded with anything else, we assume it's a command.
+  // If the server responded with anything else, we assume it's a command or a list of them.
   try {
-    const command = JSON.parse(body);
-    executeIPMCommand(command);
+    let commands = JSON.parse(body);
+
+    // adding support to legacy server response, where we receive only one command per ping
+    if (!Array.isArray(commands)) {
+      commands = [commands];
+    }
+
+    if (commands.length > 100) {
+      throw new Error("Too many commands were received.");
+    }
+
+    executeIPMCommands(commands);
   } catch (error) {
     logError("[Telemetry]: Error parsing IPM response.", error);
   }

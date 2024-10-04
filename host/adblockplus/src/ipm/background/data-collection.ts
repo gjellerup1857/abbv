@@ -155,13 +155,19 @@ async function getUserData(): Promise<UserData> {
 }
 
 /**
- * Gets data about stored commands that will be consumed by the IPM server.
+ * Gets IPM data in the extension that will be consumed by the IPM server.
  *
- * @returns an object containing stored commands data
+ * @returns an object containing the IPM data
  */
 function getIpmData(): IpmData {
   return {
-    active: getStoredCommandIds().map((id) => ({ id }))
+    active: getStoredCommandIds().map((id) => ({ id })),
+    capabilities: [
+      {
+        name: "multi_ipm_response",
+        version: 1
+      }
+    ]
   };
 }
 
