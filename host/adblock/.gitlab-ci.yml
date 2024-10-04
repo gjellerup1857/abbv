@@ -160,6 +160,7 @@ checkfilesizes:firefox_mv2:
 
 .checkbuildsizes:
   stage: checkfilesizes
+  needs: ["build", "buildfromsource"]
   before_script:
     - cd $[[ inputs.workspacepath ]]
     - if [ ! -f $SOURCE_BUILD ] || [ ! -f $REPOSITORY_BUILD ]; then

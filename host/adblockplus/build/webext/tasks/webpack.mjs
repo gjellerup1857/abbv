@@ -17,7 +17,7 @@
 
 import Dotenv from "dotenv-webpack";
 import gulp from "gulp";
-import merge from "merge-stream";
+import merge2 from "merge2";
 import webpackStream from "webpack-stream";
 import webpackMerge from "webpack-merge";
 import webpackMain from "webpack";
@@ -30,8 +30,11 @@ export default function webpack({
   sourceMapType
 })
 {
-  return merge(
-    webpackInfo.bundles.map(
+  // merge2 will merge these streams keeping their existing order. This is
+  // important, because if the order changes webpack can give results that are
+  // functionally the same between runs, but not byte-for-byte identical.
+  return merge2(
+    ...webpackInfo.bundles.map(
       (bundle) => gulp.src(bundle.src).pipe(named(() => bundle.dest))
     )
   ).pipe(webpackStream(

@@ -126,6 +126,7 @@
     "handlebars": "4.7.8",
     "hyperhtml-element": "3.15.2",
     "merge-stream": "2.0.0",
+    "merge2": "1.4.1",
     "npm-dollar": "2.2.1",
     "source-map-loader": "4.0.1",
     "style-loader": "3.3.3",
