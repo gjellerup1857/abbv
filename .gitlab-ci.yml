@@ -62,8 +62,6 @@ test:
 
 adblock:
   extends: .child
-  variables:
-    WORKSPACEPATH: host/adblock
 
 adblockplus:
   extends: .child
