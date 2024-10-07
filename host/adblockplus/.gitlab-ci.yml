@@ -285,8 +285,6 @@ comp:MV2:firefox:oldest:
 .uitests:
   stage: uitests
   needs: ["build"]
-  before_script:
-    - cd $[[ inputs.workspacepath ]]
 
 .uitests:lambdatest:
   extends: .uitests
@@ -294,6 +292,8 @@ comp:MV2:firefox:oldest:
     LT_USERNAME: $LT_USERNAME
     LT_ACCESS_KEY: $LT_ACCESS_KEY
     SUITE: all
+  before_script:
+    - cd $[[ inputs.workspacepath ]]
   script:
     - npm ci --cache .npm --prefer-offline
     - npm run test:$CONFIGURATION $SUITE 2>&1 | tee lambdatest_output.txt || true
@@ -354,15 +354,14 @@ uitests:lambdatest:MV3:all:
   services:
     - docker:24.0.5-dind
   script:
-    - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
+    - docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
     - docker run --cpus=2 --shm-size=2g -t -e SUITE -e CI end-to-end
   after_script:
-    - cd $[[ inputs.workspacepath ]]
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
-    - docker cp $IMAGE_ID:/adblockplus/test/end-to-end/screenshots . 2> /dev/null
+    - docker cp $IMAGE_ID:/extensions/host/adblockplus/test/end-to-end/screenshots host/adblockplus 2> /dev/null
   artifacts:
     paths:
-      - $[[ inputs.workspacepath ]]/screenshots/
+      - host/adblockplus/screenshots/
     when: on_failure
     expire_in: 1 mo
   rules:

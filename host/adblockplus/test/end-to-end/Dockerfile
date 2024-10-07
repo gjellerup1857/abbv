@@ -1,9 +1,5 @@
 FROM registry.gitlab.com/eyeo/docker/get-browser-binary:node18
 
-# Doing early `npm install` to cache those files on further image builds
-COPY package*.json adblockplus/
-RUN cd adblockplus/ && npm install
-
 ARG BROWSER=chrome
 
 # WebdriverIO can't handle Edge installation on Debian. Running
@@ -15,10 +11,10 @@ RUN if [ "$BROWSER" = "edge" ]; then \
   npm test -- --grep "edge.*latest.*runs"; \
 fi
 
-COPY . adblockplus/
-WORKDIR adblockplus/
+COPY . extensions/
+WORKDIR extensions/
 
-RUN npm install
+RUN npm ci
 # EDGDEDRIVER_PATH is used by `local-test.conf.js`
 RUN if [ "$BROWSER" = "edge" ]; then \
   echo EDGDEDRIVER_PATH=$(find / -path '*linux64*msedgedriver') >> .env.e2e; \
@@ -29,9 +25,11 @@ ARG BUILD_EXTENSION=true
 
 RUN if [ "$BUILD_EXTENSION" = "true" ]; then \
   browserBuild=$(if [ "$BROWSER" = "edge" ]; then echo "chrome"; else echo $BROWSER; fi); \
-  npm run build:release $browserBuild -- --manifest-version $MANIFEST_VERSION; \
+  # TODO: This previously could build a specific version
+  npm run build:release -- --scope=adblockplus; \
 fi
 
+WORKDIR extensions/host/adblockplus/
 ENV SUITE=all
 ENV MANIFEST_VERSION=$MANIFEST_VERSION
 ENV BROWSER=$BROWSER
