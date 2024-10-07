@@ -29,7 +29,13 @@ import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 export const SENTRY_USER_ID = "sentry_user_id";
 
+const MESSAGES_KEY = "cdp_messages";
+const CDP_TOKEN = "[CDP]";
+
 let scope: Scope;
+let messages = [];
+let loadPromise = null;
+let savePromise = null;
 
 /**
  * Report error to Sentry
@@ -38,6 +44,10 @@ let scope: Scope;
  */
 export function reportError(error: Error): void {
   if (scope) {
+    if (error.message.includes(CDP_TOKEN)) {
+      flushMessages();
+    }
+
     scope.captureException(error);
   }
 }
@@ -47,7 +57,36 @@ export function reportError(error: Error): void {
  * @param message - Message to report
  */
 export function captureMessage(message: string): void {
-  scope.captureMessage(message);
+  if (message.includes(CDP_TOKEN)) {
+    console.warn(`CDP log: ${message}`);
+    messages.push(message);
+    void saveMessages();
+  }
+}
+
+async function loadMessages() {
+  loadPromise = browser.storage.local.get([MESSAGES_KEY])
+  const messagesStorage = await loadPromise;
+  messages = messagesStorage[MESSAGES_KEY] ?? [];
+}
+
+async function saveMessages() {
+  await loadPromise;
+  const newSavePromise = browser.storage.local.set({
+    [MESSAGES_KEY]: messages
+  });
+  if (savePromise) {
+    savePromise.then(newSavePromise);
+  }
+  savePromise = newSavePromise;
+}
+
+export function flushMessages() {
+  for (const message of messages) {
+    scope.captureMessage(message);
+  }
+  messages = [];
+  void saveMessages();
 }
 
 let lastEvent: SentryErrorEvent;
@@ -152,6 +191,7 @@ export function start(): void {
       webpackDotenvPlugin.SENTRY_DSN,
       webpackDotenvPlugin.SENTRY_ENVIRONMENT
     );
+    void loadMessages();
   } else {
     console.warn(
       "Sentry is not initialized. " +

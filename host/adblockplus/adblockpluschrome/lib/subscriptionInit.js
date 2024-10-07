@@ -192,8 +192,7 @@ export async function start()
 
   ewe.debugging.onLogEvent.addListener(({message, level, timeStamp, color}) =>
   {
-    console.log("Capture message:", message);
-    captureMessage(message);
+    captureMessage(`${timeStamp.getTime()}: ${message}`);
   });
   (await ewe.filters.getMigrationErrors()).forEach(console.error);
   (await ewe.subscriptions.getMigrationErrors()).forEach(console.error);
