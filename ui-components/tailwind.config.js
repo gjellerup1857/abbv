@@ -34,6 +34,9 @@ module.exports = {
         // Foreground content color to use on error color
         "error-content": "rgb(var(--error-content))",
       },
+      fontFamily: {
+       "sans": "var(--extension-font-family)",
+      }
     },
   },
   plugins: [

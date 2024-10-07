@@ -5,12 +5,19 @@
 }
 
 @layer components {
-  /**
-   * Checkbox styling
-   */
   [data-extension="abp"] {
+    /**
+    * Checkbox styling
+    */
     input[type="checkbox"] {
       @apply rounded;
+    }
+
+    /**
+    * Link styling
+    */
+    a {
+      @apply underline font-sans;
     }
   }
 }

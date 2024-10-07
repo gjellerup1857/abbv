@@ -9,12 +9,20 @@
 }
 
 @layer components {
-  /**
-   * Checkbox styling
-   */
   [data-extension="adblock"] {
+    /**
+    * Checkbox styling
+    */
     input[type="checkbox"] {
       @apply rounded-full;
+    }
+
+    /**
+    * Link styling
+    */
+    a {
+      /* @apply var(--link_decoration); */
+      @apply no-underline font-sans;
     }
   }
 }

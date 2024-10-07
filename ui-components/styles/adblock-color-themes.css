@@ -112,6 +112,10 @@
       color: var(--black);
     }
   }
+  
+  [data-extension='adblock'] [data-theme='watermelon'] a {
+    @apply underline;
+  }
 
   [data-extension='adblock'][data-theme='ocean'],
   [data-extension='adblock'] [data-theme='ocean'] {
