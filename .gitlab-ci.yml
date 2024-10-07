@@ -23,6 +23,7 @@ lint:
   extends: .test
   script:
     - npm run lint -- --since origin/main
+    
 test:
   extends: .test
   script:
