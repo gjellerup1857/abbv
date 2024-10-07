@@ -73,6 +73,8 @@ build:
     - echo "CDP_PING_URL=\"$ADBLOCK_CDP_PING_URL\"" >> host/adblock/.env
     - echo "EYEOMETRY_BEARER=\"$ADBLOCK_EYEOMETRY_BEARER\"" >> host/adblock/.env
     - echo "EYEOMETRY_URL=\"$ADBLOCK_EYEOMETRY_URL\"" >> host/adblock/.env
+    # Mmmmmmm
+    - cd ../../
     # Create source archive
     - npm run build:source -- --scope=AdBlock
     # Create extension builds
