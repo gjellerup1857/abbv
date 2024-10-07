@@ -1,3 +1,6 @@
 node_modules
+**/node_modules
 browser-snapshots
+**/browser-snapshots
 .nx
+**/dist
