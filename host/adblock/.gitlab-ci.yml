@@ -91,18 +91,13 @@ build:
 buildfromsource:
   stage: build
   needs: ["build"]
-  before_script:
-    - cd host/adblock
   script:
     # We need to generate the builds outside of the git repo to avoid any
     # implicit dependencies to git in our build scripts
     - mkdir /tmp/source
-    - tar xvf dist/release/adblock-*.tar.gz -C /tmp/source
+    - tar xvf host/adblock/dist/release/adblock-*.tar.gz -C /tmp/source
     - cd /tmp/source
     - npm ci --cache .npm --prefer-offline
-
-    # Mmmmmmm
-    - cd ../../
     # Create extension builds from source archive
     - npm run build:release -- --scope=AdBlock
   after_script:
