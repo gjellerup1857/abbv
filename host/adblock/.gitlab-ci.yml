@@ -268,15 +268,12 @@ comp:MV2:chromium:oldest:
 .end-to-end:
   stage: end-to-end
   extends: .docker
-  before_script:
-    - cd host/adblock
   script:
-    - docker build -t end-to-end -f test/end-to-end/Dockerfile .
+    - docker build -t end-to-end -f host/adblock/test/end-to-end/Dockerfile .
     - docker run --cpus=2 --shm-size=2g -t -e BROWSER -e MANIFEST_VERSION end-to-end
   after_script:
-    - cd host/adblock
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
-    - docker cp $IMAGE_ID:/adblock/test/end-to-end/screenshots . 2> /dev/null
+    - docker cp $IMAGE_ID:/extensions/host/adblock/test/end-to-end/screenshots host/adblock/ 2> /dev/null
   artifacts:
     paths:
       - host/adblock/screenshots/

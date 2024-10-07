@@ -1,14 +1,8 @@
 FROM registry.gitlab.com/eyeo/docker/get-browser-binary:node18
 
-# Doing early `npm install` to cache those files on further image builds
-COPY package*.json adblock/
-RUN cd adblock/ && npm install --legacy-peer-deps
-
-COPY . adblock/
-WORKDIR adblock/
-RUN npm install --legacy-peer-deps
-
-ENTRYPOINT test/end-to-end/entrypoint.sh
+COPY . extensions/
+RUN cd extensions/ && npm ci
+WORKDIR extensions/host/adblock/
 
 ENV MANIFEST_VERSION=3
 ENV BROWSER=chromium
