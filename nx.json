@@ -54,6 +54,16 @@
         "{projectRoot}/dist/devenv/firefox-mv2"
       ]
     },
+    "build:beta": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/release/*beta*.zip",
+        "{projectRoot}/dist/release/*development*.zip"
+      ]
+    },
     "build:release:chrome": {
       "cache": true,
       "dependsOn": [

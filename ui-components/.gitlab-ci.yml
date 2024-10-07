@@ -27,24 +27,10 @@ stages:
 # Build
 ################################################################################
 
-.build:
+build:
   stage: test
   before_script:
     # Update dependencies
     - npm ci --cache .npm --prefer-offline
-
-################################################################################
-# Lint
-################################################################################
-lint:
-  extends: .build
   script:
-    - npm run -w $[[ inputs.workspacepath ]] lint
-
-################################################################################
-# Test
-################################################################################
-test:
-  extends: .build
-  script:
-    - npm run -w $[[ inputs.workspacepath ]] test
+    - npm run build -- --scope "@eyeo/ext-ui-components"

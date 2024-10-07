@@ -117,11 +117,6 @@ buildfromsource:
   rules:
     - !reference [.release-or-main, rules]
 
-lint:
-  extends: .build
-  script:
-    - npm run lint -- --scope=AdBlock
-
 ################################################################################
 # Check filesizes
 ################################################################################

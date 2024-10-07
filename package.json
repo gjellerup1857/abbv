@@ -11,6 +11,8 @@
   "scripts": {
     "build": "lerna run build",
     "build:release": "lerna run build:release",
+    "build:source": "lerna run build:source",
+    "build:beta": "lerna run build:beta",
     "test": "lerna run test",
     "lint": "lerna run lint"
   },

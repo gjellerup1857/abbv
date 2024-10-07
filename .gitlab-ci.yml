@@ -23,11 +23,11 @@ lint:
   extends: .test
   script:
     - npm run lint -- --since origin/main
-    
+
 test:
   extends: .test
   script:
-    - npm run test -- --since origin/main
+    - npm test -- --since origin/main
 
 .child:
   stage: children
