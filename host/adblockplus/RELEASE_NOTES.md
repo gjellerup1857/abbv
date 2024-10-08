@@ -6,6 +6,7 @@
 - Updated snippets to 1.6.0
 - Upgraded to SDK version 1.15.0
 - Updated snippets to 1.7.0
+- Changed popup allowlist behaviour to 7 days smart allowlist (EXT-339)
 
 # 4.7.1.1 - 2024-09-27
 
