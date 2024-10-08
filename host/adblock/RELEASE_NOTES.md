@@ -1,6 +1,7 @@
 # Unreleased
 
 - Updated snippets to 1.7.0
+- Updated the link to the source code on the support tab
 
 # 6.9.3 - 2024-10-02
 
