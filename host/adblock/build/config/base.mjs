@@ -630,10 +630,10 @@ export default {
         src: "dist/ewe-content.js",
       },
       // TODO (ui-components): Uncomment this when you want to integrate ui-components
-      // {
-      //   dest: "ui-components-styles.css",
-      //   src: "node_modules/@eyeo/ext-ui-components/dist/styles.css",
-      // },
+      {
+        dest: "ui-components-styles.css",
+        src: "../../node_modules/@eyeo/ext-ui-components/dist/styles.css",
+      },
     ],
   },
   translations: {
