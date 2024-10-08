@@ -69,7 +69,7 @@ export default function webpack({
               },
               {
                 test: /\.(js|jsx)$/,
-                include: [/button\/react-components/, /node_modules\/@eyeo\/ext-ui-components/],
+                include: [/button\/react-components/, /options\/react-components/, /node_modules\/@eyeo\/ext-ui-components/],
                 use: {
                   loader: "babel-loader",
                   options: {

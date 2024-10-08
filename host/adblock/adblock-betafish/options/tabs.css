@@ -129,6 +129,11 @@
   margin-left: var(--defaul-sidebar-width, 204px);
 }
 
+/* TODO: Remove when CSS loads correctly */
+#react-options {
+  margin-left: var(--defaul-sidebar-width, 204px);
+}
+
 @media screen and (max-width: 890px) {
   #tab-content .tab {
     margin-left: var(--small-sidebar-width, 60px);
