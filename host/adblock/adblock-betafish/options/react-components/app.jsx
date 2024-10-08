@@ -1,12 +1,25 @@
 import React, { useState } from "react";
-import { Button } from "@eyeo/ext-ui-components";
+import { GeneralOptionsList } from "./Options";
+
+const optionsData = [
+  {
+    name: 'prefs__shouldShowBlockElementMenu',
+    text: 'showcontextmenus2',
+  },
+  {
+    name: 'enable_twitch_channel_allowlist',
+    text: 'allowlisting_twitch_channels',
+    extraInfo: 'require_restart_browser',
+    helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738502507283-Does-AdBlock-block-ads-on-Twitch',
+    additionalInfoLink: {
+      text: 'settings',
+      href: 'http://www.example.com'
+    }
+  },
+];
 
 export function App() {
-  const [count, setCount] = useState(0);
   return (
-    <div>
-      <h1 className="text-red-500 font-extrabold">React App</h1>
-      <Button onClick={() => setCount(count + 1)} text={`Button clicks ${count}`} />
-    </div>
+    <GeneralOptionsList items={ optionsData } />
   );
 }
