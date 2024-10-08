@@ -73,7 +73,7 @@ function setupToggles(tab)
     const {checked} = domain;
     document.body.classList.toggle("refresh", toggleChecked !== checked);
     browser.runtime.sendMessage({
-      type: `filters.${checked ? "unallowlist" : "allowlist"}`,
+      type: checked ? "filters.unallowlist" : "filters.allowlist",
       origin: "popup",
       tab
     });
@@ -83,7 +83,7 @@ function setupToggles(tab)
   {
     document.body.classList.toggle("refresh");
     browser.runtime.sendMessage({
-      type: `filters.${page.checked ? "unallowlist" : "allowlist"}`,
+      type: page.checked ? "filters.unallowlist" : "filters.allowlist",
       origin: "popup",
       singlePage: true,
       tab

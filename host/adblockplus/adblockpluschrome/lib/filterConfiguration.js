@@ -32,17 +32,30 @@ import {filterTypes} from "./requestBlocker.js";
 const disabledFilterCounters = new Map();
 const eventEmitter = new EventEmitter();
 
-export async function addFilter(filterText, origin, expiresAt)
+/**
+ *
+ * @param {string} filterText - The filter text to add
+ * @param {string} [origin] - Where the filter originated from
+ *  e.g. "popup" or "web"
+ * @param {number} [expiresAt] - The time the filter expires
+ * @param {number} [autoExtendMs] - The milliseconds to auto-extend
+ *  the filter.
+ *
+ * @returns {Promise<*|null>}
+ */
+export async function addFilter(filterText, origin, expiresAt, autoExtendMs)
 {
-  const data = {created: Date.now()};
+  const metadata = {created: Date.now()};
   if (origin)
-    data.origin = origin;
+    metadata.origin = origin;
   if (expiresAt)
-    data.expiresAt = expiresAt;
+    metadata.expiresAt = expiresAt;
+  if (autoExtendMs)
+    metadata.autoExtendMs = autoExtendMs;
 
   try
   {
-    await ewe.filters.add([filterText], data);
+    await ewe.filters.add([filterText], metadata);
     await ewe.filters.enable([filterText]);
   }
   catch (ex)

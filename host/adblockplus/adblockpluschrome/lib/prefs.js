@@ -373,6 +373,13 @@ defaults.onpage_dialog_timing_configurations = {
 defaults.data_collection_opt_out = false;
 
 /**
+ * Milliseconds that the smart allowlist rule should be active for
+ *
+ * @type {number}
+ */
+defaults.smart_allowlist_duration_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
   * @namespace
   * @static
   */

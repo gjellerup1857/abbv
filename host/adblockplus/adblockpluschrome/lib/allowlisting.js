@@ -23,6 +23,7 @@ import {port} from "~/core/messaging/background";
 import {getPage, pageEmitter} from "../../src/core/pages/background";
 import {EventEmitter} from "./events.js";
 import {addFilter} from "./filterConfiguration.js";
+import {Prefs} from "./prefs.js";
 
 let allowlistedDomainRegexp = /^@@\|\|([^/:]+)\^\$document$/;
 let eventEmitter = new EventEmitter();
@@ -76,6 +77,11 @@ port.on("filters.isAllowlisted", async message =>
  *   URL to allowlist (required if no hostname)
  * @param {number} [options.expiresAt] The timestamp when the filter should
  *  expire (allowed 1 day - 365 days in the future).
+ * @param {number} [options.autoExtendMs] The number of milliseconds to
+ *   extend the filter's expiry when the user navigated to a URL that matches
+ *   the filter. This parameter is used together with `expiresAt` and when the
+ *   user navigates to a URL that matches this filter and is not expired,
+ *   the `expiresAt` value will be updated to `Date.now() + autoExtendMs`.
  *
  * @returns {Promise}
  * @throws {Error} Either domain or valid URL required
@@ -85,7 +91,8 @@ export async function allowlist({
   origin,
   singlePage = false,
   url,
-  expiresAt})
+  expiresAt,
+  autoExtendMs})
 {
   let filterText;
 
@@ -128,8 +135,8 @@ export async function allowlist({
   await ewe.filters.enable([filterText]);
 
   const filterSubscriptions = await ewe.subscriptions.getForFilter(filterText);
-  if (filterSubscriptions.length == 0)
-    await addFilter(filterText, origin, expiresAt);
+  if (filterSubscriptions.length === 0)
+    await addFilter(filterText, origin, expiresAt, autoExtendMs);
 }
 
 /**
@@ -161,10 +168,13 @@ async function isTabAllowlisted(tabId)
 port.on("filters.allowlist", async message =>
 {
   let page = await getPage(message.tab);
+  const ruleDuration = Prefs.get("smart_allowlist_duration_ms");
   await allowlist({
     origin: message.origin,
     singlePage: message.singlePage,
-    url: page.url
+    url: page.url,
+    expiresAt: Date.now() + ruleDuration,
+    autoExtendMs: ruleDuration
   });
 });
 
