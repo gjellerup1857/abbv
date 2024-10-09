@@ -88,6 +88,31 @@ async function addSubscriptionsAndNotifyUser()
   if (firstRun || reinitialized)
     await ewe.subscriptions.addDefaults();
 
+  // Attempt to fix the issue where the user has no subscriptions we expect
+  // them to have at least the default subscriptions.
+  // See: https://eyeo.atlassian.net/browse/EXT-375
+  const isMV3 = browser.runtime.getManifest().manifest_version === 3;
+  if (isMV3)
+  {
+    const subscriptions = await ewe.subscriptions.getSubscriptions();
+    if (subscriptions.length === 0)
+    {
+      // Enable default subscriptions: EasyList, Anti-CV and Acceptable Ads
+      await ewe.subscriptions.addDefaults(null, true);
+
+      // send a message to the log server with debug metadata
+      console.warn("Something is wrong with subscriptions, reset to defaults", {
+        firstRun,
+        reinitialized,
+        dataCorrupted
+      });
+
+      // reset the reinitialized flag to be later used in communicating
+      // with the user
+      reinitialized = true;
+    }
+  }
+
   for (let url of Prefs.additional_subscriptions)
   {
     try

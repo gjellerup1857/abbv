@@ -7,6 +7,7 @@
 - Upgraded to SDK version 1.15.0
 - Updated snippets to 1.7.0
 - Changed popup allowlist behaviour to 7 days smart allowlist (EXT-339)
+- Attempt to fix issue when no subscriptions are enabled (due to corrupted data), restoring to default subscriptions (EXT-375)
 
 # 4.7.1.1 - 2024-09-27
 
