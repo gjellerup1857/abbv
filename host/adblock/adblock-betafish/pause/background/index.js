@@ -162,11 +162,11 @@ const adblockIsDomainPaused = function (
   // set or delete a domain pause
   if (newValue === true) {
     // add a domain pause
-    const ruleDuration = Prefs.get("smart_allowlist_duration_ms");
+    const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
     const metadata = {
       ...createFilterMetaData(origin),
-      expiresAt: Date.now() + ruleDuration,
-      autoExtendMs: ruleDuration,
+      expiresAt: Date.now() + autoExtendMs,
+      autoExtendMs,
     };
     ewe.filters.add([`@@${activeDomain}$document`], metadata);
 

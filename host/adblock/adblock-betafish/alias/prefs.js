@@ -310,11 +310,12 @@ defaults.yt_auto_allow_dialog_url = "https://getadblock.com/youtube/";
 defaults.yt_allowlist_start_date = 0;
 
 /**
- * Milliseconds that the smart allowlist rule should be active for
+ * The number of milliseconds to extend the allowlisting filter's expiry when
+ * the user navigated to a URL that matches the filter.
  *
  * @type {number}
  */
-defaults.smart_allowlist_duration_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+defaults.allowlisting_auto_extend_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 /**
  * @namespace

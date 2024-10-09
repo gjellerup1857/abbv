@@ -373,6 +373,14 @@ defaults.onpage_dialog_timing_configurations = {
 defaults.data_collection_opt_out = false;
 
 /**
+ * The number of milliseconds to extend the allowlisting filter's expiry when
+ * the user navigated to a URL that matches the filter.
+ *
+ * @type {number}
+ */
+defaults.allowlisting_auto_extend_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
   * @namespace
   * @static
   */
