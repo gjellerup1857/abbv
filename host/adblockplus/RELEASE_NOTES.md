@@ -1,5 +1,11 @@
 # Unreleased
 
+# 4.8 - 2024-10-09
+
+The highlights of this release is that the popup allowlisting button now does 7
+day smart allowlisting. It also contains a potential fix for a bug where some
+users are reporting no longer having any subscriptions.
+
 - We no longer test the MV2 build of our extensions on Chrome 129 and later,
   since it disables MV2 extensions by defaults.
 - Enable user counting functionality
