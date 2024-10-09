@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
  * 
  * @param {Object} props - The props for the Link component.
  * @param {JSX.Element} [props.children] - Children components.
- * @param {string} [props.href='#'] - The URL that the link points to with different schemes supported by the browsers
+ * @param {string} [props.href] - The URL that the link points to with different schemes supported by the browsers
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href
  * @param {string} [props.target='_blank'] - Indicates where the href URL will be displayed.
  * Accepts the same values as the <a> element https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target,
