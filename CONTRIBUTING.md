@@ -1,5 +1,22 @@
 # Contributing
 
+## Merge request title
+
+For merge requests (and the resulting commits) we are following the
+[Conventional Commits][convcomms] specification with the format
+`type: Message [EXT-123]`:
+- `type`: Any of the predefined types from [Angular convention][convcomms-angular]
+- `Message`: Commit message
+- `EXT-123`: Internal Jira ticket number
+  - Use `noissue` for commits without a ticket
+  - Ticket number can be prefixed with `Refs` (e.g. `Refs EXT-123`) for changes
+    that only partially address a ticket
+
+Examples:
+- `build: Standardized npm scripts for building, linting and unit testing [EXT-222]`
+- `ci: use a compliance script to run testpages tests [noissue]`
+- `test: Add extension tests [Refs EXT-241]`
+
 ## Testing
 
 Almost all code contributions should contain appropriate automated tests to ensure the reliability and maintainability of our codebase. Whether you're fixing a bug, adding a new feature, or refactoring existing code, appropriate unit and/or integration tests are expected to be added or updated. This practice helps catch potential issues early and ensures that changes do not inadvertently break existing functionality. 
@@ -27,3 +44,8 @@ If you see a change that should probably have release notes, shout!
 ### What does this mean for me as a person doing the release?
 
 The specifics will be defined in the release process, but on a high level the release manager is reviewing existing release notes and giving them a version number, not writing them from scratch.
+
+
+
+[convcomms]: https://www.conventionalcommits.org/en/v1.0.0/
+[convcomms-angular]: https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#type
