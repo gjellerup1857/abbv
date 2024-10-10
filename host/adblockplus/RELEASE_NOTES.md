@@ -4,7 +4,7 @@
   since it disables MV2 extensions by defaults.
 - Enable user counting functionality
 - Updated snippets to 1.6.0
-- Upgraded to SDK version 1.15.0
+- Updated webext-ad-filtering-solution to 1.16.0
 - Updated snippets to 1.7.0
 - Changed popup allowlist behaviour to 7 days smart allowlist (EXT-339)
 - Attempt to fix issue when no subscriptions are enabled (due to corrupted data), restoring to default subscriptions (EXT-375)
