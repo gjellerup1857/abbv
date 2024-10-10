@@ -12,6 +12,8 @@ module.exports = {
     // Paths outside the package root
     "../host/adblock/adblock-betafish/**/*.{jsx,tsx}", // Include React components from host/adblock
     "!../host/adblock/node_modules/**", // Exclude node_modules from host/adblock
+    "../host/adblockplus/**/*.{jsx,tsx}", // Include React components from host/adblockplus
+    "!../host/adblockplus/node_modules/**", // Exclude node_modules from host/adblockplus
   ],
   theme: {
     extend: {
