@@ -9,10 +9,9 @@ interface and the web extension code, the Adblock Plus extension also includes
 [eyeo's snippets][eyeo-snippets].
 
 - [About Adblock Plus](#about-adblock-plus)
-- [Prerequisites](#prerequisites)
+- [Building](#building)
 - [UI elements](#ui-elements)
 - [Testing](#testing)
-- [Building](#building)
 - [Contributing](#contributing)
 
 ## About Adblock Plus
@@ -25,37 +24,45 @@ Adblock Plus is an open source project licensed under [GPLv3][gpl3] and subject
 to its [Terms of Use][eyeo-terms]. [eyeo GmbH][eyeo] is the parent company of
 Adblock Plus.
 
-## Prerequisites
+## Running scripts 
 
-To contribute to this project, you'll need:
+Please note that all scripts should be run from the root of the repository, not 
+this host folder.
 
-- [Node][nodejs] 18.17.1
-- [npm][npm] 9.6.7
+## Building
 
-`Node` should come installed with `npm`. If it doesn't, you can
-download `npm` [here][npm].
+See the [readme at the root of the monorepo](../../README.md) for general
+instructions on prerequisites, dependency management, how to build the
+extensions.
 
+### Building with secrets
 
-### `node-gyp` error?
+Copy the `.env.defaults` file in the `host/adblockplus` directory to a `.env`
+file and fill in the variables accordingly. This step can be skipped, and is
+only required if you wish to enable the sending of telemetry.
 
-If you're using an apple machine with apple silicon (arm64 CPU), you may
-encounter an error where `node-gyp` fails to build during `npm install`. In that
-case you need to run `arch -x86_64 zsh` before any other commands, and make sure
-you are not using `nvm` to run the node version.
+### Bundling the UI
 
-Another possible cause is that `node-gyp` cannot find the binary online,
-then tries to build the binary locally and fails because of Python 3.12 being
-installed, [which does not work work with some versions of `node-gyp`](https://github.com/nodejs/node-gyp/issues/2869).
-That could be solved by installing Python 3.11 locally, and
-[`pyenv`](https://github.com/pyenv/pyenv) could be used for that.
+Various files need to be generated before using the UI. When building the UI
+for inclusion in the extension, this is achieved using 
+`npm run dist -w=host/adblockplus` from the root folder (not this host folder).
 
-**Important:** On Windows, you need a [Linux environment running on WSL][ms-wsl]
-and run the commands from within Bash.
+For usage [in the test environment](#testing), run the
+[`build`](../../README.md#building-the-extensions-in-development-mode) script to
+generate the various bundles for all [UI elements](#ui-elements).
 
-**Tip**: If you're installing `node` in ArchLinux, please remember to install
-`npm`, too.
+Beyond that, this repository contains [various utilities][wiki-utils] that we
+rely on across our development process.
 
-After cloning this repository, open its folder and run `npm install`.
+### Error reporting
+
+We use [Sentry](https://sentry.io/) to report the errors. In order to initialize it
+during the build one has to pass `SENTRY_DSN` and `SENTRY_ENVIRONMENT`
+variables in either `.env` file or as environment variable during the (CI) build. If not
+initialized, console warning is shown. By default `SENTRY_ENVIRONMENT=production`.
+User emails are cut on client side and data scrubbing on
+[server side](https://docs.sentry.io/security-legal-pii/scrubbing/server-side-scrubbing/) is
+configured by default.
 
 ## UI elements
 
@@ -110,9 +117,16 @@ extension code in the extension's background process.
 ## Testing
 
 If you don't want to build the entire extension, you can open UI pages in a test
-environment using a local web server. This can be done by running `npm start`,
-which allows you to access the HTML pages under the URL shown in the terminal,
-e.g. http://127.0.0.1:8080.
+environment using a local web server. This should be run from the root of the
+monorepo.
+
+```sh
+npm run build:local
+npm start --workspace host/adblockplus
+```
+
+After running `npm start --workspace host/adblockplus`, you can access the HTML 
+pages under the URL shown in the terminal, e.g. http://127.0.0.1:8080.
 
 Various aspects of the pages can be tested by setting parameters in the URL (see
 [list of URL parameters](docs/test-env.md#url-parameters)).
@@ -123,9 +137,10 @@ that you want to test.
 ### Unit testing
 
 The `./test/unit` folder contains various mocha unit tests files
-which can be run via `npm run $ test.unit.legacy`. For `.ts` files we have jest
-unit tests that can be run via `npm run $ test.unit.standard`.
-Those can be run together via `npm test`.
+which can be run via `npm run $ test.unit.legacy --workspace host/adblockplus`. 
+For `.ts` files we have jest unit tests that can be run via 
+`npm run $ test.unit.standard --workspace host/adblockplus`. Those can be run 
+together via `npm test -- --scope=adblockplus`.
 
 ### End-to-end testing
 
@@ -137,18 +152,13 @@ browsers) or they can be executed using [LambdaTest](https://automation.lambdate
 
 To run the end-to-end tests locally:
 
-- Generate all the [release builds](#building-the-extension) of the extension (note: please generate
-all builds even if you plan to run tests on one browser).
-- Run the test:end-to-end-local script.
-
-Note: Browser specified in the command is the browser that tests will be run on, not the browser that 
-we specify in build step.
-
-Example:
-
 ```sh
-npm run test:end-to-end {chromium|edge|firefox} {2|3} [{all|filterlists|smoke}]
+npm run build:release -- --scope=adblockplus
+npm run test:end-to-end -- --scope=adblockplus -- {chromium|edge|firefox} {2|3} [{all|filterlists|smoke}]
 ```
+
+Note: Browser specified in the command is the browser that tests will be run on,
+not the browser that we specify in build step.
 
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
 headful mode instead of headless.
@@ -158,23 +168,25 @@ headful mode instead of headless.
 To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
 
 - Create a new .env.e2e file with your Lambda credentials. You can use the
-[.env.e2e.defaults](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/.env.e2e.defaults?ref_type=heads)
+[.env.e2e.defaults](./.env.e2e.defaults)
 provided as a guide. The values in `.env.e2e.defaults` will be used as default
 values, so you can choose to only copy the values you wish to override.
-- Generate the [release builds](#building-the-extension) of the extension.
+- Generate the [release builds](../../README.md#building-the-extensions-in-release-mode) 
+of the extension.
 - Additional steps are needed for running the tests with MV3 version of the extension:
   - Install the axios package globally: `npm install -g axios`
-  - Upload the extension to LambdaTest by running: `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
-- Run the test:end-to-end npm script `npm run test:end-to-end-lamdatest-mv2 all` or
-`npm run test:end-to-end-lambdatest-mv3 all`.
+  - Upload the extension to LambdaTest by running (in this host folder): `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
+- Run the test:end-to-end npm script 
+`npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv2 all` or
+`npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv3 all`.
 
 #### Notes
 
 - You can replace `all` tests with a specific test suite (`e2e`, `integration`,
 `smoke`).
 - If you only want to execute a single test file, you can replace the value of the
-`all` property in [suites.js](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/blob/next/test/end-to-end/suites.js#L21)
-to an array containing only the [path](https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/tree/next/test/end-to-end/tests)
+`all` property in [suites.js](./test/end-to-end/suites.js#L21)
+to an array containing only the [path](./test/end-to-end/tests)
 to the test(s) you want to run. Example:
 
   ```js
@@ -183,15 +195,17 @@ to the test(s) you want to run. Example:
 
 - Allure reporter is used for displaying the results after the execution has been
 completed. The report can be generated and opened using the
-`npm run test:generate-and-open-report` command.
-- Screenshots of failing tests get saved to `test/end-to-end/screenshots`
+`npm run --workspace host/adblockplus test:generate-and-open-report` command.
+- Screenshots of failing tests get saved to `./test/end-to-end/screenshots`
 
 #### Docker run
+
+These commands should be run from the repository root, not this host folder. 
 
 Prerequisites: Docker
 
 ```sh
-docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION={2|3} --build-arg BROWSER={chromium|firefox|edge} --build-arg BUILD_EXTENSION={true|false} .
+docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION={2|3} --build-arg BROWSER={chromium|firefox|edge} --build-arg BUILD_EXTENSION={true|false} .
 docker run --cpus=2 --shm-size=2g -it -e SUITE=smoke end-to-end
 ```
 
@@ -200,10 +214,10 @@ The default behaviour builds the extension inside the docker image. Setting the
 `dist` folder instead.
 
 To access the screenshots for failing tests run the following command, which
-copies them to the `test/end-to-end/screenshots` folder:
+copies them to the `host/adblockplus/test/end-to-end/screenshots` folder:
 
 ```shell
-docker cp $(docker ps -aqf ancestor=end-to-end | head -n 1):/adblockplus/test/end-to-end/screenshots ./test/end-to-end
+docker cp $(docker ps -aqf ancestor=end-to-end | head -n 1):/extensions/host/adblockplus/test/end-to-end/screenshots ./host/adblockplus/test/end-to-end
 ```
 
 ### Compliance tests
@@ -220,7 +234,7 @@ Prerequisites:
 To run the tests:
 
 ```sh
-EXTENSION=dist/release/<build file> MANIFEST={mv2|mv3} ./test/compliance.sh
+EXTENSION=host/adblockplus/dist/release/<build file> MANIFEST={mv2|mv3} ./host/adblockplus/test/compliance.sh
 ```
 
 Optional environment variables:
@@ -231,9 +245,9 @@ Optional environment variables:
 ### Linting
 
 You can lint all files via `npm run lint` or lint only specific file types:
-- JavaScript/TypeScript: `npm run $ lint.js`
-- CSS: `npm run $ lint.css`
-- Translation files: `npm run $ lint.locale`
+- JavaScript/TypeScript: `npm run --workspace host/adblockplus $ lint.js`
+- CSS: `npm run --workspace host/adblockplus $ lint.css`
+- Translation files: `npm run --workspace host/adblockplus $ lint.locale`
 
 **Note**: Both `eslint` and `stylelint` can help fix issues via `--fix` flag.
 You can try the example below via [npx][npx] which should be automatically
@@ -256,79 +270,6 @@ Pipeline jobs use self-managed runners from Google Cloud Platform (GCP). The
 the setup of the runner is defined in [the devops runner project](https://gitlab.com/eyeo/devops/terraform/projects/gitlab-runners/terraform-adblock-inc-runner/), and the runner status can be checked
 [here](https://gitlab.com/groups/adblockinc/ext/-/runners). Access to GCP
 resources like the GCloud console can be granted by devops as well.
-
-## Building
-
-### Building the extension
-
-Copy the `.env.defaults` file in the root directory to a `.env` file and fill in
-the variables accordingly. This step can be skipped, and is only required if
-you wish to enable the sending of CDP data.
-
-In order to build the extension you need to first
-[update its dependencies](#updating-the-dependencies). You can then run one of
-the following command for the type of build you'd like to generate:
-
-```sh
-npm run build {chrome|firefox} {2|3}
-npm run build:release {chrome|firefox} {2|3}
-npm run build:beta
-npm run build:local
-npm run build:source
-```
-
-**`build`:** Creates unpacked extension in _dist/devenv/\<target\>/_. It
-can be loaded under _chrome://extensions/_ in Chromium-based browsers, and under
-_about:debugging_ in Firefox.
-
-**`build:beta`:** Creates the following extension build file in _dist/release/_
-that can be published to extension stores:
-
-- adblockplus-chromedevelopment-\*.zip
-
-**`build:local`:** Creates [local test environment](#testing).
-
-**`build:release`:** Creates the following extension build files in
-_dist/release/_ that can be published to extension stores:
-
-- adblockplus-chrome-\*.zip
-- adblockplus-firefox-\*.xpi
-
-**`build:source`:** Creates the following source archive file in _dist/release/_
-that can be provided to extension stores for review purposes:
-
-- adblockplus-\*.tar.gz
-
-#### Updating the dependencies
-
-Install the required npm packages:
-
-`npm install`
-
-Rerun the above commands when the dependencies might have changed,
-e.g. after checking out a new revision.
-
-### Bundling the UI
-
-Various files need to be generated before using the UI. When building the UI
-for inclusion in the extension, this is achieved using `npm run dist`.
-
-For usage [in the test environment](#testing), run the
-[`build`](#building-the-extension) script to generate the various bundles
-for all [UI elements](#ui-elements).
-
-Beyond that, this repository contains [various utilities][wiki-utils] that we
-rely on across our development process.
-
-### Error reporting
-
-We use [Sentry](https://sentry.io/) to report the errors. In order to initialize it
-during the build one has to pass `SENTRY_DSN` and `SENTRY_ENVIRONMENT`
-variables in either `.env` file or as environment variable during the (CI) build. If not
-initialized, console warning is shown. By default `SENTRY_ENVIRONMENT=production`.
-User emails are cut on client side and data scrubbing on
-[server side](https://docs.sentry.io/security-legal-pii/scrubbing/server-side-scrubbing/) is
-configured by default.
 
 ## Release history
 

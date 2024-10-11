@@ -15,10 +15,6 @@
 
 spec:
   inputs:
-    workspacepath:
-      type: string
-      description: "Path to the workspace directory"
-      default: "."
     parent_pipeline_source:
       type: string
       description: "Value of CI_PIPELINE_SOURCE in the parent pipeline"
@@ -72,68 +68,52 @@ stages:
     # Update dependencies
     - npm ci --cache .npm --prefer-offline
 
-lint:
-  extends: .build
-  script:
-    # Build ui-components first, because the extension depends on it
-    # TODO: remove when we will have setup for Lerna ready
-    - npm run -w ui-components build
-    - npm run -w $[[ inputs.workspacepath ]] lint
-
 build:
   extends: .build
   script:
     # Create .env file from CI variables
-    - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "EYEOMETRY_BEARER=\"$ADBLOCKPLUS_EYEOMETRY_BEARER\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "EYEOMETRY_URL=\"$ADBLOCKPLUS_EYEOMETRY_URL\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "SENTRY_DSN=\"$ADBLOCKPLUS_SENTRY_DSN\"" >> $[[ inputs.workspacepath ]]/.env
-    - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> $[[ inputs.workspacepath ]]/.env
-    # Build ui-components first, because the extension depends on it
-    # TODO: remove when we will have setup for Lerna ready
-    - npm run -w ui-components build
+    - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> host/adblockplus/.env
+    - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> host/adblockplus/.env
+    - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> host/adblockplus/.env
+    - echo "EYEOMETRY_BEARER=\"$ADBLOCKPLUS_EYEOMETRY_BEARER\"" >> host/adblockplus/.env
+    - echo "EYEOMETRY_URL=\"$ADBLOCKPLUS_EYEOMETRY_URL\"" >> host/adblockplus/.env
+    - echo "SENTRY_DSN=\"$ADBLOCKPLUS_SENTRY_DSN\"" >> host/adblockplus/.env
+    - echo "SENTRY_ENVIRONMENT=\"$ADBLOCKPLUS_SENTRY_ENVIRONMENT\"" >> host/adblockplus/.env
     # Create source archive
-    - npm run -w $[[ inputs.workspacepath ]] build:source
+    - npm run build:source -- --scope=adblockplus
     # Create extension builds
-    - npm run -w $[[ inputs.workspacepath ]] build:release
-    - npm run -w $[[ inputs.workspacepath ]] build:beta
+    - npm run build:release -- --scope=adblockplus
+    - npm run build:beta -- --scope=adblockplus
   artifacts:
     name: "adblockplus-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - $[[ inputs.workspacepath ]]/dist/release/adblockplus-*.tar.gz
-      - $[[ inputs.workspacepath ]]/dist/release/adblockplus-chrome-*-mv2.zip
-      - $[[ inputs.workspacepath ]]/dist/release/adblockplus-chrome-*-mv3.zip
-      - $[[ inputs.workspacepath ]]/dist/release/adblockplus-chromedevelopment-*-mv3.zip
-      - $[[ inputs.workspacepath ]]/dist/release/adblockplus-firefox-*-mv2.xpi
+      - host/adblockplus/dist/release/adblockplus-*.tar.gz
+      - host/adblockplus/dist/release/adblockplus-chrome-*-mv2.zip
+      - host/adblockplus/dist/release/adblockplus-chrome-*-mv3.zip
+      - host/adblockplus/dist/release/adblockplus-chromedevelopment-*-mv3.zip
+      - host/adblockplus/dist/release/adblockplus-firefox-*-mv2.xpi
 
 buildfromsource:
   stage: build
   needs: ["build"]
-  before_script:
-    - cd $[[ inputs.workspacepath ]]
   script:
     # We need to generate the builds outside of the git repo to avoid any
     # implicit dependencies to git in our build scripts
     - mkdir /tmp/source
-    - tar xvf dist/release/adblockplus-*.tar.gz -C /tmp/source
+    - tar xvf host/adblockplus/dist/release/adblockplus-*.tar.gz -C /tmp/source
     - cd /tmp/source
     - npm ci --cache .npm --prefer-offline
-    # Build ui-components first, because the extension depends on it
-    # TODO: remove when we will have setup for Lerna ready
-    - npm run -w ui-components build
     # Create extension builds from source archive
-    - npm run -w $[[ inputs.workspacepath ]] build:release
+    - npm run build:release -- --scope=adblockplus
   after_script:
     # We cannot refer to artifacts in directories outside of the project
-    - cp -r /tmp/source/$[[ inputs.workspacepath ]]/dist/release $[[ inputs.workspacepath ]]/dist/source
+    - cp -r /tmp/source/host/adblockplus/dist/release host/adblockplus/dist/source
   artifacts:
     name: "adblockplus-source-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
-      - $[[ inputs.workspacepath ]]/dist/source/adblockplus-chrome-*-mv2.zip
-      - $[[ inputs.workspacepath ]]/dist/source/adblockplus-chrome-*-mv3.zip
-      - $[[ inputs.workspacepath ]]/dist/source/adblockplus-firefox-*-mv2.xpi
+      - host/adblockplus/dist/source/adblockplus-chrome-*-mv2.zip
+      - host/adblockplus/dist/source/adblockplus-chrome-*-mv3.zip
+      - host/adblockplus/dist/source/adblockplus-firefox-*-mv2.xpi
   rules:
     - !reference [.release-or-main, rules]
 
@@ -144,10 +124,8 @@ buildfromsource:
 .checkfilesizes:
   image: alpine:latest
   stage: checkfilesizes
-  before_script:
-    - cd $[[ inputs.workspacepath ]]
   script:
-   - unzip -d unpacked-extension/ dist/release/$EXTENSION
+   - unzip -d unpacked-extension/ host/adblockplus/dist/release/$EXTENSION
    - cd unpacked-extension/
    - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
        echo 'Some extension files are bigger than 4 MB:' &&
@@ -181,7 +159,6 @@ checkfilesizes:MV2:firefox:
   stage: checkfilesizes
   needs: ["build", "buildfromsource"]
   before_script:
-    - cd $[[ inputs.workspacepath ]]
     - if [ ! -f $SOURCE_BUILD ] || [ ! -f $REPOSITORY_BUILD ]; then
         echo "File not found" &&
         exit 1;
@@ -202,20 +179,20 @@ checkfilesizes:MV2:firefox:
 checkbuildsizes:MV3:chrome:
   extends: .checkbuildsizes
   variables:
-    REPOSITORY_BUILD: dist/release/adblockplus-chrome-*-mv3.zip
-    SOURCE_BUILD: dist/source/adblockplus-chrome-*-mv3.zip
+    REPOSITORY_BUILD: host/adblockplus/dist/release/adblockplus-chrome-*-mv3.zip
+    SOURCE_BUILD: host/adblockplus/dist/source/adblockplus-chrome-*-mv3.zip
 
 checkbuildsizes:MV2:chrome:
   extends: .checkbuildsizes
   variables:
-    REPOSITORY_BUILD: dist/release/adblockplus-chrome-*-mv2.zip
-    SOURCE_BUILD: dist/source/adblockplus-chrome-*-mv2.zip
+    REPOSITORY_BUILD: host/adblockplus/dist/release/adblockplus-chrome-*-mv2.zip
+    SOURCE_BUILD: host/adblockplus/dist/source/adblockplus-chrome-*-mv2.zip
 
 checkbuildsizes:MV2:firefox:
   extends: .checkbuildsizes
   variables:
-    REPOSITORY_BUILD: dist/release/adblockplus-firefox-*-mv2.xpi
-    SOURCE_BUILD: dist/source/adblockplus-firefox-*-mv2.xpi
+    REPOSITORY_BUILD: host/adblockplus/dist/release/adblockplus-firefox-*-mv2.xpi
+    SOURCE_BUILD: host/adblockplus/dist/source/adblockplus-firefox-*-mv2.xpi
 
 ################################################################################
 # Compliance tests
@@ -229,15 +206,13 @@ checkbuildsizes:MV2:firefox:
   needs: ["build"]
   before_script:
     - apk add bash git
-    - cd $[[ inputs.workspacepath ]]
   script:
-    - TERMINAL=t EXTENSION=dist/release/$EXTENSION ./test/compliance.sh
+    - TERMINAL=t EXTENSION=host/adblockplus/dist/release/$EXTENSION ./host/adblockplus/test/compliance.sh
   after_script:
-    - cd $[[ inputs.workspacepath ]]
-    - docker cp $(docker ps -aqf ancestor=compliance):/testpages.adblockplus.org/test/screenshots . 2> /dev/null
+    - docker cp $(docker ps -aqf ancestor=compliance):/testpages.adblockplus.org/test/screenshots host/adblockplus/ 2> /dev/null
   artifacts:
     paths:
-      - $[[ inputs.workspacepath ]]/screenshots/
+      - host/adblockplus/screenshots/
     when: always
     expire_in: 1 month
   rules:
@@ -293,33 +268,12 @@ comp:MV2:firefox:oldest:
     EXTENSION: adblockplus-firefox-*-mv2.xpi
 
 ################################################################################
-# Unit tests
-################################################################################
-
-.unit:
- extends: .build
- stage: unit
- needs: []
-
-unit:legacy:
-  extends: .unit
-  script:
-    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.legacy
-
-unit:standard:
-  extends: .unit
-  script:
-    - npm run -w $[[ inputs.workspacepath ]] $ test.unit.standard
-
-################################################################################
 # UI tests
 ################################################################################
 
 .uitests:
   stage: uitests
   needs: ["build"]
-  before_script:
-    - cd $[[ inputs.workspacepath ]]
 
 .uitests:lambdatest:
   extends: .uitests
@@ -327,6 +281,8 @@ unit:standard:
     LT_USERNAME: $LT_USERNAME
     LT_ACCESS_KEY: $LT_ACCESS_KEY
     SUITE: all
+  before_script:
+    - cd host/adblockplus
   script:
     - npm ci --cache .npm --prefer-offline
     - npm run test:$CONFIGURATION $SUITE 2>&1 | tee lambdatest_output.txt || true
@@ -346,7 +302,7 @@ unit:standard:
   artifacts:
     when: always
     paths:
-      - $[[ inputs.workspacepath ]]/allure-report
+      - host/adblockplus/allure-report
     expire_in: 1 week
   rules:
     # Do not trigger a merge request pipeline
@@ -373,7 +329,7 @@ uitests:lambdatest:MV2:oldbrowsers:
 uitests:lambdatest:MV3:all:
   extends: .uitests:lambdatest
   before_script:
-    - cd $[[ inputs.workspacepath ]]
+    - cd host/adblockplus
     - npm install axios
     - export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js $LT_USERNAME $LT_ACCESS_KEY $CHROME_BUILD_MV3)
     - echo $MV3_BUILD_CLOUD_URL
@@ -387,15 +343,14 @@ uitests:lambdatest:MV3:all:
   services:
     - docker:24.0.5-dind
   script:
-    - docker build -t end-to-end -f test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
+    - docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION=$MANIFEST_VERSION --build-arg BROWSER=$BROWSER --build-arg BUILD_EXTENSION=false .
     - docker run --cpus=2 --shm-size=2g -t -e SUITE -e CI end-to-end
   after_script:
-    - cd $[[ inputs.workspacepath ]]
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
-    - docker cp $IMAGE_ID:/adblockplus/test/end-to-end/screenshots . 2> /dev/null
+    - docker cp $IMAGE_ID:/extensions/host/adblockplus/test/end-to-end/screenshots host/adblockplus 2> /dev/null
   artifacts:
     paths:
-      - $[[ inputs.workspacepath ]]/screenshots/
+      - host/adblockplus/screenshots/
     when: on_failure
     expire_in: 1 mo
   rules:

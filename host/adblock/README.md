@@ -13,66 +13,22 @@ The exact version requirements can be found in the [package descriptor file](pac
 
 ## Usage
 
+## Running scripts
+
+Please note that all scripts should be run from the root of the repository, not
+this host folder.
+
 ## Building
 
-### Building on Windows
+See the [readme at the root of the monorepo](../../README.md) for general
+instructions on prerequisites, dependency management, how to build the
+extensions.
 
-On Windows, you need a [Linux environment running on WSL](https://docs.microsoft.com/windows/wsl/install-win10).
-Then install the above requirements and run the commands below from within Bash.
+### Building with secrets
 
-### Updating the dependencies
-
-In order to build the extension, you need to run the following command to install all of the required packages
-
-`npm install`
-
-The above script will install the required npm packages for AdBlock, Adblock Plus, and run any pre & post install processing scripts.
-
-Rerun the above commands when the dependencies might have changed,
-e.g. after checking out a new revison.
-
-### Building the extension
-
-Copy the `.env.defaults` file in the root directory to a `.env` file and fill in the variables accordingly. This step can be skipped, and is only required if you wish to enable the sending of telemetry.
-
-Run one of the following commands in the project directory:
-
-- `npm run build:release {chrome|firefox} {2|3}`
-- `npm run build:release:{chrome|edge|ff}`\
-  _equivalent to running the first command with the appropriate arguments already pre-set_
-- `npm run build:release`\
-  _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
-- `npm run build:beta`
-
-This will create a build in the _dist/release/_ directory with a name in the
-form _adblock-chrome-\*.zip_ or _adblock-firefox-\*.xpi_ . These builds are
-unsigned. They can be submitted as-is to the extension stores, or if unpacked
-loaded in development mode for testing (same as development environment below).
-
-### Building the development environment
-
-To simplify the process of testing your changes you can create an unpacked
-development environment. For that run one of the following commands:
-
-- `npm run build {chrome|firefox} {2|3}`
-- `npm run build:{chrome|edge|ff}`\
-  _equivalent to running the first command with the appropriate arguments already pre-set_
-- `npm run build`\
-  _equivalent to running the first command for each distinct build (except Beta build) with the appropriate arguments already pre-set_
-
-This will create a _dist/devenv/\*_ directory in the project directory. You can load
-the directory as an unpacked extension under _chrome://extensions_ in
-Chromium-based browsers, and under _about:debugging_ in Firefox. After making
-changes to the source code re-run the command to update the development
-environment, and the extension should reload automatically after a few seconds.
-
-### Building the source archive
-
-To generate an archive for extension stores that includes all of the extension's
-source code, and from which extension builds can be generated, run the following
-command:
-
-`npm run build:source`
+Copy the `.env.defaults` file in the `host/adblock` directory to a `.env` file
+and fill in the variables accordingly. This step can be skipped, and is only
+required if you wish to enable the sending of telemetry.
 
 ## Testing
 
@@ -87,10 +43,10 @@ Prerequisites:
 
 - Docker
 
-To run the tests:
+To run the tests from the root of the monorepo:
 
 ```bash
-EXTENSION=<build file> ./test/compliance.sh
+EXTENSION=<build file> ./host/adblock/test/compliance.sh
 ```
 
 Optional environment variables:
@@ -104,15 +60,20 @@ End-to-end tests load the release build of the AdBlock extension in the browser
 to run the end to end test suites.
 
 Prerequisite: Do the release builds as described in
-[building the extension](#building-the-extension) section.
+[building the extensions in release mode](../../README.md#building-the-extensions-in-release-mode)
+section of the readme at the root of the monorepo.
 
-Note: Browser specified in the command is the browser that tests will be run on, not the browser that
-we specify in build step.
+Note: Commands given below should be run from the root directory of this
+repository, the same as the build commands.
+
+Note: The browser specified in the command is the browser that tests will be run
+on, not the browser that we specify in build step.
 
 #### Local run
 
 ```sh
-npm run test:end-to-end {chromium|edge|firefox} {2|3}
+npm run build:release -- --scope=adblock
+npm run test:end-to-end -- --scope=adblock -- {chromium|edge|firefox} {2|3}
 ```
 
 By default browsers run headless. Setting the environment variable
@@ -122,15 +83,15 @@ Mocha [command line options](https://mochajs.org/#command-line-usage) are
 supported. Example:
 
 ```sh
-MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run test:end-to-end-local -- --grep "Smoke"
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run --workspace host/adblock test:end-to-end-local -- --grep "Smoke"
 ```
 
-Screenshots for failing tests are stored in `test/end-to-end/screenshots`.
+Screenshots for failing tests are stored in `host/adblock/test/end-to-end/screenshots`.
 
 #### Docker run
 
 ```sh
-docker build -t end-to-end -f test/end-to-end/Dockerfile .
+docker build -t end-to-end -f host/adblock/test/end-to-end/Dockerfile .
 docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
 ```
 
@@ -142,33 +103,29 @@ docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANI
 ```
 
 To access the screenshots for failing tests run the following command, which
-copies them to the `test/end-to-end/screenshots` folder:
+copies them to the `host/adblock/test/end-to-end/screenshots` folder:
 
 ```shell
-docker cp $(docker ps -aqf ancestor=end-to-end | head -n 1):/adblock/test/end-to-end/screenshots ./test/end-to-end
+docker cp $(docker ps -aqf ancestor=end-to-end | head -n 1):/extensions/host/adblock/test/end-to-end/screenshots ./host/adblock/test/end-to-end
 ```
 
 ## Code Style
 
-We use a standard code style enforced by [eslint](https://eslint.org) for JavaScript and [Prettier](https://prettier.io) for HTML, CSS and JSON. We use [HTMLhint](https://github.com/htmlhint/HTMLHint) for HTML accessibility and standards checking. To use these tools, install [Node.js](https://nodejs.org) and run the following command in the project directory:
-
-```bash
-npm install
-```
+We use a standard code style enforced by [eslint](https://eslint.org) for JavaScript and [Prettier](https://prettier.io) for HTML, CSS and JSON. We use [HTMLhint](https://github.com/htmlhint/HTMLHint) for HTML accessibility and standards checking.
 
 Specifically, the standard JavaScript code style we've adopted is the [Airbnb JavaScript style guide](https://github.com/airbnb/javascript/blob/master/README.md)
 
 The following npm commands are then available:
 
 - `npm run lint` runs all linters and prints out all violations.
-- `npm run lint-fix` runs eslint and automatically fixes JavaScript style violations in place (be sure to commit before running this command in case you need to revert the changes eslint makes).
-- `npm run prettier` runs prettier on HTML, CSS, and JSON files in the adblock-betafish directory and list all files that need to be Prettier.
-- `npm run prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.
-- `npm run html-hint` runs HTMLhint and flags any issues with the HTML templates such as missing `DOCTYPE`, tags and/or attributes. This does not run on pre-commits so it must be run manually. New AdBlock custom attributes should be added in `/rules/static/custom_attributes.json`. If mistakenly flagged, standard HTML attributes should be added in `/rules/static/aria_attributes.json` or `/rules/static/mapped_attributes.json`.
+- `npm run --workspace host/adblock lint-fix` runs eslint and automatically fixes JavaScript style violations in place (be sure to commit before running this command in case you need to revert the changes eslint makes).
+- `npm run --workspace host/adblock prettier` runs prettier on HTML, CSS, and JSON files in the adblock-betafish directory and list all files that need to be Prettier.
+- `npm run --workspace host/adblock prettier-fix` runs prettier and automatically replaces with Prettier versions for HTML, CSS, and JSON files in the adblock-betafish directory.
+- `npm run --workspace host/adblock html-hint` runs HTMLhint and flags any issues with the HTML templates such as missing `DOCTYPE`, tags and/or attributes. This does not run on pre-commits so it must be run manually. New AdBlock custom attributes should be added in `./rules/static/custom_attributes.json`. If mistakenly flagged, standard HTML attributes should be added in `./rules/static/aria_attributes.json` or `./rules/static/mapped_attributes.json`.
 
 ### Aliases
 
-As we update the extension structure and add Typescript, we will find ourselves importing files from mutiple levels within peer directories, as well as relocating files within a given subdirectory. To help make this easier, we have added a `~` shortcut, which maps to `adblock-betafish`.
+As we update the extension structure and add Typescript, we will find ourselves importing files from multiple levels within peer directories, as well as relocating files within a given subdirectory. To help make this easier, we have added a `~` shortcut, which maps to `adblock-betafish`.
 
 This means that rather than needing to use `../` to navigate out of a file's directory, the import address can be given from the perspective of `adblock-betafish`. So an import like `from '../../ipm/background/command-library.types';` can be replaced with from `'~/ipm/background/command-library.types';`.
 

@@ -1,5 +1,5 @@
 {
-  "name": "AdBlock",
+  "name": "adblock",
   "private": true,
   "description": "AdBlock",
   "repository": {
@@ -16,13 +16,7 @@
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
     "build:beta": "npm run $ create.beta",
-    "build:chrome": "npm run $ build.devenv.chrome.mv3",
-    "build:edge": "npm run $ build.devenv.chrome.mv2",
-    "build:ff": "npm run $ build.devenv.firefox",
     "build:release": "npm run $ build.release",
-    "build:release:chrome": "npm run $ build.release.chrome.mv3",
-    "build:release:edge": "npm run $ build.release.chrome.mv2",
-    "build:release:ff": "npm run $ build.release.firefox",
     "build:source": "gulp source",
     "eslint": "npm run $ lint.js",
     "eslint-fix": "npm run $ lint-fix.js",
@@ -142,7 +136,7 @@
   },
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#7b498dc74cb89d14adefa3e480a8685e991bf9c3",
-    "@eyeo/ext-ui-components": "file:../../ui-components",
+    "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
     "@eyeo/webext-ad-filtering-solution": "1.16.0",
     "@rollup/plugin-typescript": "8.3.2",
@@ -167,5 +161,19 @@
     "webpack": "5.93.0",
     "webpack-merge": "6.0.1",
     "webpack-stream": "6.1.1"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist/devenv"
+        ]
+      },
+      "build:release": {
+        "outputs": [
+          "{projectRoot}/dist/release"
+        ]
+      }
+    }
   }
 }
