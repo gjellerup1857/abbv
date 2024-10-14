@@ -315,18 +315,13 @@ comp:MV2:firefox:oldest:
     - when: manual
   allow_failure: true
 
-uitests:lambdatest:MV2:all:
-  extends: .uitests:lambdatest
-  variables:
-    CONFIGURATION: end-to-end-lambdatest-mv2
-
 uitests:lambdatest:MV2:oldbrowsers:
   extends: .uitests:lambdatest
   variables:
     CONFIGURATION: end-to-end-old-browsers
     SUITE: oldbrowsers
 
-uitests:lambdatest:MV3:all:
+uitests:lambdatest:all:
   extends: .uitests:lambdatest
   before_script:
     - cd host/adblockplus
@@ -334,7 +329,7 @@ uitests:lambdatest:MV3:all:
     - export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js $LT_USERNAME $LT_ACCESS_KEY $CHROME_BUILD_MV3)
     - echo $MV3_BUILD_CLOUD_URL
   variables:
-    CONFIGURATION: end-to-end-lambdatest-mv3
+    CONFIGURATION: end-to-end-lambdatest
     CHROME_BUILD_MV3: dist/release/adblockplus-chrome-*-mv3.zip
 
 .uitests:docker:

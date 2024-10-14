@@ -29,25 +29,28 @@ const PremiumHeaderChunk = require("./page-objects/premiumHeader.chunk");
 const globalRetriesNumber = 0;
 const isGitlab = process.env.CI === "true";
 
-const chromeBuild = process.env.MANIFEST_VERSION === "2" ?
-  findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV2}`) :
+const chromeBuildMV2 =
+  findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV2}`);
+const chromeBuildMV3 =
   findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV3}`);
 const firefoxBuild = findFirstMatchingFile(
   `../../${process.env.FIREFOX_BUILD}`);
 
 const distPath = path.join(process.cwd(), "..", "..", "dist");
-const helperExtensionPath =
-  path.join(distPath, "devenv", "helper-extension.zip");
-const helperExtensionUnpackedPath =
-  path.join(distPath, "devenv", "helper-extension");
+const helperExtensionMV2Path =
+  path.join(distPath, "devenv", "helper-extension-mv2.zip");
+const helperExtensionMV3Path =
+  path.join(distPath, "devenv", "helper-extension-mv3.zip");
+const helperExtensionMV3UnpackedPath =
+  path.join(distPath, "devenv", "helper-extension-mv3");
 
 const testConfig = {
   allureEnabled: process.env.ENABLE_ALLURE === "true",
   browserName: process.env.BROWSER,
   screenshotsPath: path.join(process.cwd(), "screenshots"),
   releasePath: path.join(distPath, "release"),
-  chromeBuild,
-  helperExtensionUnpackedPath
+  chromeBuildMV3,
+  helperExtensionMV3UnpackedPath
 };
 
 async function afterSequence(optionsUrl = null)
@@ -66,7 +69,7 @@ async function beforeSequence(expectInstalledTab = true)
   {
     await browser.installAddOn(getFirefoxExtension(), true);
     await browser.pause(500);
-    await browser.installAddOn(getHelperExtension(), true);
+    await browser.installAddOn(getHelperExtension("MV2"), true);
   }
 
   const {origin, optionsUrl} = await waitForExtension();
@@ -104,6 +107,18 @@ async function beforeSequence(expectInstalledTab = true)
   // To mitigate that, `optionsUrl` is passed here to trigger the fallback
   // mechanism in switchToABPOptionsTab()
   await afterSequence(optionsUrl);
+
+  if (isFirefox())
+  {
+    process.env.MANIFEST_VERSION = "2";
+  }
+  else
+  {
+    const manifestVersion = await browser.
+      executeScript(
+        "return browser.runtime.getManifest().manifest_version;", []);
+    process.env.MANIFEST_VERSION = manifestVersion.toString();
+  }
 
   return {origin, optionsUrl, installedUrl};
 }
@@ -313,9 +328,9 @@ function getExtension(extensionPath)
   return fs.readFileSync(extensionPath).toString("base64");
 }
 
-function getChromiumExtension()
+function getChromiumMV2Extension()
 {
-  return getExtension(chromeBuild);
+  return getExtension(chromeBuildMV2);
 }
 
 function getFirefoxExtension()
@@ -323,8 +338,17 @@ function getFirefoxExtension()
   return getExtension(firefoxBuild);
 }
 
-function getHelperExtension()
+function getHelperExtension(manifestVersion)
 {
+  let helperExtensionPath;
+  if (manifestVersion == "MV2")
+  {
+    helperExtensionPath = helperExtensionMV2Path;
+  }
+  else if (manifestVersion == "MV3")
+  {
+    helperExtensionPath = helperExtensionMV3Path;
+  }
   return getExtension(helperExtensionPath);
 }
 
@@ -659,7 +683,7 @@ module.exports = {
   afterSequence, beforeSequence, doesTabExist,
   executeAsyncScript, testConfig,
   enablePremiumByMockServer, wakeMockServer, lambdatestRunChecks,
-  getChromiumExtension, getFirefoxExtension, getHelperExtension,
+  getChromiumMV2Extension, getFirefoxExtension, getHelperExtension,
   getCurrentDate, getTabId, enablePremiumByUI,
   randomIntFromInterval, globalRetriesNumber, switchToABPOptionsTab,
   waitForExtension, getABPOptionsTabId, waitForCondition,
