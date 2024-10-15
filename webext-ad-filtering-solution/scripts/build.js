@@ -132,7 +132,9 @@ export async function run() {
   // That's why subs-run-mv2 needs to run afterwards
   await runCommand("npm run subs-run-mv2");
   await build(args);
-  await generateTypeDefs();
+  
+  // Removed for now.
+  // await generateTypeDefs();
 }
 
 if (isScriptInvokedFromCLI) {
