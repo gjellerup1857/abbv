@@ -82,7 +82,7 @@
         "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
         "standard": "jest"
       },
-      "end-to-end":{
+      "end-to-end": {
         "chromium": {
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi"
@@ -110,7 +110,7 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#585dc37e6f0a0c24c4362de3c715fce4498e04bc",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#54d462f18a65b21100b0fe2462757ec109a6d92c",
     "@eyeo/snippets": "1.7.0",
     "@eyeo/webext-ad-filtering-solution": "1.15.0",
     "@sentry/browser": "8.2.1",
