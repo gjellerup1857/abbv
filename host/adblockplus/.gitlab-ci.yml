@@ -45,7 +45,7 @@ stages:
     # Do not trigger merge request pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
-    - when: always
+    - when: on_success
 
 .release-or-main:
   rules:
@@ -213,7 +213,7 @@ checkbuildsizes:MV2:firefox:
   artifacts:
     paths:
       - host/adblockplus/screenshots/
-    when: always
+    when: on_failure
     expire_in: 1 month
   rules:
     - !reference [.always, rules]
@@ -309,9 +309,9 @@ comp:MV2:firefox:oldest:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     - if: $[[ inputs.parent_pipeline_source ]] == "schedule"
-      when: always
+      when: on_success
     - if: $CI_COMMIT_BRANCH == "adblockplus-release"
-      when: always
+      when: on_success
     - when: manual
   allow_failure: true
 

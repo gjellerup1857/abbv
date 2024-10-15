@@ -206,7 +206,7 @@ checkbuildsizes:MV2:firefox:
   artifacts:
     paths:
       - host/adblock/screenshots/
-    when: always
+    when: on_failure
     expire_in: 1 month
 
 comp:MV3:chromium:latest:
