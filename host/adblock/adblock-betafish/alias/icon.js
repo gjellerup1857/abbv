@@ -358,7 +358,7 @@ export async function showIconBadgeCTA(reason) {
   };
 
   // wait 10 seconds to allow any other tasks to finish
-  setTimeout(setNewText.bind(this, badgeTextDetails), 10_000);
+  setTimeout(setNewText.bind(this, badgeTextDetails, reason), 10_000);
 }
 
 /**

@@ -212,6 +212,24 @@ const checkAndEnableHelp = function () {
   }
 };
 
+/**
+ * Return the text used for the "NEW" badge. Replicates the logic in alias/icon.js
+ * @returns The "NEW" badge text
+ */
+const getNewBadgeText = () => {
+  const isFirefox = navigator.userAgent.match(/(?:Firefox)\/([\d.]+)/);
+  if (isFirefox) {
+    return "💥";
+  }
+
+  const text = browser.i18n.getMessage("new_badge");
+  if (text.length < 5) {
+    return text.toUpperCase();
+  }
+
+  return "New".toUpperCase();
+};
+
 const start = async function () {
   const userClosedCta = storageGet(popupMenuCtaClosedKey);
   const userClosedFreeDCCta = storageGet(popupMenuFreeDCCtaClosedKey);
@@ -248,18 +266,14 @@ const start = async function () {
   }
 
   if (info) {
-    const text = await browser.action.getBadgeText({ tabId: info.id });
-    let newBadgeText = translate("new_badge");
-    // Text that exceeds 4 characters is truncated on the toolbar badge,
-    // so we default to English
-    if (!newBadgeText || newBadgeText.length >= 5) {
-      newBadgeText = "New";
-    }
+    const currentBadgeText = await browser.action.getBadgeText({ tabId: info.id });
+    const newBadgeText = getNewBadgeText();
     let { newBadgeTextReason } = info;
-    const isBadgeTextNew = text === newBadgeText;
+    const isBadgeTextNew = currentBadgeText === newBadgeText;
     if (!isBadgeTextNew) {
       newBadgeTextReason = "";
     }
+
     const genMsgData = {
       command: "recordGeneralMessage",
       msg: "popup_opened",
