@@ -37,7 +37,7 @@ stages:
   - checkfilesizes
   - unit
   - compliance
-  - uitests
+  - end-to-end
 
 # Pipeline rules
 .always:
@@ -268,15 +268,15 @@ comp:MV2:firefox:oldest:
     EXTENSION: adblockplus-firefox-*-mv2.xpi
 
 ################################################################################
-# UI tests
+# End-to-end tests
 ################################################################################
 
-.uitests:
-  stage: uitests
+.end-to-end:
+  stage: end-to-end
   needs: ["build"]
 
-.uitests:lambdatest:
-  extends: .uitests
+.end-to-end:lambdatest:
+  extends: .end-to-end
   variables:
     LT_USERNAME: $LT_USERNAME
     LT_ACCESS_KEY: $LT_ACCESS_KEY
@@ -315,14 +315,14 @@ comp:MV2:firefox:oldest:
     - when: manual
   allow_failure: true
 
-uitests:lambdatest:MV2:oldbrowsers:
-  extends: .uitests:lambdatest
+end-to-end:lambdatest:MV2:oldbrowsers:
+  extends: .end-to-end:lambdatest
   variables:
     CONFIGURATION: end-to-end-old-browsers
     SUITE: oldbrowsers
 
-uitests:lambdatest:all:
-  extends: .uitests:lambdatest
+end-to-end:lambdatest:all:
+  extends: .end-to-end:lambdatest
   before_script:
     - cd host/adblockplus
     - npm install axios
@@ -332,8 +332,8 @@ uitests:lambdatest:all:
     CONFIGURATION: end-to-end-lambdatest
     CHROME_BUILD_MV3: dist/release/adblockplus-chrome-*-mv3.zip
 
-.uitests:docker:
-  extends: .uitests
+.end-to-end:docker:
+  extends: .end-to-end
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
@@ -353,20 +353,20 @@ uitests:lambdatest:all:
   variables:
     SUITE: filterlists
 
-uitests:docker:MV2:firefox:
-  extends: .uitests:docker
+end-to-end:MV2:firefox:
+  extends: .end-to-end:docker
   variables:
     MANIFEST_VERSION: 2
     BROWSER: firefox
 
-uitests:docker:MV2:edge:
-  extends: .uitests:docker
+end-to-end:MV2:edge:
+  extends: .end-to-end:docker
   variables:
     MANIFEST_VERSION: 2
     BROWSER: edge
 
-uitests:docker:MV3:chromium:
-  extends: .uitests:docker
+end-to-end:MV3:chromium:
+  extends: .end-to-end:docker
   variables:
     MANIFEST_VERSION: 3
     BROWSER: chromium
