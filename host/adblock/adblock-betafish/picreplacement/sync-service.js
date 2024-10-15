@@ -822,8 +822,8 @@ const SyncService = (function getSyncService() {
       lastPostStatusCode = 200;
       pendingPostData = false;
       chromeStorageSetHelper(syncPendingPostDataKey, pendingPostData);
-      log("sending sync 'payload' to server", thedata);
-      log("sending sync 'thedata' to server", payload);
+      log("sending sync 'payload' to server", payload);
+      log("sending sync 'thedata' to server", thedata);
       postData(License.MAB_CONFIG.syncURL, thedata)
         .then((postResponse) => {
           lastPostStatusCode = postResponse.status;

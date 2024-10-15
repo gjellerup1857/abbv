@@ -3,6 +3,7 @@
 - Updated snippets to 1.7.0
 - Updated the link to the source code on the support tab
 - Updated webext-ad-filtering-solution to 1.16.0
+- Added allowlisting events centered on privacy to help us improve user experience
 
 # 6.9.3 - 2024-10-02
 

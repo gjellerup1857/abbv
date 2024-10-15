@@ -668,6 +668,26 @@ async function checkUpdateProgress() {
   return { inProgress, filterError };
 }
 
+/*
+ * Listens on allowlisting events and logs when an allowlisting
+ * filter was renewed or expired.
+ */
+function addAllowlistingListeners() {
+  // Log event when a smart allowlist was renewed
+  ewe.filters.onRenewed.addListener((filter) => {
+    ServerMessages.recordAllowlistEvent("allowlisting_renewed", filter.metadata.autoExtendMs);
+  });
+
+  // Log event when a smart allowlist expired
+  ewe.filters.onExpired.addListener((filter) => {
+    const { autoExtendMs } = filter.metadata;
+
+    if (autoExtendMs) {
+      ServerMessages.recordAllowlistEvent("allowlisting_expired", autoExtendMs);
+    }
+  });
+}
+
 initialize
   .then(async () => {
     await startContentFiltering();
@@ -680,6 +700,7 @@ initialize
     await startCdpOptOutListener();
     revalidateAllowlistingStates();
     prefs.migrateUserData();
+    addAllowlistingListeners();
   })
   .catch((e) => {
     // Send anonymous event to the log server in case there was an error with
