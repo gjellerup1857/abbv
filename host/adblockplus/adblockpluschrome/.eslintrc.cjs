@@ -9,5 +9,5 @@
  */
 
 module.exports = {
-  extends: "../eslint/adblockpluschrome.js"
+  extends: "../eslint/love.js"
 };
