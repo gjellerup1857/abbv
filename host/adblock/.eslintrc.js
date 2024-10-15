@@ -3,5 +3,5 @@
 "use strict";
 
 module.exports = {
-  extends: "./eslint/love.js"
+  extends: "../../core/configs/.eslintrc.js"
 };
