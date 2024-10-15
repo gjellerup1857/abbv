@@ -22,7 +22,6 @@
 const helpers = require("./helpers.js");
 
 const mv3BuildCloudUrl = process.env.MV3_BUILD_CLOUD_URL;
-process.env.MANIFEST_VERSION = "3";
 
 exports.config = {
   capabilities: [
@@ -35,7 +34,7 @@ exports.config = {
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--lang=de"],
         prefs: {
@@ -64,7 +63,7 @@ exports.config = {
       platformName: "Windows 11",
       "ms:edgeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--start-maximized", "--lang=de"],
         prefs: {
@@ -93,7 +92,7 @@ exports.config = {
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--lang=ar_SA"],
         prefs: {
@@ -124,7 +123,7 @@ exports.config = {
       platformName: "Windows 11",
       "ms:edgeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--start-maximized", "--lang=ar_SA"],
         prefs: {
@@ -155,7 +154,7 @@ exports.config = {
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--lang=ca_CA"],
         prefs: {
@@ -185,7 +184,7 @@ exports.config = {
       platformName: "Windows 11",
       "ms:edgeOptions": {
         extensions: [
-          helpers.getHelperExtension()
+          helpers.getHelperExtension("MV3")
         ],
         args: ["--no-sandbox", "--start-maximized", "--lang=ca_CA"],
         prefs: {

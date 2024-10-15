@@ -1,0 +1,47 @@
+{
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "build:release": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
+    },
+    "build:local": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/devenv/local-mv2"
+      ]
+    },
+    "build:beta": {
+      "cache": true,
+      "dependsOn": [
+        "^build:release"
+      ],
+      "outputs": [
+        "{projectRoot}/dist/release/*beta*.zip",
+        "{projectRoot}/dist/release/*development*.zip"
+      ]
+    },
+    "lint": {
+      "cache": false,
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}

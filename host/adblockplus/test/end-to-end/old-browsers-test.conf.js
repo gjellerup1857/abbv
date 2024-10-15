@@ -38,8 +38,8 @@ const parallelConfig = {
       platformName: "Windows 10",
       "goog:chromeOptions": {
         extensions: [
-          helpers.getChromiumExtension(),
-          helpers.getHelperExtension()
+          helpers.getChromiumMV2Extension(),
+          helpers.getHelperExtension("MV2")
         ],
         args: ["--no-sandbox"],
         prefs: {

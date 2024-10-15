@@ -22,43 +22,56 @@ import path from "path";
 import AdmZip from "adm-zip";
 
 const devenvPath = path.join(process.cwd(), "dist", "devenv");
-const helperExtensionDestPath = path.join(devenvPath, "helper-extension");
-const helperExtensionDestZip = path.join(devenvPath, "helper-extension.zip");
+const helperExtensionDestPath = {
+  mv2: path.join(devenvPath, "helper-extension-mv2"),
+  mv3: path.join(devenvPath, "helper-extension-mv3")
+};
+const helperExtensionDestZip = {
+  mv2: path.join(devenvPath, "helper-extension-mv2.zip"),
+  mv3: path.join(devenvPath, "helper-extension-mv3.zip")
+};
 const helperExtensionSrcPath =
   path.join(process.cwd(), "test", "end-to-end", "helper-extension");
 
 async function run()
 {
-  let manifestVersion = process.env.MANIFEST_VERSION;
-  if (manifestVersion !== "2" && manifestVersion !== "3")
-    throw new Error("MANIFEST_VERSION env var must be \"2\" or \"3\". " +
-                    `Current: "${manifestVersion}"`);
+  for (const manifestVersionsItem of ["2", "3"])
+  {
+    const manifestVersion = parseInt(manifestVersionsItem, 10);
+    await fs.promises.rm(helperExtensionDestPath[`mv${manifestVersionsItem}`], {
+      recursive: true, force: true});
+    await fs.promises.rm(helperExtensionDestZip[`mv${manifestVersionsItem}`], {
+      recursive: true, force: true});
+    await fs.promises.mkdir(
+      helperExtensionDestPath[`mv${manifestVersionsItem}`], {recursive: true});
 
-  manifestVersion = parseInt(manifestVersion, 10);
-  await fs.promises.rm(helperExtensionDestPath, {recursive: true, force: true});
-  await fs.promises.rm(helperExtensionDestZip, {recursive: true, force: true});
-  await fs.promises.mkdir(helperExtensionDestPath, {recursive: true});
+    const manifestBase =
+      path.join(helperExtensionSrcPath, "manifest.base.json");
+    const manifest = JSON.parse(await fs.promises.readFile(manifestBase));
 
-  const manifestBase = path.join(helperExtensionSrcPath, "manifest.base.json");
-  const manifest = JSON.parse(await fs.promises.readFile(manifestBase));
+    manifest.name = `${manifest.name} MV${manifestVersion}`;
+    manifest["manifest_version"] = manifestVersion;
+    manifest.background = manifestVersion === 2 ?
+      {scripts: ["background.js"]} : {service_worker: "background.js"};
 
-  manifest.name = `${manifest.name} MV${manifestVersion}`;
-  manifest["manifest_version"] = manifestVersion;
-  manifest.background = manifestVersion === 2 ?
-    {scripts: ["background.js"]} : {service_worker: "background.js"};
+    await fs.promises.writeFile(path.join(
+      helperExtensionDestPath[`mv${manifestVersionsItem}`], "manifest.json"),
+                                JSON.stringify(manifest, null, 2)
+    );
+    await fs.promises.copyFile(
+      path.join(helperExtensionSrcPath, "background.js"), path.join(
+        helperExtensionDestPath[`mv${manifestVersionsItem}`], "background.js")
+    );
 
-  await fs.promises.writeFile(
-    path.join(helperExtensionDestPath, "manifest.json"),
-    JSON.stringify(manifest, null, 2)
-  );
-  await fs.promises.copyFile(
-    path.join(helperExtensionSrcPath, "background.js"),
-    path.join(helperExtensionDestPath, "background.js")
-  );
+    const zip = new AdmZip();
+    zip.addLocalFolder(helperExtensionDestPath[`mv${manifestVersionsItem}`]);
+    zip.writeZip(helperExtensionDestZip[`mv${manifestVersionsItem}`]);
 
-  const zip = new AdmZip();
-  zip.addLocalFolder(helperExtensionDestPath);
-  zip.writeZip(helperExtensionDestZip);
+    // eslint-disable-next-line no-console
+    console.log("Helper extension MV" + manifestVersionsItem +
+      ` built to ${helperExtensionDestPath[`mv${manifestVersionsItem}`]} ` +
+     `and zipped to ${helperExtensionDestZip[`mv${manifestVersionsItem}`]}`);
+  }
 }
 
 (async() =>
@@ -72,7 +85,4 @@ async function run()
     console.error(e);
     process.exit(1);
   }
-  // eslint-disable-next-line no-console
-  console.log(`Helper extension built to ${helperExtensionDestPath} ` +
-              `and zipped to ${helperExtensionDestZip}`);
 })();

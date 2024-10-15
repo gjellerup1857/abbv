@@ -1,15 +1,17 @@
 FROM registry.gitlab.com/eyeo/docker/get-browser-binary:node18
 
-# Doing early `npm install` to cache those files on further image builds
-COPY package*.json adblock/
-RUN cd adblock/ && npm install --legacy-peer-deps
+# Doing early `npm install` to cache those files on further image builds If this
+# fails saying that the package-lock.json is out of sync, it could mean that a
+# new package.json was added which isn't copied here.
+COPY *.json .npmrc extensions/
+COPY host/adblock/*.json extensions/host/adblock/
+COPY host/adblockplus/*.json extensions/host/adblockplus/
+COPY ui-components/*.json extensions/ui-components/
+RUN cd extensions && npm ci
 
-COPY . adblock/
-WORKDIR adblock/
-RUN npm install --legacy-peer-deps
-
-ENTRYPOINT test/end-to-end/entrypoint.sh
+COPY . extensions/
+WORKDIR extensions/
 
 ENV MANIFEST_VERSION=3
 ENV BROWSER=chromium
-ENTRYPOINT npm run test:end-to-end $BROWSER $MANIFEST_VERSION
+ENTRYPOINT npm run test:end-to-end -- --scope=adblock -- $BROWSER $MANIFEST_VERSION

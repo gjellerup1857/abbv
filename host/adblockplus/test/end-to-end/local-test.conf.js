@@ -25,8 +25,8 @@ const AdmZip = require("adm-zip");
 const helpers = require("./helpers.js");
 const {suites} = require("./suites.js");
 
-const {allureEnabled, browserName, screenshotsPath, releasePath, chromeBuild,
-       helperExtensionUnpackedPath} = helpers.testConfig;
+const {allureEnabled, browserName, screenshotsPath, releasePath, chromeBuildMV3,
+       helperExtensionMV3UnpackedPath} = helpers.testConfig;
 
 const browserCapabilities = [];
 const chromiumOptions = {
@@ -45,18 +45,18 @@ if (process.env.MANIFEST_VERSION === "3")
   const chromeExtensionUnpackedPath = path.join(releasePath, "chrome-unpacked");
   fs.rmSync(chromeExtensionUnpackedPath, {force: true, recursive: true});
 
-  const zip = new AdmZip(chromeBuild);
+  const zip = new AdmZip(chromeBuildMV3);
   zip.extractAllTo(chromeExtensionUnpackedPath, true);
 
   chromiumOptions.args.push("--load-extension=" +
-    `${chromeExtensionUnpackedPath},${helperExtensionUnpackedPath}`);
+    `${chromeExtensionUnpackedPath},${helperExtensionMV3UnpackedPath}`);
 }
 else
 {
   chromiumOptions.extensions =
     browserName === "chromium" || browserName === "edge" ? [
-      helpers.getChromiumExtension(),
-      helpers.getHelperExtension()
+      helpers.getChromiumMV2Extension(),
+      helpers.getHelperExtension("MV2")
     ] : [];
 }
 

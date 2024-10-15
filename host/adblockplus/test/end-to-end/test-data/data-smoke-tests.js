@@ -40,7 +40,6 @@ module.exports =
   regexMajorBrowserVersion: /(?<=browserVersion":").*?(?=\.)/,
   regexMajorBrowserVersionFF: /(?<=rv:)\d+/,
   regexManifestVersion: /(?<="version": ").*?(?=")/,
-  sitekeyUrl: "https://abptestpages.org/en/exceptions/sitekey_mv2",
   snippetsPageUrl: "https://adblockinc.gitlab.io/QA-team/adblocking/snippets" +
     "/snippets-testpage.html"
 };

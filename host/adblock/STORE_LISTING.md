@@ -44,7 +44,7 @@ In order to build the extension, you need to run the following command (install 
 
 Run the following command in the project directory to build the Firefox version of AdBlock
 
-    npm run -w host/adblock build:release firefox 2
+    npm run build:release -- --scope=adblock -- firefox 2
 
 This will create a build with a name in the form
 _host/adblock/dist/release/adblock-firefox-n.n.n-mv2.xpi_. These builds
@@ -56,7 +56,7 @@ unpacked loaded in development mode for testing (same as devenv builds below).
 To simplify the process of testing your changes you can create an unpacked
 development environment. For that run one of the following command:
 
-    npm run -w host/adblock build firefox 2
+    npm run build -- --scope=adblock -- firefox 2
 
 This will create a _host/adblock/devenv/firefox-mv2_ directory in the project directory. You can load
 the directory as an unpacked extension under _about:debugging_ in Firefox. After making

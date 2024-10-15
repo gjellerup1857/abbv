@@ -12,7 +12,8 @@
         "dev": "storybook dev -p 6006",
         "build": "vite build && npx tsc",
         "build:watch": "vite build --watch",
-        "test": "vitest --reporter=verbose",
+        "build:release": "npm run build",
+        "test": "vitest run --reporter=verbose",
         "lint": "eslint .",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"

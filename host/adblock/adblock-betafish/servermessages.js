@@ -184,6 +184,11 @@ const ServerMessages = (function serverMessages() {
     });
   };
 
+  // Log a data-collection smart allowlist expired message on GAB log server.
+  const recordAllowlistEvent = async function (eventName, allowlistDuration) {
+    return recordGeneralMessage(eventName, null, { allowlistDuration });
+  };
+
   return {
     recordAdreportMessage,
     recordAdWallMessage,
@@ -194,6 +199,7 @@ const ServerMessages = (function serverMessages() {
     recordStatusMessage,
     sendMessageToBackupLogServer,
     recordOptOutMessage,
+    recordAllowlistEvent,
   };
 })();
 

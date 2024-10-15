@@ -23,8 +23,8 @@ const helpers = require("./helpers.js");
 helpers.lambdatestRunChecks();
 
 const {config: baseConfig} = require("./base.conf.js");
-
-process.env.MANIFEST_VERSION = "2";
+const {config: localisationConfig} = require("./localisation.conf.js");
+const mv3BuildCloudUrl = process.env.MV3_BUILD_CLOUD_URL;
 
 const parallelConfig = {
   maxInstances: 12,
@@ -34,6 +34,65 @@ const parallelConfig = {
     }
   },
   capabilities: [
+    {
+      "LT:Options": {
+        "lambda:loadExtension": [mv3BuildCloudUrl]
+      },
+      browserName: "Chrome",
+      browserVersion: "latest",
+      platformName: "macOS Monterey",
+      "goog:chromeOptions": {
+        extensions: [
+          helpers.getHelperExtension("MV3")
+        ],
+        args: ["--no-sandbox"],
+        prefs: {
+          "intl.accept_languages": "en,en_US",
+          "profile.managed_default_content_settings.popups": 2,
+          "profile.managed_default_content_settings.notifications": 2,
+          "profile.content_settings.exceptions.clipboard": {
+            "*": {"setting": 1}
+          }
+        },
+        excludeSwitches: ["disable-extensions"]
+      },
+      acceptInsecureCerts: true,
+      exclude: [
+        "./tests/legacy-unit.js",
+        "./tests/localisation-*.js"
+      ]
+    },
+    {
+      "LT:Options": {
+        "lambda:loadExtension": [mv3BuildCloudUrl]
+      },
+      browserName: "MicrosoftEdge",
+      browserVersion: "latest",
+      platformName: "Windows 11",
+      "ms:edgeOptions": {
+        extensions: [
+          helpers.getHelperExtension("MV3")
+        ],
+        args: ["--no-sandbox", "--start-maximized"],
+        prefs: {
+          "intl.accept_languages": "en,en_US",
+          "profile.managed_default_content_settings.popups": 2,
+          "profile.managed_default_content_settings.notifications": 2,
+          "profile.content_settings.exceptions.clipboard": {
+            "*": {"setting": 1}
+          }
+        },
+        excludeSwitches: ["disable-extensions"]
+      },
+      acceptInsecureCerts: true,
+      exclude: [
+        "./tests/legacy-unit.js",
+        "./tests/localisation-*.js",
+        "./tests/test-abp-premium-license-check-retries.js",
+        "./tests/test-abp-premium-license-server-responses.js",
+        "./tests/test-abp-allowlisting-api.js"
+      ]
+    },
     {
       browserName: "Firefox",
       browserVersion: "latest",
@@ -61,8 +120,8 @@ const parallelConfig = {
       platformName: "Windows 10",
       "ms:edgeOptions": {
         extensions: [
-          helpers.getChromiumExtension(),
-          helpers.getHelperExtension()
+          helpers.getChromiumMV2Extension(),
+          helpers.getHelperExtension("MV2")
         ],
         args: ["--no-sandbox", "--start-maximized"],
         prefs: {
@@ -80,7 +139,8 @@ const parallelConfig = {
         "./tests/legacy-unit.js",
         "./tests/localisation-*.js",
         "./tests/test-abp-premium-license-check-retries.js",
-        "./tests/test-abp-premium-license-server-responses.js"
+        "./tests/test-abp-premium-license-server-responses.js",
+        "./tests/test-abp-allowlisting-api.js"
       ]
     }
   ],
@@ -90,7 +150,7 @@ const parallelConfig = {
 };
 
 exports.config = {...baseConfig, ...parallelConfig,
-                  capabilities: [...parallelConfig.capabilities]};
+                  capabilities: [...parallelConfig.capabilities, ...localisationConfig.capabilities]};
 
 // Code to support common capabilities
 exports.config.capabilities.forEach((caps) =>

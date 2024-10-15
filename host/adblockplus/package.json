@@ -29,8 +29,7 @@
     "test:end-to-end": "npm run $ test.end-to-end",
     "test:end-to-end:build": "rm -rf allure-report test/end-to-end/allure-results && node test/end-to-end/helper-extension/build.mjs",
     "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && wdio run local-test.conf.js --suite",
-    "test:end-to-end-lambdatest-mv2": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
-    "test:end-to-end-lambdatest-mv3": "MANIFEST_VERSION=3 npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.mv3.js --suite",
+    "test:end-to-end-lambdatest": "npm run test:end-to-end:build && cd test/end-to-end && wdio run test.conf.js --suite",
     "test:end-to-end-old-browsers": "MANIFEST_VERSION=2 npm run test:end-to-end:build && cd test/end-to-end && wdio run old-browsers-test.conf.js --suite",
     "test:generate-and-open-report": "allure generate test/end-to-end/allure-results && allure open",
     "test:generate-report": "allure generate test/end-to-end/allure-results"
@@ -82,7 +81,7 @@
         "legacy": "mocha \"./test/unit/**/*.spec.{js,mjs}\"",
         "standard": "jest"
       },
-      "end-to-end":{
+      "end-to-end": {
         "chromium": {
           "mv2": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi"
@@ -110,10 +109,10 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#585dc37e6f0a0c24c4362de3c715fce4498e04bc",
+    "@adblockinc/rules": "gitlab:adblockinc/ext/rules#54d462f18a65b21100b0fe2462757ec109a6d92c",
     "@eyeo/snippets": "1.7.0",
     "@eyeo/webext-ad-filtering-solution": "1.16.0",
-    "@eyeo/ext-ui-components": "file:../../ui-components",
+    "@eyeo/ext-ui-components": "*",
     "@sentry/browser": "8.2.1",
     "argparse": "1.0.10",
     "canvas": "2.11.2",
@@ -189,5 +188,19 @@
   },
   "overrides": {
     "stylelint": "14.9.1"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist/devenv"
+        ]
+      },
+      "build:release": {        
+        "outputs": [
+          "{projectRoot}/dist/release"
+        ]
+      }
+    }
   }
 }

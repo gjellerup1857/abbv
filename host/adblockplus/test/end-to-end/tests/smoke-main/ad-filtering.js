@@ -92,17 +92,18 @@ module.exports = function()
 
   it("uses sitekey to allowlist content", async function()
   {
-    if (process.env.MANIFEST_VERSION === "3")
-      this.skip();
+    const manifestVersion = process.env.MANIFEST_VERSION;
+    const sitekeyUrl =
+      `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
 
-    await waitForNewWindow(testData.sitekeyUrl, 8000);
+    await waitForNewWindow(sitekeyUrl, 8000);
     const filters = await getTestpagesFilters();
 
     await switchToABPOptionsTab();
     await addFiltersToABP(filters);
 
     const generalPage = new GeneralPage(browser);
-    await generalPage.switchToTab(testData.sitekeyUrl, 8000);
+    await generalPage.switchToTab(sitekeyUrl, 8000);
     await browser.refresh();
     await browser.waitUntil(async() =>
     {
@@ -116,7 +117,16 @@ module.exports = function()
 
     await browser.switchToFrame(await $("#sitekey-frame"));
     expect(await generalPage.isElementDisplayed("#inframe-target")).to.be.true;
-    expect(await generalPage.isElementDisplayed("#inframe-image")).to.be.true;
+    if (manifestVersion === "3")
+    {
+      expect(await generalPage.isElementDisplayed(
+        "#inframe-image", false, 100)).to.be.false;
+    }
+    else
+    {
+      expect(await generalPage.isElementDisplayed("#inframe-image")).to.be.true;
+    }
+
     await browser.closeWindow();
 
     await switchToABPOptionsTab();
