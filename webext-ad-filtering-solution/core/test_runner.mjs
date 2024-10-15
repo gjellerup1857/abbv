@@ -112,8 +112,15 @@ async function runBrowserTests(processes) {
   if (!fs.existsSync(mochaPath)) {
     mochaPath = path.join(dirname, "..", "node_modules", "mocha", "mocha.js");
   }
+  if (!fs.existsSync(mochaPath)) {
+    mochaPath = path.join(dirname, "..", "..", "node_modules", "mocha", "mocha.js");
+  }
+
   if (!fs.existsSync(chaiPath)) {
     chaiPath = path.join(dirname, "..", "node_modules", "chai", "chai.js");
+  }
+  if (!fs.existsSync(chaiPath)) {
+    chaiPath = path.join(dirname, "..", "..", "node_modules", "chai", "chai.js");
   }
 
   let bundle = await webpackInMemory(bundleFilename, {
