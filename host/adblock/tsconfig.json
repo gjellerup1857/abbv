@@ -25,6 +25,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["./**/*"],
   "compileOnSave": false
 }
