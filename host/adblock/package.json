@@ -64,7 +64,7 @@
       "ts": "tsc --noEmit"
     },
     "lint-fix": {
-      "js": "eslint --fix --ext .js,.mjs adblock-betafish/ src/",
+      "js": "eslint --fix --ext .cjs,.js,.mjs,.ts ./",
       "prettier": "prettier --write ."
     },
     "test": {
