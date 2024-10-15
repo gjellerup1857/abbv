@@ -59,10 +59,7 @@
     },
     "lint": {
       "html": "htmlhint adblock-betafish/ -R ./rules/",
-      "js": {
-        "legacy": "eslint --ext .js,.mjs,.ts adblock-betafish/ src/",
-        "love": "eslint --ext .ts adblock-betafish/ src/"
-      },
+      "js": "eslint --ext .cjs,.js,.mjs,.ts ./",
       "prettier": "prettier --check .",
       "ts": "tsc --noEmit"
     },

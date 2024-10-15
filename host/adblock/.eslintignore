@@ -2,7 +2,7 @@
 
 _locales/*
 adblockplusui/*
-devenv/*
+dist/*
 icons/*
 
 
