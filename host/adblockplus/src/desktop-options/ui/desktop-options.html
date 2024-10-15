@@ -21,15 +21,13 @@
     <meta charset="utf-8" />
     <title data-i18n="options_page_document_title"></title>
     <link rel="icon" type="image/png" href="icons/abp-32.png" />
-    <!-- TODO (ui-components): uncomment the line below when you want to integrate ui-components and React -->
-    <!-- <link rel="stylesheet" href="ui-components-styles.css" /> -->
+    <link rel="stylesheet" href="ui-components-styles.css" />
     <script src="polyfill.js"></script>
     <script defer src="desktop-options.js"></script>
   </head>
   <body
     data-tab="general"
     data-source="desktop-options"
-    data-extension="abp"
     hidden
   >
     <!-- Navigation sidebar -->
@@ -136,7 +134,6 @@
         >
       </div>
     </aside>
-    <div id="react-sections"></div>
     <main>
       <!-- General tab content -->
       <div
@@ -149,6 +146,9 @@
           <h1 data-i18n="options_tab_general"></h1>
           <p data-i18n="options_general_description"></p>
         </header>
+        <div class="react-app">
+          <div id="general-features-section" data-extension="abp"></div>
+        </div>
         <section class="recommended-features template-container">
           <div>
             <header class="premium list-header">
@@ -834,7 +834,6 @@
       </button>
     </div>
 
-    <!-- TODO (ui-components): uncomment the line below when you want to integrate ui-components and React -->
-    <!-- <script src="react-desktop-options.js"></script> -->
+    <script src="react-desktop-options.js"></script>
   </body>
 </html>

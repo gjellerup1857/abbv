@@ -47,13 +47,10 @@ export default {
         dest: "desktop-options.js",
         src: ["js/pages/desktop-options/index.mjs"]
       },
-      // eslint-disable-next-line no-warning-comments
-      // TODO (ui-components): Uncomment this when you want to integrate
-      //                       ui-components and React
-      // {
-      //   dest: "react-desktop-options.js",
-      //   src: ["src/desktop-options/ui/react-components/main.tsx"]
-      // },
+      {
+        dest: "react-desktop-options.js",
+        src: ["src/desktop-options/ui/react-components/index.jsx"]
+      },
       {
         dest: "devtools.js",
         src: ["src/devtools/ui/index.ts"]
@@ -232,14 +229,11 @@ export default {
       {
         dest: "premium-onboarding.html",
         src: "src/premium-onboarding/ui/onboarding.html"
+      },
+      {
+        dest: "ui-components-styles.css",
+        src: "../../node_modules/@eyeo/ext-ui-components/dist/styles.css"
       }
-      // eslint-disable-next-line no-warning-comments
-      // TODO (ui-components): Uncomment this when you want to integrate
-      //                       ui-components and React
-      // {
-      //   dest: "ui-components-styles.css",
-      //   src: "../../node_modules/@eyeo/ext-ui-components/dist/styles.css"
-      // }
     ]
   },
   translations: {

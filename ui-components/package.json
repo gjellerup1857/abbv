@@ -11,6 +11,7 @@
     "scripts": {
         "dev": "storybook dev -p 6006",
         "build": "vite build && npx tsc",
+        "build:watch": "vite build --watch",
         "test": "vitest --reporter=verbose",
         "lint": "eslint .",
         "storybook": "storybook dev -p 6006",
@@ -60,6 +61,7 @@
         ]
     },
     "dependencies": {
+        "postcss-prefix-selector": "2.1.0",
         "prop-types": "^15.8.1"
     }
 }
