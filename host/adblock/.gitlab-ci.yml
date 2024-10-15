@@ -32,6 +32,10 @@ default:
     - "GCP"
   interruptible: true
 
+variables:
+  # https://github.com/nrwl/nx/issues/28205#issuecomment-2403831011
+  NX_DISABLE_DB: "true"
+
 stages:
   - build
   - checkfilesizes

@@ -10,6 +10,10 @@ default:
   tags:
     - "GCP"
 
+variables:
+  # https://github.com/nrwl/nx/issues/28205#issuecomment-2403831011
+  NX_DISABLE_DB: "true"
+
 stages:
   - root
   - children
@@ -18,10 +22,7 @@ stages:
   stage: root
   before_script:
     - npm ci --cache .npm --prefer-offline
-    - if [[ "$CI_COMMIT_REF_NAME" != "main" ]]; then SINCE="--since origin/main"; fi
-  variables:
-    # https://github.com/nrwl/nx/issues/28205#issuecomment-2403831011
-    NX_DISABLE_DB: "true"
+    - if [[ "$CI_COMMIT_REF_NAME" != "main" ]]; then SINCE="--since origin/main"; fi  
 
 lint:
   extends: .base
