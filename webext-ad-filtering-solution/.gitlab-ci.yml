@@ -7,7 +7,7 @@ spec:
 ---
 
 default:
-  interruptible: true
+  image: node:18.17.1
   cache: # Cache modules using lock file
     key:
       files:
@@ -16,6 +16,7 @@ default:
       - .npm/
   tags:
     - "GCP"
+  interruptible: true
 
 variables:
   npm_config_audit: "false"
@@ -91,7 +92,6 @@ stages:
   - performance
 
 build:src:
-  image: node:18-bullseye-slim
   stage: build
   before_script:
     - npm ci --cache .npm --prefer-offline
@@ -106,7 +106,6 @@ build:src:
     expire_in: 1 week
 
 lint:
-  image: node:18-bullseye-slim
   stage: build
   before_script:
     - npm ci --cache .npm --prefer-offline
@@ -114,7 +113,6 @@ lint:
     - npm run lint -- --scope=@eyeo/webext-ad-filtering-solution
 
 # typechecks:
-#   image: node:18-bullseye-slim
 #   stage: build
 #   allow_failure: true
 #   before_script:
@@ -126,7 +124,6 @@ lint:
 # and https://eyeo.gitlab.io/adblockplus/abc/webext-ad-filtering-solution/core/index.html
 # Requirements: https://docs.gitlab.com/ee/user/project/pages/introduction.html#gitlab-pages-requirements
 pages:
-  image: node:18-bullseye-slim
   stage: build
   needs: ["build:src"]
   script:
@@ -479,7 +476,6 @@ int:scripts:
     - !reference [.avoid-flaky-run, rules]
 
 int:bundle:
-  image: node:18-bullseye-slim
   stage: integration
   script:
     - npm run test:bundle -- --scope=@eyeo/webext-ad-filtering-solution
