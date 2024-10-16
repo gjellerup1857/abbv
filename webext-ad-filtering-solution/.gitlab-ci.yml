@@ -167,17 +167,17 @@ build:functional-image:
 unit:core:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:core -- --scope=@eyeo/webext-ad-filtering-solution
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run -w @eyeo/webext-ad-filtering-solution test:unit:core
 
 unit:webext:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:webext -- --scope=@eyeo/webext-ad-filtering-solution
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run -w @eyeo/webext-ad-filtering-solution test:unit:webext
 
 unit:scripts:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:scripts -- --scope=@eyeo/webext-ad-filtering-solution
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run -w @eyeo/webext-ad-filtering-solution test:unit:scripts
 
 # Functional tests
 .functional:
@@ -270,7 +270,7 @@ func:v2:firefox:oldest:
 func:v2:windows:edge:
   extends: .functional-windows
   script:
-    - npm run test:functional -- --scope=@eyeo/webext-ad-filtering-solution -- 2 edge latest --timeout=10000
+    - npm run -w @eyeo/webext-ad-filtering-solution test:functional -- 2 edge latest --timeout=10000
 
 # Functional tests - MV3
 func:v3:chromium:latest:
@@ -479,7 +479,7 @@ int:scripts:
 int:bundle:
   stage: integration
   script:
-    - npm run test:bundle -- --scope=@eyeo/webext-ad-filtering-solution
+    - npm run -w @eyeo/webext-ad-filtering-solution test:bundle
   needs: ["build:src"]
   rules:
     - !reference [.avoid-flaky-run, rules]
@@ -489,7 +489,7 @@ int:bundle:
   extends: .functional
   stage: performance
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $FUNCTIONAL_IMAGE run test:performance -- --scope=@eyeo/webext-ad-filtering-solution -- $PARAMS
+    - docker run $DOCKER_OPTIONS --entrypoint npm $FUNCTIONAL_IMAGE run -w @eyeo/webext-ad-filtering-solution test:performance -- $PARAMS
 
 perf:v2:chromium:
   extends: .performance
