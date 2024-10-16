@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 
 const kindStyles = {
-  filled: ['bg-theme-button-primary', 'text-theme-button-secondary', 'fill-theme-button-secondary', 'stroke-theme-button-secondary', 'border', 'border-theme-button-primary', 'hover:drop-shadow-md', 'hover:bg-theme-link-color', 'hover:border-theme-link-color',],
-  outline: ['text-theme-button-primary', 'fill-theme-button-primary', 'stroke-theme-button-primary', 'border', 'border-theme-button-primary', 'hover:bg-theme-button-primary', 'hover:text-theme-button-secondary', 'hover:stroke-theme-button-secondary', 'hover:fill-theme-button-secondary'],
+  // filled: ['bg-theme-button-primary', 'text-theme-button-secondary', 'fill-theme-button-secondary', 'stroke-theme-button-secondary', 'border', 'border-theme-button-primary', 'hover:drop-shadow-md', 'hover:bg-theme-link-color', 'hover:border-theme-link-color',],
+  filled: ['bg-primary', 'text-primary-content', 'fill-primary-content', 'stroke-primary-content', 'border', 'border-primary', 'hover:drop-shadow-md', 'hover:bg-primary/80', 'hover:border-primary/80',],
+  // outline: ['text-theme-button-primary', 'fill-theme-button-primary', 'stroke-theme-button-primary', 'border', 'border-theme-button-primary', 'hover:bg-theme-button-primary', 'hover:text-theme-button-secondary', 'hover:stroke-theme-button-secondary', 'hover:fill-theme-button-secondary'],
+  outline: ['text-primary', 'fill-primary', 'stroke-primary', 'border', 'border-primary', 'hover:bg-primary/20', 'hover:stroke-primary/20'],
   text: ['text-theme-accent-dark', 'fill-theme-accent-dark', 'stroke-theme-accent-dark', 'hover:text-theme-link-color', 'hover:fill-theme-link-color', 'hover:stroke-theme-link-color'],
   link: ['text-theme-link-color', 'fill-theme-link-color', 'stroke-theme-link-color', 'inline', 'hover:text-theme-text-accent', 'hover:fill-theme-text-accent', 'hover:stroke-theme-text-accent' ],
   punched: ['bg-theme-accent-dark', 'text-theme-secondary', 'fill-theme-secondary', 'stroke-theme-secondary', 'hover:bg-theme-link-color'],

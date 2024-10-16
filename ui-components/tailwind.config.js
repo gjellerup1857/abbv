@@ -31,9 +31,26 @@ module.exports = {
         "theme-button-primary": "rgb(var(--theme-button-primary))",
         "theme-button-secondary": "rgb(var(--theme-button-secondary))",
 
-        // Error color
+        // The following is an attempt to use better semantic names for colors
+        "primary": "rgb(var(--primary))",
+        "primary-content": "rgb(var(--primary-content))",
+        "secondary": "rgb(var(--secondary))",
+        "secondary-content": "rgb(var(--secondary-content))",
+        "accent": "rgb(var(--accent))",
+        "accent-content": "rgb(var(--accent-content))",
+        // "neutral": "rgb(var(--neutral))",
+        // "neutral-content": "rgb(var(--neutral-content))",
+        "base-100": "rgb(var(--base-100))",
+        "base-200": "rgb(var(--base-200))",
+        "base-300": "rgb(var(--base-300))",
+        "base-content": "rgb(var(--base-content))",
+        // "info": "rgb(var(--info))",
+        // "info-content": "rgb(var(--info-content))",
+        // "success": "rgb(var(--success))",
+        // "success-content": "rgb(var(--success-content))",
+        // "warning": "rgb(var(--warning))",
+        // "warning-content": "rgb(var(--warning-content))",
         "error": "rgb(var(--error))",
-        // Foreground content color to use on error color
         "error-content": "rgb(var(--error-content))",
       },
       fontFamily: {

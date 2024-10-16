@@ -38,15 +38,12 @@ export const Checkbox = ({
     // Focus
     'focus:ring-0', 'focus:ring-offset-0',
 
-    // Transition
-    'transition', 'duration-200', 'ease-in-out',
-
     // Colors
     'bg-transparent',
-    'checked:bg-theme-link-color', 'checked:hover:bg-theme-link-color',
-    'checked:focus:bg-theme-link-color',
+    'checked:bg-secondary', 'checked:hover:bg-secondary',
+    'checked:focus:bg-secondary',
   ];
-  const invalidStyles = invalid ? ['border-error'] : ['border-theme-link-color'];
+  const invalidStyles = invalid ? ['border-error'] : ['border-secondary'];
   const className = [
     ...defaultStyles,
     ...invalidStyles,
