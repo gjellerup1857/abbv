@@ -38,10 +38,7 @@
       ]
     },
     "lint": {
-      "cache": false,
-      "dependsOn": [
-        "^build"
-      ]
+      "cache": false
     }
   }
 }
