@@ -20,10 +20,10 @@ import * as browser from "webextension-polyfill";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import { adblockIsDomainPaused } from "~/pause/background";
-import { AdWallMessage } from "~/polyfills/shared";
+import { type AdWallMessage } from "~/polyfills/shared";
 import { ytAllowlistStartDate } from "./detection.types";
 import * as logger from "~/utilities/background";
-import { MessageSender } from "~/polyfills/background";
+import { type MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
@@ -35,11 +35,9 @@ import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "
  */
 const captureStartDate = function (): void {
   if (Prefs.get(ytAllowlistStartDate) === 0) {
-    Prefs.set(ytAllowlistStartDate, Date.now());
-    logger.debug(
-      "[yt-detection]: set start date",
-      new Date(Prefs.get(ytAllowlistStartDate)).toLocaleDateString(),
-    );
+    const now = Date.now();
+    void Prefs.set(ytAllowlistStartDate, now);
+    logger.debug("[yt-detection]: set start date", new Date(now).toLocaleDateString());
   }
 };
 
@@ -71,11 +69,11 @@ const processYouTubeWallDetectedMessage = async (
     message.userLoggedIn ? "1" : "0",
     isAllowListed ? "1" : "0",
   );
-  if (sender && sender.page) {
+  if (sender?.page) {
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true, "auto");
-    browser.tabs.reload(sender.page.id);
+    void browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
-    browser.tabs.reload(sender.page.id);
+    void browser.tabs.reload(sender.page.id);
   }
 };
 

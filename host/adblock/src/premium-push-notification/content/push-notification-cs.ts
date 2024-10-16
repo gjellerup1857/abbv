@@ -20,7 +20,7 @@
 /**
  * Add the deny-notifications module to the web page so it can run in the world context
  */
-const addDenyPushNotificationScript = async function () {
+const addDenyPushNotificationScript = function (): void {
   try {
     const scriptElem = document.createElement("script");
     scriptElem.type = "module";

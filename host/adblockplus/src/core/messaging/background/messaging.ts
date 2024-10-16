@@ -54,6 +54,7 @@ class Port {
   constructor() {
     this.eventEmitter = new EventEmitter();
     this.onMessage = this.onMessage.bind(this);
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     messageEmitter.addListener(this.onMessage);
   }
 
@@ -115,6 +116,7 @@ class Port {
    * Disables the port and makes it stop listening to incoming messages.
    */
   disconnect(): void {
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     messageEmitter.removeListener(this.onMessage);
   }
 }

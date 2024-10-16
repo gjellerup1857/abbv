@@ -22,7 +22,10 @@ import { addTrustedMessageTypes } from "~/core/messaging/background";
  * Initializes Premium onboarding trigger
  */
 export function start(): void {
-  addTrustedMessageTypes(Prefs.get("premium_onboarding_trigger_origin"), [
-    "app.open"
-  ]);
+  const trustedOrigin = Prefs.get("premium_onboarding_trigger_origin");
+  if (typeof trustedOrigin !== "string") {
+    return;
+  }
+
+  addTrustedMessageTypes(trustedOrigin, ["app.open"]);
 }

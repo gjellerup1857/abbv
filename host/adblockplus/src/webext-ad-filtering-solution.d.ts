@@ -38,6 +38,53 @@ declare module "@eyeo/webext-ad-filtering-solution" {
   }
 
   /**
+   * Filter match information
+   */
+  interface FilterMatchInfo {
+    /**
+     * When the type in request details is undefined, this contains the reason
+     * why the request/frame got allowlisted. That is either "document",
+     * "elemhide", "genericblock", "generichide", or "extensionInitiated".
+     * "extensionInitiated" refers to any web requests initiated by a browser
+     * extension rather than a web page (those requests are not blockable).
+     */
+    allowingReason?:
+      | "document"
+      | "elemhide"
+      | "extensionInitiated"
+      | "genericblock"
+      | "generichide";
+    /**
+     * The hostname of the document that caused the request. This will be null
+     * for "main_frame" requests since those create the top-level document in
+     * the first place.
+     */
+    docDomain: string | null;
+    /**
+     * The method used to match this filter. This can be the string "request",
+     * "header", "csp", "popup", "elemhide", "snippet", "allowing", or
+     * "unmatched".
+     */
+    method:
+      | "allowing"
+      | "csp"
+      | "elemhide"
+      | "header"
+      | "popup"
+      | "request"
+      | "snippet"
+      | "unmatched";
+    /**
+     * The name of the internal resource to which to rewrite the URL.
+     */
+    rewrittenUrl?: string;
+    /**
+     * Whether selectors from generic filters should be included.
+     */
+    specificOnly?: boolean;
+  }
+
+  /**
    * Extra data associated with a filter.
    *
    * The SDK doesn't specify the type allowed for metadata entries.
@@ -62,8 +109,8 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * properties frameId , tabId and url.
      */
     request:
-      | Browser.WebRequest.OnBeforeRequestDetailsType
-      | Browser.WebRequest.OnHeadersReceivedDetailsType
+      | browser.WebRequest.OnBeforeRequestDetailsType
+      | browser.WebRequest.OnHeadersReceivedDetailsType
       | VirtualBlockableItemRequest;
   }
 
@@ -232,6 +279,24 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * not provided. It might be set if the subscription is not downloadable.
      */
     version: string;
+  }
+
+  /**
+   * Virtual blockable item request
+   */
+  interface VirtualBlockableItemRequest {
+    /**
+     * ID of frame from which request originated
+     */
+    frameId: browser.Runtime.MessageSender["frameId"];
+    /**
+     * ID of tab from which request originated
+     */
+    tabId: browser.Tabs.Tab["id"];
+    /**
+     * Request URL
+     */
+    url: string;
   }
 
   declare namespace allowlisting {

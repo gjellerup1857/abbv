@@ -34,7 +34,7 @@ function getDocumentReference(): Document {
  * @returns The info that we want to inject
  */
 async function getInfo(): Promise<InjectionInfo> {
-  return browser.runtime.sendMessage({ command: getInfoCommand });
+  return await browser.runtime.sendMessage({ command: getInfoCommand });
 }
 
 /**

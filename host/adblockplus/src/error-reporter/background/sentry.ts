@@ -110,7 +110,12 @@ export async function initialize(
   client.init();
 
   self.addEventListener("error", (event) => {
-    reportError(event.error);
+    const { error } = event;
+    if (!(error instanceof Error)) {
+      return;
+    }
+
+    reportError(error);
   });
 
   await Prefs.untilLoaded;

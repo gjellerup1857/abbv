@@ -85,11 +85,13 @@ describe("Messaging functionality", () => {
 
     await import("./messaging");
 
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.connect).toHaveBeenLastCalledWith({
       name: "ui"
     });
     expect(mockAddDisconnectListener).toHaveBeenCalled();
     expect(mockAddMessageListener).toHaveBeenCalled();
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.onMessage.addListener).toHaveBeenCalled();
   });
 
@@ -208,6 +210,7 @@ describe("Messaging functionality", () => {
     disconnectPort(mockPort);
     await wait(200);
 
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(mockPort.postMessage).toHaveBeenCalledWith({
       type: `${listenMessageType}.listen`,
       filter,

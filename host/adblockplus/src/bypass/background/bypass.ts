@@ -131,6 +131,10 @@ async function verifySignature(
   }
 
   const promisedValidations = authorizedKeys.map(async (key) => {
+    if (typeof key !== "string") {
+      return false;
+    }
+
     return await verifySignatureWithKey(data, abSignature, key);
   });
   const validations = await Promise.all(promisedValidations);

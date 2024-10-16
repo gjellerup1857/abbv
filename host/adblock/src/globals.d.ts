@@ -20,14 +20,10 @@
  * for the purpose of use in standalone JavaScript files
  */
 
-import { type Browser } from "webextension-polyfill";
-
-declare global {
-  /**
-   * Namespace exposing modules as globals to make them accessible to scripts
-   * that aren't modules themselves
-   */
-  declare namespace modulesAsGlobal {
-    const messaging;
-  }
+/**
+ * Namespace exposing modules as globals to make them accessible to scripts
+ * that aren't modules themselves
+ */
+declare namespace modulesAsGlobal {
+  const messaging;
 }

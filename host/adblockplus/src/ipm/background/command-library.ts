@@ -68,6 +68,17 @@ function isCommand(candidate: unknown): candidate is Command {
 }
 
 /**
+ * Checks whether given candidate is a list of commands
+ *
+ * @param candidate - Candidate
+ *
+ * @returns whether candidate is a list of commands
+ */
+export function isCommandList(candidate: unknown): candidate is Command[] {
+  return Array.isArray(candidate) && candidate.every(isCommand);
+}
+
+/**
  * Sets actor for handling command with given name
  *
  * @param commandName - Command name
@@ -140,6 +151,10 @@ function getCommand(ipmId: string): Command | null {
  */
 export function getStoredCommandIds(): string[] {
   const commandStorage = Prefs.get(commandStorageKey);
+  if (!isCommandList(commandStorage)) {
+    return [];
+  }
+
   return Object.keys(commandStorage);
 }
 
@@ -335,6 +350,10 @@ export async function start(): Promise<void> {
 
   // Reinitialize commands from storage
   const commandStorage = Prefs.get(commandStorageKey);
+  if (!isCommandList(commandStorage)) {
+    return;
+  }
+
   const commands = Object.values(commandStorage);
   executeIPMCommands(commands, true);
 }

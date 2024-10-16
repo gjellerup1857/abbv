@@ -270,7 +270,7 @@ function initializeLicenseChecks(): void {
   });
 
   const nextCheckTimestamp = Prefs.get("premium_license_nextcheck");
-  if (!nextCheckTimestamp) {
+  if (typeof nextCheckTimestamp !== "number") {
     return;
   }
 
@@ -316,9 +316,12 @@ function initializeMessaging(): void {
     }
   );
 
-  addTrustedMessageTypes(Prefs.get("premium_license_activation_origin"), [
-    "premium.activate"
-  ]);
+  const trustedOrigin = Prefs.get("premium_license_activation_origin");
+  if (typeof trustedOrigin !== "string") {
+    return;
+  }
+
+  addTrustedMessageTypes(trustedOrigin, ["premium.activate"]);
 }
 
 /**

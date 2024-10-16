@@ -146,6 +146,7 @@ describe("notifications/background/utils", () => {
 
       const result = await isTabAlreadyOpen(url, info);
 
+      /* eslint-disable-next-line @typescript-eslint/unbound-method */
       expect(browser.tabs.query).toHaveBeenCalledWith({
         url: "https://example.com/en_US/path/adblockpluschrome?addonVersion=10.0.0&application=unknown"
       });

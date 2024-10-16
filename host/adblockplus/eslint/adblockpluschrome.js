@@ -7,7 +7,7 @@
  * the `adblockpluschrome` directory.
  *
  * Eventually, we will apply a new configuration which can be found
- * at `standard.js`.
+ * at `love.js`.
  */
 module.exports = {
   extends: "eslint-config-eyeo",

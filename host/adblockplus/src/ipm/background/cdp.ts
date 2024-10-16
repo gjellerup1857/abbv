@@ -21,7 +21,9 @@ import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { error as logError } from "../../logger/background";
 
 async function applyOptOut(): Promise<void> {
-  await ewe.cdp.setOptOut(Prefs.get("data_collection_opt_out"));
+  const isOptedOut = Prefs.get("data_collection_opt_out");
+
+  await ewe.cdp.setOptOut(typeof isOptedOut === "boolean" ? isOptedOut : true);
 }
 
 async function initOptOut(): Promise<void> {

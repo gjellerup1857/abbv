@@ -5,5 +5,5 @@
  */
 
 module.exports = {
-  extends: "../eslint/standard.js"
+  extends: "../eslint/love.js"
 };

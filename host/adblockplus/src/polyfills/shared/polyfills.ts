@@ -15,20 +15,15 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
-import { addTrustedMessageTypes } from "~/core/messaging/background";
-
-export function startOptionLinkListener(): void {
-  const trustedOrigins = Prefs.get("options_backlink_trusted_origins");
-  if (!Array.isArray(trustedOrigins)) {
-    return;
-  }
-
-  trustedOrigins.forEach((trustedOrigin) => {
-    if (typeof trustedOrigin !== "string") {
-      return;
-    }
-
-    addTrustedMessageTypes(trustedOrigin, ["options.open"]);
-  });
+/**
+ * Checks whether given candidate is an object
+ *
+ * @param candidate - Candidate
+ *
+ * @returns whether candidate is an object
+ */
+export function isObject(
+  candidate: unknown
+): candidate is Record<string, unknown> {
+  return candidate !== null && typeof candidate === "object";
 }

@@ -24,7 +24,7 @@ import { type LogFunction, LogLevel } from "./logger.types";
  * @param fn - Log function
  * @param ...data - Data to log
  */
-function log(level: LogLevel, fn: LogFunction, ...data: any[]): void {
+function log(level: LogLevel, fn: LogFunction, ...data: unknown[]): void {
   const minLevel: number = Prefs.get("logger_log_level");
   if (level < minLevel) {
     return;

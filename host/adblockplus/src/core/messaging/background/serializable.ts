@@ -45,7 +45,7 @@ export function toSerializableBlockableItem(
   const isFrame = !requestMethods.has(matchInfo.method);
 
   let type;
-  if (matchInfo.method === "request") {
+  if (matchInfo.method === "request" && "type" in request) {
     type = ewe.reporting.contentTypesMap.get(request.type);
   } else if (matchInfo.method === "allowing") {
     type = matchInfo.allowingReason;
@@ -56,7 +56,7 @@ export function toSerializableBlockableItem(
     } else {
       type = matchInfo.method;
     }
-  } else {
+  } else if ("type" in request) {
     type = ewe.reporting.contentTypesMap.get(request.type);
   }
 

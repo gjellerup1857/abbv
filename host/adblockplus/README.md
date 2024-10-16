@@ -139,7 +139,7 @@ that you want to test.
 The `./test/unit` folder contains various mocha unit tests files
 which can be run via `npm run $ test.unit.legacy --workspace host/adblockplus`. 
 For `.ts` files we have jest unit tests that can be run via 
-`npm run $ test.unit.standard --workspace host/adblockplus`. Those can be run 
+`npm run $ test.unit.love --workspace host/adblockplus`. Those can be run 
 together via `npm test -- --scope=adblockplus`.
 
 ### End-to-end testing

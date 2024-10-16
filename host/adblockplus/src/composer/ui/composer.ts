@@ -18,8 +18,9 @@
 // Modules from legacy directories don't have type information yet, and adding
 // it is not trivial. Therefore we're first moving them over and apply the
 // coding style, and we're going to add type information in a subsequent step.
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import "./composer.css";
 import * as messaging from "~/core/messaging/front";

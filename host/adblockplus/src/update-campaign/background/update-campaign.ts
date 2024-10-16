@@ -32,6 +32,9 @@ const targetedLocales = ["en", "fr", "de", "es", "nl"];
  */
 async function openUpdatePage(): Promise<void> {
   const rawURL = Prefs.get("update_campaign_url");
+  if (typeof rawURL !== "string") {
+    return;
+  }
 
   // Don't open the campaign if its currently already opened
   const tabExists = await isTabAlreadyOpen(rawURL, info);

@@ -32,6 +32,7 @@ describe("Messaging utilities", () => {
     const paramB = 21;
     const value = await utils.send(type, { paramA, paramB });
 
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.sendMessage).toHaveBeenCalledWith({
       type,
       paramA,
@@ -44,6 +45,7 @@ describe("Messaging utilities", () => {
     const type = "foo";
     const value = await utils.send(type);
 
+    /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.sendMessage).toHaveBeenCalledWith({
       type
     });

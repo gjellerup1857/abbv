@@ -21,6 +21,7 @@ import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 import * as logger from "../../logger/background";
 import { isFilterMetadata } from "../../polyfills/background";
+import { isObject } from "~/polyfills/shared";
 import { type Dialog } from "./dialog.types";
 import { type Stats } from "./stats.types";
 import { Timing, type TimingConfiguration } from "./timing.types";
@@ -118,6 +119,10 @@ function isWithin(timestamp: number, minutes: number): boolean {
  */
 function initializeConfigs(): void {
   const configs = Prefs.get(configsStorageKey);
+  if (!isObject(configs)) {
+    return;
+  }
+
   for (const [timing, config] of Object.entries(configs)) {
     if (!isTiming(timing) || !isTimingConfiguration(config)) {
       logger.warn("[onpage-dialog] Unknown timing configuration", timing);

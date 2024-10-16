@@ -22,7 +22,7 @@ import {
   setSchedule,
   hasSchedule
 } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommands } from "./command-library";
+import { executeIPMCommands, isCommandList } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
 import { error as logError } from "../../logger/background";
 import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
@@ -56,6 +56,10 @@ async function processResponse(response: Response): Promise<void> {
       commands = [commands];
     }
 
+    if (!isCommandList(commands)) {
+      throw new Error("Invalid list of commands received");
+    }
+
     if (commands.length > 100) {
       throw new Error("Too many commands were received.");
     }
@@ -81,7 +85,12 @@ export async function sendPing(): Promise<void> {
   // successful or not.
   void clearEvents();
 
-  void fetch(Prefs.get(serverUrlKey), {
+  const url = Prefs.get(serverUrlKey);
+  if (typeof url !== "string") {
+    return;
+  }
+
+  void fetch(url, {
     method: "POST",
     cache: "no-cache",
     headers: { "Content-Type": "application/json" },
@@ -105,11 +114,12 @@ export async function start(): Promise<void> {
 
   if (!hasSchedule(scheduleName)) {
     await Prefs.untilLoaded;
+    const intervalTime = Prefs.get(intervalKey);
+    if (typeof intervalTime !== "number") {
+      return;
+    }
+
     void sendPing();
-    void setSchedule(
-      scheduleName,
-      Prefs.get(intervalKey),
-      ScheduleType.interval
-    );
+    void setSchedule(scheduleName, intervalTime, ScheduleType.interval);
   }
 }

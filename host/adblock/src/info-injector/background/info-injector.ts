@@ -16,7 +16,7 @@
  */
 
 import * as info from "info";
-import { InjectionInfo } from "../shared";
+import { type InjectionInfo } from "../shared";
 import { getUserId } from "../../../adblock-betafish/id/background/index";
 import { License } from "../../../adblock-betafish/picreplacement/check";
 import { Prefs } from "../../../adblock-betafish/alias/prefs";

@@ -18,8 +18,9 @@
 // Modules from legacy directories don't have type information yet, and adding
 // it is not trivial. Therefore we're first moving them over and apply the
 // coding style, and we're going to add type information in a subsequent step.
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import * as messaging from "~/core/messaging/front";
 
@@ -398,8 +399,10 @@ async function previewBlockedElements(active): Promise<void> {
 // the previewBlockedElements helper to avoid duplicated code
 function previewBlockedElement(element, active, overlays): void {
   const display = active ? "none" : null;
-  const find = Array.prototype.find;
-  const overlay = find.call(overlays, ({ prisoner }) => prisoner === element);
+  const overlay = Array.prototype.find.call(
+    overlays,
+    ({ prisoner }) => prisoner === element
+  );
   if (overlay) {
     overlay.style.display = display;
   }

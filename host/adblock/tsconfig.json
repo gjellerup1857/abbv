@@ -25,6 +25,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["adblock-betafish/**/*", "src/**/*"],
+  "include": ["adblock-betafish/**/*", "src/**/*", "src/.eslintrc.js"],
   "compileOnSave": false
 }

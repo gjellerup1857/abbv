@@ -27,11 +27,11 @@ import {
  *  return a 'denied' permission if the user hadn't previously granted
  *  permission.
  */
-const denyNotificationsRequests = function () {
-  window.Notification.requestPermission = function () {
+const denyNotificationsRequests = function (): void {
+  window.Notification.requestPermission = async function () {
     // When a website checks for the permission, deny it if not granted
     // and allow it if it's already allowed
-    return new Promise((resolve) => {
+    return await new Promise((resolve) => {
       resolve(
         window.Notification.permission === DefaultNotificationPermission
           ? GrantedNotificationPermission
