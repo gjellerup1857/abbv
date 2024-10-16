@@ -88,7 +88,7 @@ build:src:
   image: node:18-bullseye-slim
   stage: build
   before_script:
-    - npm install
+    - npm ci --cache .npm --prefer-offline
   script:
     - npm run build -- --scope=@eyeo/webext-ad-filtering-solution
     - DOCS_ERROR=$(npm run docs -- --scope=@eyeo/webext-ad-filtering-solution 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
@@ -103,7 +103,7 @@ lint:
   image: node:18-bullseye-slim
   stage: build
   before_script:
-    - npm install
+    - npm ci --cache .npm --prefer-offline
   script:
     - npm run lint -- --scope=@eyeo/webext-ad-filtering-solution
 
@@ -259,7 +259,7 @@ func:v2:firefox:oldest:
   before_script:
     - *edge_install_windows
     - *nodejs_install_windows
-    - npm install
+    - npm ci --cache .npm --prefer-offline
   tags:
     - saas-windows-medium-amd64
 
