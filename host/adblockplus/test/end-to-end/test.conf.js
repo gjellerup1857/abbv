@@ -68,7 +68,7 @@ const parallelConfig = {
       },
       browserName: "MicrosoftEdge",
       browserVersion: "latest",
-      platformName: "Windows 11",
+      platformName: "macOS Monterey",
       "ms:edgeOptions": {
         extensions: [
           helpers.getHelperExtension("MV3")
@@ -117,7 +117,7 @@ const parallelConfig = {
     {
       browserName: "MicrosoftEdge",
       browserVersion: "latest",
-      platformName: "Windows 10",
+      platformName: "macOS Monterey",
       "ms:edgeOptions": {
         extensions: [
           helpers.getChromiumMV2Extension(),

@@ -60,7 +60,7 @@ exports.config = {
       },
       browserName: "MicrosoftEdge",
       browserVersion: "latest",
-      platformName: "Windows 11",
+      platformName: "macOS Monterey",
       "ms:edgeOptions": {
         extensions: [
           helpers.getHelperExtension("MV3")
@@ -120,7 +120,7 @@ exports.config = {
       },
       browserName: "MicrosoftEdge",
       browserVersion: "latest-1",
-      platformName: "Windows 11",
+      platformName: "macOS Monterey",
       "ms:edgeOptions": {
         extensions: [
           helpers.getHelperExtension("MV3")
@@ -181,7 +181,7 @@ exports.config = {
       },
       browserName: "MicrosoftEdge",
       browserVersion: "latest-2",
-      platformName: "Windows 11",
+      platformName: "macOS Monterey",
       "ms:edgeOptions": {
         extensions: [
           helpers.getHelperExtension("MV3")
