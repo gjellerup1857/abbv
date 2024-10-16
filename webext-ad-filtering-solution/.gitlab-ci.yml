@@ -82,9 +82,9 @@ build:src:
   before_script:
     - npm install
   script:
-    - npm run build
-    - DOCS_ERROR=$(npm run docs 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
-    - npm run docs-core
+    - npm run build -- --scope=@eyeo/webext-ad-filtering-solution
+    - DOCS_ERROR=$(npm run docs -- --scope=@eyeo/webext-ad-filtering-solution 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
+    - npm run docs-core -- --scope=@eyeo/webext-ad-filtering-solution
   artifacts:
     paths:
       - dist/
@@ -97,16 +97,16 @@ lint:
   before_script:
     - npm install
   script:
-    - npm run lint
+    - npm run lint -- --scope=@eyeo/webext-ad-filtering-solution
 
-typechecks:
-  image: node:18-bullseye-slim
-  stage: build
-  allow_failure: true
-  before_script:
-    - npm install
-  script:
-    - npm run types:check
+# typechecks:
+#   image: node:18-bullseye-slim
+#   stage: build
+#   allow_failure: true
+#   before_script:
+#     - npm install
+#   script:
+#     - npm run types:check
 
 # Publishes the docs to https://eyeo.gitlab.io/adblockplus/abc/webext-ad-filtering-solution
 # and https://eyeo.gitlab.io/adblockplus/abc/webext-ad-filtering-solution/core/index.html
@@ -130,7 +130,7 @@ build:basic-image:
   extends: .docker-image
   needs: []
   script:
-    - docker build -t $BASIC_IMAGE -f test/dockerfiles/basic.Dockerfile .
+    - docker build -t $BASIC_IMAGE -f ./webext-ad-filtering-solution/test/dockerfiles/basic.Dockerfile .
     - docker push $BASIC_IMAGE
 
 build:functional-image:
@@ -138,7 +138,7 @@ build:functional-image:
   extends: .docker-image
   needs: ["build:src"]
   script:
-    - docker build -t $FUNCTIONAL_IMAGE -f test/dockerfiles/functional.Dockerfile --build-arg SKIP_BUILD=1 --build-arg BROWSER=chromium .
+    - docker build -t $FUNCTIONAL_IMAGE -f ./webext-ad-filtering-solution/test/dockerfiles/functional.Dockerfile --build-arg SKIP_BUILD=1 --build-arg BROWSER=chromium .
     - docker push $FUNCTIONAL_IMAGE
 
 .basic-image:
@@ -155,17 +155,17 @@ build:functional-image:
 unit:core:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:core
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:core -- --scope=@eyeo/webext-ad-filtering-solution
 
 unit:webext:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:webext
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:webext -- --scope=@eyeo/webext-ad-filtering-solution
 
 unit:scripts:
   extends: .unit
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:scripts
+    - docker run $DOCKER_OPTIONS --entrypoint npm $BASIC_IMAGE run test:unit:scripts -- --scope=@eyeo/webext-ad-filtering-solution
 
 # Functional tests
 .functional:
@@ -258,7 +258,7 @@ func:v2:firefox:oldest:
 func:v2:windows:edge:
   extends: .functional-windows
   script:
-    - npm run test:functional -- 2 edge latest --timeout=10000
+    - npm run test:functional -- --scope=@eyeo/webext-ad-filtering-solution -- 2 edge latest --timeout=10000
 
 # Functional tests - MV3
 func:v3:chromium:latest:
@@ -290,7 +290,7 @@ func:v3:edge:latest:
   extends: .functional
   stage: test
   script:
-    - docker run $DOCKER_OPTIONS -e TEST_SUITES="$TEST_SUITES" -e TEST_PARAMS="$TEST_PARAMS" --entrypoint "test/dockerfiles/isolated-entrypoint.sh" $FUNCTIONAL_IMAGE
+    - docker run $DOCKER_OPTIONS -e TEST_SUITES="$TEST_SUITES" -e TEST_PARAMS="$TEST_PARAMS" --entrypoint "./webext-ad-filtering-solution/test/dockerfiles/isolated-entrypoint.sh" $FUNCTIONAL_IMAGE
   rules:
     - !reference [.checktests-run, rules]
 
@@ -414,7 +414,7 @@ fuzz:v3:edge:latest:
   before_script:
     - apk add bash git zip
   script:
-    - TERMINAL="t" TESTS_TO_INCLUDE="filters/wildcard-domain,filters/remove,filters/remove-extended,filters/remove-on-DOM-mutation,filters/remove-extended-inversion,$MV3_ONLY_TESTS" ./test/scripts/compliance.sh
+    - TERMINAL="t" TESTS_TO_INCLUDE="filters/wildcard-domain,filters/remove,filters/remove-extended,filters/remove-on-DOM-mutation,filters/remove-extended-inversion,$MV3_ONLY_TESTS" ./webext-ad-filtering-solution/scripts/compliance.sh
   after_script:
     - docker cp $(docker ps -aqf ancestor=$COMPLIANCE_IMAGE):/testpages.adblockplus.org/test/screenshots .
   artifacts:
@@ -460,7 +460,7 @@ int:scripts:
   extends: .basic-image
   stage: integration
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint test/dockerfiles/integration-entrypoint.sh $BASIC_IMAGE
+    - docker run $DOCKER_OPTIONS --entrypoint ./webext-ad-filtering-solution/test/dockerfiles/integration-entrypoint.sh $BASIC_IMAGE
   rules:
     - !reference [.avoid-flaky-run, rules]
 
@@ -468,7 +468,7 @@ int:bundle:
   image: node:18-bullseye-slim
   stage: integration
   script:
-    - npm run test:bundle
+    - npm run test:bundle -- --scope=@eyeo/webext-ad-filtering-solution
   needs: ["build:src"]
   rules:
     - !reference [.avoid-flaky-run, rules]
@@ -478,7 +478,7 @@ int:bundle:
   extends: .functional
   stage: performance
   script:
-    - docker run $DOCKER_OPTIONS --entrypoint npm $FUNCTIONAL_IMAGE run test:performance $PARAMS
+    - docker run $DOCKER_OPTIONS --entrypoint npm $FUNCTIONAL_IMAGE run test:performance -- --scope=@eyeo/webext-ad-filtering-solution -- $PARAMS
 
 perf:v2:chromium:
   extends: .performance

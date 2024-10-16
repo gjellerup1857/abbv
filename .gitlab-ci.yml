@@ -74,3 +74,8 @@ adblockplus:
   extends: .child
   variables:
     WORKSPACEPATH: host/adblockplus
+
+webext-ad-filtering-solution:
+  extends: .child
+  variables:
+    WORKSPACEPATH: webext-ad-filtering-solution
