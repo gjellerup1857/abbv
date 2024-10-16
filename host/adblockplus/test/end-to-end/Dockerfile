@@ -14,14 +14,15 @@ fi
 # Doing early `npm install` to cache those files on further image builds If this
 # fails saying that the package-lock.json is out of sync, it could mean that a
 # new package.json was added which isn't copied here.
-COPY *.json .npmrc extensions/
-COPY host/adblock/*.json extensions/host/adblock/
-COPY host/adblockplus/*.json extensions/host/adblockplus/
-COPY ui-components/*.json extensions/ui-components/
-RUN cd extensions && npm ci
+# COPY *.json .npmrc extensions/
+# COPY host/adblock/*.json extensions/host/adblock/
+# COPY host/adblockplus/*.json extensions/host/adblockplus/
+# COPY ui-components/*.json extensions/ui-components/
+# RUN cd extensions && npm ci
 
 COPY . extensions/
 WORKDIR /extensions/
+RUN npm ci
 
 # EDGDEDRIVER_PATH is used by `local-test.conf.js`
 RUN if [ "$BROWSER" = "edge" ]; then \
