@@ -97,8 +97,9 @@ build:src:
     - npm ci --cache .npm --prefer-offline
   script:
     - npm run build -- --scope=@eyeo/webext-ad-filtering-solution
-    - DOCS_ERROR=$(npm run docs -- --scope=@eyeo/webext-ad-filtering-solution 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
-    - npm run docs-core -- --scope=@eyeo/webext-ad-filtering-solution
+    - cd webext-ad-filtering-solution
+    - DOCS_ERROR=$(npm run docs 2>&1 >/dev/null) && if [ ! -z "$DOCS_ERROR" ]; then echo $DOCS_ERROR && false; fi
+    - npm run docs-core
   artifacts:
     paths:
       - dist/
