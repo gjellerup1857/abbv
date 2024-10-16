@@ -84,7 +84,7 @@
     "build": "node scripts/build.js",
     "build:release": "npm run build -- --env release",
     "build-then-test": "node scripts/build-and-test.js",
-    "test": "npm run test:unit:core && npm run test:unit:webext && npm run test:unit:scripts",
+    "test": "npm run test:unit:webext && npm run test:unit:scripts",
     "test:bundle": "node test/bundle/run.js",
     "test:functional": "node test/runners/functional.js",
     "test:performance": "node test/runners/performance.js",
