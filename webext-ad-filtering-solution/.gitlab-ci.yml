@@ -1,3 +1,11 @@
+spec:
+  inputs:
+    parent_pipeline_source:
+      type: string
+      description: "Value of CI_PIPELINE_SOURCE in the parent pipeline"
+
+---
+
 default:
   interruptible: true
   tags:
