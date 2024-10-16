@@ -8,6 +8,12 @@ spec:
 
 default:
   interruptible: true
+  cache: # Cache modules using lock file
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
   tags:
     - "GCP"
 
