@@ -102,8 +102,8 @@ build:src:
     # - npm run docs-core
   artifacts:
     paths:
-      - dist/
-      - public/
+      - webext-ad-filtering-solution/dist/
+      # - webext-ad-filtering-solution/public/
     expire_in: 1 week
 
 lint:
