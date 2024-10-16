@@ -38,7 +38,10 @@
       ]
     },
     "lint": {
-      "cache": false
+      "cache": false,
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }
