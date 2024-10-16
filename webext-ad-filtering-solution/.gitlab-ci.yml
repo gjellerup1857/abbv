@@ -9,7 +9,7 @@ spec:
 default:
   interruptible: true
   tags:
-    - runner-webext-dev
+    - "GCP"
 
 variables:
   npm_config_audit: "false"
