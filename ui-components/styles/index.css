@@ -73,7 +73,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /*
+    Added here because Tailwind does not provide support for outline-auto,
+    but it is necessary for browser-styled hightlights. This weird style
+    should make it look like a normal Tailwind modifier class.
+  */
+  .focus-within\:outline-auto:focus-within {
+    outline-style: auto;
+  }
 }
-
-
-
