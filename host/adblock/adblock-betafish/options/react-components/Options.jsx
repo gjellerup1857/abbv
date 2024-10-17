@@ -29,32 +29,34 @@ const translate = function (messageName, substitutions) {
 
 const changeHandler = () => console.log('change is possible');
 
+const OptionItem = ({ name, text, extraInfo, helpLink, additionalInfoLink, subOptions }) => {
+  return (
+    <li key={ name }>
+      <div>
+        <div>
+          <Checkbox id={ name } onChange={ changeHandler } />
+          <label for={ name }>{translate(text)}</label>
+        </div>
+        <div>
+          { additionalInfoLink && <Link href={ additionalInfoLink.href }>{translate(additionalInfoLink.text)}</Link>}
+          { helpLink && <Link href={ helpLink }><Icon name='live-help' ariaLabel='learn_more_without_period' /></Link> }
+        </div>
+      </div>
+      <div>
+        { extraInfo && <span>{translate(extraInfo)}</span> }
+      </div>
+      { subOptions &&  subOptions.map((option) => <OptionItem { ...option } />) }
+    </li>
+  )
+}
+
 export const GeneralOptionsList = ({ items }) => {
   return (
     <>
       <h1>{ translate('generaloptions2') }</h1>
       <ul>
         {
-          items.map(({ name, text, extraInfo, helpLink, additionalInfoLink }) => {
-            console.log(name, text, extraInfo, helpLink, additionalInfoLink );
-            return (
-              <li key={ name }>
-                <div>
-                  <div>
-                    <Checkbox id={ name } onChange={ changeHandler } />
-                    <label for={ name }>{translate(text)}</label>
-                  </div>
-                  <div>
-                    { additionalInfoLink && <Link href={ additionalInfoLink.href }>{translate(additionalInfoLink.text)}</Link>}
-                    { helpLink && <Link href={ helpLink }><Icon name='live-help' ariaLabel='learn_more_without_period' /></Link> }
-                  </div>
-                </div>
-                <div>
-                  { extraInfo && <span>{translate(extraInfo)}</span> }
-                </div>
-              </li>
-            )
-          })
+          items.map((item) => <OptionItem {...item} />)
         }
       </ul>
     </>
