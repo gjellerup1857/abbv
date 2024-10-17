@@ -1,4 +1,4 @@
-import { Checkbox, Icon, Link } from "@eyeo/ext-ui-components";
+import { Checkbox, Icon, Link, ToggleSwitch } from "@eyeo/ext-ui-components";
 
 const translate = function (messageName, substitutions) {
   if (!messageName || typeof messageName !== "string") {
@@ -29,12 +29,21 @@ const translate = function (messageName, substitutions) {
 
 const changeHandler = () => console.log('change is possible');
 
-const OptionItem = ({ name, text, extraInfo, helpLink, additionalInfoLink, subOptions }) => {
+const OptionItem = ({
+  name,
+  text,
+  extraInfo,
+  helpLink,
+  additionalInfoLink,
+  subOptions,
+  selector: Selector = Checkbox
+}) => {
   return (
     <li key={ name }>
       <div>
         <div>
-          <Checkbox id={ name } onChange={ changeHandler } />
+          {/* The Toggle and Checkbox APIs need to be aligned */}
+          <Selector id={ name } name={ name } onChange={ changeHandler } />
           <label for={ name }>{translate(text)}</label>
         </div>
         <div>
@@ -45,7 +54,7 @@ const OptionItem = ({ name, text, extraInfo, helpLink, additionalInfoLink, subOp
       <div>
         { extraInfo && <span>{translate(extraInfo)}</span> }
       </div>
-      { subOptions &&  subOptions.map((option) => <OptionItem { ...option } />) }
+      { subOptions &&  subOptions.map((option) => <OptionItem selector={ ToggleSwitch } { ...option } />) }
     </li>
   )
 }
