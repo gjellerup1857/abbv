@@ -3,7 +3,7 @@
 set -xeu
 
 npm install --omit=dev
-cd test/scripts/test-extension
+cd webext-ad-filtering-solution/test/scripts/test-extension
 npm install
 npm exec subs-init
 npm exec subs-merge
