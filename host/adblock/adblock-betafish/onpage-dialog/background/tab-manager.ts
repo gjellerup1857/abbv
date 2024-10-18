@@ -18,6 +18,7 @@
 import { Tabs } from "webextension-polyfill";
 import * as browser from "webextension-polyfill";
 
+import { Prefs } from "../../alias/prefs";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { TabSessionStorage } from "../../../adblockplusui/adblockpluschrome/lib/storage/tab-session";
 import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
@@ -48,6 +49,8 @@ import {
   DialogErrorEventType,
   ShowOnpageDialogResult,
   TabPage,
+  coolDownPeriodKey,
+  lastShownKey,
 } from "./tab-manager.types";
 import { shouldBeDismissed, shouldBeShown, start as setupTimings } from "./timing";
 import { checkLanguage } from "../../ipm/background/language-check";
@@ -93,6 +96,16 @@ export function compareDialogsByPriority(dialogA: Dialog, dialogB: Dialog): numb
   }
 
   return 0;
+}
+
+/**
+ * Checks whether the global dialog cool down period is still ongoing.
+ *
+ * @returns true if the cool down period is till ongoing, false if not
+ */
+export async function isCoolDownPeriodOngoing(): Promise<boolean> {
+  await Prefs.untilLoaded;
+  return Prefs.get(lastShownKey) + Prefs.get(coolDownPeriodKey) > Date.now();
 }
 
 /**
