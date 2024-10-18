@@ -15,7 +15,9 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type Tabs } from "webextension-polyfill";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { type DialogContent } from "../shared";
 import * as dialogModule from "./dialog";
 import { type Dialog } from "./dialog.types";
 import {
@@ -30,6 +32,7 @@ import {
   ShowOnpageDialogResult
 } from "./tab-manager.types";
 import * as timing from "./timing";
+import { Timing } from "./timing.types";
 
 jest.mock("../../../adblockpluschrome/lib/prefs", () => {
   const prefsData: Record<string, any> = {
@@ -51,11 +54,96 @@ jest.mock("../../../adblockpluschrome/lib/prefs", () => {
   };
 });
 
+const dialog: Dialog = {
+  behavior: {
+    displayDuration: 1,
+    target: "http://example.com",
+    timing: Timing.afterNavigation,
+    priority: 1
+  },
+  content: {
+    body: [],
+    button: "",
+    title: ""
+  },
+  id: "dialog-1"
+};
+
+const tab: Tabs.Tab = {
+  index: 0,
+  highlighted: true,
+  active: true,
+  pinned: false,
+  incognito: false
+};
+
 async function showOnActiveTab(
   dialog: Dialog
 ): Promise<ShowOnpageDialogResult> {
   return await showOnpageDialog(tab.index, tab, dialog);
 }
+
+// fake dialog content for our dialogs here
+const content = {} as unknown as DialogContent;
+
+// dialogs to test, highest priority first. The last two have the same priority.
+const dialogs: Dialog[] = [
+  {
+    behavior: {
+      priority: 5,
+      displayDuration: 0,
+      target: "",
+      timing: Timing.afterNavigation
+    },
+    content,
+    id: "0",
+    ipmId: "a"
+  },
+  {
+    behavior: {
+      priority: 2,
+      displayDuration: 0,
+      target: "",
+      timing: Timing.afterNavigation
+    },
+    content,
+    id: "1",
+    ipmId: "b"
+  },
+  {
+    behavior: {
+      priority: 2,
+      displayDuration: 0,
+      target: "",
+      timing: Timing.afterNavigation
+    },
+    content,
+    id: "2",
+    ipmId: "c"
+  },
+  {
+    behavior: {
+      priority: 1,
+      displayDuration: 0,
+      target: "",
+      timing: Timing.afterNavigation
+    },
+    content,
+    id: "3",
+    ipmId: "d"
+  },
+  {
+    behavior: {
+      priority: 1,
+      displayDuration: 0,
+      target: "",
+      timing: Timing.afterNavigation
+    },
+    content,
+    id: "4",
+    ipmId: "d"
+  }
+];
 
 describe("TabManager", () => {
   describe("showOnpageDialog", () => {
