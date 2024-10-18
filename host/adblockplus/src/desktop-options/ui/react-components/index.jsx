@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import * as messaging from "~/core/messaging/front/index.ts";
+import "./i18n";
 import GeneralFeaturesContainer from "./GeneralFeaturesContainer";
 
 

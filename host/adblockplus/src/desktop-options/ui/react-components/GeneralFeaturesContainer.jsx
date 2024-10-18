@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 import { Checkbox, Icon } from "@eyeo/ext-ui-components";
 import * as messaging from "~/core/messaging/front/index.ts";
+import { useTranslation } from 'react-i18next';
 
 /**
  * Return the localized string for the given key.
@@ -64,6 +65,7 @@ const FeatureItem = ({ title, description, isLocked = false, isNew = false }) =>
 );
 
 export default function GeneralFeaturesContainer({ user }) {
+  const { t: i18nTrans, i18n } = useTranslation();
   const handleUpgrade = async () => {
     const upgradeUrl = await messaging.ctalinks.get("premium-upgrade", {
       source: "general-tab",
@@ -76,7 +78,7 @@ export default function GeneralFeaturesContainer({ user }) {
       <div className="w-1/2">
         <div className="flex items-center gap-5 h-14">
           <h2 className="uppercase font-bold">
-            Premium
+            Premium { t('ajksdjasas_asdasdasd_asdasdasdsaaa_xxxxx') }
           </h2>
           {
             !user.hasPremium && (
@@ -84,7 +86,7 @@ export default function GeneralFeaturesContainer({ user }) {
                 className="bg-orange-300 text-white font-bold px-5 py-1.5 rounded"
                 onClick={handleUpgrade}
               >
-                { t("options_upgrade_button") }
+                { i18nTrans("options_upgrade_button") }
               </button>
             )
           }
