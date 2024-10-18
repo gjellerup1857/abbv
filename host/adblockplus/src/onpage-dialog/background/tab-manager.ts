@@ -366,7 +366,14 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
     return;
   }
 
-  // Sort the waiting dialogs by priority.
+  // Before we iterate over the IPM dialogs, let's check if the cool down
+  // period is still ongoing.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
+    return;
+  }
+
+  // Now sort the waiting dialogs by priority.
   const dialogs = Array.from(unassignedDialogs.values()).sort(
     compareDialogsByPriority
   );
