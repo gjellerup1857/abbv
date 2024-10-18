@@ -72,6 +72,38 @@ export const eventEmitter = new EventEmitter();
 const unassignedDialogs = new Map<string, Dialog>();
 
 /**
+ * Compares two dialogs to see which has the higher priority.
+ *
+ * @param dialogA The first dialog
+ * @param dialogB The second dialog
+ * @returns 1 if dialogA has a higher priority, 1 if dialogB does, 0 if both are equal
+ */
+export function compareDialogsByPriority(
+  dialogA: Dialog,
+  dialogB: Dialog
+): number {
+  if (dialogA.behavior.priority > dialogB.behavior.priority) {
+    return -1;
+  }
+
+  if (dialogA.behavior.priority < dialogB.behavior.priority) {
+    return 1;
+  }
+
+  const ipmIdA = (dialogA.ipmId ?? "x").toUpperCase();
+  const ipmIdB = (dialogB.ipmId ?? "x").toUpperCase();
+
+  if (ipmIdA < ipmIdB) {
+    return -1;
+  }
+  if (ipmIdA > ipmIdB) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/**
  * Removes on-page dialog
  *
  * @param tabId - Tab ID
