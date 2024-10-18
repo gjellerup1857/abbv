@@ -62,6 +62,7 @@ import {
 import { checkLanguage } from "~/ipm/background/language-check";
 import { isTabPage, pageEmitter } from "~/core/pages/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { Timing } from "./timing.types";
 
 /**
  * Tab-specific session storage for dialogs
@@ -364,14 +365,7 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
     return;
   }
 
-  // Before we iterate over the IPM dialogs, let's check if the cool down
-  // period is still ongoing.
-  if (await isCoolDownPeriodOngoing()) {
-    logger.debug("[onpage-dialog]: Cool down period still ongoing");
-    return;
-  }
-
-  // Now sort the waiting dialogs by priority.
+  // Sort the waiting dialogs by priority.
   const dialogs = Array.from(unassignedDialogs.values()).sort(
     compareDialogsByPriority
   );
@@ -469,9 +463,13 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.rejected;
   }
 
-  // This is called both by IPM and local dialog logic, so we need to check
-  // if the cool down period is still ongoing in case it'a a local dialog.
-  if (await isCoolDownPeriodOngoing()) {
+  // Check if the global dialog cool down period is still ongoing.
+  // Dialogs with "immediate" timing (e.g. the local YT dialog) ignore
+  // the cool down.
+  if (
+    dialog.behavior.timing !== Timing.immediate &&
+    (await isCoolDownPeriodOngoing())
+  ) {
     logger.debug("[onpage-dialog]: Cool down period still ongoing");
     return ShowOnpageDialogResult.ignored;
   }
