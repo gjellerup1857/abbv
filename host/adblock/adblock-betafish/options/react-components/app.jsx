@@ -23,14 +23,14 @@ const optionsData = [
         name: 'enable_youtube_manage_subscribed',
         text: 'youtube_manage_subscribed',
         helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738459986707-About-Acceptable-Ads-and-Third-Party-Tracking',
+        // TODO (options): Currently calls browser.tabs.create({ url: "https://www.youtube.com/feed/channels" }); Follow up on difference, since example works fine.
+        additionalInfoLink: {
+          text: 'settings',
+          href: 'https://www.youtube.com/feed/channels'
+        }
       }
     ],
     helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738502154131-Can-I-use-AdBlock-and-still-allow-ads-on-my-favorite-YouTube-channels',
-    // TODO (options): Currently calls browser.tabs.create({ url: "https://www.youtube.com/feed/channels" }); Follow up on difference, since example works fine.
-    additionalInfoLink: {
-      text: 'settings',
-      href: 'https://www.youtube.com/feed/channels'
-    }
   },
   {
     name: 'enable_twitch_channel_allowlist',
