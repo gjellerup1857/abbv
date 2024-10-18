@@ -48,7 +48,12 @@ import { isDialog, isDialogBehavior, isDialogContent } from "./dialog";
 import { type Dialog } from "./dialog.types";
 import { setDialogCommandHandler } from "./middleware";
 import { clearStats, getStats, setStats } from "./stats";
-import { DialogEventType, ShowOnpageDialogResult } from "./tab-manager.types";
+import {
+  coolDownPeriodKey,
+  DialogEventType,
+  lastShownKey,
+  ShowOnpageDialogResult
+} from "./tab-manager.types";
 import {
   shouldBeDismissed,
   shouldBeShown,
@@ -56,6 +61,7 @@ import {
 } from "./timing";
 import { checkLanguage } from "~/ipm/background/language-check";
 import { isTabPage, pageEmitter } from "~/core/pages/background";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 /**
  * Tab-specific session storage for dialogs
@@ -101,6 +107,16 @@ export function compareDialogsByPriority(
   }
 
   return 0;
+}
+
+/**
+ * Checks whether the global dialog cool down period is still ongoing.
+ *
+ * @returns true if the cool down period is till ongoing, false if not
+ */
+export async function isCoolDownPeriodOngoing(): Promise<boolean> {
+  await Prefs.untilLoaded;
+  return Prefs.get(lastShownKey) + Prefs.get(coolDownPeriodKey) > Date.now();
 }
 
 /**
