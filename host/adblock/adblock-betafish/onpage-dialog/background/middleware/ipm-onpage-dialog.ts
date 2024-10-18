@@ -21,6 +21,7 @@ import {
   CommandName,
   type ParamDefinitionList,
   defaultLicenseState,
+  isEmptyOrPositiveNumber,
   isNotEmpty,
   isSafeUrl,
   isValidDomainList,
@@ -32,7 +33,7 @@ import * as logger from "../../../utilities/background";
 import { type DialogContent } from "../../shared";
 import { type DialogBehavior } from "../dialog.types";
 import { Timing } from "../timing.types";
-import { type DialogCommand, type DialogParams } from "./ipm-onpage-dialog.types";
+import { defaultPriority, type DialogCommand, type DialogParams } from "./ipm-onpage-dialog.types";
 
 /**
  * List of on-page dialog parameter definitions
@@ -75,6 +76,10 @@ const paramDefinitionList: ParamDefinitionList<DialogParams> = [
     name: "license_state_list",
     validate: isValidLicenseStates,
   },
+  {
+    name: "priority",
+    validate: isEmptyOrPositiveNumber,
+  },
 ];
 
 /**
@@ -95,6 +100,7 @@ function getBehavior(command: Command): DialogBehavior | null {
     timing: command.timing,
     domainList: command.domain_list,
     licenseStateList: command.license_state_list ?? defaultLicenseState,
+    priority: typeof command.priority === "number" ? command.priority : defaultPriority,
   };
 }
 
