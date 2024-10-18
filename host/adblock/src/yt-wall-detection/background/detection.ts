@@ -27,7 +27,12 @@ import { type MessageSender } from "~/polyfills/background";
 import { port } from "../../../adblockplusui/adblockpluschrome/lib/messaging/port";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
-import { youTubeAutoAllowlisted, youTubeWallDetected, youTubeNavigation } from "../shared/index";
+import {
+  youTubeAlreadyAllowLlisted,
+  youTubeAutoAllowlisted,
+  youTubeWallDetected,
+  youTubeNavigation,
+} from "../shared/index";
 
 /**
  * capture the allowlist YT start date (the update or install date)
@@ -64,6 +69,14 @@ const processYouTubeWallDetectedMessage = async (
   }
   const filters = await ewe.filters.getAllowingFilters(sender.page.id);
   const isAllowListed = !!filters.length;
+  if (isAllowListed) {
+    ServerMessages.recordAdWallMessage(
+      youTubeAlreadyAllowLlisted,
+      message.userLoggedIn ? "1" : "0",
+      isAllowListed ? "1" : "0",
+    );
+    return;
+  }
   ServerMessages.recordAdWallMessage(
     youTubeWallDetected,
     message.userLoggedIn ? "1" : "0",
@@ -73,7 +86,6 @@ const processYouTubeWallDetectedMessage = async (
     adblockIsDomainPaused({ url: sender.page.url, id: sender.page.id }, true, true, "auto");
     void browser.tabs.reload(sender.page.id);
     ServerMessages.recordAdWallMessage(youTubeAutoAllowlisted);
-    void browser.tabs.reload(sender.page.id);
   }
 };
 
