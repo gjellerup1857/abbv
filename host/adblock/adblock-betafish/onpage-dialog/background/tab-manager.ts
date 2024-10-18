@@ -472,6 +472,13 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.rejected;
   }
 
+  // AB does not have local dialogs yet, but it might in the future, so let's
+  // run another check to make sure the cool down period is not still ongoing.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
+    return ShowOnpageDialogResult.ignored;
+  }
+
   const stats = getStats(dialog.id);
   const shouldDialogBeDismissed = shouldBeDismissed(dialog, stats);
   const shouldDialogBeShown = await shouldBeShown(tab, dialog, stats);
@@ -506,10 +513,12 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.ignored;
   }
 
+  const now = Date.now();
   setStats(dialog.id, {
     displayCount: stats.displayCount + 1,
-    lastDisplayTime: Date.now(),
+    lastDisplayTime: now,
   });
+  await Prefs.set(lastShownKey, now);
 
   const successfulInjection = await addDialog(tabId);
   if (!successfulInjection) {
@@ -556,10 +565,20 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
   }
 
   if (tab.incognito || typeof tab.url !== "string" || !/^https?:/.test(tab.url)) {
+
+  // Before we iterate over the IPM dialogs, let's check if the cool down
+  // period is still ongoing.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
     return;
   }
 
-  for (const dialog of unassignedDialogs.values()) {
+  // Now sort the waiting dialogs by priority.
+  const dialogs = Array.from(unassignedDialogs.values()).sort(compareDialogsByPriority);
+
+  // Finally iterate over list and try until a dialog can be shown, or the
+  // list is empty.
+  for (const dialog of dialogs) {
     // Ignore and dismiss command if license state doesn't match those in the
     // command
     // eslint-disable-next-line no-await-in-loop
