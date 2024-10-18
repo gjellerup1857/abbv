@@ -565,6 +565,11 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
   }
 
   if (tab.incognito || typeof tab.url !== "string" || !/^https?:/.test(tab.url)) {
+
+  // Before we iterate over the IPM dialogs, let's check if the cool down
+  // period is still ongoing.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
     return;
   }
 
