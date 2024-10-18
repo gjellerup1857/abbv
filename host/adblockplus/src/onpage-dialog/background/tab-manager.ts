@@ -364,7 +364,21 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
     return;
   }
 
-  for (const dialog of unassignedDialogs.values()) {
+  // Before we iterate over the IPM dialogs, let's check if the cool down
+  // period is still ongoing.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
+    return;
+  }
+
+  // Now sort the waiting dialogs by priority.
+  const dialogs = Array.from(unassignedDialogs.values()).sort(
+    compareDialogsByPriority
+  );
+
+  // Finally iterate over list and try until a dialog can be shown, or the
+  // list is empty.
+  for (const dialog of dialogs) {
     // Ignore and dismiss command if license state doesn't match those in the
     // command
     if (!(await doesLicenseStateMatch(dialog.behavior))) {
@@ -455,6 +469,13 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.rejected;
   }
 
+  // This is called both by IPM and local dialog logic, so we need to check
+  // if the cool down period is still ongoing in case it'a a local dialog.
+  if (await isCoolDownPeriodOngoing()) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
+    return ShowOnpageDialogResult.ignored;
+  }
+
   const stats = getStats(dialog.id);
   const shouldDialogBeDismissed = shouldBeDismissed(dialog, stats);
   const shouldDialogBeShown = await shouldBeShown(tab, dialog, stats);
@@ -489,10 +510,12 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.ignored;
   }
 
+  const now = Date.now();
   setStats(dialog.id, {
     displayCount: stats.displayCount + 1,
-    lastDisplayTime: Date.now()
+    lastDisplayTime: now
   });
+  await Prefs.set(lastShownKey, now);
 
   await addDialog(tabId);
 
