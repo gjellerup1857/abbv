@@ -44,6 +44,15 @@ export const isNumeric: ParamValidator = (param) =>
 export const isNotEmpty: ParamValidator = (param) => typeof param === "string" && param.length > 0;
 
 /**
+ * Checks whether the given parameter is either not given or a positive number.
+ *
+ * @param param The parameter to check
+ * @returns Whether the param is empty or a positive number
+ */
+export const isEmptyOrPositiveNumber: ParamValidator = (param) =>
+  typeof param === "undefined" || (typeof param === "number" && param > 0);
+
+/**
  * Checks whether the given parameter contains only values of type LicenseState.
  *
  * @param param The parameter to validate
