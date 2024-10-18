@@ -565,8 +565,6 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
   }
 
   if (tab.incognito || typeof tab.url !== "string" || !/^https?:/.test(tab.url)) {
-    return;
-  }
 
   // Now sort the waiting dialogs by priority.
   const dialogs = Array.from(unassignedDialogs.values()).sort(compareDialogsByPriority);
