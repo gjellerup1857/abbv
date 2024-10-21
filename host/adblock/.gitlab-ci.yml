@@ -83,6 +83,41 @@ build:
       - host/adblock/dist/release/adblock-firefox-*-mv2.xpi
       - host/adblock/dist/release/adblockbeta-chrome-*-mv3.zip
 
+.edge_install_windows: &edge_install_windows
+  - $Env:EdgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+  - try {
+      choco install -y microsoft-edge;
+      if (!(Test-Path $Env:EdgePath)) {
+        throw "Edge not found on `"$Env:EdgePath`"";
+      }
+    }
+    catch {
+      Write-Warning "$_ - Retrying Edge install...";
+      choco install -y microsoft-edge;
+      if (!(Test-Path $Env:EdgePath)) {
+        throw "Edge not found on `"$Env:EdgePath`"";
+      }
+    }
+
+# Replaces nodejs v21.2.0 (default) with v18.17.1
+.nodejs_install_windows: &nodejs_install_windows
+  - choco uninstall -y nodejs nodejs.install
+  - choco install -y --no-progress nodejs --version 18.17.1
+  - Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+  - refreshenv
+
+test-windows:
+  extends: .build
+  needs: ["build"]
+  tags:
+    - saas-windows-medium-amd64
+  before_script:
+    - *edge_install_windows
+    - *nodejs_install_windows
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm run test:end-to-end -- --scope=adblock -- edge 2
+
 buildfromsource:
   stage: build
   needs: ["build"]
