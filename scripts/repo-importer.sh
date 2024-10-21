@@ -139,16 +139,6 @@ git checkout -B "$TARGET_BRANCH" "$REMOTE/$TARGET_BRANCH"
 
 git merge --allow-unrelated-histories --no-commit "$PROJECT-$SOURCE_BRANCH"
 
-cat >>.gitlab-ci.yml <<EOL
-$PROJECT:
-  extends: .child
-  variables:
-    HOSTPATH: $TARGET_PATH
-EOL
-
-git add .gitlab-ci.yml
-git commit -m "feat: Merge $PROJECT into the Monorepo"
-
 # Go get all the tags
 
 pushd "$CHECKOUT"
