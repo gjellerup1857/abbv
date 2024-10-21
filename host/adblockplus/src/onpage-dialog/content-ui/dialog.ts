@@ -24,6 +24,7 @@ import font700 from "../../../skin/fonts/source-sans-pro-700.woff2?uri";
 import dialogLogo from "../../../skin/icons/logo/abp-full.svg?uri";
 import { type Message } from "~/core/messaging/shared";
 import {
+  type HideMessage,
   type PingMessage,
   type ResizeMessage,
   type StartInfo
@@ -72,6 +73,8 @@ async function handleMessageEvent(event: MessageEvent): Promise<void> {
   // tab for which the dialog is intended to be shown
   const startInfo = await sendMessage({ type: "onpage-dialog.get" });
   if (!isStartInfo(startInfo)) {
+    // Hide dialog frame to avoid empty content
+    void sendMessage<HideMessage>({ type: "onpage-dialog.hide" });
     return;
   }
 

@@ -25,6 +25,14 @@ import { EventEmitter } from "../events.js";
 import { SessionStorage } from "./session.js";
 
 /**
+ * Reason to clear Tab specific data
+ */
+const clearStorageReason = {
+  startup: "startup",
+  tabRemoval: "tabRemoval",
+};
+
+/**
  * Session storage instance for storing tab-specific data.
  * @type {SessionStorage<number,any>}
  */
@@ -144,13 +152,16 @@ export class TabSessionStorage extends EventEmitter {
 /**
  * Clears tab-specific data.
  * @param {number} tabId
+ * @param {string} reason
  * @return {Promise}
  */
-async function clearStorage(tabId) {
+async function clearStorage(tabId, reason) {
   // Provide stored data to listeners before removing it
   const session = await sessionByTabId.get(tabId);
-  if (session) {
-    for (const tabStorage of tabStorages) await tabStorage.emit("tab-removed", tabId);
+  if (session && reason === clearStorageReason.tabRemoval) {
+    for (const tabStorage of tabStorages) {
+      await tabStorage.emit("tab-removed", tabId);
+    }
   }
 
   await sessionByTabId.delete(tabId);
@@ -162,12 +173,12 @@ async function clearStorage(tabId) {
 function start() {
   // Clear tab-specific data when the tab's content changes
   ext.pages.onLoading.addListener((page) => {
-    void clearStorage(page.id);
+    void clearStorage(page.id, clearStorageReason.startup);
   });
 
   // Clear tab-specific data when the tab gets removed
   ext.pages.onRemoved.addListener((tabId) => {
-    void clearStorage(tabId);
+    void clearStorage(tabId, clearStorageReason.tabRemoval);
   });
 }
 start();

@@ -15,6 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Tabs } from "webextension-polyfill";
+
 /**
  * On-page dialog event names
  */
@@ -57,4 +59,12 @@ export enum DialogErrorEventType {
   error_no_dialog_found = "error.no_ipm",
   get_no_dialog_found = "get.no_dialog",
   ping_no_dialog_found = "ping.no_dialog",
+}
+
+/**
+ * Interface for a Page shown in tab
+ */
+export interface TabPage {
+  id: Tabs.Tab["id"];
+  url: URL;
 }

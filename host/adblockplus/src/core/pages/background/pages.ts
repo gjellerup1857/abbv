@@ -23,6 +23,22 @@ import { type TabDescriptor, type TabPage } from "./pages.types";
 export const pageEmitter = new EventEmitter();
 
 /**
+ * Checks whether given candidate is a tab page
+ *
+ * @param candidate - Candidate
+ *
+ * @returns whether given candidate is a tab page
+ */
+export function isTabPage(candidate: unknown): candidate is TabPage {
+  return (
+    candidate !== null &&
+    typeof candidate === "object" &&
+    "id" in candidate &&
+    "url" in candidate
+  );
+}
+
+/**
  * Retrieves information about page shown in tab
  * @deprecated use browser.Tabs.Tab objects instead
  *

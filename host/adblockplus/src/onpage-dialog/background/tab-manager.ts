@@ -51,6 +51,7 @@ import {
   shouldBeShown,
   start as setupTimings
 } from "./timing";
+import { isTabPage, pageEmitter } from "~/core/pages/background";
 
 /**
  * Tab-specific session storage for dialogs
@@ -283,24 +284,27 @@ function handleTabRemovedEvent(data: TabRemovedEventData): void {
 }
 
 /**
- * Handles browser.tabs.onUpdated events
+ * Handles "loaded" page events
  *
- * @param tabId - Tab ID
- * @param changeInfo - Tab change information
- * @param tab - Tab
+ * @param page - Page that finished loading
  */
-async function handleTabsUpdatedEvent(
-  tabId: number,
-  changeInfo: Tabs.OnUpdatedChangeInfoType,
-  tab: Tabs.Tab
-): Promise<void> {
+async function handlePageLoadedEvent(page: unknown): Promise<void> {
+  if (!isTabPage(page)) {
+    return;
+  }
+
+  if (!page.id) {
+    return;
+  }
+
+  const tab = await browser.tabs.get(page.id);
+
   if (unassignedDialogs.size === 0) {
     logger.debug("[onpage-dialog]: No command");
     return;
   }
 
   if (
-    changeInfo.status !== "complete" ||
     tab.incognito ||
     typeof tab.url !== "string" ||
     !/^https?:/.test(tab.url)
@@ -317,7 +321,7 @@ async function handleTabsUpdatedEvent(
       continue;
     }
 
-    const result = await showOnpageDialog(tabId, tab, dialog);
+    const result = await showOnpageDialog(page.id, tab, dialog);
     if (result === ShowOnpageDialogResult.rejected) {
       dismissDialog(dialog);
     }
@@ -381,7 +385,14 @@ export async function showOnpageDialog(
   }
 
   const stats = getStats(dialog.id);
+  const shouldDialogBeDismissed = shouldBeDismissed(dialog, stats);
   const shouldDialogBeShown = await shouldBeShown(tab, dialog, stats);
+
+  // Reject commands that should be dismissed
+  if (shouldDialogBeDismissed) {
+    logger.debug("[onpage-dialog]: Reject dialog");
+    return ShowOnpageDialogResult.rejected;
+  }
 
   // Ignore and dismiss dialog that should be shown in a given tab,
   // if such tab already contains a dialog
@@ -398,6 +409,14 @@ export async function showOnpageDialog(
 
   logger.debug("[onpage-dialog]: Show dialog");
   await assignedDialogs.set(tabId, dialog);
+
+  // Sometimes dialog fails to be asssigned to the page,
+  // in that case we should ignore it so it can be retried
+  const assignedDialogOnPage = await assignedDialogs.get(tabId);
+  if (!isDialog(assignedDialogOnPage)) {
+    logger.debug("[onpage-dialog]: Failed to be assigned to the page ", tabId);
+    return ShowOnpageDialogResult.ignored;
+  }
 
   setStats(dialog.id, {
     displayCount: stats.displayCount + 1,
@@ -452,6 +471,7 @@ export async function start(): Promise<void> {
   port.on("onpage-dialog.continue", handleContinueMessage);
   port.on("onpage-dialog.get", handleGetMessage);
   port.on("onpage-dialog.ping", handlePingMessage);
+  port.on("onpage-dialog.hide", forwardMessage);
   port.on("onpage-dialog.resize", forwardMessage);
 
   addTrustedMessageTypes(null, [
@@ -459,15 +479,14 @@ export async function start(): Promise<void> {
     "onpage-dialog.close",
     "onpage-dialog.get",
     "onpage-dialog.ping",
+    "onpage-dialog.hide",
     "onpage-dialog.resize"
   ]);
 
-  // Dismiss dialog when tab used for storing session data gets closed,
-  // reloaded or unloaded
+  // Dismiss dialog when tab used for storing session data gets closed
   assignedDialogs.on("tab-removed", handleTabRemovedEvent);
 
   // Handle commands
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  browser.tabs.onUpdated.addListener(handleTabsUpdatedEvent);
+  pageEmitter.on("loaded", handlePageLoadedEvent);
   setDialogCommandHandler(handleDialogCommand);
 }

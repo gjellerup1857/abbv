@@ -219,12 +219,6 @@ async function shouldBeShownForAfterWebAllowlisting(
 export async function shouldBeShown(tab: Tabs.Tab, dialog: Dialog, stats: Stats): Promise<boolean> {
   const { domainList, timing } = dialog.behavior;
 
-  // Ignore commands that should have already been dismissed
-  if (shouldBeDismissed(dialog, stats)) {
-    logger.debug("[onpage-dialog]: No more dialogs to show for command");
-    return false;
-  }
-
   // dialogs related to web allowlisting need an extra check
   const isWebAllowlistingRelated = [
     Timing.afterWebAllowlisting,
