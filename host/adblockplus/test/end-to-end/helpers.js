@@ -63,7 +63,10 @@ async function afterSequence(optionsUrl = null)
   await waitForAbleToExecuteScripts();
 }
 
-async function beforeSequence(expectInstalledTab = true)
+async function beforeSequence({
+  expectInstalledTab = true,
+  isSmokeTest = false
+} = {expectInstalledTab: true})
 {
   if (isFirefox())
   {
@@ -76,26 +79,36 @@ async function beforeSequence(expectInstalledTab = true)
   let installedUrl;
   if (expectInstalledTab)
   {
-    // On MV3 the opening of the installed page may take a very long time
-    // on slow environments
-    const timeout = 50000;
-    await browser.waitUntil(async() =>
+    const timeout = process.env.MANIFEST_VERSION == "3" ? 50000 : 25000;
+    try
     {
-      for (const handle of await browser.getWindowHandles())
+      await browser.waitUntil(async() =>
       {
-        await browser.switchToWindow(handle);
-        installedUrl = await browser.getUrl();
-        if (/installed|first-run/.test(installedUrl))
+        for (const handle of await browser.getWindowHandles())
         {
-          await browser.url("about:blank"); // Ensures at least one open tab
-          return true;
+          await browser.switchToWindow(handle);
+          installedUrl = await browser.getUrl();
+          if (/installed|first-run/.test(installedUrl))
+          {
+            await browser.url("about:blank"); // Ensures at least one open tab
+            return true;
+          }
         }
+      }, {
+        timeout,
+        interval: 2000,
+        timeoutMsg: `Installed page didn't open after ${timeout}ms`
+      });
+    }
+    catch (e)
+    {
+      if (isSmokeTest)
+      {
+        throw new Error(`Installed page didn't open after ${timeout}ms` +
+          " while executing a smoke test"
+        );
       }
-    }, {
-      timeout,
-      interval: 2000,
-      timeoutMsg: `Installed page didn't open after ${timeout}ms`
-    });
+    }
   }
 
   if (process.env.LOCAL_RUN !== "true")
