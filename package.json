@@ -18,7 +18,7 @@
     "test:end-to-end": "lerna run test:end-to-end",
     "lint": "lerna run lint",
     "sentry:version": "sentry-cli releases new \"999898\" --project adblock-plus",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./host/adblockplus/dist/devenv && sentry-cli sourcemaps upload --org eyeo --project adblock-plus ./host/adblockplus/dist/release/devenv"
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./host/adblockplus/dist/release && sentry-cli sourcemaps upload --org eyeo --project adblock-plus ./host/adblockplus/dist/release"
   },
   "dependencies": {
     "@sentry/cli": "2.37.0"
