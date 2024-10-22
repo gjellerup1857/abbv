@@ -1,0 +1,10 @@
+{
+  "name": "@eyeo/test-utils",
+  "type": "module",
+  "devDependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start-server": "node start-server.js"
+  }
+}

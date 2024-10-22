@@ -42,6 +42,9 @@
       "dependsOn": [
         "^build"
       ]
+    },
+    "test:end-to-end": {
+      "parallelism": false
     }
   }
 }

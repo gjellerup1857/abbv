@@ -6,7 +6,8 @@
     "host/*",
     "fragment/*",
     "core/*",
-    "ui-components"
+    "ui-components",
+    "test"
   ],
   "scripts": {
     "build": "lerna run build",

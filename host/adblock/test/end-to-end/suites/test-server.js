@@ -15,24 +15,20 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { beforeEachTasks } from "../utils/hook.js";
-import smoke from "./smoke.js";
-import uninstall from "./uninstall.js";
-import optionsPageAA from "./options-page-aa.js";
-import optionsPageFL from "./options-page-fl.js";
-import testServer from "./test-server.js";
+import { expect } from "expect";
+import webdriver from "selenium-webdriver";
+
+import { openNewTab } from "../utils/driver.js";
+
+const { By } = webdriver;
 
 export default () => {
-  beforeEach(async function () {
-    await beforeEachTasks(this.driver);
-  });
+  it("loads a test server page", async function () {
+    const { driver } = this;
+    const url = "http://localhost:3005/test.html";
 
-  describe("Test server", testServer);
-  describe("Smoke Tests - Main", smoke);
-  describe("Options Page", function () {
-    describe("Acceptable Ads", optionsPageAA);
-    describe("Filter Lists", optionsPageFL);
+    await openNewTab(driver, url);
+    const elem = await driver.findElement(By.css("h1"));
+    expect(await elem.getText()).toEqual("Hello from host pages");
   });
-  // Needs to be the last suite to run because the extension gets uninstalled
-  describe("Smoke Tests - Uninstall", uninstall);
 };

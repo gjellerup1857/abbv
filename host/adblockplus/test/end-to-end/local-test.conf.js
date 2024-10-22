@@ -25,6 +25,14 @@ const AdmZip = require("adm-zip");
 const helpers = require("./helpers.js");
 const {suites} = require("./suites.js");
 
+// require of ES Modules is not supported. Using dynamic imports instead
+let runTestServer;
+let killTestServer;
+import("@eyeo/test-utils/test-server-manager.js").then(mod =>
+{
+  ({runTestServer, killTestServer} = mod);
+});
+
 const {allureEnabled, browserName, screenshotsPath, releasePath, chromeBuildMV3,
        helperExtensionMV3UnpackedPath} = helpers.testConfig;
 
@@ -167,6 +175,7 @@ exports.config = {
   {
     process.env.LOCAL_RUN = "true";
     await fs.promises.mkdir(screenshotsPath, {recursive: true});
+    await runTestServer();
     // eslint-disable-next-line no-console
     console.log(`MANIFEST_VERSION=${process.env.MANIFEST_VERSION}`);
   },
@@ -177,5 +186,9 @@ exports.config = {
   async afterTest(test, context, {error})
   {
     await manageScreenshot(test, error);
+  },
+  async after()
+  {
+    await killTestServer();
   }
 };

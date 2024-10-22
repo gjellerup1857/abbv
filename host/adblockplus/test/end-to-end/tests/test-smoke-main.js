@@ -22,6 +22,7 @@ const adFiltering = require("./smoke-main/ad-filtering.js");
 const extension = require("./smoke-main/extension.js");
 const installation = require("./smoke-main/installation.js");
 const uninstallDefault = require("./smoke-main/uninstall-default.js");
+const testServer = require("./smoke-main/test-server.js");
 
 describe("Smoke Tests - Main", function()
 {
@@ -40,6 +41,7 @@ describe("Smoke Tests - Main", function()
       await afterSequence();
   });
 
+  describe("Test Server", testServer);
   describe("Installation", installation);
   describe("Extension", extension);
   describe("Ad Filtering", adFiltering);

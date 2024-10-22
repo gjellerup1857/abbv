@@ -5,6 +5,7 @@
     "host/*",
     "fragment/*",
     "core/*",
-    "ui-components"
+    "ui-components",
+    "test"
   ]
 }

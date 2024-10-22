@@ -22,6 +22,7 @@ import fs from "fs";
 
 import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
+import { runTestServer, killTestServer } from "@eyeo/test-utils/test-server-manager.js";
 
 import { findUrl } from "./utils/driver.js";
 import { setOptionsHandle } from "./utils/hook.js";
@@ -116,6 +117,8 @@ describe("AdBlock end-to-end tests", function () {
 
     [this.driver, this.browserName, this.fullBrowserVersion, this.majorBrowserVersion] =
       await startBrowser();
+
+    await runTestServer();
   });
 
   before(async function () {
@@ -145,6 +148,7 @@ describe("AdBlock end-to-end tests", function () {
     if (this.driver) {
       await this.driver.quit();
     }
+    await killTestServer();
   });
 
   defineTestSuites();
