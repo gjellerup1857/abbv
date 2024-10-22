@@ -22,7 +22,7 @@ import {
   setSchedule,
   hasSchedule
 } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommands, isCommandList } from "./command-library";
+import { executeIPMCommands } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
 import { error as logError } from "../../logger/background";
 import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
@@ -49,15 +49,14 @@ async function processResponse(response: Response): Promise<void> {
 
   // If the server responded with anything else, we assume it's a command or a list of them.
   try {
-    let commands = JSON.parse(body);
+    const bodyJSON = JSON.parse(body);
+    let commands;
 
-    // adding support to legacy server response, where we receive only one command per ping
-    if (!Array.isArray(commands)) {
-      commands = [commands];
-    }
-
-    if (!isCommandList(commands)) {
-      throw new Error("Invalid list of commands received");
+    if (Array.isArray(bodyJSON)) {
+      commands = bodyJSON;
+    } else {
+      // adding support to legacy server response, where we receive only one command per ping
+      commands = [bodyJSON];
     }
 
     if (commands.length > 100) {

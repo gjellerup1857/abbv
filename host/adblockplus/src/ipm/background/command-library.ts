@@ -68,14 +68,21 @@ function isCommand(candidate: unknown): candidate is Command {
 }
 
 /**
- * Checks whether given candidate is a list of commands
+ * Checks whether given candidate is a map of commands
  *
  * @param candidate - Candidate
  *
- * @returns whether candidate is a list of commands
+ * @returns whether candidate is a map of commands
  */
-export function isCommandList(candidate: unknown): candidate is Command[] {
-  return Array.isArray(candidate) && candidate.every(isCommand);
+export function isCommandMap(
+  candidate: unknown
+): candidate is Record<string, Command> {
+  return (
+    typeof candidate === "object" &&
+    candidate !== null &&
+    Object.keys(candidate).every((key) => typeof key === "string") &&
+    Object.values(candidate).every(isCommand)
+  );
 }
 
 /**
@@ -151,7 +158,8 @@ function getCommand(ipmId: string): Command | null {
  */
 export function getStoredCommandIds(): string[] {
   const commandStorage = Prefs.get(commandStorageKey);
-  if (!isCommandList(commandStorage)) {
+
+  if (!isCommandMap(commandStorage)) {
     return [];
   }
 
@@ -350,7 +358,8 @@ export async function start(): Promise<void> {
 
   // Reinitialize commands from storage
   const commandStorage = Prefs.get(commandStorageKey);
-  if (!isCommandList(commandStorage)) {
+
+  if (!isCommandMap(commandStorage)) {
     return;
   }
 

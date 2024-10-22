@@ -50,11 +50,14 @@ class IPMTelemetry extends TelemetryBase {
 
     // If the server responded with anything else, we assume it's a command or a list of them.
     try {
-      let commands = JSON.parse(body);
+      const bodyJSON = JSON.parse(body);
+      let commands;
 
-      // adding support to legacy server response, where we receive only one command per ping
-      if (!Array.isArray(commands)) {
-        commands = [commands];
+      if (Array.isArray(bodyJSON)) {
+        commands = bodyJSON;
+      } else {
+        // adding support to legacy server response, where we receive only one command per ping
+        commands = [bodyJSON];
       }
 
       if (commands.length > 100) {
