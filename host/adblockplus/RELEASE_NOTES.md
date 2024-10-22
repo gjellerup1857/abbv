@@ -1,5 +1,7 @@
 # Unreleased
 
+- Restored YouTube mention in extension description.
+
 # 4.8 - 2024-10-09
 
 The highlights of this release is that the popup allowlisting button now does 7
