@@ -461,7 +461,11 @@ export async function initNotifications(firstRun)
 
   ewe.notifications.locale = browser.i18n.getUILanguage();
   ewe.notifications.numBlocked = Stats.blocked_total;
-  await ewe.notifications.start();
+
+  // As per discussion in https://eyeo.atlassian.net/browse/IM-145, we no
+  // longer ping the legacy notifications endpoint. Not calling the engine's
+  // notifications system's start() method will achieve this.
+  // await ewe.notifications.start();
 
   // If there is an active notification of the "newtab" type on startup, call
   // openNotificationInNewTab() to activate it again. If we don't do this,
