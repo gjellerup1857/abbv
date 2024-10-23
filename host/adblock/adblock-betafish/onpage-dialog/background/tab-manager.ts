@@ -85,8 +85,9 @@ export function compareDialogsByPriority(dialogA: Dialog, dialogB: Dialog): numb
     return 1;
   }
 
-  const ipmIdA = (dialogA.ipmId ?? "x").toUpperCase();
-  const ipmIdB = (dialogB.ipmId ?? "x").toUpperCase();
+  const lowPriorityFallbackValue = "x";
+  const ipmIdA = (dialogA.ipmId ?? lowPriorityFallbackValue).toUpperCase();
+  const ipmIdB = (dialogB.ipmId ?? lowPriorityFallbackValue).toUpperCase();
 
   if (ipmIdA < ipmIdB) {
     return -1;
