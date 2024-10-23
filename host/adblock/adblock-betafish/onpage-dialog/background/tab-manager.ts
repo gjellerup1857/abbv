@@ -74,7 +74,7 @@ const unassignedDialogs = new Map<string, Dialog>();
  *
  * @param dialogA The first dialog
  * @param dialogB The second dialog
- * @returns 1 if dialogA has a higher priority, 1 if dialogB does, 0 if both are equal
+ * @returns -1 if dialogA has a higher priority, 1 if dialogB does, 0 if both are equal
  */
 export function compareDialogsByPriority(dialogA: Dialog, dialogB: Dialog): number {
   if (dialogA.behavior.priority > dialogB.behavior.priority) {
