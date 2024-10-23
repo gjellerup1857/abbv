@@ -23,7 +23,8 @@ exports.suites = {
     "./tests/test-smoke-*.js",
     "./tests/test-advanced-tab-filter-lists.js",
     "./tests/test-built-in-filter-list-dropdown.js",
-    "./tests/test-options-page-acceptable-ads.js"
+    "./tests/test-options-page-acceptable-ads.js",
+    "./tests/test-popup-allowlisting-domains.js"
   ],
   oldbrowsers: [
     "./tests/test-abp-premium-cookiefl-premium-users.js",

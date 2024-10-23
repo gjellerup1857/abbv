@@ -18,7 +18,8 @@
 "use strict";
 
 const {randomIntFromInterval, switchToABPOptionsTab, waitForNewWindow,
-       waitForAssertion, waitForCondition} = require("../../helpers");
+       waitForAssertion, waitForCondition, addFiltersToABP
+} = require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
 const AllowlistedWebsitesPage =
@@ -44,22 +45,6 @@ async function getTestpagesFilters()
   return filters.join("\n");
 }
 
-async function addFiltersToABP(filters)
-{
-  const error = await browser.executeAsync(async(filtersToAdd, callback) =>
-  {
-    const [errors] = await browser.runtime.sendMessage(
-      {type: "filters.importRaw", text: filtersToAdd}
-    );
-    if (typeof errors != "undefined" && errors[0])
-      callback(errors[0]);
-
-    callback();
-  }, filters);
-
-  if (error)
-    throw new Error(error);
-}
 
 function removeAllFiltersFromABP()
 {

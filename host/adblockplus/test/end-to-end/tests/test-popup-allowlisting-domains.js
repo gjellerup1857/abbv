@@ -18,7 +18,8 @@
 "use strict";
 
 const {beforeSequence, afterSequence, getTabId, switchToABPOptionsTab,
-       waitForCondition, doesTabExist, isFirefox} = require("../helpers");
+       waitForCondition, doesTabExist, isFirefox, addFiltersToABP
+} = require("../helpers");
 const {expect} = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const TestPage = require("../page-objects/testPages.page");
@@ -35,9 +36,16 @@ describe("test popup allowlisting and disallowlisting", function()
     ({origin: globalOrigin} = await beforeSequence());
   });
 
+  beforeEach(async function()
+  {
+    // This filter no longer exists in easylist
+    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
+    await addFiltersToABP("/pop_ads.js");
+  });
+
   afterEach(async function()
   {
-    if (lastTest == false)
+    if (lastTest === false)
     {
       await afterSequence();
     }
@@ -128,13 +136,22 @@ describe("test popup allowlisting and disallowlisting", function()
     await popupPage.clickThisDomainToggle();
     await popupPage.clickRefreshButton();
 
+    // need to open the ABP options page in order to fetch the tabId
     await switchToABPOptionsTab({switchToFrame: false});
     tabId = await getTabId({title: "Blocking and hiding"});
+
     await popupPage.switchToTab("Blocking and hiding");
     await popupPage.init(globalOrigin, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.true;
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.true;
+
+    // wait for the Block Element to be visible
+    await popupPage.isElementDisplayed(
+      popupPage.blockSpecificElementButton,
+      false,
+      200
+    );
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.true;
 
     await switchToABPOptionsTab();
