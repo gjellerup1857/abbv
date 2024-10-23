@@ -1,6 +1,10 @@
 # Unreleased
 
-- Restored YouTube mention in extension description.
+# 4.9 - 2024-10-23
+
+- This release contains mostly only minor updates and under-the-hood changes.
+- Restored YouTube mention in extension description on the extension store listing.
+
 
 # 4.8 - 2024-10-09
 
@@ -474,9 +478,9 @@ Replaced abp-snippets with [@eyeo/snippets](https://gitlab.com/eyeo/snippets) an
 Upgraded abp-snippets to 0.4.1 ([update notes](https://gitlab.com/adblockinc/ext/adblockplus/adblockplusui/-/issues/1076)), which includes the following changes:
 
 - Improved support and performance for running multiple snippets on the same page.
-- Added `race` snippet directive for running only some of a given list of snippets.  
+- Added `race` snippet directive for running only some of a given list of snippets.
   _e.g. example.com#$#race start; snippet 1 2 3; other 4 5 6; another 7 8 9; race stop;_
-- Added case insensitive matching support for snippet parameters.  
+- Added case insensitive matching support for snippet parameters.
   _e.g. #`#snippet /test/ can now be #`#snippet /test/i_
 - Changed `hide-if-contains-visible-text` to ignore elements offset from user visible areas.
 - Changed `hide-if-contains-visible-text` to support specifying an optional attribute array for CSS attributes that should be interpreted as hiding an element.
@@ -530,7 +534,7 @@ Started using [eyeo's Web Extension Ad Blocking Toolkit (EWE)](https://gitlab.co
 
 ## Chromium-specific changes
 
-- Dropped support for Chromium 76 and below ([ui#1028](https://gitlab.com/eyeo/adblockplus/abpui/adblockplusui/-/issues/1028)).  
+- Dropped support for Chromium 76 and below ([ui#1028](https://gitlab.com/eyeo/adblockplus/abpui/adblockplusui/-/issues/1028)).
   _This includes Chrome 76, Microsoft Edge 76 and Opera 63._
 
 ## Firefox-specific changes
