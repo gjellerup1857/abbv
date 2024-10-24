@@ -22,17 +22,22 @@ import { getOptionsHandle } from "../utils/hook.js";
 export default () => {
   it("no data collection for firefox", async function () {
     const { driver, browserName } = this;
+
     if (browserName !== "firefox") {
       this.skip();
-    } else {
-      await initOptionsGeneralTab(driver, getOptionsHandle());
-      await driver.wait(async () => {
+    }
+
+    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await driver.wait(
+      async () => {
         const dataCollectionOptOut = await isCheckboxEnabled(
           driver,
           "prefs__data_collection_opt_out",
         );
         return dataCollectionOptOut;
-      });
-    }
+      },
+      2000,
+      "prefs__data_collection_opt_out is not present",
+    );
   });
 };
