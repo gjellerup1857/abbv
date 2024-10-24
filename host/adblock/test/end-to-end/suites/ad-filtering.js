@@ -19,33 +19,18 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import { findUrl, getDisplayedElement, openNewTab, waitForNotDisplayed } from "../utils/driver.js";
-import { initOptionsCustomizeTab, setCustomFilters } from "../utils/page.js";
+import {
+  addFiltersToAdBlock,
+  blockHideUrl,
+  checkBlockHidePage,
+  initOptionsCustomizeTab,
+  setCustomFilters,
+} from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
 
 export default () => {
-  const blockHideUrl =
-    "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
-
-  async function addFiltersToAdBlock(driver, filters) {
-    const err = await driver.executeAsyncScript(async (filtersToAdd, callback) => {
-      const errors = await browser.runtime.sendMessage({
-        type: "filters.importRaw",
-        text: filtersToAdd,
-      });
-      if (typeof errors !== "undefined" && errors[0]) {
-        callback(errors[0]);
-      }
-
-      callback();
-    }, filters);
-
-    if (err) {
-      throw new Error(err);
-    }
-  }
-
   it("uses sitekey to allowlist content", async function () {
     const { driver, manifestVersion } = this;
     const url = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
@@ -113,13 +98,7 @@ export default () => {
     await addFiltersToAdBlock(driver, "/pop_ads.js");
 
     await openNewTab(driver, blockHideUrl);
-    const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
-    expect(await popadsElem.getText()).toEqual("pop_ads.js was blocked");
-    const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
-    expect(await banneradsElem.getText()).toEqual("bannerads/* was blocked");
-
-    await waitForNotDisplayed(driver, "#search-ad");
-    await waitForNotDisplayed(driver, "#AdContainer");
+    await checkBlockHidePage(driver, { expectAllowlisted: false });
   });
 
   it("uses snippets to block ads", async function () {
@@ -136,7 +115,7 @@ export default () => {
 
     await findUrl(driver, url);
     await driver.navigate().refresh();
-    await waitForNotDisplayed(driver, "#snippet-filter");
+    await waitForNotDisplayed(driver, "#snippet-filter", 2000);
   });
 
   it("allowlists websites", async function () {
@@ -147,31 +126,7 @@ export default () => {
     await setCustomFilters(driver, filters);
 
     await openNewTab(driver, blockHideUrl);
-    await driver.wait(
-      async () => {
-        const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
-        const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
-        try {
-          expect(await popadsElem.getText()).toEqual(
-            "pop_ads.js blocking filter should block this",
-          );
-          expect(await banneradsElem.getText()).toEqual(
-            "first bannerads/* blocking filter should block this",
-          );
-          return true;
-        } catch (e) {
-          await driver.navigate().refresh();
-        }
-      },
-      5000,
-      "allowlisting filters were not applied",
-    );
-    const searchAdElem = await getDisplayedElement(driver, "#search-ad");
-    expect(await searchAdElem.getText()).toEqual("search-ad id hiding filter should hide this");
-    const adContainerElem = await getDisplayedElement(driver, "#AdContainer");
-    expect(await adContainerElem.getText()).toEqual(
-      "AdContainer class hiding filter should hide this",
-    );
+    await checkBlockHidePage(driver, { expectAllowlisted: true });
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
     // This filter no longer exists in easylist
@@ -179,21 +134,7 @@ export default () => {
     await setCustomFilters(driver, ["/pop_ads.js"]);
 
     await findUrl(driver, blockHideUrl);
-    await driver.wait(
-      async () => {
-        const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
-        const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
-        try {
-          expect(await popadsElem.getText()).toEqual("pop_ads.js was blocked");
-          expect(await banneradsElem.getText()).toEqual("bannerads/* was blocked");
-          return true;
-        } catch (e) {
-          await driver.navigate().refresh();
-        }
-      },
-      5000,
-      "blocking filters were not applied",
-    );
+    await checkBlockHidePage(driver, { expectAllowlisted: false });
     await waitForNotDisplayed(driver, "#snippet-filter");
   });
 

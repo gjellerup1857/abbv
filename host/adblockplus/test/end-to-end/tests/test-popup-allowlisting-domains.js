@@ -17,8 +17,8 @@
 
 "use strict";
 
-const {beforeSequence, afterSequence, getTabId, switchToABPOptionsTab,
-       waitForCondition, doesTabExist, isFirefox, addFiltersToABP
+const {beforeSequence, getTabId, switchToABPOptionsTab,
+       waitForCondition, addFiltersToABP
 } = require("../helpers");
 const {expect} = require("chai");
 const PopupPage = require("../page-objects/popup.page");
@@ -27,7 +27,6 @@ const AllowlistedWebsitesPage =
   require("../page-objects/allowlistedWebsites.page");
 const testData = require("../test-data/data-smoke-tests");
 let globalOrigin;
-let lastTest = false;
 
 describe("test popup allowlisting and disallowlisting", function()
 {
@@ -41,14 +40,6 @@ describe("test popup allowlisting and disallowlisting", function()
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
     await addFiltersToABP("/pop_ads.js");
-  });
-
-  afterEach(async function()
-  {
-    if (lastTest === false)
-    {
-      await afterSequence();
-    }
   });
 
   it("should allow allowlisting from popup", async function()
@@ -117,96 +108,6 @@ describe("test popup allowlisting and disallowlisting", function()
     attributesOfAllowlistingTableItems.forEach(async(element) =>
     {
       expect(element).to.equal("empty-placeholder");
-    });
-  });
-
-  it("should disallowlist domains from popup", async function()
-  {
-    const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
-    await allowistedWebsitesPage.init();
-    await allowistedWebsitesPage.
-      setAllowlistingTextboxValue("adblockinc.gitlab.io");
-    await allowistedWebsitesPage.clickAddWebsiteButton();
-    const testPage = new TestPage(browser);
-    await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
-    let tabId = await getTabId({title: "Blocking and hiding"});
-    const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
-    await popupPage.clickThisDomainToggle();
-    await popupPage.clickRefreshButton();
-
-    // need to open the ABP options page in order to fetch the tabId
-    await switchToABPOptionsTab({switchToFrame: false});
-    tabId = await getTabId({title: "Blocking and hiding"});
-
-    await popupPage.switchToTab("Blocking and hiding");
-    await popupPage.init(globalOrigin, tabId);
-    expect(await popupPage.isDomainToggleChecked()).to.be.true;
-    expect(await popupPage.isPageToggleChecked()).to.be.true;
-    expect(await popupPage.isPageStatsCounterDisplayed()).to.be.true;
-
-    // wait for the Block Element to be visible
-    await popupPage.isElementDisplayed(
-      popupPage.blockSpecificElementButton,
-      false,
-      200
-    );
-    expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.true;
-
-    await switchToABPOptionsTab();
-    await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowistedWebsitesPage.
-        getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
-      expect(element).to.equal("empty-placeholder");
-    });
-  });
-
-  it("should allowlist domains from popup", async function()
-  {
-    lastTest = true;
-    const testPage = new TestPage(browser);
-    await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
-    let tabId = await getTabId({title: "Blocking and hiding"});
-    const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
-    const popupUrl = await popupPage.getCurrentUrl();
-    await popupPage.clickThisDomainToggle();
-    expect(await popupPage.isRefreshButtonDisplayed()).to.be.true;
-    expect(await popupPage.isRefreshMessageDisplayed()).to.be.true;
-    await popupPage.clickRefreshButton();
-
-    await switchToABPOptionsTab({switchToFrame: false});
-    await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
-    // skip for FF, popup.html does not close
-    if (!isFirefox())
-    {
-      expect(await doesTabExist(popupUrl)).to.be.false;
-    }
-    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
-                           "pop_ads.js blocking filter should block this");
-    expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this");
-    tabId = await getTabId({title: "Blocking and hiding"});
-    await testPage.switchToTab("Blocking and hiding");
-    await popupPage.init(globalOrigin, tabId);
-    expect(await popupPage.isDomainToggleChecked()).to.be.false;
-    expect(await popupPage.isPageToggleEnabled()).to.be.false;
-    expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
-    expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
-
-    await switchToABPOptionsTab();
-    const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
-    await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowistedWebsitesPage
-        .getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
-      expect(element).to.equal("adblockinc.gitlab.io");
     });
   });
 });

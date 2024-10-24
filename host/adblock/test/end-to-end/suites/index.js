@@ -20,6 +20,7 @@ import smoke from "./smoke.js";
 import uninstall from "./uninstall.js";
 import optionsPageAA from "./options-page-aa.js";
 import optionsPageFL from "./options-page-fl.js";
+import popupAllowlisting from "./popup-allowlisting.js";
 import testServer from "./test-server.js";
 
 export default () => {
@@ -33,6 +34,9 @@ export default () => {
     describe("Acceptable Ads", optionsPageAA);
     describe("Filter Lists", optionsPageFL);
   });
+
+  describe("Popup allowlisting and disallowlisting", popupAllowlisting);
+
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);
 };

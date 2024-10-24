@@ -23,11 +23,15 @@ import {
   findUrl,
   waitForNotNullAttribute,
   isCheckboxEnabled,
+  waitForNotDisplayed,
 } from "./driver.js";
+import { expect } from "expect";
 
 const { By, Key } = webdriver;
 
 export const installUrl = "getadblock.com/en/installed";
+export const blockHideUrl =
+  "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
 
 export async function initPopupPage(driver, origin, tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
@@ -148,4 +152,71 @@ export async function clickFilterlist(driver, name, id, enabledAfterClick) {
     1000,
     `The filterlist "${name}" was not ${text} after clicking`,
   );
+}
+
+/**
+ * Add filters to AdBlock
+ *
+ * @param {object} driver - The driver object
+ * @param {string} filters - The filter rules to add
+ * @returns {Promise<void>}
+ */
+export async function addFiltersToAdBlock(driver, filters) {
+  const err = await driver.executeAsyncScript(async (filtersToAdd, callback) => {
+    const errors = await browser.runtime.sendMessage({
+      type: "filters.importRaw",
+      text: filtersToAdd,
+    });
+    if (typeof errors !== "undefined" && errors[0]) {
+      callback(errors[0]);
+    }
+
+    callback();
+  }, filters);
+
+  if (err) {
+    throw new Error(err);
+  }
+}
+
+/**
+ * Checked that the elements from the blockHideUrl are allowlisted or not.
+ *
+ * @param {object} driver - The driver object
+ * @param {boolean} [expectAllowlisted=false] - Whether the page is allowlisted
+ * @returns {Promise<void>}
+ */
+export async function checkBlockHidePage(driver, { expectAllowlisted = false }) {
+  let expectedPopadsText = "pop_ads.js was blocked";
+  let expectedBanneradsText = "bannerads/* was blocked";
+
+  if (expectAllowlisted) {
+    expectedPopadsText = "pop_ads.js blocking filter should block this";
+    expectedBanneradsText = "first bannerads/* blocking filter should block this";
+  }
+
+  await driver.wait(
+    async () => {
+      const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
+      const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
+
+      try {
+        expect(await popadsElem.getText()).toEqual(expectedPopadsText);
+        expect(await banneradsElem.getText()).toEqual(expectedBanneradsText);
+        return true;
+      } catch (e) {
+        await driver.navigate().refresh();
+      }
+    },
+    5000,
+    `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`,
+  );
+
+  if (expectAllowlisted) {
+    await getDisplayedElement(driver, "#search-ad", 2000);
+    await getDisplayedElement(driver, "#AdContainer", 2000);
+  } else {
+    await waitForNotDisplayed(driver, "#search-ad", 2000);
+    await waitForNotDisplayed(driver, "#AdContainer", 2000);
+  }
 }
