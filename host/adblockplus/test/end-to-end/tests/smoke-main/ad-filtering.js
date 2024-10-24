@@ -17,8 +17,8 @@
 
 "use strict";
 
-const {randomIntFromInterval, switchToABPOptionsTab, waitForNewWindow,
-       waitForAssertion, waitForCondition, addFiltersToABP
+const {switchToABPOptionsTab, waitForNewWindow,
+       waitForAssertion, addFiltersToABP
 } = require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
@@ -26,6 +26,7 @@ const AllowlistedWebsitesPage =
   require("../../page-objects/allowlistedWebsites.page");
 const GeneralPage = require("../../page-objects/general.page");
 const TestPages = require("../../page-objects/testPages.page");
+const LocalTestPage = require("../../page-objects/local.test.page");
 const testData = require("../../test-data/data-smoke-tests");
 
 async function getTestpagesFilters()
@@ -205,6 +206,8 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
+    // TODO: bind "testpages.adblockplus.org" to "localhost"
+
     // https://eyeo.atlassian.net/browse/EE-723
     if (process.env.LOCAL_RUN === "true")
     {
@@ -212,31 +215,33 @@ module.exports = function()
     }
 
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
-    const testPages = new TestPages(browser);
-    const ecosiaSearchUrl =
-      "https://www.ecosia.org/search?method=index&q=hotels";
-    await browser.newWindow(ecosiaSearchUrl);
-    await testPages.switchToTab(/ecosia/);
-    await browser.refresh();
-    try
-    {
-      await waitForCondition("isEcosiaAdPillDisplayed", testPages, 25000,
-                             true, randomIntFromInterval(1500, 3500));
-    }
-    catch (Exception)
-    {
-      await waitForCondition("isEcosiaAdPillAlternateDisplayed", testPages,
-                             25000, true, randomIntFromInterval(1500, 3500));
-    }
 
+    // Check AA is on by default
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
+
+    const testPage = new LocalTestPage(browser);
+    const testPageURL = "http://testpages.adblockplus.org/test.html";
+    const selector = "#abptest";
+
+    await browser.newWindow(testPageURL);
+    // await testPages.switchToTab(/ecosia/); // need to do that?
+
+    browser.refresh();
+
+    await waitForAssertion(async() =>
+    {
+      expect(await testPage.isElementDisplayed(selector)).to.be.true;
+    }, 5000, `${selector} elemhide exception filter from AA was not applied`);
+
+    // Turn AA off
     await switchToABPOptionsTab({optionsUrl});
     await generalPage.init();
     await generalPage.clickAllowAcceptableAdsCheckbox();
-    await browser.newWindow(ecosiaSearchUrl);
-    await testPages.switchToTab(/ecosia/);
-    await browser.refresh();
-    await browser.pause(randomIntFromInterval(1500, 2500));
-    expect(await testPages.isEcosiaAdPillDisplayed(true)).to.be.true;
+
+    browser.refresh();
+    await waitForAssertion(async() =>
+    {
+      expect(await testPage.isElementDisplayed(selector)).to.be.false;
+    }, 5000, `${selector} elemhide exception filter from AA was still applied`);
   });
 };

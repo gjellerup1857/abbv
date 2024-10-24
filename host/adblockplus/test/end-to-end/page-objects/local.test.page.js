@@ -17,20 +17,36 @@
 
 "use strict";
 
-const {expect} = require("chai");
-const LocalTestPage = require("../../page-objects/local.test.page");
+const BasePage = require("./base.page");
 
-module.exports = function()
+class LocalTestPage extends BasePage
 {
-  it("loads a test server page", async function()
+  constructor(browser)
   {
-    if (process.env.LOCAL_RUN !== "true")
-      this.skip();
+    super();
+    this.browser = browser;
+  }
 
-    const url = "http://localhost:3005/test.html";
-    const testPage = new LocalTestPage(browser);
+  async init()
+  {
+    // nothing
+  }
 
-    await browser.newWindow(url);
-    expect(await testPage.getHelloText()).to.equal("Hello from host pages");
-  });
-};
+  getMainElement()
+  {
+    return $("h1");
+  }
+
+  async getHelloText()
+  {
+    return await (await
+    this.getMainElement).getText();
+  }
+
+  get getElemhideElement()
+  {
+    return $("#abptest");
+  }
+}
+
+module.exports = LocalTestPage;
