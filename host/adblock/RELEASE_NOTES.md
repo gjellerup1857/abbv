@@ -1,5 +1,7 @@
 # Unreleased
 
+- Updated webext-ad-filtering-solution to 1.17.0
+
 # 6.10.0 - 2024-10-16
 
 This update should reduce disk usage and contains minor updates.

@@ -1,6 +1,7 @@
 # Unreleased
 
 - Restored YouTube mention in extension description.
+- Updated webext-ad-filtering-solution to 1.17.0
 
 # 4.8 - 2024-10-09
 

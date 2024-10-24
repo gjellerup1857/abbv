@@ -111,7 +111,7 @@
   "dependencies": {
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#54d462f18a65b21100b0fe2462757ec109a6d92c",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.16.0",
+    "@eyeo/webext-ad-filtering-solution": "1.17.0",
     "@eyeo/ext-ui-components": "*",
     "@sentry/browser": "8.2.1",
     "argparse": "1.0.10",

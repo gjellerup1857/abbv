@@ -139,7 +139,7 @@
     "@adblockinc/rules": "gitlab:adblockinc/ext/rules#ec6a01dc13195dfff61c75e64a21a09ea1685f76",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.16.0",
+    "@eyeo/webext-ad-filtering-solution": "1.17.0",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
     "@types/webextension-polyfill": "0.8.0",
