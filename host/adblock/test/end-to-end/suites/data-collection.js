@@ -27,7 +27,6 @@ export default () => {
         } 
         else {
             await initOptionsGeneralTab(driver, getOptionsHandle());
-            console.log("Test is running")
             await driver.wait(async () => {
             const dataCollectionOptOut = await isCheckboxEnabled(driver, "prefs__data_collection_opt_out");
             return dataCollectionOptOut
