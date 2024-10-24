@@ -19,9 +19,6 @@
     "test:end-to-end": "lerna run test:end-to-end",
     "lint": "lerna run lint"
   },
-  "dependencies": {
-    "eslint": "9.13.0"
-  },
   "devDependencies": {
     "lerna": "8.1.8"
   }
