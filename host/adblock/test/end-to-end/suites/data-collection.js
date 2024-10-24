@@ -16,7 +16,7 @@
  */
 
 import { initOptionsGeneralTab } from "../utils/page.js";
-import { isCheckboxEnabled } from "../utils/driver.js";
+import { isCheckboxEnabled, waitForNotDisplayed } from "../utils/driver.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
@@ -37,7 +37,10 @@ export default () => {
         return dataCollectionOptOut;
       },
       2000,
-      "prefs__data_collection_opt_out is not present",
+      "prefs__data_collection_opt_out is not present or enabled",
     );
+    await waitForNotDisplayed(driver, "//label[@for='enable_data_collection_v2']");
+    await waitForNotDisplayed(driver, "//label[@for='prefs__send_ad_wall_messages']");
+    await waitForNotDisplayed(driver, "//label[@for='enable_onpageMessages']");
   });
 };
