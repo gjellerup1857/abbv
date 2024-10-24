@@ -15,22 +15,24 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {initOptionsGeneralTab} from "../utils/page.js";
-import {isCheckboxEnabled} from "../utils/driver.js";
-import {getOptionsHandle} from "../utils/hook.js";
+import { initOptionsGeneralTab } from "../utils/page.js";
+import { isCheckboxEnabled } from "../utils/driver.js";
+import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
-    it("no data collection for firefox", async function() {
-        const {driver,browserName} = this;
-        if (browserName !== "firefox") {
-            this.skip();
-        } 
-        else {
-            await initOptionsGeneralTab(driver, getOptionsHandle());
-            await driver.wait(async () => {
-            const dataCollectionOptOut = await isCheckboxEnabled(driver, "prefs__data_collection_opt_out");
-            return dataCollectionOptOut
-            })
-        }
-    });
-}
+  it("no data collection for firefox", async function () {
+    const { driver, browserName } = this;
+    if (browserName !== "firefox") {
+      this.skip();
+    } else {
+      await initOptionsGeneralTab(driver, getOptionsHandle());
+      await driver.wait(async () => {
+        const dataCollectionOptOut = await isCheckboxEnabled(
+          driver,
+          "prefs__data_collection_opt_out",
+        );
+        return dataCollectionOptOut;
+      });
+    }
+  });
+};
