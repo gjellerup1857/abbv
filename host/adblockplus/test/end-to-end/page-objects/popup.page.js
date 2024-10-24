@@ -111,6 +111,11 @@ class PopupPage extends BasePage
     return $("//div[@id='stats-total']/strong");
   }
 
+  get optionsButton()
+  {
+    return $("#options");
+  }
+
   get premiumButton()
   {
     return $("#premium-manage");
@@ -220,6 +225,11 @@ class PopupPage extends BasePage
   async clickLinkInNotificationMessage()
   {
     await (await this.linkInNotificationMessage).click();
+  }
+
+  async clickOptionsButton()
+  {
+    await (await this.optionsButton).click();
   }
 
   async clickStopShowingNotificationsButton()

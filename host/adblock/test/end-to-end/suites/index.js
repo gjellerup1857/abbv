@@ -21,11 +21,12 @@ import uninstall from "./uninstall.js";
 import optionsPageAA from "./options-page-aa.js";
 import optionsPageFL from "./options-page-fl.js";
 import popupAllowlisting from "./popup-allowlisting.js";
+import popupPageOpensSettings from "./popup-page-opens-options.js";
 import testServer from "./test-server.js";
 
 export default () => {
   beforeEach(async function () {
-    await beforeEachTasks(this.driver);
+    await beforeEachTasks(this.driver, this.origin);
   });
 
   describe("Test server", testServer);
@@ -35,7 +36,10 @@ export default () => {
     describe("Filter Lists", optionsPageFL);
   });
 
-  describe("Popup allowlisting and disallowlisting", popupAllowlisting);
+  describe("Popup Page", function () {
+    popupPageOpensSettings();
+    describe("Allowlisting and disallowlisting", popupAllowlisting);
+  });
 
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);

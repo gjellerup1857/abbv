@@ -16,6 +16,7 @@
  */
 
 import { installUrl } from "./page.js";
+import { openNewTab } from "./driver.js";
 
 let optionsHandle;
 export function setOptionsHandle(handle) {
@@ -40,7 +41,15 @@ async function cleanupOpenTabs(driver) {
   }
 }
 
-export async function beforeEachTasks(driver) {
+export async function beforeEachTasks(driver, origin) {
+  // If the options page handle is not valid anymore, then restore it
+  try {
+    await driver.switchTo().window(optionsHandle);
+  } catch (e) {
+    await openNewTab(driver, `${origin}/options.html`);
+    optionsHandle = await driver.getWindowHandle();
+  }
+
   await cleanupOpenTabs(driver);
   await driver.switchTo().window(optionsHandle);
 }

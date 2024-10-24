@@ -17,22 +17,23 @@
 
 "use strict";
 
-const {beforeSequence, getTabId, switchToABPOptionsTab,
+const {getTabId, switchToABPOptionsTab,
        waitForCondition, addFiltersToABP
-} = require("../helpers");
+} = require("../../helpers");
 const {expect} = require("chai");
-const PopupPage = require("../page-objects/popup.page");
-const TestPage = require("../page-objects/testPages.page");
+const PopupPage = require("../../page-objects/popup.page");
+const TestPage = require("../../page-objects/testPages.page");
 const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
-const testData = require("../test-data/data-smoke-tests");
-let globalOrigin;
+  require("../../page-objects/allowlistedWebsites.page");
+const testData = require("../../test-data/data-smoke-tests");
 
-describe("test popup allowlisting and disallowlisting", function()
+module.exports = function()
 {
-  before(async function()
+  let globalOrigin;
+
+  before(function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    (globalOrigin = this.test.parent.parent.globalOrigin);
   });
 
   beforeEach(async function()
@@ -110,4 +111,4 @@ describe("test popup allowlisting and disallowlisting", function()
       expect(element).to.equal("empty-placeholder");
     });
   });
-});
+};
