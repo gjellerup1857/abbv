@@ -147,11 +147,15 @@ function getContent(): Content {
  *
  * @param handler - Command handler
  */
-export function setNewTabCommandHandler(handler: CommandHandler): void {
+export function setNewTabCommandHandler(
+  handler: CommandHandler,
+  onCommandsProcessed: () => void
+): void {
   setCommandActor(CommandName.createTab, {
     getBehavior,
     getContent,
     handleCommand: handler,
-    isValidCommand: isNewTabCommand
+    isValidCommand: isNewTabCommand,
+    onCommandsProcessed
   });
 }
