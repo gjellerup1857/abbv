@@ -31,7 +31,7 @@ import {
 
 import * as logger from "../../utilities/background";
 import { getSettings, settings } from "../../prefs/background/settings";
-import { CreationMethod, isNewTabBehavior, setNewTabCommandHandler } from "./middleware";
+import { CreationMethod, isNewTabBehavior, NewTab, setNewTabCommandHandler } from "./middleware";
 import {
   NewTabEventType,
   NewTabErrorEventType,
@@ -57,6 +57,47 @@ let newTabCounter = 0;
  *  that are not blank (HTTP/S and browser pages)
  */
 const newTabMessageSendTrigger = [1, 10, 20, 100, 200];
+
+
+/**
+ * Compares two new tab requests to see which has the higher priority.
+ *
+ * @param newTabA The first new tab request
+ * @param newTabB The second new tab request
+ * @returns -1 if newTabA has a higher priority, 1 if newTabB does, 0 if both are equal
+ */
+export function compareNewTabRequestsByPriority(newTabA: NewTab, newTabB: NewTab): number {
+  if (
+    newTabA.behavior.method === CreationMethod.force &&
+    newTabB.behavior.method !== CreationMethod.force
+  ) {
+    return -1;
+  }
+
+  if (
+    newTabA.behavior.method !== CreationMethod.force &&
+    newTabB.behavior.method === CreationMethod.force
+  ) {
+    return 1;
+  }
+
+  if (newTabA.behavior.priority > newTabB.behavior.priority) {
+    return -1;
+  }
+
+  if (newTabA.behavior.priority < newTabB.behavior.priority) {
+    return 1;
+  }
+
+  if (newTabA.ipmId < newTabB.ipmId) {
+    return -1;
+  }
+  if (newTabA.ipmId > newTabB.ipmId) {
+    return 1;
+  }
+
+  return 0;
+}
 
 /**
  * Registers an event with the data collection feature.

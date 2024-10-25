@@ -53,6 +53,20 @@ export interface NewTabBehavior extends LicenseStateBehavior {
 }
 
 /**
+ * This interface holds all information about a new tab
+ */
+export interface NewTab {
+  /**
+   * The new tab behavior
+   */
+  behavior: NewTabBehavior;
+  /**
+   * IPM ID
+   */
+  ipmId: string;
+}
+
+/**
  * New tab command parameters
  */
 export interface NewTabParams {
