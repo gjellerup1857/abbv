@@ -26,7 +26,7 @@ const AllowlistedWebsitesPage =
   require("../../page-objects/allowlistedWebsites.page");
 const GeneralPage = require("../../page-objects/general.page");
 const TestPages = require("../../page-objects/testPages.page");
-const {LocalTestPage, LOCALHOST} =
+const {LocalTestPage, TESTPAGES} =
   require("../../page-objects/local.test.page");
 const testData = require("../../test-data/data-smoke-tests");
 
@@ -212,7 +212,9 @@ module.exports = function()
     // Check AA is on by default
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
 
-    const testPage = new LocalTestPage(browser, LOCALHOST);
+    const testPage = new LocalTestPage(browser, TESTPAGES);
+    await testPage.init();
+    await testPage.switchToTab(/Localtest/);
     browser.refresh();
 
     await waitForAssertion(async() =>
@@ -226,8 +228,10 @@ module.exports = function()
     await generalPage.init();
     await generalPage.clickAllowAcceptableAdsCheckbox();
 
-    browser.refresh();
     await testPage.init();
+    await testPage.switchToTab(/Localtest/);
+    browser.refresh();
+
     await waitForAssertion(async() =>
     {
       expect(await testPage.isElementDisplayed(testPage.selector)).to.be.false;
