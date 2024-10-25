@@ -31,6 +31,7 @@ import * as logger from "../../logger/background";
 import {
   CreationMethod,
   isNewTabBehavior,
+  type NewTab,
   setNewTabCommandHandler
 } from "./middleware";
 import {
@@ -62,6 +63,49 @@ const tabIds = new Set<number>();
  * ourselves. Keys are the IPM IDs that triggered the tab creation.
  */
 const newTabUpdateListeners = new Map<string, Listener>();
+
+/**
+ * Compares two new tab requests to see which has the higher priority.
+ *
+ * @param newTabA The first new tab request
+ * @param newTabB The second new tab request
+ * @returns -1 if newTabA has a higher priority, 1 if newTabB does, 0 if both are equal
+ */
+export function compareNewTabRequestsByPriority(
+  newTabA: NewTab,
+  newTabB: NewTab
+): number {
+  if (
+    newTabA.behavior.method === CreationMethod.force &&
+    newTabB.behavior.method !== CreationMethod.force
+  ) {
+    return -1;
+  }
+
+  if (
+    newTabA.behavior.method !== CreationMethod.force &&
+    newTabB.behavior.method === CreationMethod.force
+  ) {
+    return 1;
+  }
+
+  if (newTabA.behavior.priority > newTabB.behavior.priority) {
+    return -1;
+  }
+
+  if (newTabA.behavior.priority < newTabB.behavior.priority) {
+    return 1;
+  }
+
+  if (newTabA.ipmId < newTabB.ipmId) {
+    return -1;
+  }
+  if (newTabA.ipmId > newTabB.ipmId) {
+    return 1;
+  }
+
+  return 0;
+}
 
 /**
  * Checks whether the global new tab cool down period is still ongoing.
