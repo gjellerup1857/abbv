@@ -10,28 +10,47 @@ const OptionItem = ({
   helpLink,
   additionalInfoLink,
   subOptions,
+  isSubOption = false,
   selector: Selector = Checkbox
 }) => {
+  const subOptionLiClasses = isSubOption ? 'pl-6' : 'first-of-type:border-none';
+  const itemClasses = ['text-lg  border-t border-theme-accent-light', subOptionLiClasses].join(' ');
+
+  const alignementClasses = isSubOption ? 'items-baseline' : 'items-center';
+  const outerDivClasses = ['flex justify-between py-2', alignementClasses].join(' ');
+  const innerDivClasses = ['flex', alignementClasses].join(' ');
+
   return (
-    <li key={ name }>
-      <div className="flex">
-        <div className="flex">
+    <li key={ name } className={ itemClasses }>
+      <div className={ outerDivClasses }>
+        <div className={ innerDivClasses }>
           {/* The Toggle and Checkbox APIs need to be aligned */}
           <Selector id={ name } name={ name } onChange={ changeHandler } />
-          <label for={ name }>{translate(text)}</label>
+          <label className="ml-4" for={ name }>{translate(text)}</label>
         </div>
-        <div className="flex">
-          { additionalInfoLink && <Link href={ additionalInfoLink.href }>{translate(additionalInfoLink.text)}</Link>}
-          { helpLink && <Link href={ helpLink }><Icon name='live-help' ariaLabel='learn_more_without_period' /></Link> }
+        <div className="flex items-center">
+          {
+            additionalInfoLink &&
+            <Link href={ additionalInfoLink.href }>{translate(additionalInfoLink.text)}</Link>
+          }
+          {
+            helpLink &&
+            <span className="inline-block ml-2"><Link href={ helpLink }><Icon name='live-help' ariaLabel='learn_more_without_period' className='fill-theme-accent-dark hover:fill-theme-link-color' size="sm"/></Link></span>
+          }
         </div>
+      </div>
+      <div className="mb-2 -mt-2.5">
+        { extraInfo && <span className='text-base italic pl-8'>{translate(extraInfo)}</span> }
       </div>
       <div>
-        { extraInfo && <span>{translate(extraInfo)}</span> }
+        {
+          subOptions && (
+            <ul>
+              { subOptions.map((option) => <OptionItem isSubOption selector={ ToggleSwitch } { ...option } />) }
+            </ul>
+          )
+        }
       </div>
-      <div className="ml-2.5">
-        { subOptions &&  subOptions.map((option) => <OptionItem selector={ ToggleSwitch } { ...option } />) }
-      </div>
-
     </li>
   )
 }

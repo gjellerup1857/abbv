@@ -1,6 +1,10 @@
 @layer base {
   [data-extension='adblock'] {
     --extension-font-family: "Lato", Arial, sans-serif;
+
+    h1 {
+      @apply my-6 text-2xl font-bold;
+    }
   }
 
   body {
@@ -13,7 +17,7 @@
     /**
     * Checkbox styling
     */
-    input[type="checkbox"] {
+     input[type="checkbox"] {
       @apply rounded-full;
     }
 

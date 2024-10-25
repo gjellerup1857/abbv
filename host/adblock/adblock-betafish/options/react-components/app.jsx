@@ -85,8 +85,12 @@ const optionsData = [
   },
 ];
 
+const contentWrapperClasses = 'flex flex-col justify-center mx-5 mb-6 flex-initial w-[711px]';
+
 export function App() {
   return (
-    <GeneralOptionsList items={ optionsData } />
+    <div className={ contentWrapperClasses }>
+      <GeneralOptionsList className="option-page-content" items={ optionsData } />
+    </div>
   );
 }
