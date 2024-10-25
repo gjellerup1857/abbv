@@ -39,9 +39,12 @@ import {
   type Listener,
   CreationError,
   CreationSuccess,
-  CreationRejection
+  CreationRejection,
+  lastShownKey,
+  coolDownPeriodKey
 } from "./tab-manager.types";
 import { checkLanguage } from "~/ipm/background/language-check";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 /**
  * Maps IPM IDs to the listeners that have been attached by them.
@@ -59,6 +62,16 @@ const tabIds = new Set<number>();
  * ourselves. Keys are the IPM IDs that triggered the tab creation.
  */
 const newTabUpdateListeners = new Map<string, Listener>();
+
+/**
+ * Checks whether the global new tab cool down period is still ongoing.
+ *
+ * @returns true if the cool down period is till ongoing, false if not
+ */
+export async function isCoolDownPeriodOngoing(): Promise<boolean> {
+  await Prefs.untilLoaded;
+  return Prefs.get(lastShownKey) + Prefs.get(coolDownPeriodKey) > Date.now();
+}
 
 /**
  * Registers an event with the data collection feature.
