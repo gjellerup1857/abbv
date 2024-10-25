@@ -21,12 +21,12 @@ export default {
       {
         dest: "data/rules/abp",
         package: "@adblockinc/rules",
-        src: "dist/rules/abp/*",
+        src: "dist/adblock/rules/abp/*",
       },
       {
         dest: "data/rules/dnr",
         package: "@adblockinc/rules",
-        src: "dist/rules/dnr/*",
+        src: "dist/adblock/rules/dnr/*",
       },
     ],
     rename: [],

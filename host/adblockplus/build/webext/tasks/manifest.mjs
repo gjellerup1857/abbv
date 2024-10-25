@@ -56,13 +56,13 @@ async function editManifest(data, version, channel, target)
 
   if ("declarative_net_request" in data)
   {
-    let rulesPath =
-        "node_modules/@adblockinc/rules/dist/manifest/adblockplus.json";
+    let rulesPath = "node_modules/@adblockinc/rules" +
+        "/dist/adblockplus/manifest/adblockplus.json";
 
     if (!fs.existsSync(rulesPath))
     {
-      rulesPath =
-        "../../node_modules/@adblockinc/rules/dist/manifest/adblockplus.json";
+      rulesPath = "../../node_modules/@adblockinc/rules" +
+        "/dist/adblockplus/manifest/adblockplus.json";
     }
 
     if (!fs.existsSync(rulesPath))

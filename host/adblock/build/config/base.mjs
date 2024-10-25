@@ -186,7 +186,7 @@ export default {
       {
         dest: "data/rules/index.json",
         package: "@adblockinc/rules",
-        src: "dist/index/adblock.json",
+        src: "dist/adblock/index/adblock.json",
       },
       {
         dest: "adblock-errorreporting.js",
