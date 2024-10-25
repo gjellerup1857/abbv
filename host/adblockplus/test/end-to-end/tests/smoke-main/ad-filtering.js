@@ -207,10 +207,11 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
-    const generalPage = new GeneralPage(browser);
+    let generalPage = new GeneralPage(browser);
 
     // Check AA is on by default
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
+      .to.be.true;
 
     const testPage = new LocalTestPage(browser, TESTPAGES);
     await testPage.init();
@@ -221,9 +222,12 @@ module.exports = function()
       .to.be.true;
 
     // Turn AA off
-    await switchToABPOptionsTab({optionsUrl});
+    generalPage = new GeneralPage(browser);
     await generalPage.init();
+    await generalPage.switchToTab("Adblock Plus Options", 5000);
     await generalPage.clickAllowAcceptableAdsCheckbox();
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
+      .to.be.false;
 
     await testPage.init();
     await testPage.switchToTab(/Localtest/);
