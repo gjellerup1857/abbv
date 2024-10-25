@@ -37,6 +37,8 @@ import {
   NewTabErrorEventType,
   NewTabExitEventType,
   blockCountQueryParameter,
+  lastShownKey,
+  coolDownPeriodKey,
 } from "./tab-manager.types";
 import { Prefs } from "../../alias/prefs";
 import { checkLanguage } from "../../ipm/background/language-check";
@@ -67,6 +69,16 @@ function registerEvent(
   name: CommandEventType | NewTabEventType | NewTabExitEventType | NewTabErrorEventType,
 ): void {
   recordEvent(ipmId, CommandName.createTab, name);
+}
+
+/**
+ * Checks whether the global new tab cool down period is still ongoing.
+ *
+ * @returns true if the cool down period is till ongoing, false if not
+ */
+export async function isCoolDownPeriodOngoing(): Promise<boolean> {
+  await Prefs.untilLoaded;
+  return Prefs.get(lastShownKey) + Prefs.get(coolDownPeriodKey) > Date.now();
 }
 
 /**
