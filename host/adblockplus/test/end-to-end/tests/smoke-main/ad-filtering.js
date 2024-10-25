@@ -223,8 +223,8 @@ module.exports = function()
 
     // Turn AA off
     generalPage = new GeneralPage(browser);
+    await switchToABPOptionsTab();
     await generalPage.init();
-    await generalPage.switchToTab("Adblock Plus Options", 5000);
     await generalPage.clickAllowAcceptableAdsCheckbox();
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
       .to.be.false;

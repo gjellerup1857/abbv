@@ -20,7 +20,7 @@
 const BasePage = require("./base.page");
 
 const LOCALHOST = "localhost:3005";
-const TESTPAGES = "testpages.adblockplus.org";
+const TESTPAGES = "testpages.adblockplus.org:3005";
 
 class LocalTestPage extends BasePage
 {
