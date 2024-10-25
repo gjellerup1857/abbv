@@ -41,7 +41,9 @@ const chromiumOptions = {
   args: [
     "--no-sandbox",
     "--window-size=1400,1000",
-    "--disable-search-engine-choice-screen"
+    "--disable-search-engine-choice-screen",
+    "--ignore-certificate-errors",
+    "--host-resolver-rules=MAP testpages.adblockplus.org 127.0.0.1"
   ]
 };
 

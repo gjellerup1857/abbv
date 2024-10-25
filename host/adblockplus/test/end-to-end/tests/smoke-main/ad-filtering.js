@@ -26,7 +26,8 @@ const AllowlistedWebsitesPage =
   require("../../page-objects/allowlistedWebsites.page");
 const GeneralPage = require("../../page-objects/general.page");
 const TestPages = require("../../page-objects/testPages.page");
-const LocalTestPage = require("../../page-objects/local.test.page");
+const {LocalTestPage, LOCALHOST} =
+  require("../../page-objects/local.test.page");
 const testData = require("../../test-data/data-smoke-tests");
 
 async function getTestpagesFilters()
@@ -206,20 +207,12 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
-    // TODO: bind "testpages.adblockplus.org" to "localhost"
-
-    // https://eyeo.atlassian.net/browse/EE-723
-    if (process.env.LOCAL_RUN === "true")
-    {
-      this.skip();
-    }
-
     const generalPage = new GeneralPage(browser);
 
     // Check AA is on by default
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
 
-    const testPage = new LocalTestPage(browser);
+    const testPage = new LocalTestPage(browser, LOCALHOST);
     browser.refresh();
 
     await waitForAssertion(async() =>
