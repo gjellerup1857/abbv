@@ -217,11 +217,8 @@ module.exports = function()
     await testPage.switchToTab(/Localtest/);
     browser.refresh();
 
-    await waitForAssertion(async() =>
-    {
-      expect(await testPage.isElementDisplayed(testPage.selector)).to.be.true;
-    }, 5000,
-    `${testPage.selector} elemhide exception filter from AA was not applied`);
+    expect(await testPage.isElementDisplayed(testPage.selector, false, 5000))
+      .to.be.true;
 
     // Turn AA off
     await switchToABPOptionsTab({optionsUrl});
@@ -232,10 +229,7 @@ module.exports = function()
     await testPage.switchToTab(/Localtest/);
     browser.refresh();
 
-    await waitForAssertion(async() =>
-    {
-      expect(await testPage.isElementDisplayed(testPage.selector)).to.be.false;
-    }, 5000,
-    `${testPage.selector} elemhide exception filter from AA was still applied`);
+    expect(await testPage.isElementDisplayed(testPage.selector, true, 5000))
+      .to.be.true;
   });
 };
