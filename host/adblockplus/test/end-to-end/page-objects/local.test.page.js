@@ -19,28 +19,38 @@
 
 const BasePage = require("./base.page");
 
+const LOCALHOST = "localhost:3005";
+const TESTPAGES = "testpages.adblockplus.org";
+
 class LocalTestPage extends BasePage
 {
-  constructor(browser)
+  constructor(browser, domain)
   {
     super();
     this.browser = browser;
+    this.domain = domain;
   }
 
   async init()
   {
-    // nothing
+    // assuming "testpages.adblockplus.org" is bound to "localhost"
+    // in the test with DNS mapping during the test
+    await browser.newWindow(`http://${this.domain}/test.html`);
   }
 
-  getMainElement()
+  get selector()
+  {
+    return "#abptest";
+  }
+
+  get mainElement()
   {
     return $("h1");
   }
 
   async getHelloText()
   {
-    return await (await
-    this.getMainElement).getText();
+    return await (await this.mainElement).getText();
   }
 
   get getElemhideElement()
@@ -49,4 +59,9 @@ class LocalTestPage extends BasePage
   }
 }
 
-module.exports = LocalTestPage;
+module.exports =
+{
+  LOCALHOST,
+  TESTPAGES,
+  LocalTestPage
+};

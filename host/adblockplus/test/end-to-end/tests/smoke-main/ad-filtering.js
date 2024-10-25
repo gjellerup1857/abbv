@@ -220,18 +220,13 @@ module.exports = function()
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
 
     const testPage = new LocalTestPage(browser);
-    const testPageURL = "http://testpages.adblockplus.org/test.html";
-    const selector = "#abptest";
-
-    await browser.newWindow(testPageURL);
-    // await testPages.switchToTab(/ecosia/); // need to do that?
-
     browser.refresh();
 
     await waitForAssertion(async() =>
     {
-      expect(await testPage.isElementDisplayed(selector)).to.be.true;
-    }, 5000, `${selector} elemhide exception filter from AA was not applied`);
+      expect(await testPage.isElementDisplayed(testPage.selector)).to.be.true;
+    }, 5000,
+    `${testPage.selector} elemhide exception filter from AA was not applied`);
 
     // Turn AA off
     await switchToABPOptionsTab({optionsUrl});
@@ -239,9 +234,11 @@ module.exports = function()
     await generalPage.clickAllowAcceptableAdsCheckbox();
 
     browser.refresh();
+    await testPage.init();
     await waitForAssertion(async() =>
     {
-      expect(await testPage.isElementDisplayed(selector)).to.be.false;
-    }, 5000, `${selector} elemhide exception filter from AA was still applied`);
+      expect(await testPage.isElementDisplayed(testPage.selector)).to.be.false;
+    }, 5000,
+    `${testPage.selector} elemhide exception filter from AA was still applied`);
   });
 };
