@@ -48,6 +48,11 @@ import { checkLanguage } from "~/ipm/background/language-check";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 /**
+ * List of tabs that we still need to open.
+ */
+const waitingTabs: Record<string, NewTab> = {};
+
+/**
  * Maps IPM IDs to the listeners that have been attached by them.
  */
 const listenerMap = new Map<string, ListenerSet>();
@@ -165,74 +170,90 @@ function onNewTabUpdated(
  *
  * @param ipmId - IPM ID
  */
-async function openNewTab(ipmId: string): Promise<void> {
+async function openNewTab(): Promise<void> {
   logger.debug("[new-tab]: openNewTab");
 
-  const command = getCommand(ipmId);
-  if (!command) {
-    return;
-  }
+  // Sort the waiting new tab candidates by priority.
+  const candidates = Object.values(waitingTabs).sort(
+    compareNewTabRequestsByPriority
+  );
 
-  removeListeners(ipmId);
-  listenerMap.delete(ipmId);
-  tabIds.clear();
+  // Iterate over list and try until a tab was opened or the list is empty.
+  for (const candidate of candidates) {
+    const ipmId = candidate.ipmId;
 
-  // Run mandatory language skew check
-  void checkLanguage(ipmId);
+    removeListeners(ipmId);
+    listenerMap.delete(ipmId);
+    tabIds.clear();
 
-  // Ignore and dismiss command if it has invalid behavior.
-  const behavior = getBehavior(ipmId);
-  if (!isNewTabBehavior(behavior)) {
-    logger.debug("[new-tab]: Invalid command behavior.");
-    registerEvent(ipmId, CreationError.invalidBehavior);
+    // Run mandatory language skew check
+    void checkLanguage(ipmId);
+
+    // Check if the global new tab cool down period is still ongoing.
+    if (await isCoolDownPeriodOngoing()) {
+      logger.debug("[new-tab]: Cool down period still ongoing");
+      continue;
+    }
+
+    // Ignore and dismiss command if it has invalid behavior.
+    const behavior = getBehavior(ipmId);
+    if (!isNewTabBehavior(behavior)) {
+      logger.debug("[new-tab]: Invalid command behavior.");
+      registerEvent(ipmId, CreationError.invalidBehavior);
+      dismissCommand(ipmId);
+      continue;
+    }
+
+    // Ignore and dismiss command if license states mismatch.
+    if (!(await doesLicenseStateMatch(behavior))) {
+      logger.debug("[new-tab]: License state mismatch.");
+      registerEvent(ipmId, CreationError.licenseStateMismatch);
+      dismissCommand(ipmId);
+      continue;
+    }
+
+    // Ignore and dismiss command if given target URL doesn't meet safe
+    // origin requirements.
+    const targetUrl = createSafeOriginUrl(behavior.target);
+    if (targetUrl === null) {
+      logger.debug("[new-tab]: Invalid target URL.");
+      registerEvent(ipmId, CreationError.invalidURL);
+      dismissCommand(ipmId);
+      continue;
+    }
+
+    // Ignore and dismiss command if it has expired
+    const command = getCommand(ipmId);
+    if (!command) {
+      continue;
+    }
+    if (isCommandExpired(command)) {
+      logger.error("[new-tab]: Command has expired.");
+      registerEvent(ipmId, CommandEventType.expired);
+      dismissCommand(ipmId);
+      continue;
+    }
+
+    // Add update listener to see when our tab is done loading.
+    const updateListener = onNewTabUpdated.bind(null, ipmId);
+    newTabUpdateListeners.set(ipmId, updateListener);
+    browser.tabs.onUpdated.addListener(updateListener);
+
+    const tab = await browser.tabs.create({ url: targetUrl }).catch((error) => {
+      logger.error("[new-tab]: create tab error", error);
+      return null;
+    });
+
+    if (tab === null) {
+      // There was an error during tab creation. Let's retry later.
+      registerEvent(ipmId, CreationError.tabCreationError);
+      continue;
+    }
+
+    await Prefs.set(lastShownKey, Date.now());
+    registerEvent(ipmId, CreationSuccess.created);
     dismissCommand(ipmId);
-    return;
   }
-
-  // Ignore and dismiss command if license states mismatch.
-  if (!(await doesLicenseStateMatch(behavior))) {
-    logger.debug("[new-tab]: License state mismatch.");
-    registerEvent(ipmId, CreationError.licenseStateMismatch);
-    dismissCommand(ipmId);
-    return;
-  }
-
-  // Ignore and dismiss command if given target URL doesn't meet safe
-  // origin requirements.
-  const targetUrl = createSafeOriginUrl(behavior.target);
-  if (targetUrl === null) {
-    logger.debug("[new-tab]: Invalid target URL.");
-    registerEvent(ipmId, CreationError.invalidURL);
-    dismissCommand(ipmId);
-    return;
-  }
-
-  // Ignore and dismiss command if it has expired
-  if (isCommandExpired(command)) {
-    logger.error("[new-tab]: Command has expired.");
-    registerEvent(ipmId, CommandEventType.expired);
-    dismissCommand(ipmId);
-    return;
-  }
-
-  // Add update listener to see when our tab is done loading.
-  const updateListener = onNewTabUpdated.bind(null, ipmId);
-  newTabUpdateListeners.set(ipmId, updateListener);
-  browser.tabs.onUpdated.addListener(updateListener);
-
-  const tab = await browser.tabs.create({ url: targetUrl }).catch((error) => {
-    logger.error("[new-tab]: create tab error", error);
-    return null;
-  });
-
-  if (tab === null) {
-    // There was an error during tab creation. Let's retry later.
-    registerEvent(ipmId, CreationError.tabCreationError);
-    return;
-  }
-
-  registerEvent(ipmId, CreationSuccess.created);
-  dismissCommand(ipmId);
 }
 
 /**
@@ -240,14 +261,13 @@ async function openNewTab(ipmId: string): Promise<void> {
  *
  * On Firefox, will directly open the new tab.
  *
- * @param ipmId - The ipmId of the command that lead to attachment of this listener.
  * @param tab - The tab created
  */
-function onTabCreated(ipmId: string, tab: browser.Tabs.Tab): void {
+function onTabCreated(tab: browser.Tabs.Tab): void {
   // Firefox loads its New Tab Page immediately and doesn't notify us
   // when it's complete so we need to open our new tab already here.
   if (tab.url === "about:newtab") {
-    void openNewTab(ipmId);
+    void openNewTab();
     return;
   }
 
@@ -262,13 +282,11 @@ function onTabCreated(ipmId: string, tab: browser.Tabs.Tab): void {
  * Listens to update events on tabs and checks the updated tab to see if it
  * signals that we can open our own new tab now.
  *
- * @param ipmId - The ipmId of the command that lead to attachment of this listener.
  * @param tabId - The id of the tab updated
  * @param changeInfo - Lists the changes to the state of the tab that is updated
  * @param tab - The tab updated
  */
 function onTabUpdated(
-  ipmId: string,
   tabId: number,
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab
@@ -292,7 +310,7 @@ function onTabUpdated(
     return;
   }
 
-  void openNewTab(ipmId);
+  void openNewTab();
 }
 
 /**
@@ -307,13 +325,12 @@ function onTabRemoved(tabId: number): void {
 /**
  * Creates listeners for the given ipmId.
  *
- * @param ipmId - The ipmId to create the listeners for
  * @returns A set of three listeners
  */
-function createListeners(ipmId: string): ListenerSet {
+function createListeners(): ListenerSet {
   return {
-    [ListenerType.create]: onTabCreated.bind(null, ipmId),
-    [ListenerType.update]: onTabUpdated.bind(null, ipmId),
+    [ListenerType.create]: onTabCreated.bind(null),
+    [ListenerType.update]: onTabUpdated.bind(null),
     [ListenerType.remove]: onTabRemoved.bind(null)
   };
 }
@@ -364,14 +381,10 @@ async function handleCommand(ipmId: string): Promise<void> {
     return;
   }
 
-  // If the method is `force`, we need to create the tab right away.
-  if (behavior.method === CreationMethod.force) {
-    void openNewTab(ipmId);
-    return;
-  }
+  waitingTabs[ipmId] = { behavior, ipmId };
 
   // Add listeners
-  const listeners = createListeners(ipmId);
+  const listeners = createListeners();
   listenerMap.set(ipmId, listeners);
 
   browser.tabs.onCreated.addListener(listeners[ListenerType.create]);
