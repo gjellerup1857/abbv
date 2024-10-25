@@ -87,7 +87,8 @@ export function isNewTabBehavior(candidate: unknown): candidate is NewTabBehavio
     candidate !== null &&
     typeof candidate === "object" &&
     "target" in candidate &&
-    "method" in candidate
+    "method" in candidate &&
+    "priority" in candidate
   );
 }
 
