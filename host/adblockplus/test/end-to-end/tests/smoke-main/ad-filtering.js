@@ -233,7 +233,7 @@ module.exports = function()
     await testPage.switchToTab(/Localtest/);
     browser.refresh();
 
-    expect(await testPage.isElementDisplayed(testPage.selector, true, 5000))
-      .to.be.true;
+    expect(await testPage.isElementDisplayed(testPage.selector, 5000))
+      .to.be.false;
   });
 };
