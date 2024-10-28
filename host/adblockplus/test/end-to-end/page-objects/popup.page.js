@@ -28,10 +28,10 @@ class PopupPage extends BasePage
     this.browser = browser;
   }
 
-  async init(origin, tabId)
+  async init(popupUrl, tabId)
   {
     await browser.newWindow("about:blank");
-    await browser.url(`${origin}/popup.html?testTabId=${tabId}`);
+    await browser.url(`${popupUrl}?testTabId=${tabId}`);
     await (await this.pageStatsCounter).waitForExist({timeout: 10000});
   }
 

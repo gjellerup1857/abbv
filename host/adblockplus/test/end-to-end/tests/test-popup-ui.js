@@ -23,14 +23,14 @@ const {expect} = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const TestPage = require("../page-objects/testPages.page");
 const testData = require("../test-data/data-smoke-tests");
-let globalOrigin;
+let popupUrl;
 let lastTest = false;
 
 describe("test popup ui", function()
 {
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   afterEach(async function()
@@ -51,7 +51,7 @@ describe("test popup ui", function()
     await browser.refresh();
     await browser.refresh();
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     const totalPageAdsBlocked = await popupPage.
         getNumberOfAdsBlockedOnThisPageText();
     const totalAdsBlocked = await popupPage.getNumberOfAdsBlockedInTotalText();
@@ -64,7 +64,7 @@ describe("test popup ui", function()
     await switchToABPOptionsTab();
     const tabId = await getTabId({title: "Adblock Plus Options"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
     expect(await popupPage.isPageToggleDisplayed()).to.be.false;
@@ -79,9 +79,9 @@ describe("test popup ui", function()
     await testPage.switchToTab("ABP Test Pages");
     const tabId = await getTabId({title: "ABP Test Pages"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickBlockSpecificElementButton();
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isBlockElementCancelButtonDisplayed()).to.be.true;
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
     expect(await popupPage.isReportAnIssueButtonDisplayed()).to.be.false;
@@ -97,7 +97,7 @@ describe("test popup ui", function()
     await browser.newWindow("https://www.example.com");
     const tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await browser.refresh();
     await popupPage.clickReportAnIssueButton();
     expect(await doesTabExist("Issue reporter")).to.be.true;

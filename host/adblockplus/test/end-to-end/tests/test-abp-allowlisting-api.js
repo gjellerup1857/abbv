@@ -26,13 +26,13 @@ const OneClickAllowAdsTestPage =
   require("../page-objects/oneClickAllowAdsTest.page");
 const PaywallChunk = require("../page-objects/paywall.chunk");
 const PopupPage = require("../page-objects/popup.page");
-let globalOrigin;
+let popupUrl;
 
 describe("test abp allowlisting api", function()
 {
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   it("should perform smart allowlisting", async function()
@@ -50,7 +50,7 @@ describe("test abp allowlisting api", function()
       isPaywallContentDisplayed(true, 10000)).to.be.true;
     const tabId = await getTabId({urlPattern: "https://allthatsinteresting.com/tag/science"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
     await switchToABPOptionsTab();
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);

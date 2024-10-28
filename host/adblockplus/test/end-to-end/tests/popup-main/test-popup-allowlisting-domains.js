@@ -29,11 +29,11 @@ const testData = require("../../test-data/data-smoke-tests");
 
 module.exports = function()
 {
-  let globalOrigin;
+  let popupUrl;
 
   before(function()
   {
-    (globalOrigin = this.test.parent.parent.globalOrigin);
+    (popupUrl = this.test.parent.parent.popupUrl);
   });
 
   beforeEach(async function()
@@ -58,7 +58,7 @@ module.exports = function()
     expect(await testPage.
        isAdContainerDivDisplayed()).to.be.false;
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisDomainToggle();
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
     await popupPage.clickRefreshButton();
@@ -87,7 +87,7 @@ module.exports = function()
       expect(element).to.equal("adblockinc.gitlab.io");
     });
     await testPage.switchToTab("Blocking and hiding");
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisDomainToggle();
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     await popupPage.clickRefreshButton();

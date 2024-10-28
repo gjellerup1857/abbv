@@ -27,13 +27,13 @@ const GeneralPage = require("../page-objects/general.page");
 const HelpPage = require("../page-objects/help.page");
 const PopupPage = require("../page-objects/popup.page");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
-let globalOrigin;
+let popupUrl;
 
 describe("test abp premium ui", function()
 {
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   it("should display correct UI for a free user", async function()
@@ -69,7 +69,7 @@ describe("test abp premium ui", function()
     await advancedPage.switchToTab("Example Domain");
     const tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isUpgradeButtonDisplayed()).to.be.true;
     expect(await popupPage.
       isBlockCookieConsentPopupsTitleDisplayed()).to.be.true;
@@ -122,7 +122,7 @@ describe("test abp premium ui", function()
     await advancedPage.switchToTab("Example Domain");
     const tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isPremiumButtonDisplayed()).to.be.true;
     expect(await popupPage.
       isBlockCookieConsentPopupsPremiumTitleDisplayed()).to.be.true;

@@ -28,11 +28,12 @@ describe("Smoke Tests - Main", function()
 {
   before(async function()
   {
-    const {origin, optionsUrl, installedUrl} =
+    const {origin, optionsUrl, installedUrl, popupUrl} =
       await beforeSequence({expectInstalledTab: true, isSmokeTest: true});
     this.test.parent.globalOrigin = origin;
     this.test.parent.optionsUrl = optionsUrl;
     this.test.parent.installedUrl = installedUrl;
+    this.test.parent.popupUrl = popupUrl;
   });
 
   afterEach(async function()

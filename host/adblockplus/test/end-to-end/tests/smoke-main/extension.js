@@ -27,10 +27,11 @@ module.exports = function()
 {
   let globalOrigin;
   let optionsUrl;
+  let popupUrl;
 
   before(function()
   {
-    ({globalOrigin, optionsUrl} = this.test.parent.parent);
+    ({globalOrigin, optionsUrl, popupUrl} = this.test.parent.parent);
   });
 
   it("displays total ad block count", async function()
@@ -40,14 +41,14 @@ module.exports = function()
     const maxAdsBlocked = 15;
 
     await browser.newWindow(url);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     const blockedFirst =
       await popupPage.waitForNumberOfAdsBlockedToBeInRange(0, maxAdsBlocked);
     await browser.closeWindow();
 
     await browser.switchWindow(url);
     await browser.refresh();
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await popupPage.waitForNumberOfAdsBlockedToBeInRange(
       blockedFirst, maxAdsBlocked);
     await browser.closeWindow();
@@ -92,7 +93,7 @@ module.exports = function()
     expect(await advancedPage.
       isAllowNonintrusiveAdvertisingFLDisplayed()).to.be.true;
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await waitForAssertion(async() =>
     {
       expect(String(await popupPage.getNotificationMessageText()).includes(

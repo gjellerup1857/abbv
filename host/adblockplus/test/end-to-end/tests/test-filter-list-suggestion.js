@@ -22,7 +22,7 @@ const {afterSequence, beforeSequence, globalRetriesNumber} =
 const {expect} = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const GeneralPage = require("../page-objects/general.page");
-let globalOrigin;
+let popupUrl;
 let lastTest = false;
 
 describe.skip("test filter list suggestion", function()
@@ -31,7 +31,7 @@ describe.skip("test filter list suggestion", function()
 
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   afterEach(async function()
@@ -49,7 +49,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.false;
   });
@@ -63,7 +63,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.true;
     const notificationText = "It looks like you visited a website in: " +
@@ -89,7 +89,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/economia");
     await browser.url("https://www.repubblica.it/esteri");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.false;
   });
@@ -103,7 +103,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.true;
     await popupPage.clickCloseNotificationButton();
@@ -111,14 +111,14 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.ilfattoquotidiano.it/");
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.false;
     await browser.url("https://www.lavanguardia.com/");
     await browser.url("https://elpais.com/");
     await browser.url("https://www.elmundo.es/");
     await browser.url("https://www.abc.es/");
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.true;
     expect(await popupPage.
@@ -138,7 +138,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.false;
   });
@@ -154,7 +154,7 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     lastTest = true;
     expect(await popupPage.
       isNotificationMessageDisplayed()).to.be.false;

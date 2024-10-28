@@ -25,14 +25,14 @@ const TestPage = require("../page-objects/testPages.page");
 const AllowlistedWebsitesPage =
   require("../page-objects/allowlistedWebsites.page");
 const testData = require("../test-data/data-smoke-tests");
-let globalOrigin;
+let popupUrl;
 let lastTest = false;
 
 describe("test popup allowlisting and disallowlisting pages", function()
 {
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   afterEach(async function()
@@ -51,19 +51,19 @@ describe("test popup allowlisting and disallowlisting pages", function()
     const blockingAndHidingUrl = await testPage.getCurrentUrl();
     const tabId = await getTabId({title: "Blocking and hiding"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
     await popupPage.clickRefreshButton();
     await testPage.switchToTab("Adblock Plus Options");
     await testPage.switchToTab("Blocking and hiding");
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.false;
     await popupPage.clickThisPageToggle();
     await popupPage.clickRefreshButton();
     await testPage.switchToTab("Adblock Plus Options");
     await testPage.switchToTab("Blocking and hiding");
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.true;
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.true;
@@ -88,8 +88,7 @@ describe("test popup allowlisting and disallowlisting pages", function()
     await testPage.switchToTab("Blocking and hiding");
     let tabId = await getTabId({title: "Blocking and hiding"});
     let popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
-    const popupUrl = await popupPage.getCurrentUrl();
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
     expect(await popupPage.isRefreshButtonDisplayed()).to.be.true;
     expect(await popupPage.isRefreshMessageDisplayed()).to.be.true;
@@ -107,7 +106,7 @@ describe("test popup allowlisting and disallowlisting pages", function()
     {
       expect(await doesTabExist(popupUrl)).to.be.false;
     }
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.false;
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
@@ -118,7 +117,7 @@ describe("test popup allowlisting and disallowlisting pages", function()
     await popupPage.switchToTab("Ad blocked count testpage");
     tabId = await getTabId({title: "Ad blocked count testpage"});
     popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleEnabled()).to.be.true;
 

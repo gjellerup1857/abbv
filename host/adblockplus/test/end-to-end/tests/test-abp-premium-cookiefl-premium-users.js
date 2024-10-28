@@ -23,7 +23,7 @@ const {expect} = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const GeneralPage = require("../page-objects/general.page");
 const PopupPage = require("../page-objects/popup.page");
-let globalOrigin;
+let popupUrl;
 
 describe("test cookie consent filterlist setting for premium users", function()
 {
@@ -31,7 +31,7 @@ describe("test cookie consent filterlist setting for premium users", function()
 
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   // eslint-disable-next-line max-len
@@ -58,7 +58,7 @@ describe("test cookie consent filterlist setting for premium users", function()
     await advancedPage.switchToTab("Example Domain");
     let tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.true;
     await switchToABPOptionsTab();
@@ -73,7 +73,7 @@ describe("test cookie consent filterlist setting for premium users", function()
       isBlockCookieConsentPopupsCheckboxSelected()).to.be.false;
     await advancedPage.switchToTab("Example Domain");
     tabId = await getTabId({title: "Example Domain"});
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.false;
     await switchToABPOptionsTab();
@@ -86,7 +86,7 @@ describe("test cookie consent filterlist setting for premium users", function()
       isBlockCookieConsentPopupsCheckboxSelected()).to.be.true;
     await advancedPage.switchToTab("Example Domain");
     tabId = await getTabId({title: "Example Domain"});
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.true;
     await switchToABPOptionsTab();
@@ -99,7 +99,7 @@ describe("test cookie consent filterlist setting for premium users", function()
       isBlockCookieConsentPopupsCheckboxSelected()).to.be.false;
     await advancedPage.switchToTab("Example Domain");
     tabId = await getTabId({title: "Example Domain"});
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.false;
   });
@@ -136,7 +136,7 @@ describe("test cookie consent filterlist setting for premium users", function()
     await advancedPage.switchToTab("Example Domain");
     const tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.true;
     await browser.closeWindow();
@@ -148,7 +148,7 @@ describe("test cookie consent filterlist setting for premium users", function()
     await advancedPage.init();
     expect(await advancedPage.
       isPremiumBlockCookieConsentPopupsFLDisplayed()).to.be.false;
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.false;
   });
@@ -162,7 +162,7 @@ describe("test cookie consent filterlist setting for premium users", function()
     await advancedPage.switchToTab("Example Domain");
     let tabId = await getTabId({title: "Example Domain"});
     let popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.false;
     await popupPage.clickBlockCookieConsentPopupsToggle();
@@ -190,7 +190,7 @@ describe("test cookie consent filterlist setting for premium users", function()
     await advancedPage.switchToTab("Example Domain");
     tabId = await getTabId({title: "Example Domain"});
     popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     await popupPage.clickBlockCookieConsentPopupsToggle();
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.false;

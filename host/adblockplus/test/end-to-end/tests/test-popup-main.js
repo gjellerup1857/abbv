@@ -26,8 +26,9 @@ describe("Popup Tests - Main", function()
 {
   before(async function()
   {
-    const {origin} = await beforeSequence();
+    const {origin, popupUrl} = await beforeSequence();
     this.test.parent.globalOrigin = origin;
+    this.test.parent.popupUrl = popupUrl;
   });
 
   describe("Test that clicking on the gear button", optionsPageOpen);

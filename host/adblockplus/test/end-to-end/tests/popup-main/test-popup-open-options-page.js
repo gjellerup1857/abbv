@@ -23,11 +23,11 @@ const PopupPage = require("../../page-objects/popup.page");
 
 module.exports = function()
 {
-  let globalOrigin;
+  let popupUrl;
 
   before(function()
   {
-    (globalOrigin = this.test.parent.parent.globalOrigin);
+    (popupUrl = this.test.parent.parent.popupUrl);
   });
 
   it("should open settings page", async function()
@@ -38,7 +38,7 @@ module.exports = function()
     expect(await doesTabExist("Adblock Plus Options")).to.be.false;
 
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await popupPage.clickOptionsButton();
     expect(await doesTabExist("Adblock Plus Options")).to.be.true;
   });

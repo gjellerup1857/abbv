@@ -23,7 +23,7 @@ const {expect} = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const notificationScripts =
   require("../test-data/data-notifications-appearance").notificationScripts;
-let globalOrigin;
+let popupUrl;
 let lastTest = false;
 
 describe("test client side notifications appearance", function()
@@ -32,7 +32,7 @@ describe("test client side notifications appearance", function()
 
   before(async function()
   {
-    ({origin: globalOrigin} = await beforeSequence());
+    ({popupUrl} = await beforeSequence());
   });
 
   afterEach(async function()
@@ -46,7 +46,7 @@ describe("test client side notifications appearance", function()
   it("should display default notification", async function()
   {
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await browser.executeScript(notificationScripts.defaultNotification, []);
     expect(await popupPage.
       getNotificationBorderColor()).to.equal("rgb(255, 143, 0)");
@@ -64,7 +64,7 @@ describe("test client side notifications appearance", function()
   it("should display information notification", async function()
   {
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await browser.executeScript(
       notificationScripts.informationNotification, []);
     expect(await popupPage.
@@ -81,7 +81,7 @@ describe("test client side notifications appearance", function()
   it("should display critical notification", async function()
   {
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin);
+    await popupPage.init(popupUrl);
     await browser.executeScript(notificationScripts.criticalNotification, []);
     expect(await popupPage.
       getNotificationBorderColor()).to.equal("rgb(237, 30, 69)");

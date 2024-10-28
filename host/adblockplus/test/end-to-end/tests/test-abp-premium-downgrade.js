@@ -27,14 +27,14 @@ const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 
 describe("test abp premium downgrade", function()
 {
-  let globalOrigin;
   let optionsUrl;
+  let popupUrl;
 
   this.retries(globalRetriesNumber);
 
   before(async function()
   {
-    ({origin: globalOrigin, optionsUrl} = await beforeSequence());
+    ({popupUrl, optionsUrl} = await beforeSequence());
   });
 
   it("should downgrade premium user", async function()
@@ -76,7 +76,7 @@ describe("test abp premium downgrade", function()
     await advancedPage.switchToTab("Example Domain");
     const tabId = await getTabId({title: "Example Domain"});
     const popupPage = new PopupPage(browser);
-    await popupPage.init(globalOrigin, tabId);
+    await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isUpgradeButtonDisplayed()).to.be.true;
     expect(await popupPage.

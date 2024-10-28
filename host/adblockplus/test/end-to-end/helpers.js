@@ -75,7 +75,7 @@ async function beforeSequence({
     await browser.installAddOn(getHelperExtension("MV2"), true);
   }
 
-  const {origin, optionsUrl} = await waitForExtension();
+  const {origin, optionsUrl, popupUrl} = await waitForExtension();
   let installedUrl;
   if (expectInstalledTab)
   {
@@ -133,7 +133,7 @@ async function beforeSequence({
     process.env.MANIFEST_VERSION = manifestVersion.toString();
   }
 
-  return {origin, optionsUrl, installedUrl};
+  return {origin, optionsUrl, popupUrl, installedUrl};
 }
 
 async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
@@ -550,6 +550,7 @@ async function waitForExtension()
   const timeout = 20000;
   let origin;
   let optionsUrl;
+  let popupUrl;
 
   await waitForAbleToExecuteScripts();
 
@@ -559,20 +560,31 @@ async function waitForExtension()
     {
       await browser.switchToWindow(handle);
 
-      ({origin, optionsUrl} = await browser.executeAsync(async callback =>
-      {
-        if (typeof browser !== "undefined" &&
-            browser.management !== "undefined")
+      ({origin, optionsUrl, popupUrl} =
+        await browser.executeAsync(async callback =>
         {
-          const info = await browser.management.getSelf();
-          callback(info.optionsUrl ?
-            {origin: location.origin, optionsUrl: info.optionsUrl} : {});
-        }
-        else
-        {
-          callback({});
-        }
-      }));
+          if (typeof browser !== "undefined" &&
+              browser.management !== "undefined")
+          {
+            const info = await browser.management.getSelf();
+            const manifest = await browser.runtime.getManifest();
+            const popupPath = manifest.applications?.gecko ?
+              await browser.action.getPopup({}) :
+              manifest.manifest_version == "3" ?
+              `${location.origin}/${manifest.action.default_popup}` :
+              `${location.origin}/${manifest.browser_action.default_popup}`;
+
+            callback(info.optionsUrl ? {
+                origin: location.origin,
+                optionsUrl: info.optionsUrl,
+                popupUrl: popupPath
+            } : {});
+          }
+          else
+          {
+            callback({});
+          }
+        }));
       if (origin)
       {
         return true;
@@ -580,7 +592,7 @@ async function waitForExtension()
     }
   }, {timeout, timeoutMsg: `Options page not found after ${timeout}ms`});
 
-  return {origin, optionsUrl};
+  return {origin, optionsUrl, popupUrl};
 }
 
 async function wakeMockServer(serverUrl, serverUpText)
