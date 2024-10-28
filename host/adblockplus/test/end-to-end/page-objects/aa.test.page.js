@@ -40,9 +40,9 @@ class AaTestPage extends BasePage
     return "#abptest";
   }
 
-  get getElemhideElement()
+  get visibleSelector()
   {
-    return $(this.selector);
+    return "#abptest2";
   }
 
   async switch()

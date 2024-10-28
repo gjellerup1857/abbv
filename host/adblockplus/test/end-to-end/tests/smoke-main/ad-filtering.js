@@ -214,6 +214,9 @@ module.exports = function()
 
     expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
       .to.be.true;
+    expect(await testPage.isElementDisplayed(
+      testPage.visibleSelector, false, timeout))
+      .to.be.true;
 
     // Turn AA off
     generalPage = new GeneralPage(browser);
@@ -229,5 +232,8 @@ module.exports = function()
 
     expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
       .to.be.false;
+    expect(await testPage.isElementDisplayed(
+      testPage.visibleSelector, false, timeout))
+      .to.be.true;
   });
 };
