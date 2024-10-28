@@ -26,8 +26,8 @@ const AllowlistedWebsitesPage =
   require("../../page-objects/allowlistedWebsites.page");
 const GeneralPage = require("../../page-objects/general.page");
 const TestPages = require("../../page-objects/testPages.page");
-const {LocalTestPage, TESTPAGES} =
-  require("../../page-objects/local.test.page");
+const {AaTestPage} =
+  require("../../page-objects/aa.test.page");
 const testData = require("../../test-data/data-smoke-tests");
 
 async function getTestpagesFilters()
@@ -63,13 +63,6 @@ function removeAllFiltersFromABP()
 
 module.exports = function()
 {
-  let optionsUrl;
-
-  before(function()
-  {
-    ({optionsUrl} = this.test.parent.parent);
-  });
-
   beforeEach(async function()
   {
     // This filter no longer exists in easylist
@@ -207,18 +200,19 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
+    const timeout = 5 * 1000;
     let generalPage = new GeneralPage(browser);
 
     // Check AA is on by default
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
       .to.be.true;
 
-    const testPage = new LocalTestPage(browser, TESTPAGES);
+    const testPage = new AaTestPage(browser);
     await testPage.init();
-    await testPage.switchToTab(/Localtest/);
+    await testPage.switch();
     await browser.refresh();
 
-    expect(await testPage.isElementDisplayed(testPage.selector, false, 5000))
+    expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
       .to.be.true;
 
     // Turn AA off
@@ -230,10 +224,10 @@ module.exports = function()
       .to.be.false;
 
     await testPage.init();
-    await testPage.switchToTab(/Localtest/);
+    await testPage.switch();
     await browser.refresh();
 
-    expect(await testPage.isElementDisplayed(testPage.selector, false, 5000))
+    expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
       .to.be.false;
   });
 };

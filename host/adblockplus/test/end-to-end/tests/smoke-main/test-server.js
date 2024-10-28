@@ -18,8 +18,6 @@
 "use strict";
 
 const {expect} = require("chai");
-const {LocalTestPage, LOCALHOST} =
-  require("../../page-objects/local.test.page");
 
 module.exports = function()
 {
@@ -28,9 +26,9 @@ module.exports = function()
     if (process.env.LOCAL_RUN !== "true")
       this.skip();
 
-    const testPage = new LocalTestPage(browser, LOCALHOST);
-    await testPage.init();
+    const url = "http://localhost:3005/test.html";
 
-    expect(await testPage.getHelloText()).to.equal("Hello from host pages");
+    await browser.newWindow(url);
+    expect(await $("h1").getText()).to.equal("Hello from host pages");
   });
 };
