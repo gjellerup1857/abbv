@@ -16,6 +16,7 @@
  */
 
 import { beforeEachTasks } from "../utils/hook.js";
+import dataCollection from "./data-collection.js";
 import smoke from "./smoke.js";
 import uninstall from "./uninstall.js";
 import optionsPageAA from "./options-page-aa.js";
@@ -31,6 +32,7 @@ export default () => {
 
   describe("Test server", testServer);
   describe("Smoke Tests - Main", smoke);
+  describe("Data collection", dataCollection);
   describe("Options Page", function () {
     describe("Acceptable Ads", optionsPageAA);
     describe("Filter Lists", optionsPageFL);
