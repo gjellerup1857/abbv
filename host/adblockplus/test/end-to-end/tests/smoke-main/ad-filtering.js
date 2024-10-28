@@ -216,7 +216,7 @@ module.exports = function()
     const testPage = new LocalTestPage(browser, TESTPAGES);
     await testPage.init();
     await testPage.switchToTab(/Localtest/);
-    browser.refresh();
+    await browser.refresh();
 
     expect(await testPage.isElementDisplayed(testPage.selector, false, 5000))
       .to.be.true;
@@ -231,9 +231,9 @@ module.exports = function()
 
     await testPage.init();
     await testPage.switchToTab(/Localtest/);
-    browser.refresh();
+    await browser.refresh();
 
-    expect(await testPage.isElementDisplayed(testPage.selector, 5000))
+    expect(await testPage.isElementDisplayed(testPage.selector, false, 5000))
       .to.be.false;
   });
 };
