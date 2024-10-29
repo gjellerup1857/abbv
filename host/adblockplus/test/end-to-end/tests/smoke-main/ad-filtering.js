@@ -18,7 +18,7 @@
 "use strict";
 
 const {switchToABPOptionsTab, waitForNewWindow,
-       waitForAssertion, addFiltersToABP
+       waitForAssertion, addFiltersToABP, isFirefox
 } = require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
@@ -200,40 +200,39 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
+    async function assertAcceptableAdsIsShown(shown)
+    {
+      const testPage = new AaTestPage(browser);
+      await testPage.init();
+      await testPage.switch();
+      await browser.refresh();
+
+      expect(await testPage.isElementDisplayed(
+        testPage.selector, shown, timeout))
+        .to.be.false;
+      expect(await testPage.isElementDisplayed(
+        testPage.visibleSelector, false, timeout))
+        .to.be.true;
+    }
+
     const timeout = 5 * 1000;
+    const acceptableAdsIsOn = !isFirefox();
     let generalPage = new GeneralPage(browser);
 
-    // Check AA is on by default
+    // Check AA is ON by default in all the browsers, except Firefox
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
-      .to.be.true;
+      .to.equal(acceptableAdsIsOn);
 
-    const testPage = new AaTestPage(browser);
-    await testPage.init();
-    await testPage.switch();
-    await browser.refresh();
+    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
 
-    expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
-      .to.be.true;
-    expect(await testPage.isElementDisplayed(
-      testPage.visibleSelector, false, timeout))
-      .to.be.true;
-
-    // Turn AA off
+    // Switch AA
     generalPage = new GeneralPage(browser);
     await switchToABPOptionsTab();
     await generalPage.init();
     await generalPage.clickAllowAcceptableAdsCheckbox();
+
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
-      .to.be.false;
-
-    await testPage.init();
-    await testPage.switch();
-    await browser.refresh();
-
-    expect(await testPage.isElementDisplayed(testPage.selector, false, timeout))
-      .to.be.false;
-    expect(await testPage.isElementDisplayed(
-      testPage.visibleSelector, false, timeout))
-      .to.be.true;
+      .to.equal(!acceptableAdsIsOn);
+    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
   });
 };
