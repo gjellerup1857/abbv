@@ -99,7 +99,7 @@ export default () => {
   });
 
   it("displays total ad block count", async function () {
-    const { driver, origin } = this;
+    const { driver, popupUrl } = this;
 
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
@@ -132,13 +132,13 @@ export default () => {
 
     await openNewTab(driver, url);
     const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, origin, tabId);
+    await initPopupPage(driver, popupUrl, tabId);
 
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
 
     await findUrl(driver, url);
     await driver.navigate().refresh();
-    await initPopupPage(driver, origin, tabId);
+    await initPopupPage(driver, popupUrl, tabId);
 
     await waitForAdsBlockedToBeInRange(blockedFirst, maxAdsBlocked);
   });

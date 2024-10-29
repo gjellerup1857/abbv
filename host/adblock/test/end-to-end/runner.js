@@ -87,7 +87,13 @@ async function getExtensionInfo(driver) {
     if (typeof browser !== "undefined" && browser.management !== "undefined") {
       let { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
       const origin = optionsUrl ? location.origin : null;
-      callback({ name: shortName, version, permissions, origin });
+      const manifest = await browser.runtime.getManifest();
+      const popupPath =
+        manifest.manifest_version == "3"
+          ? manifest.action.default_popup
+          : manifest.browser_action.default_popup;
+      const popupUrl = manifest.applications?.gecko ? popupPath : `${origin}/${popupPath}`;
+      callback({ name: shortName, version, origin, permissions, popupUrl });
     } else {
       callback({});
     }
@@ -125,10 +131,13 @@ describe("AdBlock end-to-end tests", function () {
     const { handle } = await findUrl(this.driver, "options.html", 6000);
     setOptionsHandle(handle);
 
-    const { name, version, manifestVersion, origin } = await getExtensionInfo(this.driver);
+    const { name, version, manifestVersion, origin, popupUrl } = await getExtensionInfo(
+      this.driver,
+    );
     console.log(`Extension: ${name} ${version} MV${manifestVersion}`);
 
     this.origin = origin;
+    this.popupUrl = popupUrl;
     this.manifestVersion = manifestVersion;
   });
 

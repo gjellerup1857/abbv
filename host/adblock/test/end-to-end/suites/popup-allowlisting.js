@@ -18,7 +18,7 @@ export default () => {
   });
 
   it("allowlists from popup", async function () {
-    const { driver, origin } = this;
+    const { driver, popupUrl } = this;
 
     // open new tab with the URL that will be allowlisted
     await openNewTab(driver, blockHideUrl);
@@ -28,7 +28,7 @@ export default () => {
 
     // initialize the popup for the above page
     const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, origin, tabId);
+    await initPopupPage(driver, popupUrl, tabId);
 
     // click on the 'Pause on this site' button
     const pauseButton = await getDisplayedElement(driver, "[data-text='domain_pause_adblock']");
@@ -43,7 +43,7 @@ export default () => {
     await checkBlockHidePage(driver, { expectAllowlisted: true });
 
     // re-open the popup and check if it's in allowlisted state
-    await initPopupPage(driver, origin, tabId);
+    await initPopupPage(driver, popupUrl, tabId);
 
     // check if the allowlisted
     await getDisplayedElement(driver, "#div_domain_allowlisted_msg");

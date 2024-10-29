@@ -34,9 +34,9 @@ export const installUrl = "getadblock.com/en/installed";
 export const blockHideUrl =
   "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
 
-export async function initPopupPage(driver, origin, tabId) {
+export async function initPopupPage(driver, popupUrl, tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
-  const url = `${origin}/adblock-button-popup.html${tabIdParam}`;
+  const url = `${popupUrl}${tabIdParam}`;
   await openNewTab(driver, url);
   await getDisplayedElement(driver, ".header-logo", 5000);
 }

@@ -24,10 +24,10 @@ const { By } = webdriver;
 
 export default () => {
   it("opens the settings page", async function () {
-    const { driver, origin } = this;
+    const { driver, popupUrl } = this;
 
     // Open the Popup page
-    await initPopupPage(driver, origin);
+    await initPopupPage(driver, popupUrl);
     const popupWindow = driver.getWindowHandle();
 
     // Close the existing options page

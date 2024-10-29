@@ -19,10 +19,10 @@ export default () => {
   });
 
   beforeEach(async function () {
-    const { driver, origin } = this;
+    const { driver, popupUrl } = this;
     await openNewTab(driver, "https://example.com/");
     const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, origin, tabId);
+    await initPopupPage(driver, popupUrl, tabId);
   });
 
   for (const { selector, title } of premiumFeatures) {
