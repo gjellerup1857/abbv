@@ -30,7 +30,7 @@ import {
   initPopupPage,
   initOptionsFiltersTab,
   installUrl,
-  getUserId,
+  getUserIdFromPage,
   getSubscriptionInfo,
   clickFilterlist,
 } from "../utils/page.js";
@@ -44,7 +44,7 @@ export default () => {
     const { driver, browserName, fullBrowserVersion, majorBrowserVersion } = this;
     const { url } = await findUrl(driver, installUrl);
 
-    const userId = await getUserId(driver);
+    const userId = await getUserIdFromPage(driver);
 
     await driver.switchTo().window(getOptionsHandle());
     const appVersion = await driver.executeScript(() => {

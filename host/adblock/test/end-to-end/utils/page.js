@@ -24,6 +24,7 @@ import {
   waitForNotNullAttribute,
   isCheckboxEnabled,
   waitForNotDisplayed,
+  clickAndCloseNewTab,
 } from "./driver.js";
 import { expect } from "expect";
 
@@ -84,6 +85,29 @@ export async function initOptionsGeneralTab(driver, optionsHandle) {
   await driver.sleep(1000);
 }
 
+export async function initOptionsPremiumTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "mab");
+  // https://eyeo.atlassian.net/browse/EXT-335
+  await driver.sleep(3000);
+  await driver.navigate().refresh();
+}
+
+export async function initOptionsThemesTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "mab-themes");
+}
+
+export async function initOptionsImageSwapTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "mab-image-swap");
+}
+
+export async function initOptionsBackupSyncTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "sync");
+}
+
+export async function initOptionsPremiumFilersTab(driver, optionsHandle) {
+  await loadOptionsTab(driver, optionsHandle, "premium-filters");
+}
+
 export async function setCustomFilters(driver, filters) {
   const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
 
@@ -107,7 +131,7 @@ export async function setCustomFilters(driver, filters) {
   await saveButton.click();
 }
 
-export async function getUserId(driver) {
+export async function getUserIdFromPage(driver) {
   await findUrl(driver, installUrl);
 
   let userId;
@@ -120,6 +144,19 @@ export async function getUserId(driver) {
     } catch (err) {}
   });
 
+  return userId;
+}
+
+export async function getUserIdFromStorage(driver, optionsHandle) {
+  const currentHandle = await driver.getWindowHandle();
+
+  await driver.switchTo().window(optionsHandle);
+  const userId = await driver.executeAsyncScript(async (callback) => {
+    const res = await browser.storage.local.get("userid");
+    callback(res.userid);
+  });
+
+  await driver.switchTo().window(currentHandle);
   return userId;
 }
 
@@ -219,4 +256,16 @@ export async function checkBlockHidePage(driver, { expectAllowlisted = false }) 
     await waitForNotDisplayed(driver, "#search-ad", 2000);
     await waitForNotDisplayed(driver, "#AdContainer", 2000);
   }
+}
+
+export async function checkPremiumPageHeader(driver, ctaTextSelector, ctaLinkSelector, premiumURL) {
+  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 2000, false);
+  expect(await ctaText.getText()).toEqual(
+    "You’ll be an ad blocking pro with these easy-to-use add-ons.",
+  );
+
+  const ctaLink = await getDisplayedElement(driver, ctaLinkSelector);
+  expect(await ctaLink.getText()).toEqual("Get It Now");
+
+  await clickAndCloseNewTab(driver, ctaLinkSelector, premiumURL);
 }

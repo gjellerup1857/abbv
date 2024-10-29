@@ -74,18 +74,18 @@ export async function getTabId(driver, optionsHandle) {
 
 // The forceRefresh parameter is a temporary workaround, to be removed when fixing
 // https://eyeo.atlassian.net/browse/EXT-335
-export async function getDisplayedElement(driver, cssText, timeout = 500, forceRefresh = true) {
+export async function getDisplayedElement(driver, cssSelector, timeout = 500, forceRefresh = true) {
   let elem;
   const findElement = async () => {
     await driver.wait(
       async () => {
         try {
-          elem = await driver.findElement(By.css(cssText));
+          elem = await driver.findElement(By.css(cssSelector));
           return await elem.isDisplayed();
         } catch (e) {}
       },
       timeout,
-      `Element "${cssText}" was not displayed after ${timeout}ms`,
+      `Element "${cssSelector}" was not displayed after ${timeout}ms`,
     );
   };
 
@@ -97,7 +97,7 @@ export async function getDisplayedElement(driver, cssText, timeout = 500, forceR
     }
 
     // eslint-disable-next-line no-console
-    console.warn(`Element "${cssText}" is not displayed, refreshing the page and retrying...`);
+    console.warn(`Element "${cssSelector}" is not displayed, refreshing the page and retrying...`);
     await driver.navigate().refresh();
     await findElement();
   }
@@ -153,4 +153,59 @@ export async function waitForNotNullAttribute(driver, id, attribute, timeout = 1
 
 export function isCheckboxEnabled(driver, inputId) {
   return waitForNotNullAttribute(driver, inputId, "checked");
+}
+
+export async function clickAndNavigateBack(driver, selector, expectedURL) {
+  const currentURL = await driver.getCurrentUrl();
+  const elem = await getDisplayedElement(driver, selector);
+  await elem.click();
+
+  const newURL = await driver.getCurrentUrl();
+  if (newURL !== expectedURL) {
+    throw new Error(`Expected URL to be "${expectedURL}", but got "${newURL}"`);
+  }
+
+  await driver.navigate().to(currentURL);
+  await driver.navigate().refresh();
+}
+
+export async function clickAndCloseNewTab(driver, selector, expectedURL) {
+  const currentWindowHandle = await driver.getWindowHandle();
+  const initialWindowHandles = await driver.getAllWindowHandles();
+
+  const elem = await getDisplayedElement(driver, selector);
+  await elem.click();
+
+  await driver.wait(
+    async () => {
+      const currentWindowHandles = await driver.getAllWindowHandles();
+      return currentWindowHandles.length > initialWindowHandles.length;
+    },
+    5000,
+    `The element "${selector}" did not open a new tab with the URL "${expectedURL}"`,
+  );
+
+  const currentWindowHandles = await driver.getAllWindowHandles();
+  const newWindowHandle = currentWindowHandles.find(
+    (handle) => !initialWindowHandles.includes(handle),
+  );
+
+  if (!newWindowHandle) {
+    throw new Error(`Could not find the new window handle after clicking "${selector}"`);
+  }
+
+  await driver.switchTo().window(newWindowHandle);
+
+  await driver.wait(
+    async () => {
+      const newWindowURL = await driver.getCurrentUrl();
+      return newWindowURL === expectedURL;
+    },
+    1000,
+    `The new tab did not navigate to the expected URL "${expectedURL}"`,
+  );
+
+  // Close the new tab and switch back to the original window
+  await driver.close();
+  await driver.switchTo().window(currentWindowHandle);
 }

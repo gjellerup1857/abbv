@@ -23,6 +23,8 @@ import optionsPageAA from "./options-page-aa.js";
 import optionsPageFL from "./options-page-fl.js";
 import popupAllowlisting from "./popup-allowlisting.js";
 import popupPageOpensSettings from "./popup-page-opens-options.js";
+import optionsPagePremiumFreeUser from "./options-page-premium-free-user.js";
+import popupPagePremiumFreeUser from "./popup-page-premium-free-user.js";
 import testServer from "./test-server.js";
 
 export default () => {
@@ -41,6 +43,11 @@ export default () => {
   describe("Popup Page", function () {
     popupPageOpensSettings();
     describe("Allowlisting and disallowlisting", popupAllowlisting);
+  });
+
+  describe("Premium", function () {
+    describe("Free user - Options page", optionsPagePremiumFreeUser);
+    describe("Free user - Popup page", popupPagePremiumFreeUser);
   });
 
   // Needs to be the last suite to run because the extension gets uninstalled

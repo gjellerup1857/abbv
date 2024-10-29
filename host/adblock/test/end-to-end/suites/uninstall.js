@@ -18,14 +18,14 @@
 import { expect } from "expect";
 
 import { findUrl } from "../utils/driver.js";
-import { getUserId } from "../utils/page.js";
+import { getUserIdFromPage } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
     const { driver } = this;
 
-    const userId = await getUserId(driver);
+    const userId = await getUserIdFromPage(driver);
     const expectedParams = {
       u: userId,
       bc: expect.any(Number),
