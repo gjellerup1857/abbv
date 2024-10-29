@@ -15,7 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import { findUrl } from "../utils/driver.js";
