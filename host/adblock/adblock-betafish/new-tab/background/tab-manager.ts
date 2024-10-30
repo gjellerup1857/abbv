@@ -191,6 +191,7 @@ async function openNewtab(): Promise<void> {
     void checkLanguage(ipmId);
 
     // Check if the global new tab cool down period is still ongoing.
+    // eslint-disable-next-line no-await-in-loop
     if (await isCoolDownPeriodOngoing()) {
       logger.debug("[new-tab]: Cool down period still ongoing");
       continue;
