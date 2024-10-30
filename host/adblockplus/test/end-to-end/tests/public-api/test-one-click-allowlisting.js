@@ -30,6 +30,10 @@ module.exports = function()
 {
   before(async function()
   {
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (isEdge())
+      this.skip();
+
     // update the authorized keys and reload extension
     await updateExtPrefAPIKey("allowlisting_authorizedKeys");
     await reloadExtension();
@@ -42,10 +46,6 @@ module.exports = function()
 
   it("allowlists the page forever", async function()
   {
-    // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-      this.skip();
-
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
