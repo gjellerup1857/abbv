@@ -18,9 +18,7 @@
 "use strict";
 
 const {expect} = require("chai");
-const {
-  reloadExtension, waitForNewWindow, removeFilter, isEdge
-} = require("../../helpers");
+const {reloadExtension, waitForNewWindow, isEdge} = require("../../helpers");
 const {updateExtPrefAPIKey, sendExtCommand} = require("./shared/helpers");
 const {blockHideUrl} = require("../../test-data/data-smoke-tests");
 const TestPages = require("../../page-objects/testPages.page");
@@ -37,11 +35,6 @@ module.exports = function()
     // update the authorized keys and reload extension
     await updateExtPrefAPIKey("allowlisting_authorizedKeys");
     await reloadExtension();
-  });
-
-  afterEach(async function()
-  {
-    await removeFilter("@@||adblockinc.gitlab.io^$document");
   });
 
   it("allowlists the page forever", async function()

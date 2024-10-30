@@ -146,6 +146,8 @@ describe("AdBlock end-to-end tests", function () {
     this.popupUrl = popupUrl;
     this.manifestVersion = manifestVersion;
     global.extOrigin = origin;
+    global.extVersion = version;
+    global.extName = name;
     global.manifestVersion = manifestVersion;
   });
 

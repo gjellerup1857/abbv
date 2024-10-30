@@ -28,6 +28,7 @@ import optionsPagePremiumFreeUser from "./options-page-premium-free-user.js";
 import popupPagePremiumFreeUser from "./popup-page-premium-free-user.js";
 import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
+import bypassAPI from "./public-api/bypass-api.js";
 
 export default () => {
   beforeEach(async function () {
@@ -49,6 +50,7 @@ export default () => {
 
   describe("Public API", function () {
     describe("One click allowlisting", oneClickAllowlisting);
+    describe("Bypass API", bypassAPI);
   });
 
   describe("Premium", function () {

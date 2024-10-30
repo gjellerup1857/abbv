@@ -17,16 +17,26 @@
 
 "use strict";
 
-const {beforeSequence} = require("../../helpers");
+const {
+  beforeSequence, removeFilter
+} = require("../../helpers");
 const oneClickAllowlisting = require("./test-one-click-allowlisting.js");
+const bypassAPI = require("./test-bypass-api.js");
 
 describe("Public API", function()
 {
   before(async function()
   {
-    const {origin} = await beforeSequence();
+    const {origin, extVersion} = await beforeSequence();
     this.test.parent.globalOrigin = origin;
+    this.test.parent.extVersion = extVersion;
+  });
+
+  afterEach(async function()
+  {
+    await removeFilter("@@||adblockinc.gitlab.io^$document");
   });
 
   describe("Test one-click allowlisting", oneClickAllowlisting);
+  describe("Test Bypass API", bypassAPI);
 });

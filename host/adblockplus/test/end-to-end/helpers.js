@@ -75,7 +75,7 @@ async function beforeSequence({
     await browser.installAddOn(getHelperExtension("MV2"), true);
   }
 
-  const {origin, optionsUrl, popupUrl} = await waitForExtension();
+  const {origin, optionsUrl, popupUrl, extVersion} = await waitForExtension();
   let installedUrl;
   if (expectInstalledTab)
   {
@@ -133,7 +133,7 @@ async function beforeSequence({
     process.env.MANIFEST_VERSION = manifestVersion.toString();
   }
 
-  return {origin, optionsUrl, popupUrl, installedUrl};
+  return {origin, optionsUrl, popupUrl, installedUrl, extVersion};
 }
 
 async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
@@ -555,6 +555,7 @@ async function waitForExtension()
   let origin;
   let optionsUrl;
   let popupUrl;
+  let extVersion;
 
   await waitForAbleToExecuteScripts();
 
@@ -564,7 +565,7 @@ async function waitForExtension()
     {
       await browser.switchToWindow(handle);
 
-      ({origin, optionsUrl, popupUrl} =
+      ({origin, optionsUrl, popupUrl, extVersion} =
         await browser.executeAsync(async callback =>
         {
           if (typeof browser !== "undefined" &&
@@ -581,7 +582,8 @@ async function waitForExtension()
             callback(info.optionsUrl ? {
                 origin: location.origin,
                 optionsUrl: info.optionsUrl,
-                popupUrl: popupPath
+                popupUrl: popupPath,
+                extVersion: info.version
             } : {});
           }
           else
@@ -596,7 +598,7 @@ async function waitForExtension()
     }
   }, {timeout, timeoutMsg: `Options page not found after ${timeout}ms`});
 
-  return {origin, optionsUrl, popupUrl};
+  return {origin, optionsUrl, popupUrl, extVersion};
 }
 
 async function wakeMockServer(serverUrl, serverUpText)
