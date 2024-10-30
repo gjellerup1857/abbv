@@ -330,13 +330,9 @@ export function executeIPMCommands(commands: unknown[], isInitialization: boolea
   const executableCommands = Array.from(actorByExecutableCommand.keys());
   storeCommands(executableCommands);
 
-  for (const [executableCommand, actor] of actorByExecutableCommand) {
-    void actor.handleCommand(executableCommand.ipm_id, isInitialization);
-  }
-
   const commandHandlingPromises = Array.from(actorByExecutableCommand).map(
     async ([executableCommand, actor]) => {
-      await actor.handleCommand(executableCommand.ipm_id);
+      await actor.handleCommand(executableCommand.ipm_id, isInitialization);
     },
   );
 
