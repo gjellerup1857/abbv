@@ -38,6 +38,7 @@ stages:
   - unit
   - compliance
   - end-to-end
+  - release
 
 # Pipeline rules
 .always:
@@ -370,3 +371,21 @@ end-to-end:MV3:chromium:
   variables:
     MANIFEST_VERSION: 3
     BROWSER: chromium
+
+################################################################################
+# Release
+################################################################################
+
+create_release:
+  stage: release
+  image: gitlab/glab
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/'
+      when: on_success
+    - when: never
+  script:
+    - apk add nodejs
+    - version=${CI_COMMIT_TAG/adblockplus-/""}
+    - release_notes=$(node scripts/release-utils/get-release-notes.js adblockplus $version)  
+    - glab auth login --token $GITLAB_TOKEN_RELEASE
+    - glab release create $CI_COMMIT_TAG -n "Adblock Plus $version" host/adblockplus/dist/release/* -N "$release_notes"
