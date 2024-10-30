@@ -189,6 +189,12 @@ async function openNewtab(): Promise<void> {
     // Run mandatory language skew check
     void checkLanguage(ipmId);
 
+    // Check if the global new tab cool down period is still ongoing.
+    if (await isCoolDownPeriodOngoing()) {
+      logger.debug("[new-tab]: Cool down period still ongoing");
+      continue;
+    }
+
     // Ignore and dismiss command if it has no behavior
     const behavior = getBehavior(ipmId);
     if (!isNewTabBehavior(behavior)) {
@@ -247,6 +253,8 @@ async function openNewtab(): Promise<void> {
       return null;
     });
     if (tab !== null) {
+      // eslint-disable-next-line no-await-in-loop
+      await Prefs.set(lastShownKey, Date.now());
       registerEvent(ipmId, NewTabEventType.created);
       dismissCommand(ipmId);
     }
