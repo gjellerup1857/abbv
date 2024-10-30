@@ -17,6 +17,7 @@
 
 import webdriver from "selenium-webdriver";
 
+import { expect } from "expect";
 import {
   getDisplayedElement,
   openNewTab,
@@ -26,7 +27,7 @@ import {
   waitForNotDisplayed,
   clickAndCloseNewTab,
 } from "./driver.js";
-import { expect } from "expect";
+import { getOptionsHandle, setOptionsHandle } from "./hook.js";
 
 const { By, Key } = webdriver;
 
@@ -256,6 +257,134 @@ export async function checkBlockHidePage(driver, { expectAllowlisted = false }) 
     await waitForNotDisplayed(driver, "#search-ad", 2000);
     await waitForNotDisplayed(driver, "#AdContainer", 2000);
   }
+}
+
+/**
+ * Reload the extension and wait for the options page to be displayed
+ *
+ * * @param {boolean} [suppressUpdatePage=true] - Whether to suppress
+ *    the update page or not before reloading
+ * @returns {Promise<void>}
+ */
+export async function reloadExtension(suppressUpdatePage = true) {
+  const { driver, extOrigin } = global;
+
+  // Extension pages will be closed during reload,
+  // create a new tab to avoid the "target window already closed" error
+  await openNewTab(driver, "https://example.com");
+  const safeHandle = await driver.getWindowHandle();
+
+  // ensure options page is open
+  await initOptionsGeneralTab(driver, getOptionsHandle());
+
+  // Suppress page or not
+  await updateSettings("suppress_update_page", suppressUpdatePage);
+
+  // reload the extension
+  await driver.executeScript(() => browser.runtime.reload());
+  // Workaround for `target window already closed`
+  await driver.switchTo().window(safeHandle);
+
+  // Wait until the current option page is closed by the reload
+  // otherwise the next step will fail
+  await driver.wait(
+    async () => {
+      const handlers = await driver.getAllWindowHandles();
+      return !handlers.includes(getOptionsHandle());
+    },
+    5000,
+    "Current option page was not closed in time",
+  );
+
+  // The update page should be suppressed before reloading the extension
+  // wait for the extension to be ready and the options page to be displayed
+  await driver.wait(
+    async () => {
+      try {
+        await driver.navigate().to(`${extOrigin}/options.html`);
+        await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+        return true;
+      } catch (e) {
+        await driver.navigate().refresh();
+      }
+    },
+    15000,
+    "Options page not found after reload",
+    1000,
+  );
+  setOptionsHandle(await driver.getWindowHandle());
+}
+
+/**
+ * Sends a message to the extension from the options page.
+ *
+ * @param {object} message The message to be sent to the extension
+ */
+export async function sendExtMessage(message) {
+  const { driver } = global;
+  const currentHandle = await driver.getWindowHandle();
+
+  // open the options page and cleanup the allowlisting
+  await initOptionsGeneralTab(driver, getOptionsHandle());
+
+  const extResponse = await driver.executeAsyncScript(async (params, callback) => {
+    const result = await browser.runtime.sendMessage(params);
+    callback(result);
+  }, message);
+
+  // go back to prev page
+  await driver.switchTo().window(currentHandle);
+  return extResponse;
+}
+
+/**
+ * Removes a filter.
+ * @param {string} filterText The filter text.
+ */
+export async function removeFilter(filterText) {
+  return sendExtMessage({
+    type: "filters.remove",
+    text: filterText,
+  });
+}
+
+/**
+ * Adds a filter.
+ * @param {string} filterText The filter text.
+ */
+export async function addFilter(filterText) {
+  return sendExtMessage({
+    type: "filters.add",
+    text: filterText,
+  });
+}
+
+/**
+ * Changes a setting by sending a message to the extension on the settings page.
+ *
+ * @param {string} name The setting key name
+ * @param {boolean} isEnabled The settings value
+ */
+export async function updateSettings(name, isEnabled) {
+  return sendExtMessage({
+    command: "setSetting",
+    name,
+    isEnabled,
+  });
+}
+
+/**
+ * Changes a pref by sending a message to the extension on the settings page.
+ *
+ * @param {string} key The pref key name
+ * @param {*} value The pref value
+ */
+export async function updatePrefs(key, value) {
+  return sendExtMessage({
+    type: "prefs.set",
+    key,
+    value,
+  });
 }
 
 export async function checkPremiumPageHeader(driver, ctaTextSelector, ctaLinkSelector, premiumURL) {

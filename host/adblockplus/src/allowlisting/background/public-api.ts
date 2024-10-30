@@ -112,12 +112,13 @@ async function removeWebAllowlistingFilters(): Promise<void> {
  * Initializes experimental allowlisting API
  */
 export async function start(): Promise<void> {
+  // Make sure the storage was loaded before updating authorized keys and
+  // reading the premium state
+  await Prefs.untilLoaded;
+
   const authorizedKeys = Prefs.get("allowlisting_authorizedKeys") as string[];
   void ewe.allowlisting.setAuthorizedKeys(authorizedKeys);
   ewe.allowlisting.setAllowlistingCallback(onAllowlisting);
-
-  // Make sure the premium state is only read after the storage was loaded
-  await Prefs.untilLoaded;
 
   if (premium.getPremiumState().isActive) {
     void removeWebAllowlistingFilters();

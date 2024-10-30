@@ -124,6 +124,12 @@ describe("AdBlock end-to-end tests", function () {
     [this.driver, this.browserName, this.fullBrowserVersion, this.majorBrowserVersion] =
       await startBrowser();
 
+    // Set global variables for the tests
+    global.driver = this.driver;
+    global.browserName = this.browserName;
+    global.fullBrowserVersion = this.fullBrowserVersion;
+    global.majorBrowserVersion = this.majorBrowserVersion;
+
     await runTestServer();
   });
 
@@ -139,6 +145,8 @@ describe("AdBlock end-to-end tests", function () {
     this.origin = origin;
     this.popupUrl = popupUrl;
     this.manifestVersion = manifestVersion;
+    global.extOrigin = origin;
+    global.manifestVersion = manifestVersion;
   });
 
   afterEach(async function () {

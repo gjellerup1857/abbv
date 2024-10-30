@@ -26,6 +26,7 @@ import popupPageOpensSettings from "./popup-page-opens-options.js";
 import optionsPagePremiumFreeUser from "./options-page-premium-free-user.js";
 import popupPagePremiumFreeUser from "./popup-page-premium-free-user.js";
 import testServer from "./test-server.js";
+import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 
 export default () => {
   beforeEach(async function () {
@@ -43,6 +44,10 @@ export default () => {
   describe("Popup Page", function () {
     popupPageOpensSettings();
     describe("Allowlisting and disallowlisting", popupAllowlisting);
+  });
+
+  describe("Public API", function () {
+    describe("One click allowlisting", oneClickAllowlisting);
   });
 
   describe("Premium", function () {

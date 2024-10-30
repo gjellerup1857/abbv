@@ -33,6 +33,7 @@ import {
   getUserIdFromPage,
   getSubscriptionInfo,
   clickFilterlist,
+  reloadExtension,
 } from "../utils/page.js";
 import { setOptionsHandle, getOptionsHandle } from "../utils/hook.js";
 import { getDefaultFilterLists } from "../utils/dataset.js";
@@ -144,7 +145,7 @@ export default () => {
   });
 
   it("resets settings", async function () {
-    const { driver, origin, browserName } = this;
+    const { driver, browserName } = this;
     const enabledFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
     const handleDisabledFilterlistsAlert = async () => {
@@ -168,9 +169,6 @@ export default () => {
       await alert.accept();
     };
 
-    await driver.switchTo().newWindow("tab");
-    const safeHandle = await driver.getWindowHandle();
-
     await initOptionsFiltersTab(driver, getOptionsHandle());
 
     let lastInputId;
@@ -192,32 +190,8 @@ export default () => {
     const aaEnabled = await isCheckboxEnabled(driver, lastInputId);
     expect(aaEnabled).toEqual(false);
 
-    await driver.executeScript(() => browser.runtime.reload());
-    // Workaround for `target window already closed`
-    await driver.switchTo().window(safeHandle);
-
-    // Only Firefox triggers the updated page
-    if (browserName === "firefox") {
-      await findUrl(driver, "getadblock.com/en/update");
-      await driver.close();
-      await driver.switchTo().window(safeHandle);
-    }
-
-    await driver.wait(
-      async () => {
-        try {
-          await driver.navigate().to(`${origin}/options.html`);
-          await driver.findElement(By.css('[href="#general"]'));
-          return true;
-        } catch (e) {
-          await driver.navigate().refresh();
-        }
-      },
-      15000,
-      "Options page not found after reload",
-      1000,
-    );
-    setOptionsHandle(await driver.getWindowHandle());
+    // reload the extension to restore the default settings
+    await reloadExtension();
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
     for (const { name } of enabledFilterLists) {

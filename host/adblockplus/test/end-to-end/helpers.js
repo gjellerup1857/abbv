@@ -727,6 +727,121 @@ async function addFiltersToABP(filters)
     throw new Error(error);
 }
 
+/**
+ * Sends a message to the extension from the options page.
+ *
+ * @param {object} message The message to be sent to the extension
+ */
+async function sendExtMessage(message)
+{
+  const currentHandle = await browser.getWindowHandle();
+
+  // open the options page and cleanup the allowlisting
+  await switchToABPOptionsTab();
+
+  const extResponse = await browser.executeAsync(
+    async(params, callback) =>
+    {
+      const result = await browser.runtime.sendMessage(params);
+      callback(result);
+    },
+    message
+  );
+
+  // go back to prev page
+  await browser.switchToWindow(currentHandle);
+  return extResponse;
+}
+
+/**
+ * Removes a filter.
+ * @param {string} filterText The filter text.
+ */
+async function removeFilter(filterText)
+{
+  return sendExtMessage({
+    type: "filters.remove",
+    text: filterText
+  });
+}
+
+/**
+ * Adds a filter.
+ * @param {string} filterText The filter text.
+ */
+async function addFilter(filterText)
+{
+  return sendExtMessage({
+    type: "filters.add",
+    text: filterText
+  });
+}
+
+/**
+ * Changes the value of a pref from the settings page.
+ *
+ * @param {string} key The pref key
+ * @param {any} value the pref value
+ * @returns {Promise<void>}
+ */
+async function updatePrefs(key, value)
+{
+  return sendExtMessage({
+    type: "prefs.set",
+    key,
+    value
+  });
+}
+
+/**
+ * Reload the extension and wait for the options page to be displayed
+ *
+ * @param {boolean} [suppressUpdatePage=true] - Whether to suppress
+ *    the update page or not before reloading
+ * @returns {Promise<void>}
+ */
+async function reloadExtension(suppressUpdatePage = true)
+{
+  // Extension pages will be closed during reload,
+  // create a new tab to avoid the "target window already closed" error
+  await waitForNewWindow("https://example.com");
+  const safeHandle = await browser.getWindowHandle();
+
+  // ensure options page is open
+  await switchToABPOptionsTab();
+  const optionsUrl = await browser.getUrl();
+
+  // Suppress page or not
+  await updatePrefs("suppress_first_run_page", suppressUpdatePage);
+
+  // reload the extension
+  await browser.execute(() => browser.runtime.reload());
+  // Workaround for `target window already closed`
+  await browser.switchToWindow(safeHandle);
+
+  // wait for the extension to be ready and the options page to be displayed
+  await waitForSwitchToABPOptionsTab(optionsUrl, 60000);
+}
+
+/**
+ * Converts an array buffer byte array into a base64 string.
+ *
+ * @param {Uint8Array|ArrayBuffer} buffer - Byte array of any data.
+ * @return {string} The same data, encoded as a base64 string.
+ */
+function arrayBufferToBase64(buffer)
+{
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; i++)
+  {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
+}
+
+
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
   executeAsyncScript, testConfig,
@@ -737,5 +852,8 @@ module.exports = {
   waitForExtension, getABPOptionsTabId, waitForCondition,
   waitForSwitchToABPOptionsTab, waitForNewWindow, waitForAssertion, isChrome,
   isFirefox, isEdge, uninstallExtension,
-  addFiltersToABP
+  addFiltersToABP, addFilter, removeFilter,
+  arrayBufferToBase64,
+  reloadExtension,
+  updatePrefs
 };

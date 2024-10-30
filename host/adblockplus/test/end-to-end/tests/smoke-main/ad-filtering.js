@@ -123,17 +123,7 @@ module.exports = function()
     await waitForNewWindow(testData.blockHideUrl);
 
     const testPages = new TestPages(browser);
-    const timeout = 15000;
-    await waitForAssertion(async() =>
-    {
-      browser.refresh();
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked");
-    }, timeout, "pop_ads.js blocking filter was not applied");
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked");
-    expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPages.isAdContainerDivDisplayed()).to.be.false;
+    await testPages.checkPage({expectAllowlisted: false});
     await browser.closeWindow();
   });
 
@@ -165,23 +155,12 @@ module.exports = function()
     await allowistedWebsitesPage.clickAddWebsiteButton();
 
     await waitForNewWindow(testData.blockHideUrl);
+
     const testPages = new TestPages(browser);
-    const timeout = 5000;
-    await waitForAssertion(async() =>
-    {
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js blocking filter should block this");
-    }, timeout, "pop_ads.js blocking filter was applied");
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this");
-    await waitForAssertion(async() =>
-    {
-      expect(await testPages.getSearchAdDivText()).to.include(
-        "search-ad id hiding filter should hide this");
-    }, timeout, "search-ad id hiding filter was applied");
-    expect(await testPages.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this");
+    await testPages.checkPage({expectAllowlisted: true});
+
     await switchToABPOptionsTab();
+
     await allowistedWebsitesPage.
       removeAllowlistedDomain("adblockinc.gitlab.io");
     const attributesOfAllowlistingTableItems = await
@@ -192,6 +171,8 @@ module.exports = function()
     });
 
     await waitForNewWindow(testData.allowlistingUrl);
+
+    const timeout = 5000;
     await waitForAssertion(async() =>
     {
       expect(await testPages.getPopadsFilterText()).to.include(

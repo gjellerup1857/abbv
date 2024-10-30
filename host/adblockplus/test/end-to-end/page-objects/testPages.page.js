@@ -17,7 +17,9 @@
 
 "use strict";
 
+const {expect} = require("chai");
 const BasePage = require("./base.page");
+const {waitForAssertion} = require("../helpers");
 
 // This is used for content available on any test pages
 class TestPages extends BasePage
@@ -321,6 +323,44 @@ class TestPages extends BasePage
   async isAdContainerDivDisplayed()
   {
     return await (await this.AdContainerDiv).isDisplayed();
+  }
+
+  async checkPage({expectAllowlisted = false})
+  {
+    let expectedPopadsText = "pop_ads.js was blocked";
+    let expectedBanneradsText = "bannerads/* was blocked";
+
+    if (expectAllowlisted)
+    {
+      expectedPopadsText = "pop_ads.js blocking filter should block this";
+      // eslint-disable-next-line max-len
+      expectedBanneradsText = "first bannerads/* blocking filter should block this";
+    }
+
+    const timeout = 15000;
+    await waitForAssertion(
+      async() =>
+      {
+        expect(await this.getPopadsFilterText()).to.include(expectedPopadsText);
+        expect(await this.getBanneradsFilterText()).to.include(
+          expectedBanneradsText
+        );
+      },
+      timeout,
+      // eslint-disable-next-line max-len
+      `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`
+    );
+
+    if (expectAllowlisted)
+    {
+      expect(await this.isSearchAdDivDisplayed()).to.be.true;
+      expect(await this.isAdContainerDivDisplayed()).to.be.true;
+    }
+    else
+    {
+      expect(await this.isSearchAdDivDisplayed()).to.be.false;
+      expect(await this.isAdContainerDivDisplayed()).to.be.false;
+    }
   }
 }
 
