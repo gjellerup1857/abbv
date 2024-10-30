@@ -39,6 +39,11 @@ export enum CreationMethod {
 export const defaultCreationMethod = CreationMethod.default;
 
 /**
+ * The default priority for new tab commands.
+ */
+export const defaultPriority = 1;
+
+/**
  * New tab behavior
  */
 export interface NewTabBehavior extends LicenseStateBehavior {
@@ -50,6 +55,10 @@ export interface NewTabBehavior extends LicenseStateBehavior {
    * The method to use for opening the tab creation.
    */
   method: CreationMethod;
+  /**
+   * The priority of the opening request.
+   */
+  priority: number;
 }
 
 /**
@@ -73,6 +82,7 @@ export interface NewTabParams {
   url: string;
   license_state_list?: string;
   method?: `${CreationMethod}`;
+  priority?: number;
 }
 
 /**

@@ -383,6 +383,11 @@ async function handleCommand(ipmId: string): Promise<void> {
 
   waitingTabs[ipmId] = { behavior, ipmId };
 
+  // If the method is `force`, we don't need to create handlers.
+  if (behavior.method === CreationMethod.force) {
+    return;
+  }
+
   // Add listeners
   const listeners = createListeners();
   listenerMap.set(ipmId, listeners);

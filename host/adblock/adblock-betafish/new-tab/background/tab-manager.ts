@@ -58,6 +58,10 @@ let newTabCounter = 0;
  */
 const newTabMessageSendTrigger = [1, 10, 20, 100, 200];
 
+/**
+ * List of tabs that we still need to open.
+ */
+const waitingTabs: Record<string, NewTab> = {};
 
 /**
  * Compares two new tab requests to see which has the higher priority.
@@ -172,69 +176,80 @@ async function addBlockCountToURL(urlString: string): Promise<string | null> {
  *
  * @param ipmId - IPM ID
  */
-async function openNewtab(ipmId: string): Promise<void> {
+async function openNewtab(): Promise<void> {
   logger.debug("[new-tab]:openNewtab");
 
-  const command = getCommand(ipmId);
-  if (!command) {
-    return;
-  }
+  // Sort the waiting new tab candidates by priority.
+  const candidates = Object.values(waitingTabs).sort(compareNewTabRequestsByPriority);
 
-  // Run mandatory language skew check
-  void checkLanguage(ipmId);
+  // Iterate over list and try until a tab was opened or the list is empty.
+  for (const candidate of candidates) {
+    const { ipmId } = candidate;
 
-  // Ignore and dismiss command if it has no behavior
-  const behavior = getBehavior(ipmId);
-  if (!isNewTabBehavior(behavior)) {
-    logger.debug("[new-tab]: No command behavior");
-    registerEvent(ipmId, NewTabErrorEventType.noBehaviorFound);
-    dismissCommand(ipmId);
-    return;
-  }
-  // Ignore and dismiss command if License states doesn't match the license state of the command
-  if (!(await doesLicenseStateMatch(behavior))) {
-    logger.debug("[new-tab]: License state mis-match");
-    registerEvent(ipmId, NewTabErrorEventType.licenseStateNoMatch);
-    dismissCommand(ipmId);
-    return;
-  }
+    // Run mandatory language skew check
+    void checkLanguage(ipmId);
 
-  const targetUrl = createSafeOriginUrl(behavior.target);
-  if (!targetUrl) {
-    registerEvent(ipmId, NewTabErrorEventType.noUrlFound);
-    dismissCommand(ipmId);
-    return;
-  }
+    // Ignore and dismiss command if it has no behavior
+    const behavior = getBehavior(ipmId);
+    if (!isNewTabBehavior(behavior)) {
+      logger.debug("[new-tab]: No command behavior");
+      registerEvent(ipmId, NewTabErrorEventType.noBehaviorFound);
+      dismissCommand(ipmId);
+      continue;
+    }
+    // Ignore and dismiss command if License states doesn't match the license state of the command
+    // eslint-disable-next-line no-await-in-loop
+    if (!(await doesLicenseStateMatch(behavior))) {
+      logger.debug("[new-tab]: License state mis-match");
+      registerEvent(ipmId, NewTabErrorEventType.licenseStateNoMatch);
+      dismissCommand(ipmId);
+      continue;
+    }
 
-  const url = await addBlockCountToURL(targetUrl);
-  if (url === null) {
-    registerEvent(ipmId, NewTabErrorEventType.noUrlFound);
-    dismissCommand(ipmId);
-    logger.debug("[new-tab]: Invalid URL.");
-    return;
-  }
+    const targetUrl = createSafeOriginUrl(behavior.target);
+    if (!targetUrl) {
+      registerEvent(ipmId, NewTabErrorEventType.noUrlFound);
+      dismissCommand(ipmId);
+      continue;
+    }
 
-  // Ignore and dismiss command if it has expired
-  if (isCommandExpired(command)) {
-    logger.error("[new-tab]: Command has expired.");
-    registerEvent(ipmId, CommandEventType.expired);
-    dismissCommand(ipmId);
-    return;
-  }
+    // eslint-disable-next-line no-await-in-loop
+    const url = await addBlockCountToURL(targetUrl);
+    if (url === null) {
+      recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
+      dismissCommand(ipmId);
+      logger.debug("[new-tab]: Invalid URL.");
+      continue;
+    }
 
-  let tab: browser.Tabs.Tab | null = null;
-  const onUpdatedHandler = openNewtabOnUpdated.bind(null, ipmId);
-  openNewtabOnUpdatedHandlerByIPMids.set(ipmId, onUpdatedHandler);
-  browser.tabs.onUpdated.addListener(onUpdatedHandler);
+    const command = getCommand(ipmId);
+    if (!command) {
+      continue;
+    }
 
-  tab = await browser.tabs.create({ url }).catch((error) => {
-    logger.error("[new-tab]: create tab error", error);
-    registerEvent(ipmId, NewTabErrorEventType.tabCreationError);
-    return null;
-  });
-  if (tab !== null) {
-    registerEvent(ipmId, NewTabEventType.created);
-    dismissCommand(ipmId);
+    // Ignore and dismiss command if it has expired
+    if (isCommandExpired(command)) {
+      logger.error("[new-tab]: Command has expired.");
+      registerEvent(ipmId, CommandEventType.expired);
+      dismissCommand(ipmId);
+      continue;
+    }
+
+    let tab: browser.Tabs.Tab | null = null;
+    const onUpdatedHandler = openNewtabOnUpdated.bind(null, ipmId);
+    openNewtabOnUpdatedHandlerByIPMids.set(ipmId, onUpdatedHandler);
+    browser.tabs.onUpdated.addListener(onUpdatedHandler);
+
+    // eslint-disable-next-line no-await-in-loop
+    tab = await browser.tabs.create({ url }).catch((error) => {
+      logger.error("[new-tab]: create tab error", error);
+      registerEvent(ipmId, NewTabErrorEventType.tabCreationError);
+      return null;
+    });
+    if (tab !== null) {
+      registerEvent(ipmId, NewTabEventType.created);
+      dismissCommand(ipmId);
+    }
   }
 }
 
@@ -259,7 +274,7 @@ const openNotificationTab = (ipmId: string) => {
   browser.tabs.onRemoved.removeListener(onRemoved);
 
   tabIds.clear();
-  openNewtab(ipmId);
+  openNewtab();
 };
 
 /**
@@ -357,9 +372,10 @@ async function handleCommand(ipmId: string): Promise<void> {
   // Let the IPM know we received the command.
   registerEvent(ipmId, NewTabEventType.received);
 
-  // If the method is `force`, we need to create the tab right away.
+  waitingTabs[ipmId] = { behavior, ipmId };
+
+  // If the method is `force`, we don't need to create handlers.
   if (behavior.method === CreationMethod.force) {
-    openNotificationTab(ipmId);
     return;
   }
 

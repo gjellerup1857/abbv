@@ -25,6 +25,7 @@ import {
   isValidLicenseStates,
   setCommandActor,
   validateParams,
+  isEmptyOrPositiveNumber,
 } from "../../../ipm/background";
 import * as logger from "~/utilities/background";
 import {
@@ -33,6 +34,7 @@ import {
   NewTabCommand,
   NewTabParams,
   defaultCreationMethod,
+  defaultPriority,
 } from "./new-tab.types";
 
 /**
@@ -55,6 +57,10 @@ const paramDefinitionList: ParamDefinitionList<NewTabParams> = [
         Object.values(CreationMethod)
           .map((method) => String(method))
           .includes(param)),
+  },
+  {
+    name: "priority",
+    validate: isEmptyOrPositiveNumber,
   },
 ];
 
@@ -110,6 +116,7 @@ function getBehavior(command: Command): NewTabBehavior | null {
     target: command.url,
     licenseStateList: command.license_state_list || defaultLicenseState,
     method,
+    priority: typeof command.priority === "number" ? command.priority : defaultPriority,
   };
 }
 
