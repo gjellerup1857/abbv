@@ -41,7 +41,11 @@ const chromiumOptions = {
   args: [
     "--no-sandbox",
     "--window-size=1400,1000",
-    "--disable-search-engine-choice-screen"
+    "--disable-search-engine-choice-screen",
+    // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+    // to be able to test with locally hosted page.
+    "--ignore-certificate-errors",
+    "--host-resolver-rules=MAP testpages.adblockplus.org 127.0.0.1"
   ]
 };
 

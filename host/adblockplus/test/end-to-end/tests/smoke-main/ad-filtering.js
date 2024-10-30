@@ -17,8 +17,8 @@
 
 "use strict";
 
-const {randomIntFromInterval, switchToABPOptionsTab, waitForNewWindow,
-       waitForAssertion, waitForCondition, addFiltersToABP
+const {switchToABPOptionsTab, waitForNewWindow,
+       waitForAssertion, addFiltersToABP, isFirefox
 } = require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
@@ -26,6 +26,8 @@ const AllowlistedWebsitesPage =
   require("../../page-objects/allowlistedWebsites.page");
 const GeneralPage = require("../../page-objects/general.page");
 const TestPages = require("../../page-objects/testPages.page");
+const {AaTestPage} =
+  require("../../page-objects/aa.test.page");
 const testData = require("../../test-data/data-smoke-tests");
 
 async function getTestpagesFilters()
@@ -61,11 +63,15 @@ function removeAllFiltersFromABP()
 
 module.exports = function()
 {
-  let optionsUrl;
+  let aaCheckboxSelected;
 
-  before(function()
+  before(async function()
   {
-    ({optionsUrl} = this.test.parent.parent);
+    const generalPage = new GeneralPage(browser);
+    await generalPage.init();
+
+    aaCheckboxSelected =
+      await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
   beforeEach(async function()
@@ -184,40 +190,61 @@ module.exports = function()
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
   });
 
+  after(async function()
+  {
+    const generalPage = new GeneralPage(browser);
+    await generalPage.init();
+
+    const selected =
+      await generalPage.isAllowAcceptableAdsCheckboxSelected();
+    if (selected != aaCheckboxSelected)
+      await generalPage.clickAllowAcceptableAdsCheckbox();
+  });
+
   it("displays acceptable ads", async function()
   {
-    // https://eyeo.atlassian.net/browse/EE-723
-    if (process.env.LOCAL_RUN === "true")
+    // The DNS mapping for Firefox is not yet implemented
+    if (isFirefox() || process.env.LOCAL_RUN !== "true")
     {
       this.skip();
     }
 
-    const generalPage = new GeneralPage(browser);
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
-    const testPages = new TestPages(browser);
-    const ecosiaSearchUrl =
-      "https://www.ecosia.org/search?method=index&q=hotels";
-    await browser.newWindow(ecosiaSearchUrl);
-    await testPages.switchToTab(/ecosia/);
-    await browser.refresh();
-    try
+    async function assertAcceptableAdsIsShown(shown)
     {
-      await waitForCondition("isEcosiaAdPillDisplayed", testPages, 25000,
-                             true, randomIntFromInterval(1500, 3500));
-    }
-    catch (Exception)
-    {
-      await waitForCondition("isEcosiaAdPillAlternateDisplayed", testPages,
-                             25000, true, randomIntFromInterval(1500, 3500));
+      const testPage = new AaTestPage(browser);
+      await testPage.init();
+      await browser.waitUntil(async() =>
+      {
+        await browser.refresh();
+        return (await testPage.isElementDisplayed(
+          testPage.selector, shown, 500)) === false;
+      }, {
+        timeout: 5000,
+        timeoutMsg:
+          "The AA element is still in unexpected state in 5000 ms"
+      });
+
+      expect(await testPage.isElementDisplayed(
+        testPage.visibleSelector, false, 500))
+        .to.be.true;
     }
 
-    await switchToABPOptionsTab({optionsUrl});
-    await generalPage.init();
+    const acceptableAdsIsOn = !isFirefox();
+    const generalPage = new GeneralPage(browser);
+
+    // Check AA is ON by default in all the browsers, except Firefox
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
+      .to.equal(acceptableAdsIsOn);
+
+    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
+
+    // Switch AA
+    await switchToABPOptionsTab({});
     await generalPage.clickAllowAcceptableAdsCheckbox();
-    await browser.newWindow(ecosiaSearchUrl);
-    await testPages.switchToTab(/ecosia/);
-    await browser.refresh();
-    await browser.pause(randomIntFromInterval(1500, 2500));
-    expect(await testPages.isEcosiaAdPillDisplayed(true)).to.be.true;
+
+    // Make sure the AA state has been changed due to click above
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
+      .to.equal(!acceptableAdsIsOn);
+    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
   });
 };

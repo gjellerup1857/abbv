@@ -163,6 +163,9 @@ not the browser that we specify in build step.
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
 headful mode instead of headless.
 
+DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used in non-Firefox
+browsers to be able to test with locally served pages and AA-related filter rules.
+
 #### LambdaTest run
 
 To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
