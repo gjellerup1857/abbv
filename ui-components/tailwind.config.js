@@ -10,7 +10,7 @@ module.exports = {
     "./docs/**/*.{js,jsx,ts,tsx}",
 
     // Paths outside the package root
-    "../host/adblock/adblock-betafish/**/*.{jsx,tsx}", // Include React components from host/adblock
+    "../host/adblock/adblock-betafish/**/*.{js,jsx,tsx,html}", // Include React components from host/adblock
     "!../host/adblock/node_modules/**", // Exclude node_modules from host/adblock
     "../host/adblockplus/**/*.{jsx,tsx}", // Include React components from host/adblockplus
     "!../host/adblockplus/node_modules/**", // Exclude node_modules from host/adblockplus
@@ -32,9 +32,9 @@ module.exports = {
         "theme-button-secondary": "var(--theme-button-secondary)",
 
         // Error color
-        "error": "rgb(var(--error))",
+        "error": "var(--error)",
         // Foreground content color to use on error color
-        "error-content": "rgb(var(--error-content))",
+        "error-content": "var(--error-content)",
       },
       fontFamily: {
        "sans": "var(--extension-font-family)",

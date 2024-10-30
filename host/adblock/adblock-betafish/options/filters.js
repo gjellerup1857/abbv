@@ -575,6 +575,7 @@ function getDefaultFilterUI(filterList, checkboxID, filterListType) {
   const $checkBoxWrapper = $("<span>")
     .addClass("checkbox")
     .addClass("md-stack")
+    .addClass("mt-1")
     .append($checkBox)
     .append($checkBoxIcons);
 
