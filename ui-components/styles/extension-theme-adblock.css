@@ -17,7 +17,7 @@
     /**
     * Checkbox styling
     */
-     input[type="checkbox"] {
+    input[type="checkbox"] {
       @apply rounded-full;
     }
 

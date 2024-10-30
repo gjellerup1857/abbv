@@ -80,7 +80,7 @@ export default {
         dest: "adblock-deny-push-notifications-requests.js",
         src: ["src/premium-push-notification/content/deny-notifications-requests.ts"],
       },
-      // TODO (ui-components): Uncomment this when you want to integrate ui-components
+      // TODO (ui-components): Uncomment this when you want to integrate ui-components into popup
       // {
       //   dest: "button/react-popup.js",
       //   src: ["adblock-betafish/button/react-components/main.jsx"],
@@ -629,7 +629,6 @@ export default {
         package: "@eyeo/webext-ad-filtering-solution",
         src: "dist/ewe-content.js",
       },
-      // TODO (ui-components): Uncomment this when you want to integrate ui-components
       {
         dest: "ui-components-styles.css",
         src: "../../node_modules/@eyeo/ext-ui-components/dist/styles.css",

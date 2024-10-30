@@ -1,3 +1,8 @@
+/* For ESLint: List any global identifiers used in this file below */
+/* global browser */
+
+const VERBOSE_DEBUG = false;
+
 export const translate = function (messageName, substitutions) {
   if (!messageName || typeof messageName !== "string") {
     // eslint-disable-next-line no-console
