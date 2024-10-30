@@ -184,6 +184,7 @@ async function openNewtab(): Promise<void> {
 
   // Iterate over list and try until a tab was opened or the list is empty.
   for (const candidate of candidates) {
+    logger.debug("[new-tab]:openNewtab");
     const { ipmId } = candidate;
 
     // Run mandatory language skew check
