@@ -394,12 +394,28 @@ async function handleCommand(ipmId: string): Promise<void> {
 }
 
 /**
+ * Checks if we need to open a tab already right now.
+ * We run this check when we're done processing commands from an IPM server
+ * ping.
+ */
+function onCommandsProcessed(): void {
+  // Do we have "force" commands? If so, try to open a tab right now.
+  if (
+    Array.from(Object.values(waitingTabs)).some(
+      (candidate) => candidate.behavior.method === CreationMethod.force,
+    )
+  ) {
+    void openNewtab();
+  }
+}
+
+/**
  * Initializes new tab manager
  */
 async function start(): Promise<void> {
   logger.debug("[new-tab]:tab manager start");
 
-  setNewTabCommandHandler(handleCommand);
+  setNewTabCommandHandler(handleCommand, onCommandsProcessed);
 }
 
 void start().catch(logger.error);

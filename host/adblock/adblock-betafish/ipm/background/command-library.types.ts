@@ -150,6 +150,11 @@ export interface CommandActor {
    * @returns whether the given command is valid for the actor
    */
   isValidCommand: (command: Command) => boolean;
+  /**
+   * Get's called by the IPM system after all commands of a ping have been
+   * processed.
+   */
+  onCommandsProcessed: () => void;
 }
 
 /**

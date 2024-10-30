@@ -137,12 +137,17 @@ function getContent(): null {
  * Sets new tab command handler
  *
  * @param handler - Command handler
+ * @param onCommandsProcessed - Called when all commands in a ping are processed
  */
-export function setNewTabCommandHandler(handler: CommandHandler): void {
+export function setNewTabCommandHandler(
+  handler: CommandHandler,
+  onCommandsProcessed: () => void,
+): void {
   setCommandActor(CommandName.createTab, {
     getBehavior,
     getContent,
     handleCommand: handler,
     isValidCommand: isNewTabCommand,
+    onCommandsProcessed,
   });
 }
