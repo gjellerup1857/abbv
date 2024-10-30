@@ -146,6 +146,8 @@ function getContent(): Content {
  * Sets new tab command handler
  *
  * @param handler - Command handler
+ * @param onCommandsProcessed - Called when all commands in a ping are
+ *  processed
  */
 export function setNewTabCommandHandler(
   handler: CommandHandler,
