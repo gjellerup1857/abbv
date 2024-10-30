@@ -26,7 +26,8 @@ exports.suites = {
     "./tests/test-options-page-acceptable-ads.js",
     "./tests/test-popup-main.js",
     "./tests/test-abp-premium-ui.js",
-    "./tests/public-api/index.js"
+    "./tests/public-api/index.js",
+    "./tests/test-unlock-premium.js"
   ],
   oldbrowsers: [
     "./tests/test-abp-premium-cookiefl-premium-users.js",

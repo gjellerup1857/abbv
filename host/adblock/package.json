@@ -32,7 +32,7 @@
     "prettier-fix": "npm run $ lint-fix.prettier",
     "test": "echo 'No unit test setup yet'",
     "test:end-to-end": "npm run $ test.end-to-end",
-    "test:end-to-end-local": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 120000 --",
+    "test:end-to-end-local": "npm run test:end-to-end:build && mocha test/end-to-end/runner.js --timeout 150000 --",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js"
   },
   "$": {

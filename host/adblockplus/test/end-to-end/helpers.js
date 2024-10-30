@@ -245,7 +245,11 @@ async function enablePremiumByUI()
   await premiumCheckoutPage.init();
   await premiumCheckoutPage.typeTextToEmailField("test_automation" +
     randomIntFromInterval(1000000, 9999999).toString() + "@adblock.org");
-  await premiumCheckoutPage.typeTextToZIPField("10001");
+  try
+  {
+    await premiumCheckoutPage.typeTextToZIPField("10001");
+  }
+  catch (e) {} // Depending on the location, the ZIP may be required or not
   await premiumCheckoutPage.clickContinueButton();
   await premiumCheckoutPage.typeTextToCardNumberField("4242424242424242");
   await premiumCheckoutPage.typeTextToCardExpiryField("0528");

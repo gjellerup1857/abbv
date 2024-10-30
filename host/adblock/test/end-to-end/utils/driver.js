@@ -110,6 +110,10 @@ export async function openNewTab(driver, url) {
   await driver.navigate().to(url);
 }
 
+export function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
   return driver.wait(
     async () => {
