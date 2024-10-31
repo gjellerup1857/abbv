@@ -7,7 +7,7 @@
     "fragment/*",
     "core/*",
     "ui-components",
-    "test", 
+    "test-utils",
     "scripts/*"
   ],
   "scripts": {

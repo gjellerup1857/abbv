@@ -302,7 +302,7 @@ export async function reloadExtension(suppressUpdatePage = true) {
     async () => {
       try {
         await driver.navigate().to(`${extOrigin}/options.html`);
-        await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+        await waitForNotNullAttribute(driver, "acceptable_ads", "checked", 5000);
         return true;
       } catch (e) {
         await driver.navigate().refresh();

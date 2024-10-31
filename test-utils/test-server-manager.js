@@ -32,10 +32,10 @@ export function runTestServer(verbose) {
 
   console.log("Test server starting...");
   // adblock test run happens in the context of host/adblock
-  let startServerPath = path.join(process.cwd(), "..", "..", "test", "start-server.js");
+  let startServerPath = path.join(process.cwd(), "..", "..", "test-utils", "start-server.js");
   if (!fs.existsSync(startServerPath)) {
     // adblockplus test run happens in the context of host/adblockplus/test/end-to-end
-    startServerPath = path.join(process.cwd(), "..", "..", "..", "..", "test", "start-server.js");
+    startServerPath = path.join(process.cwd(), "..", "..", "..", "..", "test-utils", "start-server.js");
   }
 
   let args = [startServerPath];

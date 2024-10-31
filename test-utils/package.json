@@ -1,6 +1,7 @@
 {
   "name": "@eyeo/test-utils",
   "type": "module",
+  "main": "index.js",
   "devDependencies": {
     "express": "^4.17.1"
   },
