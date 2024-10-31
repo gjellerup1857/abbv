@@ -29,15 +29,12 @@ async function run() {
     process.exit(1);
   }      
 
+
   const releaseNotes = await ReleaseNotes.readFromHostFilepath(host);
-  const notesForVersion = releaseNotes.notesForVersion(version);
-
   releaseNotes.insertNewVersionHeading(version, new Date());
+  const notesForVersion = releaseNotes.notesForVersion(version);
+  await releaseNotes.writeToHostFilepath(host);
 
-  // Write the new entry?
-  // await releaseNotes.writeToDefaultFilepath();
-
-  
 }
 
 run().catch(err => {

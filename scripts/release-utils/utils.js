@@ -20,8 +20,17 @@ import url from "url";
 import path from "path";
 
 export async function readFile(filePath) {
-  let contents = await fs.promises.readFile(filePath, {encoding: "utf-8"});
-  return contents.trim();
+  return fs.promises.readFile(filePath, {encoding: "utf-8"});
+}
+
+export async function writeFile(filePath, contents) {
+  return fs.promises.writeFile(
+    filePath,
+    contents,
+    {
+      encoding: "utf-8"
+    }
+  );
 }
 
 export function projectRootPath() {

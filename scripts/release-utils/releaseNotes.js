@@ -17,7 +17,7 @@
 
 import path from "path";
 
-import {projectRootPath, readFile} from "./utils.js";
+import {projectRootPath, readFile, writeFile} from "./utils.js";
 
 export class ReleaseNotes {
   constructor(fileContent) {
@@ -84,6 +84,13 @@ export class ReleaseNotes {
       this.lines.splice(expectedWhitespaceLine, 0, "");
     }
   }
+
+  async writeToHostFilepath(host) {
+    await writeFile(
+      ReleaseNotes.hostFilePath(host),
+      this.toString()
+    );
+  }
 }
 
 ReleaseNotes.hostFilePath = function(host) {   
@@ -94,4 +101,3 @@ ReleaseNotes.readFromHostFilepath = async function(host) {
   let releaseNotesContent = await readFile(ReleaseNotes.hostFilePath(host));
   return new ReleaseNotes(releaseNotesContent);
 };
-
