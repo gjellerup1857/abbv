@@ -62,22 +62,19 @@ export class ReleaseNotes {
   insertNewVersionHeading(version, now) {
     let unreleasedLine = this.lines.findIndex((currentLine) => {
       const line = currentLine.toLowerCase();
+      const headingStart = "# unreleased";
             
-      return line.trim().toLowerCase().includes("unreleased");
+      return line.startsWith(headingStart + " ") || line == headingStart;
     });
 
-    let newHeadingLine = 0;
-    if (unreleasedLine >= 0) {
-      newHeadingLine = unreleasedLine;
-    }
+    let newHeadingLine = unreleasedLine >= 0 ? unreleasedLine + 1 : 0;
 
     let date = now.toISOString().substring(0, 10);
     let versionHeading = `# ${version} - ${date}`;
 
     let newHeading = [
       "",
-      versionHeading,
-      ""
+      versionHeading
     ];
 
     this.lines.splice(newHeadingLine, 0, ...newHeading);

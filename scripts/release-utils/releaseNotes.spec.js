@@ -49,7 +49,7 @@ const NON_SERMVER_RELEASE_NOTES_LINES = [
   "- Would you believe it, more stuff!",
   ""
 ];
-const NON_SERMVER_RELEASE_NOTES = NON_SERMVER_RELEASE_NOTES_LINES.join("\n")
+const NON_SERMVER_RELEASE_NOTES = NON_SERMVER_RELEASE_NOTES_LINES.join("\n");
 
 const NO_WHITESPACE_LINES = NORMAL_FILE_LINES.filter(l => l.length > 0);
 const NO_WHITESPACE = NO_WHITESPACE_LINES.join("\n");
@@ -105,7 +105,7 @@ describe("ReleaseNotes script", function() {
 
       releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
 
-      let unreleasedHeading = NORMAL_FILE_LINES.slice(3, 6).join("\n");
+      let unreleasedHeading = NORMAL_FILE_LINES.slice(3, 4).join("\n");
 
       let expectedNotes = previousUnreleasedNotes.replace(
         unreleasedHeading,
@@ -124,11 +124,11 @@ describe("ReleaseNotes script", function() {
 
       releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
 
-      let unreleasedHeading = NO_WHITESPACE_LINES.slice(2, 5).join("\n");
+      let unreleasedHeading = NO_WHITESPACE_LINES.slice(2, 3).join("\n");
 
       let expectedNotes = previousUnreleasedNotes.replace(
         unreleasedHeading,
-        "# 1.2.0 - 2023-11-15"
+        "# 1.2.0 - 2023-11-15\n"
       );
 
       expect(releaseNotes.unreleasedNotes())
