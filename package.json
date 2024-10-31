@@ -18,7 +18,8 @@
     "build:beta": "lerna run build:beta",
     "test": "lerna run test",
     "test:end-to-end": "lerna run test:end-to-end",
-    "lint": "lerna run lint"
+    "lint": "lerna run lint",
+    "version-bump": "npm run -w scripts/release-utils version-bump"
   },
   "dependencies": {},
   "devDependencies": {

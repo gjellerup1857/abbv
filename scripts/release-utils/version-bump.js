@@ -23,18 +23,27 @@ async function run() {
   const version = process.argv[3];
   const commit = process.argv[4];
 
-  if (!host || !version) {
-    console.error('Please provide a host and a version');
-    console.error('Usage: node version-bump.js <host> <version> [commit]');
-    process.exit(1);
-  }      
+  // TODO: Dry-run parameter, updates the branch being pushed to and tag format
 
+  if (!host || !version) {
+    console.error('Please provide a host, version and commit to release');
+    console.error('Usage: node version-bump.js <host> <version> <commit>');
+    process.exit(1);
+  }
+
+  // TODO: git fetch --all
+  // TODO: git checkout -B <PRODUCT ID>-release <RELEASE CANDIDATE HASH>
 
   const releaseNotes = await ReleaseNotes.readFromHostFilepath(host);
   releaseNotes.insertNewVersionHeading(version, new Date());
   const notesForVersion = releaseNotes.notesForVersion(version);
   await releaseNotes.writeToHostFilepath(host);
 
+  // TODO: Update version in host/adblock/build/config/base.mjs OR host/adblockplus/build/webext/config/base.mjs
+  // TODO: Pause here, ask the user to review release notes, add summary (open $EDITOR?)
+  // TODO: git add affected files
+  // TODO: git commit -m 'build: Releasing <PRODUCT NAME> <VERSION> [noissue]'
+  // TODO: git push origin <PRODUCT ID>-release -f
 }
 
 run().catch(err => {
