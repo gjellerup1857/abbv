@@ -59,12 +59,23 @@ async function run() {
   console.log(releaseNotes.unreleasedNotes());
   console.log('\n---------------------------------\n');
 
-  let rl = readline.createInterface({ input: stdin, output: stdout });
-  let answer = await rl.question("Is this the version you want to release? (yes / no) ");
+  const rl = readline.createInterface({ input: stdin, output: stdout });
+  const answer = await rl.question("Is this the version you want to release? (yes / no) ");
   rl.close();
 
-  let userIsSure = answer.toLowerCase().startsWith("y");
+  const userIsSure = answer.toLowerCase().startsWith("y");
   if (!userIsSure) {
+    // If the notes are not in a good place, would the person doing the release 
+    // have to manually edit them, commit a new version, and then run this 
+    // script again? Here is where we might want to open up a text editor
+
+    // Maybe here we can do some sort of: 
+    //    const userWantsToEditReleaseNotes = answer.toLowerCase().startsWith("e"); // For edit?
+
+    // If so, open the current text editor with the release notes file? 
+    // const editor = process.env.EDITOR || 'vscode';
+    // await promisify(exec)(`${editor} ${releaseNotesPath}`);
+
     console.log('Okay. Weird. Exiting');
     process.exit(1);
   }
@@ -91,7 +102,6 @@ async function run() {
   //       Maybe with a quick git diff?
   // TODO: git push origin <PRODUCT ID>-release -f    
 }
-
 
 // TODO: This file is a bit of a mess right now. 
 //       Let's see where else we can group things.
