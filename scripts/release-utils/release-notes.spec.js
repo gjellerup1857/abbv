@@ -16,7 +16,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import {ReleaseNotes} from "./releaseNotes.js";
+import {ReleaseNotes} from "./release-notes.js";
 
 const NORMAL_FILE_LINES = [
   "This is maybe some preamble, which could be explaining the headings like ",

@@ -16,7 +16,7 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {ReleaseNotes} from "./releaseNotes.js";
+import {ReleaseNotes} from "./release-notes.js";
 
 async function run() {
   const host = process.argv[2];
