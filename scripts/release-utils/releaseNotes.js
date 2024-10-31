@@ -55,18 +55,20 @@ export class ReleaseNotes {
     return this.lines.slice(start, end).join("\n").trim();
   }
 
+  unreleasedNotes() {
+    return this.notesForVersion("unreleased");
+  }
+  
   insertNewVersionHeading(version, now) {
-    let unreleasedLine = this.lines.findIndex((line, index, allLines) => {
-      let nextLine = allLines[index + 1];
-      if (!isUnderline(nextLine)) {
-        return false;
-      }
+    let unreleasedLine = this.lines.findIndex((currentLine) => {
+      const line = currentLine.toLowerCase();
+            
       return line.trim().toLowerCase().includes("unreleased");
     });
 
     let newHeadingLine = 0;
     if (unreleasedLine >= 0) {
-      newHeadingLine = unreleasedLine + 2;
+      newHeadingLine = unreleasedLine;
     }
 
     let date = now.toISOString().substring(0, 10);

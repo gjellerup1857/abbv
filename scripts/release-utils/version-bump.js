@@ -31,10 +31,13 @@ async function run() {
 
   const releaseNotes = await ReleaseNotes.readFromHostFilepath(host);
   const notesForVersion = releaseNotes.notesForVersion(version);
-  console.log(notesForVersion); 
-    
-  // releaseNotes.insertNewVersionHeading(version, new Date());
 
+  releaseNotes.insertNewVersionHeading(version, new Date());
+
+  // Write the new entry?
+  // await releaseNotes.writeToDefaultFilepath();
+
+  
 }
 
 run().catch(err => {

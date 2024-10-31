@@ -103,13 +103,13 @@ describe("ReleaseNotes script", function() {
       let releaseNotes = new ReleaseNotes(NORMAL_FILE);
       let previousUnreleasedNotes = releaseNotes.unreleasedNotes();
 
-      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"), "🍂");
+      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
 
-      let unreleasedHeading = NORMAL_FILE_LINES.slice(3, 5).join("\n");
+      let unreleasedHeading = NORMAL_FILE_LINES.slice(3, 6).join("\n");
 
       let expectedNotes = previousUnreleasedNotes.replace(
         unreleasedHeading,
-        "🍂 1.2.0 - 2023-11-15 🍂\n========================"
+        "# 1.2.0 - 2023-11-15"
       );
 
       expect(releaseNotes.unreleasedNotes())
@@ -122,13 +122,13 @@ describe("ReleaseNotes script", function() {
       let releaseNotes = new ReleaseNotes(NO_WHITESPACE);
       let previousUnreleasedNotes = releaseNotes.unreleasedNotes();
 
-      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"), "🍂");
+      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
 
-      let unreleasedHeading = NO_WHITESPACE_LINES.slice(2, 4).join("\n");
+      let unreleasedHeading = NO_WHITESPACE_LINES.slice(2, 5).join("\n");
 
       let expectedNotes = previousUnreleasedNotes.replace(
         unreleasedHeading,
-        "🍂 1.2.0 - 2023-11-15 🍂\n========================\n"
+        "# 1.2.0 - 2023-11-15"
       );
 
       expect(releaseNotes.unreleasedNotes())
