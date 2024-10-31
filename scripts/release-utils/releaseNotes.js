@@ -54,6 +54,37 @@ export class ReleaseNotes {
 
     return this.lines.slice(start, end).join("\n").trim();
   }
+
+  insertNewVersionHeading(version, now) {
+    let unreleasedLine = this.lines.findIndex((line, index, allLines) => {
+      let nextLine = allLines[index + 1];
+      if (!isUnderline(nextLine)) {
+        return false;
+      }
+      return line.trim().toLowerCase().includes("unreleased");
+    });
+
+    let newHeadingLine = 0;
+    if (unreleasedLine >= 0) {
+      newHeadingLine = unreleasedLine + 2;
+    }
+
+    let date = now.toISOString().substring(0, 10);
+    let versionHeading = `# ${version} - ${date}`;
+
+    let newHeading = [
+      "",
+      versionHeading,
+      ""
+    ];
+
+    this.lines.splice(newHeadingLine, 0, ...newHeading);
+
+    let expectedWhitespaceLine = newHeadingLine + newHeading.length;
+    if (this.lines[expectedWhitespaceLine].trim() != "") {
+      this.lines.splice(expectedWhitespaceLine, 0, "");
+    }
+  }
 }
 
 ReleaseNotes.hostFilePath = function(host) {   
