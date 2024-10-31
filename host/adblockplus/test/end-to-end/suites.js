@@ -25,7 +25,7 @@ exports.suites = {
     "./tests/test-built-in-filter-list-dropdown.js",
     "./tests/test-options-page-acceptable-ads.js",
     "./tests/test-popup-main.js",
-    "./tests/test-abp-premium-ui.js",
+    "./tests/test-abp-premium-ui-free-user.js",
     "./tests/public-api/index.js",
     "./tests/test-unlock-premium.js"
   ],
@@ -39,7 +39,8 @@ exports.suites = {
     "./tests/test-abp-premium-onboarding-free-user.js",
     "./tests/test-abp-premium-onboarding-premium-user.js",
     "./tests/test-abp-premium-one-click-allow.js",
-    "./tests/test-abp-premium-ui.js",
+    "./tests/test-abp-premium-ui-free-user.js",
+    "./tests/test-abp-premium-ui-premium-user.js",
     "./tests/test-advanced-tab-customisations.js",
     "./tests/test-advanced-tab-filter-lists.js",
     "./tests/test-allowlisted-websites-tab.js",

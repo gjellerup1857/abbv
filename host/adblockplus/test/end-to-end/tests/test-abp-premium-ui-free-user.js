@@ -17,8 +17,7 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       getTabId, switchToABPOptionsTab} = require("../helpers");
+const {beforeSequence, getTabId, switchToABPOptionsTab} = require("../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const AllowlistedWebsitesPage =
@@ -29,7 +28,7 @@ const PopupPage = require("../page-objects/popup.page");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 let popupUrl;
 
-describe("test abp premium ui", function()
+describe("test abp premium ui - free user", function()
 {
   before(async function()
   {
@@ -85,60 +84,5 @@ describe("test abp premium ui", function()
       isBlockMoreDistractionsToggleDisplayed()).to.be.false;
     await browser.closeWindow();
     await switchToABPOptionsTab();
-  });
-
-  it("should display correct UI for a premium user", async function()
-  {
-    await enablePremiumByMockServer();
-    const premiumHeaderChunk = new PremiumHeaderChunk(browser);
-    expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
-    expect(await premiumHeaderChunk.
-      isManageMySubscriptionButtonDisplayed()).to.be.true;
-    expect(await premiumHeaderChunk.isPremiumButtonDisplayed()).to.be.true;
-    expect(await premiumHeaderChunk.isUpgradeButtonDisplayed()).to.be.false;
-    const generalPage = new GeneralPage(browser);
-    await generalPage.init();
-    expect(await generalPage.
-      isBlockCookieConsentPopupsItemDisplayed()).to.be.true;
-    expect(await generalPage.
-      isBlockCookieConsentPopupsCheckboxSelected(true)).to.be.true;
-    expect(await generalPage.
-      isBlockMoreDistractionsItemDisplayed()).to.be.true;
-    expect(await generalPage.
-      isBlockMoreDistractionsCheckboxSelected()).to.be.true;
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    expect(await advancedPage.
-      isPremiumDistractionControlFLDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isPremiumBlockCookieConsentPopupsFLDisplayed(true)).to.be.true;
-    const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
-    await allowistedWebsitesPage.init();
-    expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
-    const helpPage = new HelpPage(browser);
-    await helpPage.init();
-    expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
-    await browser.newWindow("https://example.com");
-    await advancedPage.switchToTab("Example Domain");
-    const tabId = await getTabId({title: "Example Domain"});
-    const popupPage = new PopupPage(browser);
-    await popupPage.init(popupUrl, tabId);
-    expect(await popupPage.isPremiumButtonDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockCookieConsentPopupsPremiumTitleDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockCookieConsentPopupsCrownIconDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockCookieConsentPopupsToggleDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockCookieConsentPopupsToggleSelected()).to.be.false;
-    expect(await popupPage.
-      isBlockMoreDistractionsPremiumTitleDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockMoreDistractionsCrownIconDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockMoreDistractionsToggleDisplayed()).to.be.true;
-    expect(await popupPage.
-      isBlockMoreDistractionsToggleSelected()).to.be.true;
   });
 });
