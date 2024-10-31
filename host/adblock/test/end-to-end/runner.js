@@ -71,7 +71,16 @@ async function startBrowser() {
   ];
   const headless = process.env.FORCE_HEADFUL !== "true";
   const extraArgs =
-    browser === "firefox" ? ["-width=1400", "-height=1000"] : ["--window-size=1400,1000"];
+    browser === "firefox"
+      ? ["-width=1400", "-height=1000"]
+      : [
+          "--window-size=1400,1000",
+          // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+          // to be able to test with locally hosted page.
+          "--host-resolver-rules=MAP testpages.adblockplus.org 127.0.0.1",
+          "--ignore-certificate-errors",
+          "--disable-search-engine-choice-screen",
+        ];
   const options = { headless, extensionPaths, extraArgs };
   const driver = await BROWSERS[browser].getDriver(version, options);
 
@@ -85,7 +94,7 @@ async function startBrowser() {
 async function getExtensionInfo(driver) {
   const info = await driver.executeAsyncScript(async (callback) => {
     if (typeof browser !== "undefined" && browser.management !== "undefined") {
-      let { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
+      const { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
       const origin = optionsUrl ? location.origin : null;
       const manifest = await browser.runtime.getManifest();
       const popupPath =

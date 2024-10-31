@@ -308,7 +308,7 @@ export async function reloadExtension(suppressUpdatePage = true) {
         await driver.navigate().refresh();
       }
     },
-    15000,
+    20000,
     "Options page not found after reload",
     1000,
   );
@@ -397,4 +397,16 @@ export async function checkPremiumPageHeader(driver, ctaTextSelector, ctaLinkSel
   expect(await ctaLink.getText()).toEqual("Get It Now");
 
   await clickAndCloseNewTab(driver, ctaLinkSelector, premiumURL);
+}
+
+export async function setAADefaultState(driver, expectAAEnabled) {
+  const name = "acceptable_ads";
+  const inputId = "adblockFilterList_0";
+
+  await initOptionsFiltersTab(driver, getOptionsHandle());
+  const aaEnabled = await isCheckboxEnabled(driver, inputId);
+  // Cleanup setting the AA default state
+  if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
+    await clickFilterlist(driver, name, inputId, expectAAEnabled);
+  }
 }

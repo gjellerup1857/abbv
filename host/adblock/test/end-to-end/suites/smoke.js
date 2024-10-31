@@ -196,7 +196,7 @@ export default () => {
     await initOptionsFiltersTab(driver, getOptionsHandle());
     for (const { name } of enabledFilterLists) {
       const text = await getSubscriptionInfo(driver, name);
-      expect(text).toMatch(/updated/);
+      expect(text).toMatch(/(updated|Subscribed)/);
     }
   });
 

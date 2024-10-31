@@ -18,19 +18,40 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
-import { findUrl, getDisplayedElement, openNewTab, waitForNotDisplayed } from "../utils/driver.js";
+import {
+  findUrl,
+  getDisplayedElement,
+  openNewTab,
+  isCheckboxEnabled,
+  waitForNotDisplayed,
+} from "../utils/driver.js";
 import {
   addFiltersToAdBlock,
   blockHideUrl,
   checkBlockHidePage,
   initOptionsCustomizeTab,
   setCustomFilters,
+  initOptionsFiltersTab,
+  clickFilterlist,
+  setAADefaultState,
 } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
 
 export default () => {
+  let expectAAEnabled;
+
+  before(function () {
+    // By default AA is enabled on Chrome and disabled on Firefox
+    expectAAEnabled = this.browserName !== "firefox";
+  });
+
+  after(async function () {
+    const { driver } = this;
+    await setAADefaultState(driver, expectAAEnabled);
+  });
+
   it("uses sitekey to allowlist content", async function () {
     const { driver, manifestVersion } = this;
     const url = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
@@ -138,8 +159,54 @@ export default () => {
     await waitForNotDisplayed(driver, "#snippet-filter");
   });
 
-  it("displays acceptable ads", function () {
-    // https://eyeo.atlassian.net/browse/EXT-71
-    this.skip();
+  it("displays acceptable ads", async function () {
+    const { browserName, driver } = this;
+    const aaUrl = "http://testpages.adblockplus.org:3005/aa.html";
+    const visibleSelector = "#abptest2";
+    const hiddenSelector = "#abptest";
+    const aaTimeout = 500;
+    const aaFLButtonId = "adblockFilterList_0";
+
+    if (browserName === "firefox") {
+      // #EXT-497 - DNS Mapping not yet added for Firefox
+      this.skip();
+    }
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await driver.wait(
+      // https://eyeo.atlassian.net/browse/EXT-446
+      async () => {
+        return (await isCheckboxEnabled(driver, aaFLButtonId)) == expectAAEnabled;
+      },
+      2000,
+      `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
+    );
+    await openNewTab(driver, aaUrl);
+    if (expectAAEnabled) {
+      await getDisplayedElement(driver, hiddenSelector);
+    } else {
+      await waitForNotDisplayed(driver, hiddenSelector);
+    }
+    await getDisplayedElement(driver, visibleSelector);
+
+    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await clickFilterlist(driver, "acceptable_ads", aaFLButtonId, !expectAAEnabled);
+    await findUrl(driver, aaUrl);
+    await driver.wait(
+      async () => {
+        await driver.navigate().refresh();
+        try {
+          await getDisplayedElement(driver, visibleSelector, aaTimeout);
+          if (!expectAAEnabled) {
+            await getDisplayedElement(driver, hiddenSelector, aaTimeout);
+          } else {
+            await waitForNotDisplayed(driver, hiddenSelector, aaTimeout);
+          }
+          return true;
+        } catch (e) {}
+      },
+      8000,
+      "The AA element is still in unexpected state in 8000 ms",
+    );
   });
 };

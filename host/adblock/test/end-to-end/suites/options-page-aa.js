@@ -18,7 +18,7 @@
 import { expect } from "expect";
 
 import { isCheckboxEnabled, getDisplayedElement } from "../utils/driver.js";
-import { initOptionsGeneralTab, initOptionsFiltersTab, clickFilterlist } from "../utils/page.js";
+import { initOptionsGeneralTab, initOptionsFiltersTab, setAADefaultState } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
@@ -30,16 +30,7 @@ export default () => {
 
   after(async function () {
     const { driver } = this;
-    const name = "acceptable_ads";
-    const inputId = "adblockFilterList_0";
-
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-    const aaEnabled = await isCheckboxEnabled(driver, inputId);
-
-    // Cleanup setting the AA default state
-    if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
-      await clickFilterlist(driver, name, inputId, expectAAEnabled);
-    }
+    await setAADefaultState(driver, expectAAEnabled);
   });
 
   it("displays AA default state", async function () {
