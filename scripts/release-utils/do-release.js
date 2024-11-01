@@ -23,7 +23,7 @@ import { hideBin } from "yargs/helpers";
 
 import { ReleaseNotes } from "./release-notes.js";
 import { updateVersionInConfig } from "./version-bump.js";
-import { executeGitCommand } from "./utils.js";
+import { executeShellCommand } from "./utils.js";
 
 async function run() {
   const args = yargs(hideBin(process.argv))
@@ -53,12 +53,12 @@ async function run() {
   // TODO: Validation that version doesn't already exist for that host?
 
   console.log('- Fetching latest changes');
-  await executeGitCommand('git fetch --all');
+  await executeShellCommand('git fetch --all');
 
   const branchName = `${args.host}-release`;
   console.log(`- Creating release branch: ${branchName}`);
   // TODO: The dry run idea. This is a bit of a pain.
-  // await executeGitCommand(`git checkout -B ${branchName} ${args.commit }`);
+  await executeShellCommand(`git checkout -B ${branchName} ${args.commit }`);
 
   console.log('- Getting unreleased release notes');
   const releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
@@ -100,7 +100,7 @@ async function run() {
 
   console.log('- Committing changes');
   // TODO: Stopped here for now.
-  // await executeGitCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
+  // await executeShellCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?

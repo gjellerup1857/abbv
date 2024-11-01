@@ -20,7 +20,8 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 import url from "url";
-import { executeGitCommand } from "../../utils.js";
+
+import { executeShellCommand } from "../../utils.js";
 
 async function findNodeModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -53,11 +54,13 @@ describe("Do-release script", function() {
 
     const scriptDir = path.dirname(url.fileURLToPath(import.meta.url));
     const repoRoot =  path.join(scriptDir, "..", "..", "..", "..");
-    await fs.cp(repoRoot, originDir, { recursive: true });
-    await executeGitCommand("git add --all", originDir);
-    await executeGitCommand("git commit -m WIP", originDir);
 
-    await executeGitCommand("git clone origin checkout", tempDir);
+    // TODO: This would take much less time if it respected the .gitignore file.
+    await fs.cp(repoRoot, originDir, { recursive: true });
+    await executeShellCommand("git add --all", originDir);
+    await executeShellCommand("git commit -m WIP", originDir);
+
+    await executeShellCommand("git clone origin checkout", tempDir);
 
     const nodeModulesDirs = await findNodeModules(originDir);
     for (const dir of nodeModulesDirs) {
@@ -71,7 +74,13 @@ describe("Do-release script", function() {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
-  it("works", async function() {
-    await executeGitCommand("npm run do-release adblock 1.2.3 main", checkoutDir);
+  it("does the release for adblockplus", async function() {
+    let date = new Date().toISOString().substring(0, 10);
+    await executeShellCommand("npm run do-release adblockplus 99.4.7.1.1 662abb352", checkoutDir);
+    let releaseNotes = await executeShellCommand("npm run -w scripts/release-utils get-release-notes -- adblockplus 99.4.7.1.1", checkoutDir);
+    expect(releaseNotes).toEqual(
+      `# 99.4.7.1.1 - ${date}\n` +
+        "\n" +
+        "This release contains only minor updates and under-the-hood changes.");
   });
 });
