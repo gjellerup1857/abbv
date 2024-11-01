@@ -75,7 +75,15 @@ else
 const firefoxOptions = {args: [
   "-width=1400",
   "-height=1000"
-]};
+],
+  // We force webdriverIO to open new windows as new tabs
+  // this is because webDriverIO with FF and proxy is opening
+  // new tabs as windows and that is making debugging of the test
+  // hard. More context and way to bypass it:
+  // https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206
+                        prefs: {
+                          "browser.link.open_newwindow": 3
+                        }};
 
 if (process.env.FORCE_HEADFUL !== "true")
 {
@@ -175,6 +183,16 @@ exports.config = {
     ui: "bdd",
     timeout: 300000
   },
+  // This is needed to enable DNS mapping for allowlisting
+  // testpages.adblockplus.org is redirected to localhost
+  services: [
+    ["firefox-profile", {
+      proxy: {
+        proxyType: "pac",
+        autoconfigUrl: "http://localhost:3005/proxy-config.pac"
+      }
+    }]
+  ],
   async before()
   {
     process.env.LOCAL_RUN = "true";

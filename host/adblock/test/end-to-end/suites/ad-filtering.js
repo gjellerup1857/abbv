@@ -167,16 +167,11 @@ export default () => {
     const aaTimeout = 500;
     const aaFLButtonId = "adblockFilterList_0";
 
-    if (browserName === "firefox") {
-      // #EXT-497 - DNS Mapping not yet added for Firefox
-      this.skip();
-    }
-
     await initOptionsFiltersTab(driver, getOptionsHandle());
     await driver.wait(
       // https://eyeo.atlassian.net/browse/EXT-446
       async () => {
-        return (await isCheckboxEnabled(driver, aaFLButtonId)) == expectAAEnabled;
+        return (await isCheckboxEnabled(driver, aaFLButtonId)) === expectAAEnabled;
       },
       2000,
       `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,

@@ -18,8 +18,7 @@
 "use strict";
 
 const {switchToABPOptionsTab, waitForNewWindow,
-       waitForAssertion, addFiltersToABP, isFirefox
-} = require("../../helpers");
+       waitForAssertion, addFiltersToABP} = require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
 const AllowlistedWebsitesPage =
@@ -203,36 +202,36 @@ module.exports = function()
 
   it("displays acceptable ads", async function()
   {
-    // The DNS mapping for Firefox is not yet implemented
-    if (isFirefox() || process.env.LOCAL_RUN !== "true")
+    if (process.env.LOCAL_RUN !== "true")
     {
       this.skip();
     }
 
     async function assertAcceptableAdsIsShown(shown)
     {
+      const shortTimeout = 500;
+      const timeout = 5000;
+
       const testPage = new AaTestPage(browser);
       await testPage.init();
       await browser.waitUntil(async() =>
       {
         await browser.refresh();
         return (await testPage.isElementDisplayed(
-          testPage.selector, shown, 500)) === false;
+          testPage.selector, shown, shortTimeout)) === false;
       }, {
-        timeout: 5000,
+        timeout,
         timeoutMsg:
-          "The AA element is still in unexpected state in 5000 ms"
+          `The AA element is still ${shown ? "not " : ""}shown in ${timeout}ms`
       });
 
       expect(await testPage.isElementDisplayed(
-        testPage.visibleSelector, false, 500))
+        testPage.visibleSelector, false, shortTimeout))
         .to.be.true;
     }
-
-    const acceptableAdsIsOn = !isFirefox();
+    const acceptableAdsIsOn = true;
     const generalPage = new GeneralPage(browser);
 
-    // Check AA is ON by default in all the browsers, except Firefox
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected())
       .to.equal(acceptableAdsIsOn);
 

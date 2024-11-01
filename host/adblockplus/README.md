@@ -163,8 +163,11 @@ not the browser that we specify in build step.
 The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
 headful mode instead of headless.
 
-DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used in non-Firefox
-browsers to be able to test with locally served pages and AA-related filter rules.
+DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used to be able
+to test with locally served pages and AA-related filter rules.
+
+Note: By default webDriverIO in Firefox is opening every tab or window as a new tab. 
+More details can be found in the [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206). 
 
 #### LambdaTest run
 
