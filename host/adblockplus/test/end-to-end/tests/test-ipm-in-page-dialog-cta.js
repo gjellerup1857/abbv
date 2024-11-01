@@ -17,7 +17,7 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, wakeMockServer,
+const {beforeSequence, globalRetriesNumber,
        executeAsyncScript, doesTabExist, waitForCondition,
        switchToABPOptionsTab} = require("../helpers");
 const {expect} = require("chai");
@@ -34,8 +34,6 @@ describe("test ABP IPM in page dialog CTA", function()
 
   it("should display in page dialog CTA", async function()
   {
-    await wakeMockServer("https://qa-mock-ipm-server.glitch.me/",
-                         "Mock IPM server is up and running");
     try
     {
       await switchToABPOptionsTab();
@@ -43,7 +41,7 @@ describe("test ABP IPM in page dialog CTA", function()
     catch (Exception) {}
     await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
       ", key: 'ipm_server_url', value: " +
-      "'https://qa-mock-ipm-server.glitch.me/'});");
+      "'http://localhost:3007'});");
     await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
       ", key: 'installation_id', value: 'opdnavigationctaABP'});");
     await executeAsyncScript("browser.runtime.sendMessage({type: " +

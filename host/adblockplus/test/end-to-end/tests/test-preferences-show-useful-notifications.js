@@ -17,7 +17,7 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, wakeMockServer, executeAsyncScript,
+const {beforeSequence, globalRetriesNumber, executeAsyncScript,
        switchToABPOptionsTab} = require("../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
@@ -34,8 +34,6 @@ describe("test preferences - show useful notifications", function()
 
   it("should display useful notification", async function()
   {
-    await wakeMockServer("https://qa-mock-ipm-server.glitch.me/",
-                         "Mock IPM server is up and running");
     try
     {
       await switchToABPOptionsTab();
@@ -43,7 +41,7 @@ describe("test preferences - show useful notifications", function()
     catch (Exception) {}
     await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
       ", key: 'ipm_server_url', value: " +
-      "'https://qa-mock-ipm-server.glitch.me/'});");
+      "'http://localhost:3007'});");
     await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
       ", key: 'installation_id', value: 'opdnavigationctaABP'});");
     await executeAsyncScript("browser.runtime.sendMessage({type: " +

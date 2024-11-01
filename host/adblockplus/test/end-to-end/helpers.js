@@ -599,14 +599,6 @@ async function waitForExtension()
   return {origin, optionsUrl, popupUrl, extVersion};
 }
 
-async function wakeMockServer(serverUrl, serverUpText)
-{
-  await browser.newWindow(serverUrl);
-  const generalPage = new GeneralPage(browser);
-  await generalPage.isMockServerUpTextDisplayed(serverUpText);
-  await browser.closeWindow();
-}
-
 /**
  * Gets the ID of current tab using the browser.tabs WebExtension API.
  * This is mainly used to work with the popup when it is open in a tab.
@@ -849,7 +841,7 @@ function arrayBufferToBase64(buffer)
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
   executeAsyncScript, testConfig,
-  enablePremiumByMockServer, wakeMockServer, lambdatestRunChecks,
+  enablePremiumByMockServer, lambdatestRunChecks,
   getChromiumMV2Extension, getFirefoxExtension, getHelperExtension,
   getCurrentDate, getTabId, enablePremiumByUI,
   randomIntFromInterval, globalRetriesNumber, switchToABPOptionsTab,

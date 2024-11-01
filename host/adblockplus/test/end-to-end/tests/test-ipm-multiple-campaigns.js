@@ -17,7 +17,7 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, wakeMockServer,
+const {beforeSequence, globalRetriesNumber,
        executeAsyncScript, doesTabExist, switchToABPOptionsTab,
        waitForCondition} = require("../helpers");
 const {expect} = require("chai");
@@ -34,12 +34,10 @@ describe.skip("test ABP IPM multiple campaigns", function()
 
   it("should display IPM for multiple campaigns", async function()
   {
-    await wakeMockServer("https://qa-mock-ipm-server.glitch.me/",
-                         "Mock IPM server is up and running");
     await switchToABPOptionsTab();
     await executeAsyncScript("chrome.runtime.sendMessage({type: " +
       "'prefs.set', key: 'ipm_server_url', value: " +
-      "'https://qa-mock-ipm-server.glitch.me/'});");
+      "'http://localhost:3007'});");
     await executeAsyncScript("chrome.runtime.sendMessage({type: " +
       "'prefs.set', key: 'installation_id', value: " +
       "'opdmultiplenavigationABP'});");

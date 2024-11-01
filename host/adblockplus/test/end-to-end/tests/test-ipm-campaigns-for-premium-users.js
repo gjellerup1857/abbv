@@ -17,7 +17,7 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber, wakeMockServer,
+const {afterSequence, beforeSequence, globalRetriesNumber,
        executeAsyncScript, doesTabExist, switchToABPOptionsTab,
        enablePremiumByMockServer} = require("../helpers");
 const {expect} = require("chai");
@@ -38,12 +38,10 @@ describe("test ABP IPM campaigns for premium users", function()
 
   beforeEach(async function()
   {
-    await wakeMockServer("https://qa-mock-ipm-server.glitch.me/",
-                         "Mock IPM server is up and running");
     await switchToABPOptionsTab();
     await executeAsyncScript("chrome.runtime.sendMessage({type: " +
       "'prefs.set', key: 'ipm_server_url', value: " +
-      "'https://qa-mock-ipm-server.glitch.me/'});");
+      "'http://localhost:3007'});");
   });
 
   afterEach(async function()
