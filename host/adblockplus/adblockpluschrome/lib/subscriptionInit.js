@@ -38,7 +38,9 @@ import {
 import {
   start as startIPMPingListener
 } from "../../src/testing/ping-ipm/background";
-
+import {
+  start as startStorageListener
+} from "../../src/testing/storage/background";
 let firstRun;
 let userNotificationCallback = null;
 let reinitialized = false;
@@ -238,6 +240,7 @@ export async function start()
   void initializeEyeometryMACCounting();
   startUnloadCleanup();
   startIPMPingListener();
+  startStorageListener();
   setReadyState(ReadyState.started);
 
   /**
