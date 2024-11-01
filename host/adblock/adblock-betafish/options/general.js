@@ -249,11 +249,18 @@ function addUIChangeListeners() {
   });
 }
 
+const addAndEmitLoadedEvt = () => {
+  const evt = new Event('onOptionsLoaded');
+  document.addEventListener('onOptionsLoaded', () => console.log('of coursse this works'));
+  document.dispatchEvent(evt);
+};
+
 $(async () => {
   await initializeProxies();
   initialize();
   showSeparators();
   addUIChangeListeners();
+  addAndEmitLoadedEvt();
 
   if (!License || $.isEmptyObject(License) || !MABPayment) {
     return;

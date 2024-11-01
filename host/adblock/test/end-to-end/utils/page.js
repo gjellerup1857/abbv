@@ -79,8 +79,20 @@ export async function initOptionsCustomizeTab(driver, optionsHandle) {
   await loadOptionsTab(driver, optionsHandle, "customize");
 }
 
+async function optionsTabLoaded(driver) {
+  return driver.executeAsyncScript(async (callback) => {
+    document.addEventListener('onOptionsLoaded', function onmessage() {
+      callback();
+    });
+
+    // Uncommenting this works, so the script is being executed
+    // setTimeout(() => callback(), 2000);
+  });
+}
+
 export async function initOptionsGeneralTab(driver, optionsHandle) {
   await loadOptionsTab(driver, optionsHandle, "general");
+  await optionsTabLoaded(driver);
   await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
   // https://eyeo.atlassian.net/browse/EXT-335
   await driver.sleep(1000);
