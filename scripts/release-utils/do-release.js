@@ -94,14 +94,11 @@ async function run() {
   releaseNotes.insertNewVersionHeading(args.version, new Date());
   await releaseNotes.writeToHostFilepath(args.host);
 
-  const configPath = args.host === 'adblock'
-    ? 'host/adblock/build/config/base.mjs'
-    : 'host/adblockplus/build/webext/config/base.mjs';
-  console.log(`- Updating ${configPath} to version ${args.version}`);
-  updateVersionInConfig(configPath, args.version);
+  console.log(`- Updating ${args.host}'s version to ${args.version}`);
+  await updateVersionInConfig(args.host, args.version);
 
   console.log('- Adding changes to git');
-  // await executeGitCommand(`git add ${configPath} ${releaseNotesPath}`);
+  // await executeGitCommand(`git add --update`);
 
   console.log('- Committing changes');
   // TODO: Stopped here for now.

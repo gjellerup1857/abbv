@@ -3,21 +3,20 @@ import path from 'path';
 import { projectRootPath, readFile, writeFile } from "./utils.js";
 
 export function updateVersionInConfigContent(content, version) {
-  const lines = content.split('\n');
-  
-  const versionLineIndex = lines.findIndex(line => line.trim().startsWith('version:'));
-  if (versionLineIndex === -1) {
+  const regex = /(version:\s*)\"[^\"]+\"/;
+
+  if (!regex.test(content)) {
     throw new Error('Could not find version field in the config file');
   }
   
-  const originalLine = lines[versionLineIndex];
-  const indentation = originalLine.slice(0, originalLine.length - originalLine.trimLeft().length);
-  lines[versionLineIndex] = `${indentation}version: "${version}",`;
-  
-  return lines.join('\n');
+  return content.replace(regex, "$1\"" + version + "\"");
 }
 
-export async function updateVersionInConfig(configPath, version) {
+export async function updateVersionInConfig(host, version) {
+  const configPath = host === 'adblock'
+    ? 'host/adblock/build/config/base.mjs'
+    : 'host/adblockplus/build/webext/config/base.mjs';
+
   const fullPath = path.join(projectRootPath(), configPath);
   const content = await readFile(fullPath);
   const updatedContent = updateVersionInConfigContent(content, version);
