@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * This file is part of Web Extensions Core Utilities (Web Extensions CU),
  * Copyright (C) 2024-present eyeo GmbH
