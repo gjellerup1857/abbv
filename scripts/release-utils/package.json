@@ -2,8 +2,9 @@
   "name": "@eyeo/release-utils",
   "type": "module",
   "scripts": {
-    "test": "vitest run --reporter=verbose",
-    "do-release": "node do-release.js"
+    "do-release": "node do-release.js",
+    "test": "vitest run --exclude test/end-to-end --reporter=verbose",
+    "test:end-to-end": "vitest run --root test/end-to-end --reporter=verbose"
   },
   "devDependencies": {
     "yargs": "^17.7.2",

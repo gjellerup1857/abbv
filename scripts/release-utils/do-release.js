@@ -97,12 +97,9 @@ async function run() {
   console.log(`- Updating ${args.host}'s version to ${args.version}`);
   await updateVersionInConfig(args.host, args.version);
 
-  console.log('- Adding changes to git');
-  // await executeGitCommand(`git add --update`);
-
   console.log('- Committing changes');
   // TODO: Stopped here for now.
-  // await executeGitCommand(`git commit -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
+  // await executeGitCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
