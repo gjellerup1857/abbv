@@ -31,7 +31,17 @@ it("sends telemetry request and saves the data in the storage", async function()
     await browser.waitUntil(async() =>
     {
       const key = "ewe:telemetry";
-      data = await browser.storage.local.get([key]);
+      data = await browser.executeScript(`
+      return new Promise((resolve, reject) => {
+        chrome.storage.local.get([\"${key}\"]).then((response) => {
+          if (browser.runtime.lastError) {
+            reject(browser.runtime.lastError);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+    `, []);
       if (data)
         data = data[key];
       if (data)
