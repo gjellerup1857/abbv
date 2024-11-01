@@ -6,6 +6,7 @@
     "do-release": "node do-release.js"
   },
   "devDependencies": {
+    "yargs": "^17.7.2",
     "vitest": "^2.0.5"
   }
 }

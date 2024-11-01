@@ -18,44 +18,53 @@
 
 import * as readline from "node:readline/promises";
 import { stdin, stdout } from "node:process";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 
 import { ReleaseNotes } from "./release-notes.js";
 import { updateVersionInConfig } from "./version-bump.js";
 import { executeGitCommand } from "./utils.js";
 
 async function run() {
-  const host = process.argv[2];
-  const version = process.argv[3];
-  const commit = process.argv[4];
-  const dryRun = process.argv.includes('--dry-run');
+  const args = yargs(hideBin(process.argv))
+      .version(false)
+      .strict()
+      .command("$0 <host> <version> <commit>", "", subparser =>
+        subparser.positional("host", {choices: ["adblock", "adblockplus"]})
+          .positional("version", {type: "string"})
+          .positional("commit", {type: "string"}))
+      .option("dry-run", {
+        type: "boolean",
+        description: "Make branches and tags with a 'test' prefix, in order to not affect real releases"
+      })
+      .option("verbose", {
+        alias: "v",
+        type: "boolean",
+        description: "Run with verbose logging"
+      })
+      .check(argv => {
+        if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
+          throw new Error("Invalid version: Version must be a semver version.");
+        }
+        return true;
+      })
+      .parse();
 
-  if (!host || !version || !commit) {
-    console.error('Please provide a host, version, and commit to release');
-    console.error('Usage: node do-release.js <host> <version> <commit> [--dry-run]');
-    process.exit(1);
-  }
-
-  if (host !== "adblock" && host !== "adblockplus") {
-    console.error('Please provide a valid host: adblock or adblockplus');
-    process.exit(1);
-  }
-
-  // TODO: Validation that version follows semver? 
   // TODO: Validation that version doesn't already exist for that host?
 
   console.log('- Fetching latest changes');
   await executeGitCommand('git fetch --all');
 
-  const branchName = `${host}-release`;
+  const branchName = `${args.host}-release`;
   console.log(`- Creating release branch: ${branchName}`);
-  // TODO: The dry run idea. This is a bit of a pain. 
-  // await executeGitCommand(`git checkout -B ${branchName} ${commit }`);
-  
+  // TODO: The dry run idea. This is a bit of a pain.
+  // await executeGitCommand(`git checkout -B ${branchName} ${args.commit }`);
+
   console.log('- Getting unreleased release notes');
-  const releaseNotes = await ReleaseNotes.readFromHostFilepath(host);
+  const releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
 
   console.log('\nUnreleased changes:\n');
-  console.log('\n---------------------------------\n');  
+  console.log('\n---------------------------------\n');
   console.log(releaseNotes.unreleasedNotes());
   console.log('\n---------------------------------\n');
 
@@ -65,14 +74,14 @@ async function run() {
 
   const userIsSure = answer.toLowerCase().startsWith("y");
   if (!userIsSure) {
-    // If the notes are not in a good place, would the person doing the release 
-    // have to manually edit them, commit a new version, and then run this 
+    // If the notes are not in a good place, would the person doing the release
+    // have to manually edit them, commit a new version, and then run this
     // script again? Here is where we might want to open up a text editor
 
-    // Maybe here we can do some sort of: 
+    // Maybe here we can do some sort of:
     //    const userWantsToEditReleaseNotes = answer.toLowerCase().startsWith("e"); // For edit?
 
-    // If so, open the current text editor with the release notes file? 
+    // If so, open the current text editor with the release notes file?
     // const editor = process.env.EDITOR || 'vscode';
     // await promisify(exec)(`${editor} ${releaseNotesPath}`);
 
@@ -80,32 +89,32 @@ async function run() {
     process.exit(1);
   }
 
-  const releaseNotesPath = ReleaseNotes.hostFilePath(host);
+  const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   console.log(`- Updating release notes file: ${releaseNotesPath}`);
-  releaseNotes.insertNewVersionHeading(version, new Date());
-  await releaseNotes.writeToHostFilepath(host);    
-  
-  const configPath = host === 'adblock'
+  releaseNotes.insertNewVersionHeading(args.version, new Date());
+  await releaseNotes.writeToHostFilepath(args.host);
+
+  const configPath = args.host === 'adblock'
     ? 'host/adblock/build/config/base.mjs'
     : 'host/adblockplus/build/webext/config/base.mjs';
-  console.log(`- Updating ${configPath} to version ${version}`);  
-  updateVersionInConfig(configPath, version);  
+  console.log(`- Updating ${configPath} to version ${args.version}`);
+  updateVersionInConfig(configPath, args.version);
 
-  console.log('- Adding changes to git');  
+  console.log('- Adding changes to git');
   // await executeGitCommand(`git add ${configPath} ${releaseNotesPath}`);
 
   console.log('- Committing changes');
-  // TODO: Stopped here for now. 
-  // await executeGitCommand(`git commit -m 'build: Releasing ${host} ${version} [noissue]'`);
+  // TODO: Stopped here for now.
+  // await executeGitCommand(`git commit -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
-  // TODO: git push origin <PRODUCT ID>-release -f    
+  // TODO: git push origin <PRODUCT ID>-release -f
 }
 
-// TODO: This file is a bit of a mess right now. 
+// TODO: This file is a bit of a mess right now.
 //       Let's see where else we can group things.
-// Try this out by running 
+// Try this out by running
 //    npm run do-release -- adblock 11.11.0 3391e6e94
 // from the root of this repo.
 
