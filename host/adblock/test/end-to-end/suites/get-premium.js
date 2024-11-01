@@ -35,11 +35,8 @@ export default () => {
     await driver.navigate().to(`${url}&testmode`);
     const getPremiumButton = await getDisplayedElement(driver, '[data-plan="me"]');
     await getPremiumButton.click();
+    await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
     const completePurchaseButton = await getDisplayedElement(driver, '[i18n="complete_purchase"]');
-    await driver.executeScript(
-      "arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });",
-      completePurchaseButton,
-    );
     await driver.sleep(500); // Sometimes the scrolling is not done when the click is performed
     await completePurchaseButton.click();
 
