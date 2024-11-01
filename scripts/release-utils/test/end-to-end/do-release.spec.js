@@ -15,42 +15,63 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { describe, expect, it, beforeAll } from "vitest";
-import { existsSync } from "fs";
+import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
-import { execSync } from "child_process";
+import os from "os";
+import url from "url";
+import { executeGitCommand } from "../../utils.js";
 
-function isRunningInDocker() {
-  return existsSync("/.dockerenv");
-}
+async function findNodeModules(dir) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const nodeModulesDirs = [];
 
-function runInDocker() {
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const DOCKERFILE_PATH = path.resolve(__dirname, './Dockerfile');
-  const DOCKER_CONTEXT = path.resolve(__dirname, '../../../../');
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
 
-  console.log('Not running in Docker. Building and starting Docker container...');
-
-  execSync(`docker build -t test-container -f ${DOCKERFILE_PATH} ${DOCKER_CONTEXT}`, { stdio: "inherit" });
-  try {
-    execSync(
-      "docker run --rm test-container",
-      { stdio: "inherit" }
-    );
-    return 0;
+    if (entry.isDirectory()) {
+      if (entry.name === 'node_modules') {
+        nodeModulesDirs.push(fullPath);
+      } else {
+        nodeModulesDirs.push(...await findNodeModules(fullPath));
+      }
+    }
   }
-  catch (e) {
-    return e.status;
-  }
-}
 
-if (!isRunningInDocker()) {
-  let exitStatus = runInDocker();
-  process.exit(exitStatus);
+  return nodeModulesDirs;
 }
 
 describe("Do-release script", function() {
-  it("works", function() {
+  let tempDir;
+  let originDir;
+  let checkoutDir;
+
+  beforeAll(async function() {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "do-release-spec-"));
+    originDir = path.join(tempDir, "origin");
+    checkoutDir = path.join(tempDir, "checkout");
+
+    const scriptDir = path.dirname(url.fileURLToPath(import.meta.url));
+    const repoRoot =  path.join(scriptDir, "..", "..", "..", "..");
+    await fs.cp(repoRoot, originDir, { recursive: true });
+    await executeGitCommand("git add --all", originDir);
+    await executeGitCommand("git commit -m WIP", originDir);
+
+    await executeGitCommand("git clone origin checkout", tempDir);
+
+    const nodeModulesDirs = await findNodeModules(originDir);
+    for (const dir of nodeModulesDirs) {
+      const relativePath = path.relative(originDir, dir);
+      const targetPath = path.join(checkoutDir, relativePath);
+      await fs.symlink(dir, targetPath);
+    }
+  }, 0);
+
+  afterAll(async function() {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  });
+
+  it("works", async function() {
+    await executeGitCommand("npm run do-release adblock 1.2.3 main", checkoutDir);
   });
 });

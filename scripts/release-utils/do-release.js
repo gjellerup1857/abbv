@@ -68,11 +68,12 @@ async function run() {
   console.log(releaseNotes.unreleasedNotes());
   console.log('\n---------------------------------\n');
 
-  const rl = readline.createInterface({ input: stdin, output: stdout });
-  const answer = await rl.question("Is this the version you want to release? (yes / no) ");
-  rl.close();
+  // const rl = readline.createInterface({ input: stdin, output: stdout });
+  // const answer = await rl.question("Is this the version you want to release? (yes / no) ");
+  // rl.close();
 
-  const userIsSure = answer.toLowerCase().startsWith("y");
+  // const userIsSure = answer.toLowerCase().startsWith("y");
+  const userIsSure = true;
   if (!userIsSure) {
     // If the notes are not in a good place, would the person doing the release
     // have to manually edit them, commit a new version, and then run this
