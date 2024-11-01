@@ -17,13 +17,16 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber, wakeMockServer,
+const {afterSequence, beforeSequence, globalRetriesNumber,
        executeAsyncScript, doesTabExist, switchToABPOptionsTab,
        waitForCondition} = require("../helpers");
 const {expect} = require("chai");
 const IPMChunk = require("../page-objects/ipm.chunk");
 const ipmCampaignsData =
   require("../test-data/data-ipm-campaigns").ipmCampaignTriggersData;
+const {port: ipmPort} =
+  require("../../../../../test-utils/ipm-server/test-ipm-server.js");
+
 let lastTest = false;
 
 describe("test ABP IPM campaign triggers", function()
@@ -37,12 +40,10 @@ describe("test ABP IPM campaign triggers", function()
 
   beforeEach(async function()
   {
-    await wakeMockServer("https://qa-mock-ipm-server.glitch.me/",
-                         "Mock IPM server is up and running");
     await switchToABPOptionsTab();
     await executeAsyncScript("chrome.runtime.sendMessage({type: " +
       "'prefs.set', key: 'ipm_server_url', value: " +
-      "'https://qa-mock-ipm-server.glitch.me/'});");
+      `'http://localhost:${ipmPort}'});`);
   });
 
   afterEach(async function()

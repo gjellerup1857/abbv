@@ -177,15 +177,13 @@ async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
 
 async function enablePremiumByMockServer()
 {
-  await wakeMockServer("https://qa-mock-licensing-server.glitch.me/",
-                       "Mock licensing server is up and running");
   await switchToABPOptionsTab();
   await browser.executeScript(`
     Promise.all([
       new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.set",
           key: "premium_license_check_url",
-          value: "https://qa-mock-licensing-server.glitch.me/"},
+          value: "http://localhost:3006"},
           response => {
           if (browser.runtime.lastError) {
             reject(browser.runtime.lastError);
@@ -601,14 +599,6 @@ async function waitForExtension()
   return {origin, optionsUrl, popupUrl, extVersion};
 }
 
-async function wakeMockServer(serverUrl, serverUpText)
-{
-  await browser.newWindow(serverUrl);
-  const generalPage = new GeneralPage(browser);
-  await generalPage.isMockServerUpTextDisplayed(serverUpText);
-  await browser.closeWindow();
-}
-
 /**
  * Gets the ID of current tab using the browser.tabs WebExtension API.
  * This is mainly used to work with the popup when it is open in a tab.
@@ -851,7 +841,7 @@ function arrayBufferToBase64(buffer)
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
   executeAsyncScript, testConfig,
-  enablePremiumByMockServer, wakeMockServer, lambdatestRunChecks,
+  enablePremiumByMockServer, lambdatestRunChecks,
   getChromiumMV2Extension, getFirefoxExtension, getHelperExtension,
   getCurrentDate, getTabId, enablePremiumByUI,
   randomIntFromInterval, globalRetriesNumber, switchToABPOptionsTab,
