@@ -177,15 +177,13 @@ async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
 
 async function enablePremiumByMockServer()
 {
-  await wakeMockServer("https://qa-mock-licensing-server.glitch.me/",
-                       "Mock licensing server is up and running");
   await switchToABPOptionsTab();
   await browser.executeScript(`
     Promise.all([
       new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.set",
           key: "premium_license_check_url",
-          value: "https://qa-mock-licensing-server.glitch.me/"},
+          value: "http://localhost:3006"},
           response => {
           if (browser.runtime.lastError) {
             reject(browser.runtime.lastError);

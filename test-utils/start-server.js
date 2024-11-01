@@ -20,5 +20,7 @@
 /* eslint-disable no-console */
 
 import {startTestPagesServer} from "./test-pages-server.js";
+import {startLicenseServer} from "./test-license-server.js";
 
 startTestPagesServer("localhost");
+startLicenseServer("localhost");
