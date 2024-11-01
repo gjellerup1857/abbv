@@ -33,6 +33,11 @@ async function run() {
         subparser.positional("host", {choices: ["adblock", "adblockplus"]})
           .positional("version", {type: "string"})
           .positional("commit", {type: "string"}))
+      .option("release-date", {
+        type: "string",
+        description: "Sets the date of the release. Defaults to today.",
+        coerce: arg => new Date(arg)
+      })
       .option("dry-run", {
         type: "boolean",
         description: "Make branches and tags with a 'test' prefix, in order to not affect real releases"
@@ -46,6 +51,11 @@ async function run() {
         if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
           throw new Error("Invalid version: Version must be a semver version.");
         }
+
+        if (argv.releaseDate && isNaN(argv.releaseDate)) {
+          throw new Error("Invalid release date: This must be a valid date string.");
+        }
+
         return true;
       })
       .parse();
@@ -92,19 +102,19 @@ async function run() {
 
   const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   console.log(`- Updating release notes file: ${releaseNotesPath}`);
-  releaseNotes.insertNewVersionHeading(args.version, new Date());
+  releaseNotes.insertNewVersionHeading(args.version, args.releaseDate || new Date());
   await releaseNotes.writeToHostFilepath(args.host);
 
   console.log(`- Updating ${args.host}'s version to ${args.version}`);
   await updateVersionInConfig(args.host, args.version);
 
   console.log('- Committing changes');
-  // TODO: Stopped here for now.
-  // await executeShellCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
+
+  await executeShellCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
-  // TODO: git push origin <PRODUCT ID>-release -f
+  await executeShellCommand(`git push origin ${branchName} -f`);
 }
 
 // TODO: This file is a bit of a mess right now.

@@ -19,9 +19,8 @@ import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
-import url from "url";
 
-import { executeShellCommand } from "../../utils.js";
+import { readFile, executeShellCommand, getCurrentFileDir } from "../../utils.js";
 
 async function findNodeModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -42,6 +41,10 @@ async function findNodeModules(dir) {
   return nodeModulesDirs;
 }
 
+async function loadTestFile(relativePath) {
+  return await readFile(path.join(getCurrentFileDir(import.meta.url), relativePath));
+}
+
 describe("Do-release script", function() {
   let tempDir;
   let originDir;
@@ -52,11 +55,16 @@ describe("Do-release script", function() {
     originDir = path.join(tempDir, "origin");
     checkoutDir = path.join(tempDir, "checkout");
 
-    const scriptDir = path.dirname(url.fileURLToPath(import.meta.url));
+    const scriptDir = getCurrentFileDir(import.meta.url);
     const repoRoot =  path.join(scriptDir, "..", "..", "..", "..");
 
-    // TODO: This would take much less time if it respected the .gitignore file.
+    // TODO: This would take much less time if it respected the .gitignore
+    // file. That would just mean symlinking the node_modules from the project
+    // dir, not the copy.
     await fs.cp(repoRoot, originDir, { recursive: true });
+
+    // This commit is so that any uncommitted changes to the do-release script
+    // are included in the checkout, and so are used in the test run.
     await executeShellCommand("git add --all", originDir);
     await executeShellCommand("git commit -m WIP", originDir);
 
@@ -74,13 +82,11 @@ describe("Do-release script", function() {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
-  it("does the release for adblockplus", async function() {
-    let date = new Date().toISOString().substring(0, 10);
-    await executeShellCommand("npm run do-release adblockplus 99.4.7.1.1 662abb352", checkoutDir);
-    let releaseNotes = await executeShellCommand("npm run -w scripts/release-utils get-release-notes -- adblockplus 99.4.7.1.1", checkoutDir);
-    expect(releaseNotes).toEqual(
-      `# 99.4.7.1.1 - ${date}\n` +
-        "\n" +
-        "This release contains only minor updates and under-the-hood changes.");
+  it("recreates the 4.9 release for adblockplus", async function() {
+    await executeShellCommand("npm run do-release -- adblockplus 99.4.9 01debaf19 --release-date=2024-10-31", checkoutDir);
+
+    let diff = await executeShellCommand("git diff --unified=0 HEAD^..HEAD", checkoutDir);
+    let expectedDiff = await loadTestFile("adblockplus-99.4.9-diff.txt");
+    expect(diff).toEqual(expectedDiff);
   });
 });
