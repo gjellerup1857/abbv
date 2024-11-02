@@ -24,11 +24,11 @@ async function getStorage(storage, key)
   return browser.executeAsync(async(params, callback) =>
   {
     browser.storage[params.storage].get([params.key])
-      .then(result => callback(result[key]));
+      .then(result => callback(result[params.key]));
   }, {storage, key});
 }
 
-describe("Telemetry", function()
+describe("Eyeometry", function()
 {
   before(async function()
   {
@@ -51,8 +51,6 @@ describe("Telemetry", function()
       await browser.waitUntil(async() =>
       {
         data = await getStorage("local", "ewe:telemetry");
-        console.warn("Data", data);
-
         if (data)
           return true;
       },
@@ -85,8 +83,7 @@ describe("Telemetry", function()
     }
     else
     {
-      // on Firefox there should be no telemetry data saved
-      expect(true).toEqual(false);
+      expect.fail("No telemetry data saved is expected on Firefox");
     }
   });
 });

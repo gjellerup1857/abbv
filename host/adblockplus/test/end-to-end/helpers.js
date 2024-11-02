@@ -700,31 +700,6 @@ async function uninstallExtension()
   return await browser.getUrl();
 }
 
-async function getStorage(storage, key)
-{
-  return sendExtMessage({
-    type: "testing.storage.get",
-    storage, key
-  });
-}
-
-/*
-async function getStorage(storage, key)
-{
-  return await browser.executeAsync(async(params, callback) =>
-  {
-    // const [errors] = await browser.runtime.sendMessage(
-    //   { type: "filters.importRaw", text: key }
-    // );
-    // if (typeof errors != "undefined" && errors[0])
-    //   callback(errors[0]);
-
-    // callback();
-    chrome.storage.local.get([params.key]).then(result => callback(result));
-    // callback(params);
-  }, {storage, key});
-}
-*/
 
 /**
  * Adds filters to the extension using the filters.importRaw message
@@ -873,7 +848,7 @@ module.exports = {
   waitForExtension, getABPOptionsTabId, waitForCondition,
   waitForSwitchToABPOptionsTab, waitForNewWindow, waitForAssertion, isChrome,
   isFirefox, isEdge, uninstallExtension,
-  addFiltersToABP, getStorage, addFilter, removeFilter,
+  addFiltersToABP, addFilter, removeFilter,
   arrayBufferToBase64,
   reloadExtension,
   updatePrefs
