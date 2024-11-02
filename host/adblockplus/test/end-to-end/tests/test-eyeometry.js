@@ -40,10 +40,41 @@ describe("Eyeometry", function()
     await afterSequence();
   });
 
-  it("sends request and saves the data in the storage", async function()
+  const timeout = 10000;
+
+  it("sends the request not in Firefox", async function()
   {
-    const timeout = 10000;
+    if (isFirefox())
+      this.skip();
+
     const timeoutMsg = `No storage data after ${timeout}ms`;
+    let data;
+
+    await browser.waitUntil(async() =>
+    {
+      data = await getStorage("local", "ewe:telemetry");
+      if (data)
+        return true;
+    },
+                            {
+                              timeout,
+                              interval: 100,
+                              timeoutMsg
+                            });
+
+    expect(data).toEqual(expect.objectContaining({
+      firstPing: expect.any(String),
+      lastPing: expect.any(String),
+      lastPingTag: expect.any(String)
+    }));
+  });
+
+  it("does not send a request in Firefox", async function()
+  {
+    if (!isFirefox())
+      this.skip();
+
+    const timeoutMsg = `Storage data found after ${timeout}ms`;
     let data;
 
     try
@@ -62,28 +93,10 @@ describe("Eyeometry", function()
     }
     catch (e)
     {
-      if (!isFirefox())
-      {
-        throw e;
-      }
-      else
-      {
-        // It's Firefox and no storage data was saved, all good
-        return;
-      }
+      // Timeout exceeded, no telemetry data saved, all good
+      return;
     }
 
-    if (!isFirefox())
-    {
-      expect(data).toEqual(expect.objectContaining({
-        firstPing: expect.any(String),
-        lastPing: expect.any(String),
-        lastPingTag: expect.any(String)
-      }));
-    }
-    else
-    {
-      expect.fail("No telemetry data saved is expected on Firefox");
-    }
+    expect(data).toBeNull();
   });
 });
