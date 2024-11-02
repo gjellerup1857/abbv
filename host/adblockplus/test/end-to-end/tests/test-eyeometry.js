@@ -70,7 +70,7 @@ describe("Eyeometry", function()
     }));
   });
 
-  it("does not send a request in Firefox", async function()
+  it("does not send the request in Firefox", async function()
   {
     if (!isFirefox())
       this.skip();

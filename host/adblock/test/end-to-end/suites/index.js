@@ -60,7 +60,7 @@ export default () => {
   });
 
   describe("Premium Tests", getPremium);
-  describe("Telemetry", eyoemetry);
+  describe("Eyeometry", eyeometry);
 
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);
