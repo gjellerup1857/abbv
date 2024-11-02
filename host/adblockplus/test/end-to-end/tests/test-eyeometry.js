@@ -50,17 +50,18 @@ describe("Eyeometry", function()
     const timeoutMsg = `No storage data after ${timeout}ms`;
     let data;
 
-    await browser.waitUntil(async() =>
-    {
-      data = await getStorage("local", "ewe:telemetry");
-      if (data)
-        return true;
-    },
-                            {
-                              timeout,
-                              interval: 100,
-                              timeoutMsg
-                            });
+    await browser.waitUntil(
+      async() =>
+      {
+        data = await getStorage("local", "ewe:telemetry");
+        if (data)
+          return true;
+      },
+      {
+        timeout,
+        interval: 100,
+        timeoutMsg
+      });
 
     expect(data).toEqual(expect.objectContaining({
       firstPing: expect.any(String),
@@ -79,17 +80,18 @@ describe("Eyeometry", function()
 
     try
     {
-      await browser.waitUntil(async() =>
-      {
-        data = await getStorage("local", "ewe:telemetry");
-        if (data)
-          return true;
-      },
-                              {
-                                timeout,
-                                interval: 100,
-                                timeoutMsg
-                              });
+      await browser.waitUntil(
+        async() =>
+        {
+          data = await getStorage("local", "ewe:telemetry");
+          if (data)
+            return true;
+        },
+        {
+          timeout,
+          interval: 100,
+          timeoutMsg
+        });
     }
     catch (e)
     {

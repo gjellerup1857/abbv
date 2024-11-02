@@ -29,6 +29,7 @@ import popupPagePremiumFreeUser from "./popup-page-premium-free-user.js";
 import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 import bypassAPI from "./public-api/bypass-api.js";
+import eyeometry from "./eyeometry.js";
 
 export default () => {
   beforeEach(async function () {
@@ -59,6 +60,7 @@ export default () => {
   });
 
   describe("Premium Tests", getPremium);
+  describe("Telemetry", eyoemetry);
 
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);
