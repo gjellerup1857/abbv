@@ -18,18 +18,14 @@
 "use strict";
 
 const {isFirefox, beforeSequence, afterSequence} = require("../helpers");
-const GeneralPage = require("../page-objects/general.page");
-const {executeAsyncScript, getStorage} = require("../helpers");
 
-function removeAllFiltersFromABP() {
-  return browser.executeAsync(async callback => {
-    const filters = await browser.runtime.sendMessage({ type: "filters.get" });
-    await Promise.all(filters.map(filter => browser.runtime.sendMessage(
-      { type: "filters.remove", text: filter.text }
-    )));
-
-    callback();
-  });
+async function getStorage(storage, key)
+{
+  return browser.executeAsync(async(params, callback) =>
+  {
+    browser.storage[params.storage].get([params.key])
+      .then(result => callback(result[key]));
+  }, {storage, key});
 }
 
 describe("Telemetry", function()
@@ -50,54 +46,12 @@ describe("Telemetry", function()
     const timeoutMsg = `No storage data after ${timeout}ms`;
     let data;
 
-    // const generalPage = new GeneralPage(browser);
-
-    await removeAllFiltersFromABP();
-    return;
-
     try
     {
       await browser.waitUntil(async() =>
       {
-        // const key = "ewe:telemetry";
-        const key = "pref:sentry_user_id";
-        /*
-        data = await browser.executeAsync(async callback =>
-        {
-          callback("hello");
-          // chrome.storage.local.get([key]).then(result => callback(result));
-
-          // const result = await browser.runtime.sendMessage({
-          //   type: "testing.storage.get",
-          //   storage: "local",
-          //   key
-          // });
-          // callback(result);
-        });
-        */
-        data = await getStorage("local", key);
-
-        // 1
-        // data = await executeAsyncScript("return chrome");
-        // data = await executeAsyncScript("return browser.runtime.sendMessage(" +
-        //   `{type: 'testing.storage.get', storage: 'local', key: '${key}' })`);
-
-        // 2
-        // data = await browser.executeScript(`
-        //   return new Promise((resolve, reject) => {
-        //     chrome.runtime.sendMessage({ type: "testing.storage.get",
-        //       storage: "local", key: "${key}" }, response => {
-        //       if (browser.runtime.lastError) {
-        //         reject(browser.runtime.lastError);
-        //       } else {
-        //         resolve(response);
-        //       }
-        //     });
-        //   });
-        // `, []);
-
-        // if (data)
-        //   data = data[key];
+        data = await getStorage("local", "ewe:telemetry");
+        console.warn("Data", data);
 
         if (data)
           return true;
@@ -110,8 +64,6 @@ describe("Telemetry", function()
     }
     catch (e)
     {
-      console.error("ERROR >>>>>", e.message);
-
       if (!isFirefox())
       {
         throw e;
@@ -119,16 +71,22 @@ describe("Telemetry", function()
       else
       {
         // It's Firefox and no storage data was saved, all good
-        // return;
+        return;
       }
     }
 
-    console.warn("Data", data);
-
-    expect(data).toEqual(expect.objectContaining({
-      firstPing: expect.any(String),
-      lastPing: expect.any(String),
-      lastPingTag: expect.any(String)
-    }));
+    if (!isFirefox())
+    {
+      expect(data).toEqual(expect.objectContaining({
+        firstPing: expect.any(String),
+        lastPing: expect.any(String),
+        lastPingTag: expect.any(String)
+      }));
+    }
+    else
+    {
+      // on Firefox there should be no telemetry data saved
+      expect(true).toEqual(false);
+    }
   });
 });

@@ -42,9 +42,9 @@ describe("Smoke Tests - Main", function()
       await afterSequence();
   });
 
-  // describe("Test Server", testServer);
-  // describe("Installation", installation);
-  // describe("Extension", extension);
+  describe("Test Server", testServer);
+  describe("Installation", installation);
+  describe("Extension", extension);
   describe("Ad Filtering", adFiltering);
-  // describe("Uninstall with default settings", uninstallDefault);
+  describe("Uninstall with default settings", uninstallDefault);
 });
