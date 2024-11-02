@@ -18,16 +18,20 @@
 import { expect } from "expect";
 
 async function getStorage(driver, storage, key) {
-  return driver.executeAsyncScript(async (params, callback) => {
-    browser.storage[params.storage].get([params.key])
-      .then(result => callback(result[params.key]));
-  }, { storage, key });
+  return driver.executeAsyncScript(
+    async (params, callback) => {
+      browser.storage[params.storage]
+        .get([params.key])
+        .then((result) => callback(result[params.key]));
+    },
+    { storage, key },
+  );
 }
 
 export default () => {
   const timeout = 10000;
 
-  it("sends the request not in Firefox", async function() {
+  it("sends the request not in Firefox", async function () {
     const { driver, browserName } = this;
     if (browserName === "firefox") {
       this.skip();
@@ -42,11 +46,13 @@ export default () => {
       timeoutMsg,
     );
 
-    expect(data).toEqual(expect.objectContaining({
-      firstPing: expect.any(String),
-      lastPing: expect.any(String),
-      lastPingTag: expect.any(String)
-    }));
+    expect(data).toEqual(
+      expect.objectContaining({
+        firstPing: expect.any(String),
+        lastPing: expect.any(String),
+        lastPingTag: expect.any(String),
+      }),
+    );
   });
 
   it("does not send the request in Firefox", async function () {

@@ -15,6 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-undef */
+
 "use strict";
 
 const {isFirefox, beforeSequence, afterSequence} = require("../helpers");
