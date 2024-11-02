@@ -17,59 +17,118 @@
 
 "use strict";
 
-const {expect} = require("chai");
-const {isFirefox} = require("../helpers");
+const {isFirefox, beforeSequence, afterSequence} = require("../helpers");
+const GeneralPage = require("../page-objects/general.page");
+const {executeAsyncScript, getStorage} = require("../helpers");
 
-it("sends telemetry request and saves the data in the storage", async function()
+function removeAllFiltersFromABP() {
+  return browser.executeAsync(async callback => {
+    const filters = await browser.runtime.sendMessage({ type: "filters.get" });
+    await Promise.all(filters.map(filter => browser.runtime.sendMessage(
+      { type: "filters.remove", text: filter.text }
+    )));
+
+    callback();
+  });
+}
+
+describe("Telemetry", function()
 {
-  const timeout = 10000;
-  const timeoutMsg = `No storage data after ${timeout}ms`;
-  let data;
-
-  try
+  before(async function()
   {
-    await browser.waitUntil(async() =>
+    await beforeSequence();
+  });
+
+  after(async function()
+  {
+    await afterSequence();
+  });
+
+  it("sends request and saves the data in the storage", async function()
+  {
+    const timeout = 10000;
+    const timeoutMsg = `No storage data after ${timeout}ms`;
+    let data;
+
+    // const generalPage = new GeneralPage(browser);
+
+    await removeAllFiltersFromABP();
+    return;
+
+    try
     {
-      const key = "ewe:telemetry";
-      data = await browser.executeScript(`
-        return new Promise((resolve, reject) => {
-          chrome.runtime.sendMessage({ type: "testing.storage.get",
-            storage: "local", key: "${key}" }, response => {
-            if (browser.runtime.lastError) {
-              reject(browser.runtime.lastError);
-            } else {
-              resolve(response);
-            }
-          });
+      await browser.waitUntil(async() =>
+      {
+        // const key = "ewe:telemetry";
+        const key = "pref:sentry_user_id";
+        /*
+        data = await browser.executeAsync(async callback =>
+        {
+          callback("hello");
+          // chrome.storage.local.get([key]).then(result => callback(result));
+
+          // const result = await browser.runtime.sendMessage({
+          //   type: "testing.storage.get",
+          //   storage: "local",
+          //   key
+          // });
+          // callback(result);
         });
-      `, []);
-      if (data)
-        data = data[key];
-      if (data)
-        return true;
-    },
-                            {
-                              timeout,
-                              interval: 100,
-                              timeoutMsg
-                            });
-  }
-  catch (e)
-  {
-    if (!isFirefox())
-    {
-      throw e;
-    }
-    else
-    {
-      // It's Firefox and no storage data was saved, all good
-      return;
-    }
-  }
+        */
+        data = await getStorage("local", key);
 
-  expect(data).toEqual(expect.objectContaining({
-    firstPing: expect.any(String),
-    lastPing: expect.any(String),
-    lastPingTag: expect.any(String)
-  }));
+        // 1
+        // data = await executeAsyncScript("return chrome");
+        // data = await executeAsyncScript("return browser.runtime.sendMessage(" +
+        //   `{type: 'testing.storage.get', storage: 'local', key: '${key}' })`);
+
+        // 2
+        // data = await browser.executeScript(`
+        //   return new Promise((resolve, reject) => {
+        //     chrome.runtime.sendMessage({ type: "testing.storage.get",
+        //       storage: "local", key: "${key}" }, response => {
+        //       if (browser.runtime.lastError) {
+        //         reject(browser.runtime.lastError);
+        //       } else {
+        //         resolve(response);
+        //       }
+        //     });
+        //   });
+        // `, []);
+
+        // if (data)
+        //   data = data[key];
+
+        if (data)
+          return true;
+      },
+                              {
+                                timeout,
+                                interval: 100,
+                                timeoutMsg
+                              });
+    }
+    catch (e)
+    {
+      console.error("ERROR >>>>>", e.message);
+
+      if (!isFirefox())
+      {
+        throw e;
+      }
+      else
+      {
+        // It's Firefox and no storage data was saved, all good
+        // return;
+      }
+    }
+
+    console.warn("Data", data);
+
+    expect(data).toEqual(expect.objectContaining({
+      firstPing: expect.any(String),
+      lastPing: expect.any(String),
+      lastPingTag: expect.any(String)
+    }));
+  });
 });

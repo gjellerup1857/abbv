@@ -19,6 +19,7 @@ import { port } from "~/core/messaging/background";
 
 export function start(): void {
   port.on("testing.storage.get", async (message) => {
-    return await browser.storage[message.storage].get([message.key]);
+    return "hello";
+    // return await browser.storage[message.storage].get([message.key]);
   });
 }

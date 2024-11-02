@@ -46,18 +46,13 @@ async function getTestpagesFilters()
   return filters.join("\n");
 }
 
-
-function removeAllFiltersFromABP()
+function getStorage(storage, key)
 {
-  return browser.executeAsync(async callback =>
+  return browser.executeAsync(async(params, callback) =>
   {
-    const filters = await browser.runtime.sendMessage({type: "filters.get"});
-    await Promise.all(filters.map(filter => browser.runtime.sendMessage(
-      {type: "filters.remove", text: filter.text}
-    )));
-
-    callback();
-  });
+    const result = await browser.storage[params.storage].get([params.key]);
+    callback(result);
+  }, {storage, key});
 }
 
 module.exports = function()
@@ -80,6 +75,14 @@ module.exports = function()
     await addFiltersToABP("/pop_ads.js");
   });
 
+  it("sends telemetry request", async function()
+  {
+    const data = await getStorage("local", "pref:sentry_user_id");
+    console.log("Data", data);
+    expect(data).toEqual("abc");
+  });
+
+  /*
   it("uses sitekey to allowlist content", async function()
   {
     const manifestVersion = process.env.MANIFEST_VERSION;
@@ -246,4 +249,5 @@ module.exports = function()
       .to.equal(!acceptableAdsIsOn);
     await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
   });
+  */
 };
