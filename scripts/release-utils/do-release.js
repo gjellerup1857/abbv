@@ -71,6 +71,7 @@ async function run() {
 
   console.log('- Getting unreleased release notes');
   const releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
+  const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
 
   console.log('\nUnreleased changes:\n');
   console.log('\n---------------------------------\n');
@@ -78,9 +79,13 @@ async function run() {
   console.log('\n---------------------------------\n');
 
   let answer;    
+  
   if (!args.yes) {
     const rl = readline.createInterface({ input: stdin, output: stdout });
-    answer = await rl.question("Is this the version you want to release? (yes / no) ");
+    while(!answer || !answer.toLowerCase().startsWith("r")) {
+      answer = await rl.question("Is this the version you want to release? (yes / no / reload)");     
+    }
+
     rl.close();
   }
 
@@ -91,9 +96,12 @@ async function run() {
     // script again? Here is where we might want to open up a text editor
 
     // Maybe here we can do some sort of:
-    //    const userWantsToEditReleaseNotes = answer.toLowerCase().startsWith("e"); // For edit?
+    // const userWantsToEditReleaseNotes = answer.toLowerCase().startsWith("e");
 
+    
     // If so, open the current text editor with the release notes file?
+    
+    console.log("Cool! You want to edit things! Open this: ", releaseNotesPath) 
     // const editor = process.env.EDITOR || 'vscode';
     // await promisify(exec)(`${editor} ${releaseNotesPath}`);
 
@@ -101,7 +109,6 @@ async function run() {
     process.exit(1);
   }
 
-  const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   console.log(`- Updating release notes file: ${releaseNotesPath}`);
   releaseNotes.insertNewVersionHeading(args.version, args.releaseDate || new Date());
   await releaseNotes.writeToHostFilepath(args.host);
