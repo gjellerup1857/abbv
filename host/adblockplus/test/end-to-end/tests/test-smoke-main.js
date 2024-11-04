@@ -20,6 +20,7 @@
 const {afterSequence, beforeSequence} = require("../helpers.js");
 const adFiltering = require("./smoke-main/ad-filtering.js");
 const extension = require("./smoke-main/extension.js");
+const eyeometry = require("./smoke-main/eyeometry.js");
 const installation = require("./smoke-main/installation.js");
 const uninstallDefault = require("./smoke-main/uninstall-default.js");
 const testServer = require("./smoke-main/test-server.js");
@@ -45,6 +46,7 @@ describe("Smoke Tests - Main", function()
   describe("Test Server", testServer);
   describe("Installation", installation);
   describe("Extension", extension);
+  describe("Eyeometry", eyeometry);
   describe("Ad Filtering", adFiltering);
   describe("Uninstall with default settings", uninstallDefault);
 });
