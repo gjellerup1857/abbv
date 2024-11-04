@@ -65,9 +65,9 @@ describe("Do-release script", function() {
 
     // This commit is so that any uncommitted changes to the do-release script
     // are included in the checkout, and so are used in the test run.
-    await executeShellCommand("git add --all", originDir);
-    await executeShellCommand("git commit -m WIP", originDir);
-
+    await executeShellCommand("git add --all", originDir);        
+    await executeShellCommand("git commit -m WIP --allow-empty", originDir);
+    
     await executeShellCommand("git clone origin checkout", tempDir);
 
     const nodeModulesDirs = await findNodeModules(originDir);
