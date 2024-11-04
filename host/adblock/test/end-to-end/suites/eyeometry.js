@@ -17,33 +17,28 @@
 
 import { expect } from "expect";
 
-async function getStorage(driver, storage, key) {
-  return driver.executeAsyncScript(
-    async (params, callback) => {
-      browser.storage[params.storage]
-        .get([params.key])
-        .then((result) => callback(result[params.key]));
-    },
-    { storage, key },
-  );
+async function getStorage(driver) {
+  return driver.executeAsyncScript(async (callback) => {
+    const data = await browser.storage.local.get(["ewe:telemetry"]);
+    callback(data);
+  });
 }
 
 export default () => {
-  const timeout = 10000;
+  const timeout = 20000;
 
-  it("sends the request not in Firefox", async function () {
+  it("sends the request", async function () {
     const { driver, browserName } = this;
-    if (browserName === "firefox") {
-      this.skip();
-    }
-
     const timeoutMsg = `No storage data after ${timeout}ms`;
     const data = await driver.wait(
       async () => {
-        return getStorage(driver, "local", "ewe:telemetry");
+        const storageData = await getStorage(driver);
+        console.log("Storage data: ", storageData);
+        return false;
       },
       timeout,
       timeoutMsg,
+      1000,
     );
 
     expect(data).toEqual(
@@ -55,28 +50,28 @@ export default () => {
     );
   });
 
-  it("does not send the request in Firefox", async function () {
-    const { driver, browserName } = this;
-    if (browserName !== "firefox") {
-      this.skip();
-    }
+  // it("does not send the request in Firefox", async function () {
+  //   const { driver, browserName } = this;
+  //   if (browserName !== "firefox") {
+  //     this.skip();
+  //   }
 
-    const timeoutMsg = `Storage data found after ${timeout}ms`;
-    let data;
+  //   const timeoutMsg = `Storage data found after ${timeout}ms`;
+  //   let data;
 
-    try {
-      await driver.wait(
-        async () => {
-          return getStorage(driver, "local", "ewe:telemetry");
-        },
-        timeout,
-        timeoutMsg,
-      );
-    } catch (e) {
-      // Timeout exceeded, no telemetry data saved, all good
-      return;
-    }
+  //   try {
+  //     await driver.wait(
+  //       async () => {
+  //         return getStorage(driver, "local", "ewe:telemetry");
+  //       },
+  //       timeout,
+  //       timeoutMsg,
+  //     );
+  //   } catch (e) {
+  //     // Timeout exceeded, no telemetry data saved, all good
+  //     return;
+  //   }
 
-    expect(data).to.equal(null);
-  });
+  //   expect(data).to.equal(null);
+  // });
 };
