@@ -38,9 +38,9 @@ async function run() {
         description: "Sets the date of the release. Defaults to today.",
         coerce: arg => new Date(arg)
       })
-      .option("dry-run", {
+      .option("yes", {
         type: "boolean",
-        description: "Make branches and tags with a 'test' prefix, in order to not affect real releases"
+        description: "Answers yes to all prompts."
       })
       .option("verbose", {
         alias: "v",
@@ -66,8 +66,7 @@ async function run() {
   await executeShellCommand('git fetch --all');
 
   const branchName = `${args.host}-release`;
-  console.log(`- Creating release branch: ${branchName}`);
-  // TODO: The dry run idea. This is a bit of a pain.
+  console.log(`- Creating release branch: ${branchName}`);    
   await executeShellCommand(`git checkout -B ${branchName} ${args.commit }`);
 
   console.log('- Getting unreleased release notes');
@@ -78,12 +77,14 @@ async function run() {
   console.log(releaseNotes.unreleasedNotes());
   console.log('\n---------------------------------\n');
 
-  // const rl = readline.createInterface({ input: stdin, output: stdout });
-  // const answer = await rl.question("Is this the version you want to release? (yes / no) ");
-  // rl.close();
+  let answer;    
+  if (!args.yes) {
+    const rl = readline.createInterface({ input: stdin, output: stdout });
+    answer = await rl.question("Is this the version you want to release? (yes / no) ");
+    rl.close();
+  }
 
-  // const userIsSure = answer.toLowerCase().startsWith("y");
-  const userIsSure = true;
+  const userIsSure = args.yes || answer.toLowerCase().startsWith("y");
   if (!userIsSure) {
     // If the notes are not in a good place, would the person doing the release
     // have to manually edit them, commit a new version, and then run this

@@ -83,7 +83,7 @@ describe("Do-release script", function() {
   });
 
   it("recreates the 4.9 release for adblockplus", async function() {
-    await executeShellCommand("npm run do-release -- adblockplus 99.4.9 01debaf19 --release-date=2024-10-31", checkoutDir);
+    await executeShellCommand("npm run do-release -- adblockplus 99.4.9 01debaf19 --yes --release-date=2024-10-31", checkoutDir);
 
     let diff = await executeShellCommand("git diff --unified=0 HEAD^..HEAD", checkoutDir);
     let expectedDiff = await loadTestFile("adblockplus-99.4.9-diff.txt");
