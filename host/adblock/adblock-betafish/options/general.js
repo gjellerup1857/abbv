@@ -251,7 +251,7 @@ function addUIChangeListeners() {
 
 const addAndEmitLoadedEvt = () => {
   const evt = new Event('onOptionsLoaded');
-  document.addEventListener('onOptionsLoaded', () => console.log('of coursse this works'));
+  document.addEventListener('onOptionsLoaded', () => console.log('of course this works'));
   document.dispatchEvent(evt);
 };
 

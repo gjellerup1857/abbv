@@ -80,13 +80,19 @@ export async function initOptionsCustomizeTab(driver, optionsHandle) {
 }
 
 async function optionsTabLoaded(driver) {
-  return driver.executeAsyncScript(async (callback) => {
+  // Only this ever logs
+  console.log("1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣");
+  return await driver.executeAsyncScript(async (callback) => {
+    console.log("2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣2️⃣");
     document.addEventListener('onOptionsLoaded', function onmessage() {
+      console.log("3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣3️⃣");
       callback();
     });
 
-    // Uncommenting this works, so the script is being executed
-    // setTimeout(() => callback(), 2000);
+    // Uncommenting this works, so the script is being executed, even if none of the other
+    // logs seem to work
+    console.log("4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣4️⃣");
+    setTimeout(() =>  console.log("5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣5️⃣") || callback(), 2000);
   });
 }
 

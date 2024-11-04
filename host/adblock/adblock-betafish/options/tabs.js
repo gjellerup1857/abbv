@@ -182,6 +182,7 @@ function displayActiveTab($activeTab) {
 function activateTab(tabHref) {
   const tabID = validateTabID(tabHref);
   const $activeTab = $(`.tablink[href='${tabID}']`);
+
   const $allTabs = $(".tablink");
   const $allTabPanels = $(".tab");
 
@@ -193,6 +194,16 @@ function activateTab(tabHref) {
   setStorageCookie("active_tab", $activeTab.attr("href"), THIRTY_MINUTES_IN_MILLISECONDS);
 
   displayActiveTab($activeTab);
+
+  const addAndEmitLoadedEvtTabs = () => {
+    const evt = new Event('onOptionsLoaded');
+    document.addEventListener('onOptionsLoaded', () => console.log('in tab changer'));
+    document.dispatchEvent(evt);
+  };
+
+  if (tabID === '#general') {
+    addAndEmitLoadedEvtTabs()
+  }
 
   checkPFNewIcon(tabID);
 }
