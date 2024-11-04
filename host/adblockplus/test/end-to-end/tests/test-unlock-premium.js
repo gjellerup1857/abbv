@@ -47,9 +47,9 @@ describe("test unlock premium", function()
   {
     await enablePremiumByMockServer();
     await browser.newWindow("https://example.com");
-    let popupPage = new PopupPage(browser);
+    const popupPage = new PopupPage(browser);
     await popupPage.switchToTab("Example Domain");
-    let tabId = await getTabId({title: "Example Domain"});
+    const tabId = await getTabId({title: "Example Domain"});
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleUnlocked()).to.be.true;
