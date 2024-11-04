@@ -15,12 +15,42 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { describe, expect, it, beforeAll, afterAll } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import ignore from "ignore";
 
-import { readFile, executeShellCommand, getCurrentFileDir } from "../../utils.js";
+import { readFile, executeShellCommand, getCurrentFileDir, projectRootPath } from "../../utils.js";
+
+async function loadGitignore() {
+  const gitignorePath = path.join(projectRootPath(), '.gitignore');
+  const gitignoreContent = await readFile(gitignorePath);
+
+  const ig = ignore();
+  ig.add(gitignoreContent);
+  return ig;
+}
+
+async function recursiveCopyDirectoryWithGitignore(src, dest, ig, rootDir = src) {
+  await fs.mkdir(dest, { recursive: true });
+
+  const items = await fs.readdir(src);
+  for (const item of items) {
+    const srcPath = path.join(src, item);
+    const destPath = path.join(dest, item);
+    const relativePath = path.relative(rootDir, srcPath);
+
+    if (!ig.ignores(relativePath)) {
+      const stats = await fs.stat(srcPath);
+      if (stats.isDirectory()) {
+        await recursiveCopyDirectoryWithGitignore(srcPath, destPath, ig, rootDir);
+      } else if (stats.isFile()) {
+        await fs.copyFile(srcPath, destPath);
+      }
+    }
+  }
+}
 
 async function findNodeModules(dir) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -41,6 +71,15 @@ async function findNodeModules(dir) {
   return nodeModulesDirs;
 }
 
+async function recursiveSymlinkNodeModules(src, dest) {
+  const nodeModulesDirs = await findNodeModules(src);
+  for (const dir of nodeModulesDirs) {
+    const relativePath = path.relative(src, dir);
+    const targetPath = path.join(dest, relativePath);
+    await fs.symlink(dir, targetPath);
+  }
+}
+
 async function loadTestFile(relativePath) {
   return await readFile(path.join(getCurrentFileDir(import.meta.url), relativePath));
 }
@@ -50,18 +89,14 @@ describe("Do-release script", function() {
   let originDir;
   let checkoutDir;
 
-  beforeAll(async function() {
+  beforeEach(async function() {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "do-release-spec-"));
     originDir = path.join(tempDir, "origin");
     checkoutDir = path.join(tempDir, "checkout");
 
-    const scriptDir = getCurrentFileDir(import.meta.url);
-    const repoRoot =  path.join(scriptDir, "..", "..", "..", "..");
+    const repoRoot =  projectRootPath();
 
-    // TODO: This would take much less time if it respected the .gitignore
-    // file. That would just mean symlinking the node_modules from the project
-    // dir, not the copy.
-    await fs.cp(repoRoot, originDir, { recursive: true });
+    await recursiveCopyDirectoryWithGitignore(repoRoot, originDir, await loadGitignore());
 
     // This commit is so that any uncommitted changes to the do-release script
     // are included in the checkout, and so are used in the test run.
@@ -69,24 +104,25 @@ describe("Do-release script", function() {
     await executeShellCommand("git commit -m WIP --allow-empty", originDir);
     
     await executeShellCommand("git clone origin checkout", tempDir);
+    await recursiveSymlinkNodeModules(repoRoot, checkoutDir);
+  });
 
-    const nodeModulesDirs = await findNodeModules(originDir);
-    for (const dir of nodeModulesDirs) {
-      const relativePath = path.relative(originDir, dir);
-      const targetPath = path.join(checkoutDir, relativePath);
-      await fs.symlink(dir, targetPath);
-    }
-  }, 0);
-
-  afterAll(async function() {
+  afterEach(async function() {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
   it("recreates the 4.9 release for adblockplus", async function() {
     await executeShellCommand("npm run do-release -- adblockplus 99.4.9 01debaf19 --yes --release-date=2024-10-31", checkoutDir);
 
-    let diff = await executeShellCommand("git diff --unified=0 HEAD^..HEAD", checkoutDir);
-    let expectedDiff = await loadTestFile("adblockplus-99.4.9-diff.txt");
+    const diff = await executeShellCommand("git diff --unified=0 HEAD^..HEAD", checkoutDir);
+    const expectedDiff = await loadTestFile("adblockplus-99.4.9-diff.txt");
     expect(diff).toEqual(expectedDiff);
+
+    const newCommit = await executeShellCommand("git rev-parse --short HEAD", checkoutDir);
+    const checkoutReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblockplus-release", checkoutDir);
+    const originReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblockplus-release", originDir);
+
+    expect(checkoutReleaseBranchCommit).toEqual(newCommit);
+    expect(originReleaseBranchCommit).toEqual(newCommit);
   });
 });
