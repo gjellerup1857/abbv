@@ -143,4 +143,9 @@ describe("Do-release script", function() {
     expect(checkoutReleaseBranchCommit).toEqual(newCommit);
     expect(originReleaseBranchCommit).toEqual(newCommit);
   });
+
+  it("exits if a version already exists", async function() {
+    expect(() => executeShellCommand("npm run do-release -- adblock 6.10.0 HEAD --yes", checkoutDir))
+      .rejects.toThrowError("already exists");
+  });
 });

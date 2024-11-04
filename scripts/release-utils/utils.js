@@ -43,11 +43,10 @@ export function projectRootPath() {
 
 export async function executeShellCommand(command, cwd = projectRootPath()) {
   try {
-    const { stdout, stderr } = await promisify(exec)(command, { cwd });
-    if (stderr) console.error('stderr:', stderr);
+    const { stdout } = await promisify(exec)(command, { cwd });
     return stdout.trim();
   } catch (error) {
-    throw new Error(`Command failed: ${error.message}`);
+    throw new Error(`${error.message}\nstdout: ${error.stdout}\nstderr: ${error.stderr}`);
   }
 }
 

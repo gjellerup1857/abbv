@@ -29,7 +29,6 @@ async function executeMaybe(command, dryRun) {
   if (dryRun) {
     console.log(`Dry run, would have run: ${command}`);
   } else {
-    throw new Error("This should not happen");
     await executeShellCommand(command);
   }
 }
@@ -68,52 +67,64 @@ async function run() {
       })
       .parse();
 
-  // TODO: Validation that version doesn't already exist for that host?
-
   if (!args.skipGit && await gitRepoHasChanges()) {
     console.log("You have uncommitted changes. Commit them or stash them and try again.");
     process.exit(1);
   }
 
+  const tagName = `${args.host}-${args.version}`;
+
+  if (!args.skipGit) {
+    const legacyTagName = `${args.host}-v${args.version}`;
+    const existingTags = await executeShellCommand(`git tag --list ${tagName} ${legacyTagName}`);
+    const versionAlreadyExists = existingTags != "";
+
+    if (versionAlreadyExists) {
+      console.log(`${args.host} version ${args.version} already exists.`);
+      process.exit(1);
+    }
+  }
+
+
   console.log('- Fetching latest changes');
   await executeMaybe('git fetch --all', args.skipGit);
 
   const branchName = `${args.host}-release`;
-  console.log(`- Creating release branch: ${branchName}`);    
+  console.log(`- Creating release branch: ${branchName}`);
   await executeMaybe(`git checkout -B ${branchName} ${args.commit }`, args.skipGit);
 
   const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   let releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
-  
-  let answer;    
-  
+
+  let answer;
+
   if (!args.yes) {
     const rl = readline.createInterface({ input: stdin, output: stdout });
     while(!answer || answer.toLowerCase().startsWith("r")) {
       console.log('- Getting unreleased release notes');
-      
+
       releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
-     
+
       console.log('\nUnreleased changes:\n');
       console.log('\n---------------------------------\n');
       console.log(releaseNotes.unreleasedNotes());
       console.log('\n---------------------------------\n');
 
       // TODO: Use a nice library for this to make the prompting nicer
-      const question = `Is this the version you want to release? : 
+      const question = `Is this the version you want to release? :
 (yes) - Continue with the release.
 (no) - Exit the release process.
-(reload) - You need to change this file: ${releaseNotesPath} and then reload the release notes file to check again. 
+(reload) - You need to change this file: ${releaseNotesPath} and then reload the release notes file to check again.
 `;
 
-      answer = await rl.question(question);     
+      answer = await rl.question(question);
     }
 
     rl.close();
   }
 
   const userIsSure = args.yes || answer.toLowerCase().startsWith("y");
-  if (!userIsSure) {    
+  if (!userIsSure) {
     console.log('- Exiting the release process.');
     process.exit(1);
   }
@@ -129,7 +140,7 @@ async function run() {
 
   await executeMaybe(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`, args.skipGit);
 
-  // TODO: Add tagging here. 
+  // TODO: Add tagging here.
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
   await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
