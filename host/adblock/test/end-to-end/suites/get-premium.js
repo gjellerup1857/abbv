@@ -16,10 +16,20 @@
  */
 
 import { expect } from "expect";
+import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement, findUrl, openNewTab, randomIntFromInterval } from "../utils/driver.js";
-import { initOptionsGeneralTab } from "../utils/page.js";
+import {
+  getDisplayedElement,
+  findUrl,
+  openNewTab,
+  getTabId,
+  randomIntFromInterval,
+  waitForNotDisplayed,
+} from "../utils/driver.js";
+import { initOptionsGeneralTab, initPopupPage } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
+
+const { By } = webdriver;
 
 export default () => {
   it("activates premium", async function () {
@@ -116,22 +126,92 @@ export default () => {
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.executeScript("License.activate();");
-    
-    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]');
+    await driver.sleep(2000); // Premium activation takes a bit
+    await driver.navigate().refresh();
+
+    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]', 4000);
     await imageSwapTab.click();
-    const catsCheckbox = await getDisplayedElement(driver, "#channel-options", 4000);
-    // await catsCheckbox.click();
-    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]');
+    await getDisplayedElement(driver, "#cats", 4000);
+    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', 4000);
     await themesTab.click();
-    const darkThemePopupItem = await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]');
-    await darkThemePopupItem.click();
-    const darkThemeOptionsPageItem = await getDisplayedElement(driver, '[data-key="options_page"][data-theme="dark_theme"]');
+
+    await getDisplayedElement(driver, '[data-key="options_page"][data-theme="dark_theme"]', 5000);
+    const darkThemeOptionsPageItem = await driver.findElement(
+      By.css('[data-key="options_page"][data-theme="dark_theme"] input'),
+    );
     await darkThemeOptionsPageItem.click();
     const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", 5000);
     expect(await darkOptionsPage.isDisplayed()).toEqual(true);
+
+    await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]', 5000);
+    const darkThemePopupItem = await driver.findElement(
+      By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
+    );
+    await darkThemePopupItem.click();
     await openNewTab(driver, "https://example.com/");
     const tabId = await getTabId(driver, getOptionsHandle());
     await initPopupPage(driver, popupUrl, tabId);
-    expect(await darkOptionsPage.isDisplayed()).toEqual(true);
+    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", 5000);
+    expect(await darkPopupPage.isDisplayed()).toEqual(true);
+
+    let skipCookieWallsToggle = await getDisplayedElement(
+      driver,
+      '[data-name="cookies-premium"]',
+      5000,
+    );
+    expect(await skipCookieWallsToggle.isEnabled()).toEqual(true);
+    expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual(null);
+    let blockDistractionsToggle = await getDisplayedElement(
+      driver,
+      '[data-name="distraction-control"]',
+      5000,
+    );
+    expect(await blockDistractionsToggle.isEnabled()).toEqual(true);
+    expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual(null);
+    await skipCookieWallsToggle.click();
+    const confirmCookieWallsButton = await getDisplayedElement(
+      driver,
+      '[data-action="confirmCookie"]',
+      4000,
+    );
+    await confirmCookieWallsButton.click();
+    await initPopupPage(driver, popupUrl, tabId);
+    blockDistractionsToggle = await getDisplayedElement(
+      driver,
+      '[data-name="distraction-control"]',
+      5000,
+    );
+    await blockDistractionsToggle.click();
+    const confirmDCButton = await getDisplayedElement(
+      driver,
+      '[data-action="confirmDistractions"]',
+      4000,
+    );
+    await confirmDCButton.click();
+    await initPopupPage(driver, popupUrl, tabId);
+    skipCookieWallsToggle = await getDisplayedElement(
+      driver,
+      '[data-name="cookies-premium"]',
+      5000,
+    );
+    expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual("true");
+    blockDistractionsToggle = await getDisplayedElement(
+      driver,
+      '[data-name="distraction-control"]',
+      5000,
+    );
+    expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual("true");
+
+    const url =
+      "https://adblockinc.gitlab.io/QA-team/adblocking/DC-filters/DC-filters-testpage.html";
+    await openNewTab(driver, url);
+    await waitForNotDisplayed(driver, "#pushnotifications-hiding-filter");
+    await waitForNotDisplayed(driver, "#pushnotifications-blocking-filter");
+    await waitForNotDisplayed(driver, "#product-video-container");
+    await waitForNotDisplayed(driver, "#autoplayvideo-blocking-filter");
+    await waitForNotDisplayed(driver, "#survey-feedback-to-left");
+    await waitForNotDisplayed(driver, "#survey-blocking-filter");
+    await waitForNotDisplayed(driver, "#newsletterMsg");
+    await waitForNotDisplayed(driver, "#newsletter-blocking-filter");
   });
 };
