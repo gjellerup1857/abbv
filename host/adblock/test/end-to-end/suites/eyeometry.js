@@ -27,7 +27,7 @@ async function getStorage(driver) {
 export default () => {
   // When running test in isolation, extensions needs time to
   // Initialize eyeometry and ewe to set storage data
-  const timeout = 2000;
+  const timeout = 4000;
 
   it("sends the request", async function () {
     // TODO: add information to readme that proper data for testing eyeometry should be filled
