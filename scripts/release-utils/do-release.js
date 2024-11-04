@@ -25,6 +25,15 @@ import { ReleaseNotes } from "./release-notes.js";
 import { updateVersionInConfig } from "./version-bump.js";
 import { executeShellCommand, gitRepoHasChanges } from "./utils.js";
 
+async function executeMaybe(command, dryRun) {
+  if (dryRun) {
+    console.log(`Dry run, would have run: ${command}`);
+  } else {
+    throw new Error("This should not happen");
+    await executeShellCommand(command);
+  }
+}
+
 async function run() {
   const args = yargs(hideBin(process.argv))
       .version(false)
@@ -42,11 +51,9 @@ async function run() {
         type: "boolean",
         description: "Answers yes to all prompts."
       })
-  // TODO: Do we have a need for verbose logging? Get rid of the option for now?
-      .option("verbose", {
-        alias: "v",
+      .option("skip-git", {
         type: "boolean",
-        description: "Run with verbose logging"
+        description: "Don't actually run any git commands. Useful for manual testing the script interface."
       })
       .check(argv => {
         if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
@@ -63,17 +70,17 @@ async function run() {
 
   // TODO: Validation that version doesn't already exist for that host?
 
-  if (await gitRepoHasChanges()) {
+  if (!args.skipGit && await gitRepoHasChanges()) {
     console.log("You have uncommitted changes. Commit them or stash them and try again.");
     process.exit(1);
   }
 
   console.log('- Fetching latest changes');
-  await executeShellCommand('git fetch --all');
+  await executeMaybe('git fetch --all', args.skipGit);
 
   const branchName = `${args.host}-release`;
   console.log(`- Creating release branch: ${branchName}`);    
-  await executeShellCommand(`git checkout -B ${branchName} ${args.commit }`);
+  await executeMaybe(`git checkout -B ${branchName} ${args.commit }`, args.skipGit);
 
   const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   let releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
@@ -120,12 +127,12 @@ async function run() {
 
   console.log('- Committing changes');
 
-  await executeShellCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
+  await executeMaybe(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`, args.skipGit);
 
   // TODO: Add tagging here. 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
-  await executeShellCommand(`git push origin ${branchName} -f`);
+  await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
 }
 
 // TODO: This file is a bit of a mess right now.
