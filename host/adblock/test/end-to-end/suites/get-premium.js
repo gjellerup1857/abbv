@@ -123,27 +123,40 @@ export default () => {
 
   it("should have premium features", async function () {
     const { driver, popupUrl } = this;
+    const defaultTimeout = 5000;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.executeScript("License.activate();");
-    await driver.sleep(2000); // Premium activation takes a bit
+    await getDisplayedElement(driver, "#premium_status_msg", defaultTimeout);
     await driver.navigate().refresh();
 
-    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]', 4000);
+    const imageSwapTab = await getDisplayedElement(
+      driver,
+      '[href="#mab-image-swap"]',
+      defaultTimeout,
+    );
     await imageSwapTab.click();
-    await getDisplayedElement(driver, "#cats", 4000);
-    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', 4000);
+    await getDisplayedElement(driver, "#cats", defaultTimeout);
+    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', defaultTimeout);
     await themesTab.click();
 
-    await getDisplayedElement(driver, '[data-key="options_page"][data-theme="dark_theme"]', 5000);
+    await getDisplayedElement(
+      driver,
+      '[data-key="options_page"][data-theme="dark_theme"]',
+      defaultTimeout,
+    );
     const darkThemeOptionsPageItem = await driver.findElement(
       By.css('[data-key="options_page"][data-theme="dark_theme"] input'),
     );
     await darkThemeOptionsPageItem.click();
-    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", 5000);
+    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
     expect(await darkOptionsPage.isDisplayed()).toEqual(true);
 
-    await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]', 5000);
+    await getDisplayedElement(
+      driver,
+      '[data-key="popup_menu"][data-theme="dark_theme"]',
+      defaultTimeout,
+    );
     const darkThemePopupItem = await driver.findElement(
       By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
     );
@@ -151,20 +164,20 @@ export default () => {
     await openNewTab(driver, "https://example.com/");
     const tabId = await getTabId(driver, getOptionsHandle());
     await initPopupPage(driver, popupUrl, tabId);
-    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", 5000);
+    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
     expect(await darkPopupPage.isDisplayed()).toEqual(true);
 
     let skipCookieWallsToggle = await getDisplayedElement(
       driver,
       '[data-name="cookies-premium"]',
-      5000,
+      defaultTimeout,
     );
     expect(await skipCookieWallsToggle.isEnabled()).toEqual(true);
     expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual(null);
     let blockDistractionsToggle = await getDisplayedElement(
       driver,
       '[data-name="distraction-control"]',
-      5000,
+      defaultTimeout,
     );
     expect(await blockDistractionsToggle.isEnabled()).toEqual(true);
     expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual(null);
@@ -172,33 +185,33 @@ export default () => {
     const confirmCookieWallsButton = await getDisplayedElement(
       driver,
       '[data-action="confirmCookie"]',
-      4000,
+      defaultTimeout,
     );
     await confirmCookieWallsButton.click();
     await initPopupPage(driver, popupUrl, tabId);
     blockDistractionsToggle = await getDisplayedElement(
       driver,
       '[data-name="distraction-control"]',
-      5000,
+      defaultTimeout,
     );
     await blockDistractionsToggle.click();
     const confirmDCButton = await getDisplayedElement(
       driver,
       '[data-action="confirmDistractions"]',
-      4000,
+      defaultTimeout,
     );
     await confirmDCButton.click();
     await initPopupPage(driver, popupUrl, tabId);
     skipCookieWallsToggle = await getDisplayedElement(
       driver,
       '[data-name="cookies-premium"]',
-      5000,
+      defaultTimeout,
     );
     expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual("true");
     blockDistractionsToggle = await getDisplayedElement(
       driver,
       '[data-name="distraction-control"]',
-      5000,
+      defaultTimeout,
     );
     expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual("true");
 
