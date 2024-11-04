@@ -51,6 +51,11 @@ export async function executeShellCommand(command, cwd = projectRootPath()) {
   }
 }
 
+export async function gitRepoHasChanges(cwd = projectRootPath()) {
+  let status = await executeShellCommand("git status --porcelain", cwd);
+  return status != "";
+}
+
 // metaUrl from import.meta.url of the script in question.
 export function getCurrentFileDir(metaUrl) {
   return path.dirname(url.fileURLToPath(metaUrl));

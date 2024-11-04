@@ -23,7 +23,7 @@ import { hideBin } from "yargs/helpers";
 
 import { ReleaseNotes } from "./release-notes.js";
 import { updateVersionInConfig } from "./version-bump.js";
-import { executeShellCommand } from "./utils.js";
+import { executeShellCommand, gitRepoHasChanges } from "./utils.js";
 
 async function run() {
   const args = yargs(hideBin(process.argv))
@@ -42,6 +42,7 @@ async function run() {
         type: "boolean",
         description: "Answers yes to all prompts."
       })
+  // TODO: Do we have a need for verbose logging? Get rid of the option for now?
       .option("verbose", {
         alias: "v",
         type: "boolean",
@@ -61,7 +62,11 @@ async function run() {
       .parse();
 
   // TODO: Validation that version doesn't already exist for that host?
-  // TODO: Check that there are no uncommitted changes. 
+
+  if (await gitRepoHasChanges()) {
+    console.log("You have uncommitted changes. Commit them or stash them and try again.");
+    process.exit(1);
+  }
 
   console.log('- Fetching latest changes');
   await executeShellCommand('git fetch --all');

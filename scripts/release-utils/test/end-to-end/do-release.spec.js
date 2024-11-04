@@ -21,7 +21,8 @@ import path from "path";
 import os from "os";
 import ignore from "ignore";
 
-import { readFile, executeShellCommand, getCurrentFileDir, projectRootPath } from "../../utils.js";
+import { readFile, executeShellCommand, getCurrentFileDir, projectRootPath,
+       gitRepoHasChanges } from "../../utils.js";
 
 async function loadGitignore() {
   const gitignorePath = path.join(projectRootPath(), '.gitignore');
@@ -98,10 +99,12 @@ describe("Do-release script", function() {
 
     await recursiveCopyDirectoryWithGitignore(repoRoot, originDir, await loadGitignore());
 
-    // This commit is so that any uncommitted changes to the do-release script
-    // are included in the checkout, and so are used in the test run.
-    await executeShellCommand("git add --all", originDir);        
-    await executeShellCommand("git commit -m WIP --allow-empty", originDir);
+    if (await gitRepoHasChanges(originDir)) {
+      // This commit is so that any uncommitted changes to the do-release script
+      // are included in the checkout, and so are used in the test run.
+      await executeShellCommand("git add --all", originDir);
+      await executeShellCommand("git commit -m WIP", originDir);
+    }
     
     await executeShellCommand("git clone origin checkout", tempDir);
     await recursiveSymlinkNodeModules(repoRoot, checkoutDir);
