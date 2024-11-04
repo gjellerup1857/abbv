@@ -125,4 +125,19 @@ describe("Do-release script", function() {
     expect(checkoutReleaseBranchCommit).toEqual(newCommit);
     expect(originReleaseBranchCommit).toEqual(newCommit);
   });
+
+  it("recreates the 6.11.0 release for adblock", async function() {
+    await executeShellCommand("npm run do-release -- adblock 99.6.11.0 05a2e33a5 --yes --release-date=2024-10-30", checkoutDir);
+
+    const diff = await executeShellCommand("git diff --unified=0 HEAD^..HEAD", checkoutDir);
+    const expectedDiff = await loadTestFile("adblock-99.6.11.0-diff.txt");
+    expect(diff).toEqual(expectedDiff);
+
+    const newCommit = await executeShellCommand("git rev-parse --short HEAD", checkoutDir);
+    const checkoutReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblock-release", checkoutDir);
+    const originReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblock-release", originDir);
+
+    expect(checkoutReleaseBranchCommit).toEqual(newCommit);
+    expect(originReleaseBranchCommit).toEqual(newCommit);
+  });
 });
