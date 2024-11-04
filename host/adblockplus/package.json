@@ -109,7 +109,7 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#c178ea7d3ed436bf767a6682a67710b0268e4cc7",
+    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#fbca5c21c722930eca0cdba0b6540e4869d903b7",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
     "@eyeo/webext-ad-filtering-solution": "1.17.0",
