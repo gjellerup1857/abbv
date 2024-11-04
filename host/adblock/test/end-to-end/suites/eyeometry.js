@@ -25,53 +25,50 @@ async function getStorage(driver) {
 }
 
 export default () => {
-  const timeout = 20000;
+  // When running test in isolation, extensions needs time to
+  // Initialize eyeometry and ewe to set storage data
+  const timeout = 2000;
 
   it("sends the request", async function () {
+    // TODO: add information to readme that proper data for testing eyeometry should be filled
+    // as env variable - in other scenario - it will fail
     const { driver, browserName } = this;
-    const timeoutMsg = `No storage data after ${timeout}ms`;
-    const data = await driver.wait(
-      async () => {
-        const storageData = await getStorage(driver);
-        console.log("Storage data: ", storageData);
-        return false;
-      },
-      timeout,
-      timeoutMsg,
-      1000,
-    );
+    let storageData;
+    if (browserName !== "firefox") {
+      await driver.wait(
+        async () => {
+          storageData = await getStorage(driver);
+          return Object.keys(storageData).length > 0;
+        },
+        timeout,
+        `No storage data after ${timeout}ms`,
+        500,
+      );
 
-    expect(data).toEqual(
-      expect.objectContaining({
-        firstPing: expect.any(String),
-        lastPing: expect.any(String),
-        lastPingTag: expect.any(String),
-      }),
-    );
+      expect(storageData["ewe:telemetry"]).toEqual(
+        expect.objectContaining({
+          firstPing: expect.any(String),
+          lastPing: expect.any(String),
+          lastPingTag: expect.any(String),
+        }),
+      );
+    } else {
+      try {
+        await driver.wait(
+          async () => {
+            storageData = await getStorage(driver);
+            return Object.keys(storageData).length > 0;
+          },
+          timeout,
+          `No storage data after ${timeout}ms`,
+          500,
+        );
+      } catch (e) {
+        // Timeout exceeded, no telemetry data saved, all good
+        return;
+      }
+
+      expect(storageData).to.equal(null);
+    }
   });
-
-  // it("does not send the request in Firefox", async function () {
-  //   const { driver, browserName } = this;
-  //   if (browserName !== "firefox") {
-  //     this.skip();
-  //   }
-
-  //   const timeoutMsg = `Storage data found after ${timeout}ms`;
-  //   let data;
-
-  //   try {
-  //     await driver.wait(
-  //       async () => {
-  //         return getStorage(driver, "local", "ewe:telemetry");
-  //       },
-  //       timeout,
-  //       timeoutMsg,
-  //     );
-  //   } catch (e) {
-  //     // Timeout exceeded, no telemetry data saved, all good
-  //     return;
-  //   }
-
-  //   expect(data).to.equal(null);
-  // });
 };
