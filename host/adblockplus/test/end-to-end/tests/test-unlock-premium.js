@@ -17,10 +17,13 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       enablePremiumByUI} = require("../helpers");
+const {beforeSequence, globalRetriesNumber, enablePremiumByMockServer,
+       enablePremiumByUI, getTabId} = require("../helpers");
 const {expect} = require("chai");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
+const PopupPage = require("../page-objects/popup.page");
+const TestPages = require("../page-objects/testPages.page");
+let popupUrl;
 
 describe("test unlock premium", function()
 {
@@ -28,7 +31,7 @@ describe("test unlock premium", function()
 
   before(async function()
   {
-    await beforeSequence();
+    ({popupUrl} = await beforeSequence());
   });
 
   it("should be able to activate premium", async function()
@@ -38,5 +41,47 @@ describe("test unlock premium", function()
     expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
     expect(await premiumHeaderChunk.
       isManageMySubscriptionButtonDisplayed()).to.be.true;
+  });
+
+  it("should have premium features", async function()
+  {
+    await enablePremiumByMockServer();
+    await browser.newWindow("https://example.com");
+    let popupPage = new PopupPage(browser);
+    await popupPage.switchToTab("Example Domain");
+    let tabId = await getTabId({title: "Example Domain"});
+    await popupPage.init(popupUrl, tabId);
+    expect(await popupPage.
+      isBlockCookieConsentPopupsToggleUnlocked()).to.be.true;
+    expect(await popupPage.
+      isBlockCookieConsentPopupsToggleSelected()).to.be.false;
+    expect(await popupPage.
+      isBlockMoreDistractionsToggleUnlocked()).to.be.true;
+    expect(await popupPage.
+      isBlockMoreDistractionsToggleSelected()).to.be.true;
+    await popupPage.clickBlockCookieConsentPopupsToggle();
+    await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
+    expect(await popupPage.
+      isBlockCookieConsentPopupsToggleSelected()).to.be.true;
+    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/" +
+      "adblocking/DC-filters/DC-filters-testpage.html");
+    const testPages = new TestPages(browser);
+    await testPages.switchToTab("DC filters");
+    expect(await testPages.
+      isPushNotificationsHidingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isPushNotificationsBlockingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isAutoplayVideosHidingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isAutoplayVideosBlockingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isSurveysHidingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isSurveysBlockingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isNewsletterPopupsHidingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.
+      isNewsletterPopupsBlockingFilterIdDisplayed()).to.be.false;
   });
 });
