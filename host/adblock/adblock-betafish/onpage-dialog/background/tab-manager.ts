@@ -23,12 +23,15 @@ import { TabSessionStorage } from "../../../adblockplusui/adblockpluschrome/lib/
 import { EventEmitter } from "../../../adblockplusui/adblockpluschrome/lib/events";
 import { getLocaleInfo } from "../../i18n/background";
 import {
+  CommandEventType,
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
   doesLicenseStateMatch,
   getBehavior,
+  getCommand,
   getContent,
+  isCommandExpired,
   recordEvent,
 } from "../../ipm/background";
 import * as logger from "../../utilities/background";
@@ -80,7 +83,7 @@ function sendMessage(tabId: number, message: Message): Promise<any> {
  * @param dialog - Dialog information
  * @param eventType - Dialog event type
  */
-function recordDialogEvent(dialog: Dialog, eventType: DialogEventType): void {
+function recordDialogEvent(dialog: Dialog, eventType: CommandEventType | DialogEventType): void {
   eventEmitter.emit(eventType, dialog);
 
   if (typeof dialog.ipmId === "string") {
@@ -516,6 +519,17 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
       logger.debug("[onpage-dialog]: License has mismatch");
       dismissDialog(dialog);
       continue;
+    }
+
+    // Ignore and dismiss command if it has expired
+    if (typeof dialog.ipmId === "string") {
+      const command = getCommand(dialog.ipmId);
+      if (command && isCommandExpired(command)) {
+        logger.error("[onpage-dialog]: Command has expired.");
+        recordDialogEvent(dialog, CommandEventType.expired);
+        dismissDialog(dialog);
+        continue;
+      }
     }
 
     // eslint-disable-next-line no-await-in-loop

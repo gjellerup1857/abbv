@@ -54,9 +54,9 @@ export enum CommandName {
  * A map that contains the version for each command.
  */
 export const CommandVersion: Record<CommandName, number> = {
-  [CommandName.createOnPageDialog]: 4,
-  [CommandName.createTab]: 4,
-  [CommandName.deleteCommands]: 1
+  [CommandName.createOnPageDialog]: 5,
+  [CommandName.createTab]: 5,
+  [CommandName.deleteCommands]: 2
 };
 
 /**
@@ -75,6 +75,10 @@ export interface CommandMetaData {
    * The IPM id.
    */
   ipm_id: string;
+  /**
+   * The command expiration date.
+   */
+  expiry: string;
 }
 
 /**
@@ -114,6 +118,13 @@ export interface CommandActor {
    * @returns whether the given command is valid for the actor
    */
   isValidCommand: (command: Command) => boolean;
+}
+
+/**
+ * General Command events
+ */
+export enum CommandEventType {
+  expired = "command_expired"
 }
 
 /**

@@ -16,7 +16,12 @@
  */
 
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
-import { commandStorageKey, getStoredCommandIds } from "./command-library";
+import {
+  commandStorageKey,
+  getStoredCommandIds,
+  isCommandExpired
+} from "./command-library";
+import { CommandName } from "./command-library.types";
 
 describe("command-library", () => {
   describe("getStoredCommandIds", () => {
@@ -42,17 +47,62 @@ describe("command-library", () => {
           [commandIds[0]]: {
             version: 1,
             ipm_id: commandIds[0],
-            command_name: "mock-command"
+            command_name: "mock-command",
+            expiry: 0
           },
           [commandIds[1]]: {
             version: 1,
             ipm_id: commandIds[1],
-            command_name: "mock-command"
+            command_name: "mock-command",
+            expiry: 0
           }
         }
       };
 
       expect(getStoredCommandIds()).toStrictEqual(commandIds);
+    });
+  });
+
+  describe("isCommandExpired", () => {
+    const commandBase = {
+      version: 1,
+      command_name: CommandName.createOnPageDialog,
+      ipm_id: "command_1"
+    };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("1996-01-15T12:00:00Z"));
+    });
+    afterEach(() => {
+      jest.setSystemTime();
+      jest.useRealTimers();
+    });
+    it("should return true when expiry date doesn't have a valid shape", () => {
+      expect(isCommandExpired({ ...commandBase, expiry: "" })).toBe(true);
+      expect(
+        isCommandExpired({ ...commandBase, expiry: "1996-January-16" })
+      ).toBe(true);
+    });
+    it("should return true when expiry date is not a real date", () => {
+      expect(isCommandExpired({ ...commandBase, expiry: "1996-01-32" })).toBe(
+        true
+      );
+    });
+    it("should return true when expiry date is in the past", () => {
+      expect(isCommandExpired({ ...commandBase, expiry: "1996-01-14" })).toBe(
+        true
+      );
+    });
+    it("should return true when expiry date is the same as current date", () => {
+      expect(isCommandExpired({ ...commandBase, expiry: "1996-01-15" })).toBe(
+        true
+      );
+    });
+    it("should return false when expiry date is in the future", () => {
+      expect(isCommandExpired({ ...commandBase, expiry: "1996-01-16" })).toBe(
+        false
+      );
     });
   });
 });

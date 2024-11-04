@@ -17,11 +17,14 @@
 
 import * as browser from "webextension-polyfill";
 import {
+  CommandEventType,
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
   doesLicenseStateMatch,
   getBehavior,
+  getCommand,
+  isCommandExpired,
   recordEvent
 } from "../../ipm/background";
 import * as logger from "../../logger/background";
@@ -64,7 +67,7 @@ const newTabUpdateListeners = new Map<string, Listener>();
  */
 function registerEvent(
   ipmId: string,
-  name: CreationSuccess | CreationError | CreationRejection
+  name: CommandEventType | CreationSuccess | CreationError | CreationRejection
 ): void {
   void recordEvent(ipmId, CommandName.createTab, name);
 }
@@ -107,6 +110,11 @@ function onNewTabUpdated(
 async function openNewTab(ipmId: string): Promise<void> {
   logger.debug("[new-tab]: openNewTab");
 
+  const command = getCommand(ipmId);
+  if (!command) {
+    return;
+  }
+
   removeListeners(ipmId);
   listenerMap.delete(ipmId);
   tabIds.clear();
@@ -134,6 +142,14 @@ async function openNewTab(ipmId: string): Promise<void> {
   if (targetUrl === null) {
     logger.debug("[new-tab]: Invalid target URL.");
     registerEvent(ipmId, CreationError.invalidURL);
+    dismissCommand(ipmId);
+    return;
+  }
+
+  // Ignore and dismiss command if it has expired
+  if (isCommandExpired(command)) {
+    logger.error("[new-tab]: Command has expired.");
+    registerEvent(ipmId, CommandEventType.expired);
     dismissCommand(ipmId);
     return;
   }

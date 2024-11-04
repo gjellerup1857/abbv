@@ -21,7 +21,8 @@ import {
   isNumeric,
   isSafeUrl,
   isValidLicenseStateList,
-  isValidDomainList
+  isValidDomainList,
+  isValidDate
 } from "./param-validator";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
@@ -166,6 +167,28 @@ describe("param-validator", () => {
     it("returns false for a comma separated list of invalid domains", () => {
       expect(isValidDomainList(`http://example.com`)).toBe(false);
       expect(isValidDomainList(`foo.bar, thisTld.doesNotExist`)).toBe(false);
+    });
+  });
+
+  describe("isValidDate", () => {
+    it("should return false for falsy dates", () => {
+      expect(isValidDate(null)).toBe(false);
+      expect(isValidDate(undefined)).toBe(false);
+      expect(isValidDate("")).toBe(false);
+    });
+    it("should return false for incorrect date types", () => {
+      expect(isValidDate(1996)).toBe(false);
+      expect(isValidDate(new Date("1996-01-16"))).toBe(false);
+      expect(isValidDate(["1996-01-16"])).toBe(false);
+    });
+    it("should return false for incorrect date shape", () => {
+      expect(isValidDate("1996-January-16")).toBe(false);
+    });
+    it("should return false for non-real date", () => {
+      expect(isValidDate("1996-01-32")).toBe(false);
+    });
+    it("should return true for valid date", () => {
+      expect(isValidDate("1996-01-16")).toBe(true);
     });
   });
 });

@@ -22,6 +22,11 @@ import { ParamDefinitionList, ParamValidator } from "./param-validator.types";
 import { createSafeOriginUrl } from "./url";
 
 /**
+ * Regular expression for checking if a string has a valid date shape
+ */
+const validDateRegExp = /^\d{4}-\d{1,2}-\d{1,2}$/;
+
+/**
  * Checks whether the given parameter is of type number, and not NaN.
  *
  * @param param The parameter to validate
@@ -115,4 +120,33 @@ export const isValidDomainList: ParamValidator = (param: unknown): boolean => {
   }
 
   return isDomainList(param);
+};
+
+/**
+ * Checks whether the given parameter is a date of type string
+ * with the shape YYYY-MM-DD, YYYY-MM-D, YYYY-M-DD or YYYY-M-D
+ *
+ * @param param The parameter to check
+ * @returns Whether the given parameter is a valid date string
+ */
+export const isValidDate: ParamValidator = (param: unknown): boolean => {
+  if (!param) {
+    return false;
+  }
+
+  if (typeof param !== "string") {
+    return false;
+  }
+
+  if (!validDateRegExp.test(param)) {
+    return false;
+  }
+
+  // Validating date shape is not enough, we need to verify
+  // that a valid Date object can be created from it
+  if (!Date.parse(param)) {
+    return false;
+  }
+
+  return true;
 };

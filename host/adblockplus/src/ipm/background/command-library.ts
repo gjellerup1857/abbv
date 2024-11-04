@@ -19,6 +19,7 @@ import {
   type Behavior,
   type Command,
   type CommandActor,
+  CommandEventType,
   CommandName,
   CommandVersion,
   type Content,
@@ -28,6 +29,7 @@ import * as logger from "../../logger/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
 import { recordEvent } from "./data-collection";
+import { isValidDate } from "./param-validator";
 
 /**
  * A list of known commands.
@@ -63,7 +65,8 @@ function isCommand(candidate: unknown): candidate is Command {
     candidate !== null &&
     "version" in candidate &&
     "ipm_id" in candidate &&
-    "command_name" in candidate
+    "command_name" in candidate &&
+    "expiry" in candidate
   );
 }
 
@@ -146,7 +149,7 @@ export function getBehavior(ipmId: string): Behavior | null {
  *
  * @returns command
  */
-function getCommand(ipmId: string): Command | null {
+export function getCommand(ipmId: string): Command | null {
   const commandStorage = Prefs.get(commandStorageKey);
   return commandStorage[ipmId] || null;
 }
@@ -197,6 +200,28 @@ export function getContent(ipmId: string): Content | null {
 function hasProcessedCommand(ipmId: string): boolean {
   const commandStorage = Prefs.get(commandStorageKey);
   return ipmId in commandStorage;
+}
+
+/**
+ * Checks whether the IPM command has expired or not
+ *
+ * @param command The IPM command
+ * @returns Whether the IPM command has expired or not
+ */
+export function isCommandExpired(command: Command): boolean {
+  if (!isValidDate(command.expiry)) {
+    return true;
+  }
+
+  // Expiry command parameter will only have date data without time
+  const expiryDateOnly = new Date(command.expiry);
+  const nowDateTime = new Date();
+
+  if (nowDateTime >= expiryDateOnly) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -261,10 +286,26 @@ export function executeIPMCommands(
       logger.error(
         `[ipm]: Command version mismatch for command "${
           command.command_name
-        }". Requested version was ${command.version}", version present is ${
+        }". Requested version was ${command.version}, version present is ${
           CommandVersion[command.command_name]
         }`
       );
+      continue;
+    }
+
+    if (isCommandExpired(command)) {
+      logger.error("[ipm]: Command has expired.");
+      void recordEvent(
+        command.ipm_id,
+        command.command_name,
+        CommandEventType.expired
+      );
+
+      // cleanup commands that have expired from local storage
+      if (isInitialization) {
+        dismissCommand(command.ipm_id);
+      }
+
       continue;
     }
 
@@ -304,7 +345,10 @@ export function executeIPMCommands(
  * @param ipmId The ipm id to register the event for
  * @param name The event name to register
  */
-function registerDeleteEvent(ipmId: string, name: DeleteEventType): void {
+function registerDeleteEvent(
+  ipmId: string,
+  name: CommandEventType | DeleteEventType
+): void {
   void recordEvent(ipmId, CommandName.deleteCommands, name);
 }
 
@@ -315,10 +359,23 @@ function registerDeleteEvent(ipmId: string, name: DeleteEventType): void {
  * @returns
  */
 async function handleDeleteCommand(ipmId: string): Promise<void> {
+  const command = getCommand(ipmId);
+  if (!command) {
+    return;
+  }
+
   const behavior = getBehavior(ipmId);
 
   if (!isDeleteBehavior(behavior)) {
     logger.error("[delete-commands]: Invalid command behavior.");
+    return;
+  }
+
+  // Ignore and dismiss command if it has expired
+  if (isCommandExpired(command)) {
+    logger.error("[delete-commands]: Command has expired.");
+    registerDeleteEvent(ipmId, CommandEventType.expired);
+    dismissCommand(ipmId);
     return;
   }
 
