@@ -17,7 +17,7 @@
 
 import { expect } from "expect";
 
-import { getDisplayedElement, findUrl, randomIntFromInterval } from "../utils/driver.js";
+import { getDisplayedElement, findUrl, openNewTab, randomIntFromInterval } from "../utils/driver.js";
 import { initOptionsGeneralTab } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
@@ -36,8 +36,8 @@ export default () => {
     const getPremiumButton = await getDisplayedElement(driver, '[data-plan="me"]');
     await getPremiumButton.click();
     await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+    await driver.sleep(1000); // Sometimes the scrolling is not done when the element is searched for
     const completePurchaseButton = await getDisplayedElement(driver, '[i18n="complete_purchase"]');
-    await driver.sleep(500); // Sometimes the scrolling is not done when the click is performed
     await completePurchaseButton.click();
 
     try {
@@ -109,5 +109,29 @@ export default () => {
     expect(
       [`SUPPORTER SINCE ${formattedDate}`, "ACTIVE"].includes(await premiumStatusText.getText()),
     ).toEqual(true);
+  });
+
+  it("should have premium features", async function () {
+    const { driver, popupUrl } = this;
+
+    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await driver.executeScript("License.activate();");
+    
+    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]');
+    await imageSwapTab.click();
+    const catsCheckbox = await getDisplayedElement(driver, "#channel-options", 4000);
+    // await catsCheckbox.click();
+    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]');
+    await themesTab.click();
+    const darkThemePopupItem = await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]');
+    await darkThemePopupItem.click();
+    const darkThemeOptionsPageItem = await getDisplayedElement(driver, '[data-key="options_page"][data-theme="dark_theme"]');
+    await darkThemeOptionsPageItem.click();
+    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", 5000);
+    expect(await darkOptionsPage.isDisplayed()).toEqual(true);
+    await openNewTab(driver, "https://example.com/");
+    const tabId = await getTabId(driver, getOptionsHandle());
+    await initPopupPage(driver, popupUrl, tabId);
+    expect(await darkOptionsPage.isDisplayed()).toEqual(true);
   });
 };
