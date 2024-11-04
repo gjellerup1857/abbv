@@ -61,6 +61,7 @@ async function run() {
       .parse();
 
   // TODO: Validation that version doesn't already exist for that host?
+  // TODO: Check that there are no uncommitted changes. 
 
   console.log('- Fetching latest changes');
   await executeShellCommand('git fetch --all');
@@ -86,6 +87,7 @@ async function run() {
       console.log(releaseNotes.unreleasedNotes());
       console.log('\n---------------------------------\n');
 
+      // TODO: Use a nice library for this to make the prompting nicer
       const question = `Is this the version you want to release? : 
 (yes) - Continue with the release.
 (no) - Exit the release process.
@@ -115,6 +117,7 @@ async function run() {
 
   await executeShellCommand(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`);
 
+  // TODO: Add tagging here. 
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
   await executeShellCommand(`git push origin ${branchName} -f`);
