@@ -69,43 +69,38 @@ async function run() {
   console.log(`- Creating release branch: ${branchName}`);    
   await executeShellCommand(`git checkout -B ${branchName} ${args.commit }`);
 
-  console.log('- Getting unreleased release notes');
-  const releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
   const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
-
-  console.log('\nUnreleased changes:\n');
-  console.log('\n---------------------------------\n');
-  console.log(releaseNotes.unreleasedNotes());
-  console.log('\n---------------------------------\n');
-
+  let releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
+  
   let answer;    
   
   if (!args.yes) {
     const rl = readline.createInterface({ input: stdin, output: stdout });
-    while(!answer || !answer.toLowerCase().startsWith("r")) {
-      answer = await rl.question("Is this the version you want to release? (yes / no / reload)");     
+    while(!answer || answer.toLowerCase().startsWith("r")) {
+      console.log('- Getting unreleased release notes');
+      
+      releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
+     
+      console.log('\nUnreleased changes:\n');
+      console.log('\n---------------------------------\n');
+      console.log(releaseNotes.unreleasedNotes());
+      console.log('\n---------------------------------\n');
+
+      const question = `Is this the version you want to release? : 
+(yes) - Continue with the release.
+(no) - Exit the release process.
+(reload) - You need to change this file: ${releaseNotesPath} and then reload the release notes file to check again. 
+`;
+
+      answer = await rl.question(question);     
     }
 
     rl.close();
   }
 
   const userIsSure = args.yes || answer.toLowerCase().startsWith("y");
-  if (!userIsSure) {
-    // If the notes are not in a good place, would the person doing the release
-    // have to manually edit them, commit a new version, and then run this
-    // script again? Here is where we might want to open up a text editor
-
-    // Maybe here we can do some sort of:
-    // const userWantsToEditReleaseNotes = answer.toLowerCase().startsWith("e");
-
-    
-    // If so, open the current text editor with the release notes file?
-    
-    console.log("Cool! You want to edit things! Open this: ", releaseNotesPath) 
-    // const editor = process.env.EDITOR || 'vscode';
-    // await promisify(exec)(`${editor} ${releaseNotesPath}`);
-
-    console.log('Okay. Weird. Exiting');
+  if (!userIsSure) {    
+    console.log('- Exiting the release process.');
     process.exit(1);
   }
 
