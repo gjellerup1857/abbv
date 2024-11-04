@@ -318,6 +318,11 @@ class PopupPage extends BasePage
       getAttribute("aria-checked") === "true";
   }
 
+  async isBlockCookieConsentPopupsToggleUnlocked()
+  {
+    return await (await this.blockCookieConsentPopupsToggle).isEnabled();
+  }
+
   async isBlockMoreDistractionsCrownIconDisplayed()
   {
     const bgImage = await (await this.blockMoreDistractionsPremiumTitle).
@@ -359,6 +364,11 @@ class PopupPage extends BasePage
   {
     return await (await this.blockMoreDistractionsToggle).
       getAttribute("aria-checked") === "true";
+  }
+
+  async isBlockMoreDistractionsToggleUnlocked()
+  {
+    return await (await this.blockMoreDistractionsToggle).isEnabled();
   }
 
   async isCloseNotificationButtonDisplayed()
