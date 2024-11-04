@@ -54,6 +54,10 @@ async function run() {
         type: "boolean",
         description: "Don't actually run any git commands. Useful for manual testing the script interface."
       })
+      .option("skip-tag", {
+        type: "boolean",
+        description: "Do not create a tag for the release."
+      })
       .check(argv => {
         if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
           throw new Error("Invalid version: Version must be a semver version.");
@@ -140,17 +144,16 @@ async function run() {
 
   await executeMaybe(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`, args.skipGit);
 
-  // TODO: Add tagging here.
   // TODO: Should we add another prompt here to ask if we should push to origin?
   //       Maybe with a quick git diff?
-  await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
-}
 
-// TODO: This file is a bit of a mess right now.
-//       Let's see where else we can group things.
-// Try this out by running
-//    npm run do-release -- adblock 11.11.0 3391e6e94
-// from the root of this repo.
+  await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
+
+  if (!args.skipTag) {
+    await executeMaybe(`git tag -a -m '' ${tagName}`, args.skipGit);
+    await executeMaybe(`git push origin ${tagName}`, args.skipGit);
+  }
+}
 
 run().catch(err => {
   console.error(err.message);

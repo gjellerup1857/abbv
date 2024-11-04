@@ -124,9 +124,11 @@ describe("Do-release script", function() {
     const newCommit = await executeShellCommand("git rev-parse --short HEAD", checkoutDir);
     const checkoutReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblockplus-release", checkoutDir);
     const originReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblockplus-release", originDir);
+    const originTagCommit = await executeShellCommand("git rev-parse --short adblockplus-99.4.9^{commit}", originDir);
 
     expect(checkoutReleaseBranchCommit).toEqual(newCommit);
     expect(originReleaseBranchCommit).toEqual(newCommit);
+    expect(originTagCommit).toEqual(newCommit);
   });
 
   it("recreates the 6.11.0 release for adblock", async function() {
@@ -139,9 +141,11 @@ describe("Do-release script", function() {
     const newCommit = await executeShellCommand("git rev-parse --short HEAD", checkoutDir);
     const checkoutReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblock-release", checkoutDir);
     const originReleaseBranchCommit = await executeShellCommand("git rev-parse --short adblock-release", originDir);
+    const originTagCommit = await executeShellCommand("git rev-parse --short adblock-99.6.11.0^{commit}", originDir);
 
     expect(checkoutReleaseBranchCommit).toEqual(newCommit);
     expect(originReleaseBranchCommit).toEqual(newCommit);
+    expect(originTagCommit).toEqual(newCommit);
   });
 
   it("exits if a version already exists", async function() {
