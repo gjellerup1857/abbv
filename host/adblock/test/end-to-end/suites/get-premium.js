@@ -199,52 +199,10 @@ export default () => {
       const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
-    async function getToggleElement(selector) {
-      return await getDisplayedElement(driver, selector, defaultTimeout);
-    }
-    const toggleItems = [
-      {
-        toggleSelector: '[data-name="cookies-premium"]',
-        confirmButton: '[data-action="confirmCookie"]',
-      },
-      {
-        toggleSelector: '[data-name="distraction-control"]',
-        confirmButton: '[data-action="confirmDistractions"]',
-      },
-    ];
-    for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
-      expect(await toggleElement.isEnabled()).toEqual(true);
-      expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
-    }
-    for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
-      await toggleElement.click();
-      const confirmButton = await getToggleElement(item.confirmButton);
-      await confirmButton.click();
-      await initPopupPage(driver, popupUrl, tabId);
-    }
-    for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
-      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
-    }
 
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/DC-filters/DC-filters-testpage.html";
     await openNewTab(driver, url);
-    const dcFilters = [
-      "#pushnotifications-hiding-filter",
-      "#pushnotifications-blocking-filter",
-      "#product-video-container",
-      "#autoplayvideo-blocking-filter",
-      "#survey-feedback-to-left",
-      "#survey-blocking-filter",
-      "#newsletterMsg",
-      "#newsletter-blocking-filter",
-    ];
-    for (const dcFilter of dcFilters) {
-      await waitForNotDisplayed(driver, dcFilter);
-    }
     const dcFilters = [
       "#pushnotifications-hiding-filter",
       "#pushnotifications-blocking-filter",
