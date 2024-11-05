@@ -16,13 +16,13 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { select, confirm } from '@inquirer/prompts';
+import { select, confirm, input } from '@inquirer/prompts';
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { ReleaseNotes } from "./release-notes.js";
 import { updateVersionInConfig } from "./version-bump.js";
-import { executeShellCommand, gitRepoHasChanges } from "./utils.js";
+import { executeShellCommand, gitRepoHasChanges, checkIfGitRefExists } from "./utils.js";
 
 async function executeMaybe(command, dryRun) {
   if (dryRun) {
@@ -33,10 +33,12 @@ async function executeMaybe(command, dryRun) {
 }
 
 async function run() {
+  const validVersionRegex = /^\d+(\.\d+){2,}$/;
+
   const args = yargs(hideBin(process.argv))
     .version(false)
     .strict()
-    .command("$0 <host> <version> <commit>", "", subparser =>
+    .command("$0 [host] [version] [commit]", "", subparser =>
       subparser.positional("host", { choices: ["adblock", "adblockplus"] })
         .positional("version", { type: "string" })
         .positional("commit", { type: "string" }))
@@ -58,7 +60,7 @@ async function run() {
       description: "Do not create a tag for the release."
     })
     .check(argv => {
-      if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
+      if (argv.version && !validVersionRegex.test(argv.version)) {
         throw new Error("Invalid version: Version must be a semver version.");
       }
 
@@ -66,16 +68,46 @@ async function run() {
         throw new Error("Invalid release date: This must be a valid date string.");
       }
 
+      if (argv.yes && !(argv.host && argv.version && argv.commit)) {
+        throw new Error("The --yes option can only be used if host, version and commit are all specified.");
+      }
+
       return true;
     })
     .parse();
-
-  // TODO: If no args, prompt using inquirer. 
 
   if (!args.skipGit && await gitRepoHasChanges()) {
     console.log("You have uncommitted changes. Commit them or stash them and try again.");
     process.exit(1);
   }
+
+  console.log('- Fetching latest changes');
+  await executeMaybe('git fetch --all', args.skipGit);
+
+  args.host = args.host || await select({
+    message: 'Which host do you want to release?',
+    choices: [
+      {
+        name: 'AdBlock',
+        value: 'adblock'
+      },
+      {
+        name: 'Adblock Plus',
+        value: 'adblockplus'
+      }
+    ]
+  });
+
+  args.version = args.version || await input({
+    message: 'What is the new version number?',
+    validate: version => validVersionRegex.test(version) || "Version must be a semver version"
+  });
+
+  args.commit = args.commit || await input({
+    message: 'What is the git commit to release?',
+    default: "origin/main",
+    validate: async ref => await checkIfGitRefExists(ref) || "That is not a known git reference."
+  });
 
   const tagName = `${args.host}-${args.version}`;
 
@@ -89,9 +121,6 @@ async function run() {
       process.exit(1);
     }
   }
-
-  console.log('- Fetching latest changes');
-  await executeMaybe('git fetch --all', args.skipGit);
 
   const branchName = `${args.host}-release`;
   console.log(`- Creating release branch: ${branchName}`);

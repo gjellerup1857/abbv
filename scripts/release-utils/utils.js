@@ -55,6 +55,15 @@ export async function gitRepoHasChanges(cwd = projectRootPath()) {
   return status != "";
 }
 
+export async function checkIfGitRefExists(ref) {
+  try {
+    await executeShellCommand(`git rev-parse --quiet --verify ${ref}^{commit}`);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // metaUrl from import.meta.url of the script in question.
 export function getCurrentFileDir(metaUrl) {
   return path.dirname(url.fileURLToPath(metaUrl));
