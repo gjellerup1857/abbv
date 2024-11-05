@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { arrayBufferToBase64 } from "../../../utils/helpers.js";
+import { arrayBufferToBase64 } from "@eyeo/test-utils";
 import { blockHideUrl, updatePrefs } from "../../../utils/page.js";
 
 const algorithm = {

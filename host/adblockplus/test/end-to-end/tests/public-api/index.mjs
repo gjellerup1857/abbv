@@ -15,25 +15,18 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { beforeSequence, removeFilter } from "../../helpers.js";
+import oneClickAllowlisting from "./test-one-click-allowlisting.mjs";
+import bypassAPI from "./test-bypass-api.mjs";
 
-const {
-  beforeSequence, removeFilter
-} = require("../../helpers");
-const oneClickAllowlisting = require("./test-one-click-allowlisting.js");
-const bypassAPI = require("./test-bypass-api.js");
-
-describe("Public API", function()
-{
-  before(async function()
-  {
-    const {origin, extVersion} = await beforeSequence();
+describe("Public API", function () {
+  before(async function () {
+    const { origin, extVersion } = await beforeSequence();
     this.test.parent.globalOrigin = origin;
     this.test.parent.extVersion = extVersion;
   });
 
-  afterEach(async function()
-  {
+  afterEach(async function () {
     await removeFilter("@@||adblockinc.gitlab.io^$document");
   });
 

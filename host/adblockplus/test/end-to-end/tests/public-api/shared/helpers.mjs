@@ -1,17 +1,17 @@
-"use strict";
+import crypto from "crypto";
+import { arrayBufferToBase64 } from "@eyeo/test-utils";
+import { updatePrefs } from "../../../helpers.js";
+import testData from "../../../test-data/data-smoke-tests.js";
 
-const crypto = require("crypto");
-const {
-  arrayBufferToBase64,
-  updatePrefs
-} = require("../../../helpers");
-const {blockHideUrl} = require("../../../test-data/data-smoke-tests");
+const { blockHideUrl } = testData;
 
 const algorithm = {
   name: "RSASSA-PKCS1-v1_5",
   modulusLength: 4096,
   publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-  hash: {name: "SHA-512"}
+  hash: {
+    name: "SHA-512"
+  }
 };
 let keyPair;
 let publicKey;
@@ -19,8 +19,7 @@ let publicKey;
 /**
  * Generates the encryption keys
  */
-async function generateEncryptionKeys()
-{
+async function generateEncryptionKeys() {
   // Generate the key pair
   keyPair = await crypto.subtle.generateKey(
     algorithm,
@@ -38,8 +37,7 @@ async function generateEncryptionKeys()
  * @param {string} message - The message to encrypt.
  * @returns {Promise<string>}
  */
-async function encryptMessage(message)
-{
+async function encryptMessage(message) {
   const abData = new TextEncoder().encode(message);
   const abSignature = await crypto.subtle.sign(
     algorithm,
@@ -54,10 +52,8 @@ async function encryptMessage(message)
  * signing the messages
  * @param {string} prefsKeyName The pref key name.
  */
-async function updateExtPrefAPIKey(prefsKeyName)
-{
-  if (!keyPair)
-  {
+export async function updateExtPrefAPIKey(prefsKeyName) {
+  if (!keyPair) {
     await generateEncryptionKeys();
   }
 
@@ -75,8 +71,11 @@ async function updateExtPrefAPIKey(prefsKeyName)
  * @param {object} [extraParams] - Extra parameters to be sent on the event.
  * @returns {Promise<!IThenable<T>|*>}
  */
-async function sendExtCommand({triggerEventName, responseEventName, options})
-{
+export async function sendExtCommand({
+  triggerEventName,
+  responseEventName,
+  options
+}) {
   const parsedUrl = new URL(blockHideUrl);
   const domain = parsedUrl.hostname;
   const timestamp = Date.now();
@@ -84,8 +83,7 @@ async function sendExtCommand({triggerEventName, responseEventName, options})
   const signature = await encryptMessage(data);
 
   return browser.executeAsync(
-    (params, callback) =>
-    {
+    (params, callback) => {
       const event = new CustomEvent(params.triggerEventName, {
         detail: {
           domain: params.domain,
@@ -105,13 +103,13 @@ async function sendExtCommand({triggerEventName, responseEventName, options})
 
       // if the event is not received in 5 seconds, consider it failed
       setTimeout(() => callback(null), 5000);
-    },
-    {domain, signature, timestamp, options, triggerEventName, responseEventName}
+    }, {
+      domain,
+      signature,
+      timestamp,
+      options,
+      triggerEventName,
+      responseEventName
+    }
   );
 }
-
-
-module.exports = {
-  updateExtPrefAPIKey,
-  sendExtCommand
-};

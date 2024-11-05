@@ -17,7 +17,7 @@
 
 "use strict";
 
-const {switchToABPOptionsTab, waitForAssertion, reloadExtension} =
+const {switchToABPOptionsTab, waitForAssertion, reloadExtension, isEdge} =
   require("../../helpers");
 const {expect} = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
@@ -58,6 +58,10 @@ module.exports = function()
 
   it("resets settings", async function()
   {
+    // https://eyeo.atlassian.net/browse/EXT-153
+    if (isEdge())
+      this.skip();
+
     await switchToABPOptionsTab();
 
     const advancedPage = new AdvancedPage(browser);
