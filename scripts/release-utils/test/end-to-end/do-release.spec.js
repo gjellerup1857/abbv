@@ -108,6 +108,12 @@ describe("Do-release script", function() {
     
     await executeShellCommand("git clone origin checkout", tempDir);
     await recursiveSymlinkNodeModules(repoRoot, checkoutDir);
+
+    // This is needed for environments that don't have git identify set up, like
+    // CI. Note that it does NOT change global git config, only local to the
+    // checkout.
+    await executeShellCommand("git config user.name end-to-end-test", checkoutDir);
+    await executeShellCommand("git config user.email end-to-end-test@example.com", checkoutDir);
   });
 
   afterEach(async function() {
