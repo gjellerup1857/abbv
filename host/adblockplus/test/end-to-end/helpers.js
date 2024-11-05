@@ -837,6 +837,21 @@ function arrayBufferToBase64(buffer)
   return btoa(binary);
 }
 
+/**
+ * Get persistent storage data
+ * @param {string} storage Storage data type ["local", "session"].
+ * @param {string} key Storage key
+ * @returns {*} Storage data
+ */
+async function getStorage(storage, key)
+{
+  return browser.executeAsync(async(params, callback) =>
+  {
+    browser.storage[params.storage]
+      .get([params.key])
+      .then(result => callback(result[params.key]));
+  }, {storage, key});
+}
 
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
@@ -851,5 +866,5 @@ module.exports = {
   addFiltersToABP, addFilter, removeFilter,
   arrayBufferToBase64,
   reloadExtension,
-  updatePrefs
+  updatePrefs, getStorage
 };

@@ -21,15 +21,6 @@
 
 const {isFirefox, beforeSequence, afterSequence} = require("../helpers");
 
-async function getStorage(storage, key)
-{
-  return browser.executeAsync(async(params, callback) =>
-  {
-    browser.storage[params.storage].get([params.key])
-      .then(result => callback(result[params.key]));
-  }, {storage, key});
-}
-
 describe("Eyeometry", function()
 {
   before(async function()
@@ -44,7 +35,7 @@ describe("Eyeometry", function()
 
   const timeout = 10000;
 
-  it("sends the request not in Firefox", async function()
+  it("sends the request in Chrome and Edge", async function()
   {
     if (isFirefox())
       this.skip();

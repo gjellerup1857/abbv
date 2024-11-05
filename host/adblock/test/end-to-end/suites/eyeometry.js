@@ -31,7 +31,7 @@ async function getStorage(driver, storage, key) {
 export default () => {
   const timeout = 10000;
 
-  it("sends the request not in Firefox", async function () {
+  it("sends the request in Chrome and Edge", async function () {
     const { driver, browserName } = this;
     if (browserName === "firefox") {
       this.skip();
