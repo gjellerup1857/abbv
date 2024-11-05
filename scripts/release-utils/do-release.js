@@ -107,7 +107,7 @@ async function run() {
       console.log('- Getting unreleased release notes');
       releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
 
-      console.log('\nUnreleased changes:\n');
+      console.log('\nUnreleased changes:');
       console.log('\n---------------------------------\n');
       console.log(releaseNotes.unreleasedNotes());
       console.log('\n---------------------------------\n');
@@ -149,15 +149,16 @@ async function run() {
   console.log(`- Updating ${args.host}'s version to ${args.version}`);
   await updateVersionInConfig(args.host, args.version);
 
-  if (!args.yes) {
-    console.log('- Showing git diff\n');
+  if (!args.yes) { // && !args.skipGit ? 
     console.log('---------------------------------\n');
+    console.log('The following changes will be made:\n');
+    console.log(`- Push branch '${branchName}' to origin`);
 
-    // TODO: List exactly what's going to happen now. 
-    // We're going to push X branch, 
-    // We're going to push X Tag
-    // Version bumping from X to Y
+    if (!args.skipTag) {
+      console.log(`- Create and push tag '${tagName}' to origin`);
+    }
 
+    console.log(`- Update ${args.host} version from current to ${args.version}`);
     console.log('---------------------------------\n');
 
     const answer = await confirm({
