@@ -16,7 +16,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import {ReleaseNotes} from "./releaseNotes.js";
+import {ReleaseNotes} from "./release-notes.js";
 
 const NORMAL_FILE_LINES = [
   "This is maybe some preamble, which could be explaining the headings like ",
@@ -49,7 +49,7 @@ const NON_SERMVER_RELEASE_NOTES_LINES = [
   "- Would you believe it, more stuff!",
   ""
 ];
-const NON_SERMVER_RELEASE_NOTES = NON_SERMVER_RELEASE_NOTES_LINES.join("\n")
+const NON_SERMVER_RELEASE_NOTES = NON_SERMVER_RELEASE_NOTES_LINES.join("\n");
 
 const NO_WHITESPACE_LINES = NORMAL_FILE_LINES.filter(l => l.length > 0);
 const NO_WHITESPACE = NO_WHITESPACE_LINES.join("\n");
@@ -97,4 +97,45 @@ describe("ReleaseNotes script", function() {
          .toEqual(NON_SERMVER_RELEASE_NOTES_LINES.slice(5, 8).join("\n"));
     });
   });
+
+  describe("inserting a new version heading", function() {
+    it("inserts the new heading such that unreleased notes become the new version's notes", function() {
+      let releaseNotes = new ReleaseNotes(NORMAL_FILE);
+      let previousUnreleasedNotes = releaseNotes.unreleasedNotes();
+
+      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
+
+      let unreleasedHeading = NORMAL_FILE_LINES.slice(3, 4).join("\n");
+
+      let expectedNotes = previousUnreleasedNotes.replace(
+        unreleasedHeading,
+        "# 1.2.0 - 2023-11-15"
+      );
+
+      expect(releaseNotes.unreleasedNotes())
+        .toEqual(unreleasedHeading);
+      expect(releaseNotes.notesForVersion("1.2.0"))
+        .toEqual(expectedNotes);
+    });
+
+    it("inserts a new line after the heading, even if the unreleased heading didn't have one", function() {
+      let releaseNotes = new ReleaseNotes(NO_WHITESPACE);
+      let previousUnreleasedNotes = releaseNotes.unreleasedNotes();
+
+      releaseNotes.insertNewVersionHeading("1.2.0", new Date("2023-11-15"));
+
+      let unreleasedHeading = NO_WHITESPACE_LINES.slice(2, 3).join("\n");
+
+      let expectedNotes = previousUnreleasedNotes.replace(
+        unreleasedHeading,
+        "# 1.2.0 - 2023-11-15\n"
+      );
+
+      expect(releaseNotes.unreleasedNotes())
+        .toEqual(unreleasedHeading);
+      expect(releaseNotes.notesForVersion("1.2.0"))
+        .toEqual(expectedNotes);
+    });
+  });
+
 });

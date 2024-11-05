@@ -17,7 +17,7 @@
 
 import path from "path";
 
-import {projectRootPath, readFile} from "./utils.js";
+import {projectRootPath, readFile, writeFile} from "./utils.js";
 
 export class ReleaseNotes {
   constructor(fileContent) {
@@ -54,6 +54,43 @@ export class ReleaseNotes {
 
     return this.lines.slice(start, end).join("\n").trim();
   }
+
+  unreleasedNotes() {
+    return this.notesForVersion("unreleased");
+  }
+  
+  insertNewVersionHeading(version, now) {
+    let unreleasedLine = this.lines.findIndex((currentLine) => {
+      const line = currentLine.toLowerCase();
+      const headingStart = "# unreleased";
+            
+      return line.startsWith(headingStart + " ") || line == headingStart;
+    });
+
+    let newHeadingLine = unreleasedLine >= 0 ? unreleasedLine + 1 : 0;
+
+    let date = now.toISOString().substring(0, 10);
+    let versionHeading = `# ${version} - ${date}`;
+
+    let newHeading = [
+      "",
+      versionHeading
+    ];
+
+    this.lines.splice(newHeadingLine, 0, ...newHeading);
+
+    let expectedWhitespaceLine = newHeadingLine + newHeading.length;
+    if (this.lines[expectedWhitespaceLine].trim() != "") {
+      this.lines.splice(expectedWhitespaceLine, 0, "");
+    }
+  }
+
+  async writeToHostFilepath(host) {
+    await writeFile(
+      ReleaseNotes.hostFilePath(host),
+      this.toString()
+    );
+  }
 }
 
 ReleaseNotes.hostFilePath = function(host) {   
@@ -64,4 +101,3 @@ ReleaseNotes.readFromHostFilepath = async function(host) {
   let releaseNotesContent = await readFile(ReleaseNotes.hostFilePath(host));
   return new ReleaseNotes(releaseNotesContent);
 };
-

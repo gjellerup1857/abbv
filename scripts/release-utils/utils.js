@@ -18,14 +18,53 @@
 import fs from "fs";
 import url from "url";
 import path from "path";
+import {exec} from "child_process";
+import {promisify} from "util";
 
 export async function readFile(filePath) {
-  let contents = await fs.promises.readFile(filePath, {encoding: "utf-8"});
-  return contents.trim();
+  return fs.promises.readFile(filePath, {encoding: "utf-8"});
+}
+
+export async function writeFile(filePath, contents) {
+  return fs.promises.writeFile(
+    filePath,
+    contents,
+    {
+      encoding: "utf-8"
+    }
+  );
 }
 
 export function projectRootPath() {
   const scriptDir = path.dirname(url.fileURLToPath(import.meta.url));  
   const projectRoot = path.join(scriptDir, "..", "..");  
   return path.normalize(projectRoot);
+}
+
+export async function executeShellCommand(command, cwd = projectRootPath()) {
+  try {
+    const { stdout } = await promisify(exec)(command, { cwd });
+    return stdout.trim();
+  } catch (error) {
+    throw new Error(`${error.message}\nstdout: ${error.stdout}\nstderr: ${error.stderr}`);
+  }
+}
+
+export async function gitRepoHasChanges(cwd = projectRootPath()) {
+  let status = await executeShellCommand("git status --porcelain", cwd);
+  return status != "";
+}
+
+export async function checkIfGitRefExists(ref) {
+  try {
+    await executeShellCommand(`git rev-parse --quiet --verify ${ref}^{commit}`);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// metaUrl from import.meta.url of the script in question.
+export function getCurrentFileDir(metaUrl) {
+  return path.dirname(url.fileURLToPath(metaUrl));
 }
