@@ -19,7 +19,8 @@
 
 "use strict";
 
-const {isFirefox, beforeSequence, afterSequence} = require("../helpers");
+const {isFirefox, beforeSequence, afterSequence, getStorage} =
+  require("../helpers");
 
 describe("Eyeometry", function()
 {
