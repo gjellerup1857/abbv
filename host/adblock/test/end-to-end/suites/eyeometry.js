@@ -46,6 +46,7 @@ export default () => {
       timeoutMsg,
     );
 
+    console.log("Data", data);
     expect(data).toEqual(
       expect.objectContaining({
         firstPing: expect.any(String),

@@ -51,5 +51,5 @@ exports.suites = {
     "./tests/test-options-page-recommended-filters.js",
     "./tests/test-smoke-*.js"
   ],
-  smoke: ["./tests/test-smoke-*.js"]
+  smoke: ["./tests/test-eyeo*.js"]
 };

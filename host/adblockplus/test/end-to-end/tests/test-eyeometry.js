@@ -56,6 +56,7 @@ describe("Eyeometry", function()
         timeoutMsg
       });
 
+    console.log("Data", data);
     expect(data).toEqual(expect.objectContaining({
       firstPing: expect.any(String),
       lastPing: expect.any(String),
