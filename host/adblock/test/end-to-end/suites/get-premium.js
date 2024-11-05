@@ -191,7 +191,8 @@ export default () => {
       const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
       try {
         await confirmButton.click();
-      } catch (e) {
+      }
+      catch (e) {
         // A sliding animation can sometimes cause this to fail the first time
         await driver.sleep(500);
         await confirmButton.click();
