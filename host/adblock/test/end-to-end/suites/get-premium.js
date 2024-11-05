@@ -222,5 +222,18 @@ export default () => {
     for (const dcFilter of dcFilters) {
       await waitForNotDisplayed(driver, dcFilter);
     }
+    const dcFilters = [
+      "#pushnotifications-hiding-filter",
+      "#pushnotifications-blocking-filter",
+      "#product-video-container",
+      "#autoplayvideo-blocking-filter",
+      "#survey-feedback-to-left",
+      "#survey-blocking-filter",
+      "#newsletterMsg",
+      "#newsletter-blocking-filter",
+    ];
+    for (const dcFilter of dcFilters) {
+      await waitForNotDisplayed(driver, dcFilter);
+    }
   });
 };
