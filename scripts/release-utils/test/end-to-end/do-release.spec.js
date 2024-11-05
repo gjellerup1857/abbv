@@ -85,6 +85,15 @@ async function loadTestFile(relativePath) {
   return await readFile(path.join(getCurrentFileDir(import.meta.url), relativePath));
 }
 
+async function configureTestGitUser(repoDir) {
+  // This is needed for environments that don't have git identify set up, like
+  // CI. Note that it does NOT change global git config, only local to the
+  // checkout.
+
+  await executeShellCommand("git config user.name end-to-end-test", repoDir);
+  await executeShellCommand("git config user.email end-to-end-test@example.com", repoDir);
+}
+
 describe("Do-release script", function() {
   let tempDir;
   let originDir;
@@ -102,6 +111,7 @@ describe("Do-release script", function() {
     if (await gitRepoHasChanges(originDir)) {
       // This commit is so that any uncommitted changes to the do-release script
       // are included in the checkout, and so are used in the test run.
+      await configureTestGitUser(originDir);
       await executeShellCommand("git add --all", originDir);
       await executeShellCommand("git commit -m WIP", originDir);
     }
@@ -109,11 +119,7 @@ describe("Do-release script", function() {
     await executeShellCommand("git clone origin checkout", tempDir);
     await recursiveSymlinkNodeModules(repoRoot, checkoutDir);
 
-    // This is needed for environments that don't have git identify set up, like
-    // CI. Note that it does NOT change global git config, only local to the
-    // checkout.
-    await executeShellCommand("git config user.name end-to-end-test", checkoutDir);
-    await executeShellCommand("git config user.email end-to-end-test@example.com", checkoutDir);
+    await configureTestGitUser(checkoutDir);
   });
 
   afterEach(async function() {
