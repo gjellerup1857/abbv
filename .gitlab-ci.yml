@@ -30,6 +30,13 @@ test:
   script:
     - npm test -- $SINCE
 
+release-utils:
+  extends: .base
+  stage: children
+  script:
+    - npm run -w scripts/release-utils test:end-to-end
+  needs: []
+
 .child:
   stage: children
   rules:
