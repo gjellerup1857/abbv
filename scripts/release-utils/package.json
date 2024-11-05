@@ -7,9 +7,12 @@
     "test": "vitest run --exclude test/end-to-end --reporter=verbose",
     "test:end-to-end": "vitest run --root test/end-to-end --reporter=verbose"
   },
-  "devDependencies": {
-    "yargs": "^17.7.2",
-    "vitest": "^2.0.5",
-    "ignore": "6.0.2"
+  "dependencies": {
+    "@inquirer/prompts": "7.0.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {    
+    "ignore": "6.0.2",
+    "vitest": "^2.0.5"    
   }
 }

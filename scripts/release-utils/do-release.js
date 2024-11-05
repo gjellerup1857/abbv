@@ -16,8 +16,7 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as readline from "node:readline/promises";
-import { stdin, stdout } from "node:process";
+import { select, confirm } from '@inquirer/prompts';
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
@@ -35,41 +34,43 @@ async function executeMaybe(command, dryRun) {
 
 async function run() {
   const args = yargs(hideBin(process.argv))
-      .version(false)
-      .strict()
-      .command("$0 <host> <version> <commit>", "", subparser =>
-        subparser.positional("host", {choices: ["adblock", "adblockplus"]})
-          .positional("version", {type: "string"})
-          .positional("commit", {type: "string"}))
-      .option("release-date", {
-        type: "string",
-        description: "Sets the date of the release. Defaults to today.",
-        coerce: arg => new Date(arg)
-      })
-      .option("yes", {
-        type: "boolean",
-        description: "Answers yes to all prompts."
-      })
-      .option("skip-git", {
-        type: "boolean",
-        description: "Don't actually run any git commands. Useful for manual testing the script interface."
-      })
-      .option("skip-tag", {
-        type: "boolean",
-        description: "Do not create a tag for the release."
-      })
-      .check(argv => {
-        if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
-          throw new Error("Invalid version: Version must be a semver version.");
-        }
+    .version(false)
+    .strict()
+    .command("$0 <host> <version> <commit>", "", subparser =>
+      subparser.positional("host", { choices: ["adblock", "adblockplus"] })
+        .positional("version", { type: "string" })
+        .positional("commit", { type: "string" }))
+    .option("release-date", {
+      type: "string",
+      description: "Sets the date of the release. Defaults to today.",
+      coerce: arg => new Date(arg)
+    })
+    .option("yes", {
+      type: "boolean",
+      description: "Answers yes to all prompts."
+    })
+    .option("skip-git", {
+      type: "boolean",
+      description: "Don't actually run any git commands. Useful for manual testing the script interface."
+    })
+    .option("skip-tag", {
+      type: "boolean",
+      description: "Do not create a tag for the release."
+    })
+    .check(argv => {
+      if (!argv.version.match(/^\d+(\.\d+){2,}$/)) {
+        throw new Error("Invalid version: Version must be a semver version.");
+      }
 
-        if (argv.releaseDate && isNaN(argv.releaseDate)) {
-          throw new Error("Invalid release date: This must be a valid date string.");
-        }
+      if (argv.releaseDate && isNaN(argv.releaseDate)) {
+        throw new Error("Invalid release date: This must be a valid date string.");
+      }
 
-        return true;
-      })
-      .parse();
+      return true;
+    })
+    .parse();
+
+  // TODO: If no args, prompt using inquirer. 
 
   if (!args.skipGit && await gitRepoHasChanges()) {
     console.log("You have uncommitted changes. Commit them or stash them and try again.");
@@ -89,24 +90,21 @@ async function run() {
     }
   }
 
-
   console.log('- Fetching latest changes');
   await executeMaybe('git fetch --all', args.skipGit);
 
   const branchName = `${args.host}-release`;
   console.log(`- Creating release branch: ${branchName}`);
-  await executeMaybe(`git checkout -B ${branchName} ${args.commit }`, args.skipGit);
+  await executeMaybe(`git checkout -B ${branchName} ${args.commit}`, args.skipGit);
 
   const releaseNotesPath = ReleaseNotes.hostFilePath(args.host);
   let releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
 
-  let answer;
-
   if (!args.yes) {
-    const rl = readline.createInterface({ input: stdin, output: stdout });
-    while(!answer || answer.toLowerCase().startsWith("r")) {
-      console.log('- Getting unreleased release notes');
+    let shouldContinue = false;
 
+    while (!shouldContinue) {
+      console.log('- Getting unreleased release notes');
       releaseNotes = await ReleaseNotes.readFromHostFilepath(args.host);
 
       console.log('\nUnreleased changes:\n');
@@ -114,23 +112,34 @@ async function run() {
       console.log(releaseNotes.unreleasedNotes());
       console.log('\n---------------------------------\n');
 
-      // TODO: Use a nice library for this to make the prompting nicer
-      const question = `Is this the version you want to release? :
-(yes) - Continue with the release.
-(no) - Exit the release process.
-(reload) - You need to change this file: ${releaseNotesPath} and then reload the release notes file to check again.
-`;
+      const answer = await select({
+        message: 'Is this the version you want to release?',
+        choices: [
+          {
+            name: 'Yes - Continue with the release',
+            value: 'yes',
+            description: 'Proceed with the release process'
+          },
+          {
+            name: 'No - Exit the release process',
+            value: 'no',
+            description: 'Cancel the release'
+          },
+          {
+            name: 'Reload - Check release notes again',
+            value: 'reload',
+            description: `Update ${releaseNotesPath} and reload to check again`
+          }
+        ]
+      });
 
-      answer = await rl.question(question);
+      if (answer === 'yes') {
+        shouldContinue = true;
+      } else if (answer === 'no') {
+        console.log('- Exiting the release process.');
+        process.exit(1);
+      }
     }
-
-    rl.close();
-  }
-
-  const userIsSure = args.yes || answer.toLowerCase().startsWith("y");
-  if (!userIsSure) {
-    console.log('- Exiting the release process.');
-    process.exit(1);
   }
 
   console.log(`- Updating release notes file: ${releaseNotesPath}`);
@@ -140,13 +149,30 @@ async function run() {
   console.log(`- Updating ${args.host}'s version to ${args.version}`);
   await updateVersionInConfig(args.host, args.version);
 
+  if (!args.yes) {
+    console.log('- Showing git diff\n');
+    console.log('---------------------------------\n');
+
+    // TODO: List exactly what's going to happen now. 
+    // We're going to push X branch, 
+    // We're going to push X Tag
+    // Version bumping from X to Y
+
+    console.log('---------------------------------\n');
+
+    const answer = await confirm({
+      message: "You are about to release the above changes. Are you sure?",
+    });
+
+    if (!answer) {
+      console.log('- Exiting the release process.');
+      process.exit(1);
+    }
+  }
+
   console.log('- Committing changes');
 
   await executeMaybe(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`, args.skipGit);
-
-  // TODO: Should we add another prompt here to ask if we should push to origin?
-  //       Maybe with a quick git diff?
-
   await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
 
   if (!args.skipTag) {
