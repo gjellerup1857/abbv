@@ -38,15 +38,18 @@ export default () => {
     }
 
     const timeoutMsg = `No storage data after ${timeout}ms`;
-    const data = await driver.wait(
+    let data;
+
+    await driver.wait(
       async () => {
-        return getStorage(driver, "local", "ewe:telemetry");
+        data = getStorage(driver, "local", "ewe:telemetry");
+        return data;
       },
       timeout,
       timeoutMsg,
     );
 
-    console.log("Data", data);
+    console.log("Data >>>", data);
     expect(data).toEqual(
       expect.objectContaining({
         firstPing: expect.any(String),
@@ -68,7 +71,8 @@ export default () => {
     try {
       await driver.wait(
         async () => {
-          return getStorage(driver, "local", "ewe:telemetry");
+          data = getStorage(driver, "local", "ewe:telemetry");
+          return data;
         },
         timeout,
         timeoutMsg,
