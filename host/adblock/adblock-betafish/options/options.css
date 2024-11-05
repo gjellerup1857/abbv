@@ -963,12 +963,6 @@ input[type="checkbox"]:active:not(:disabled) {
   border-color: rgba(0, 0, 0, 0.5);
 }
 
-input[type="radio"]:focus,
-input[type="checkbox"]:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 input[type="radio"]:checked::before {
   display: block;
   height: 0.38em;
@@ -1036,11 +1030,12 @@ textarea.widest {
 }
 
 .checkbox > input[type="checkbox"] {
-  opacity: 0;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
+  background-color: transparent;
+  border: none;
 }
 
 .checkbox > input[type="checkbox"]:hover {
