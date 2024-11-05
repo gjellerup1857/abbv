@@ -189,7 +189,14 @@ export default () => {
       const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       await toggleElement.click();
       const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
-      await confirmButton.click();
+      try {
+        await confirmButton.click();
+      }
+      catch (e) {
+        // A sliding animation can sometimes cause this to fail the first time
+        await driver.sleep(500);
+        await confirmButton.click();
+      }
       await initPopupPage(driver, popupUrl, tabId);
     }
     for (const item of toggleItems) {
