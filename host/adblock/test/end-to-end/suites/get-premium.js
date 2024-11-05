@@ -126,7 +126,8 @@ export default () => {
     const defaultTimeout = 5000;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
-    await driver.executeScript("License.activate();");
+    await driver.executeScript("License.activate()");
+    await driver.navigate().refresh();
     const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
     await premiumTab.click();
     await getDisplayedElement(driver, "#premium_status_msg", defaultTimeout);
@@ -169,9 +170,6 @@ export default () => {
     const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
     expect(await darkPopupPage.isDisplayed()).toEqual(true);
 
-    async function getToggleElement(selector) {
-      return await getDisplayedElement(driver, selector, defaultTimeout);
-    }
     const toggleItems = [
       {
         toggleSelector: '[data-name="cookies-premium"]',
@@ -183,19 +181,19 @@ export default () => {
       },
     ];
     for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       expect(await toggleElement.isEnabled()).toEqual(true);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
     }
     for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       await toggleElement.click();
-      const confirmButton = await getToggleElement(item.confirmButton);
+      const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
       await confirmButton.click();
       await initPopupPage(driver, popupUrl, tabId);
     }
     for (const item of toggleItems) {
-      const toggleElement = await getToggleElement(item.toggleSelector);
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
