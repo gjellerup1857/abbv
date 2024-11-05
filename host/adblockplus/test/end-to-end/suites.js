@@ -26,8 +26,12 @@ exports.suites = {
     "./tests/test-options-page-acceptable-ads.js",
     "./tests/test-popup-main.js",
     "./tests/test-abp-premium-ui-free-user.js",
-    "./tests/public-api/index.js",
+    "./tests/public-api/index.mjs",
     "./tests/test-unlock-premium.js"
+  ],
+  upgrade: [
+    // The upgrade suite is only run in the upgrade test
+    "./tests/upgrade/test-upgrade.mjs"
   ],
   oldbrowsers: [
     "./tests/test-abp-premium-cookiefl-premium-users.js",

@@ -29,12 +29,15 @@ import { EventEmitter } from "../../../adblockpluschrome/lib/events";
 import { getLocaleInfo } from "../../i18n/background";
 import { info } from "../../info/background";
 import {
+  CommandEventType,
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
   doesLicenseStateMatch,
   getBehavior,
+  getCommand,
   getContent,
+  isCommandExpired,
   recordEvent
 } from "../../ipm/background";
 import * as logger from "../../logger/background";
@@ -321,6 +324,17 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
       continue;
     }
 
+    // Ignore and dismiss command if it has expired
+    if (typeof dialog.ipmId === "string") {
+      const command = getCommand(dialog.ipmId);
+      if (command && isCommandExpired(command)) {
+        logger.error("[onpage-dialog]: Command has expired.");
+        recordDialogEvent(dialog, CommandEventType.expired);
+        dismissDialog(dialog);
+        continue;
+      }
+    }
+
     const result = await showOnpageDialog(page.id, tab, dialog);
     if (result === ShowOnpageDialogResult.rejected) {
       dismissDialog(dialog);
@@ -334,7 +348,10 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
  * @param dialog - Dialog information
  * @param eventType - Dialog event type
  */
-function recordDialogEvent(dialog: Dialog, eventType: DialogEventType): void {
+function recordDialogEvent(
+  dialog: Dialog,
+  eventType: CommandEventType | DialogEventType
+): void {
   eventEmitter.emit(eventType, dialog);
 
   if (typeof dialog.ipmId === "string") {

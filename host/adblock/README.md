@@ -69,7 +69,7 @@ repository, the same as the build commands.
 Note: The browser specified in the command is the browser that tests will be run
 on, not the browser that we specify in build step.
 
-DNS mapping "testpages.adblockplus.org." to "127.0.0.1" is used in non-Firefox browsers in order to test with locally served pages and AA-related filter rules.
+DNS mapping "testpages.adblockplus.org." to "127.0.0.1" is used in browsers in order to test with locally served pages and AA-related filter rules.
 
 #### Local run
 

@@ -13,6 +13,29 @@ export async function sleep(ms) {
 }
 
 /**
+ * Finds the project root directory by looking for a package.json file.
+ *
+ * @param {string} [startDir] - The directory to start looking in
+ * @param {string} [lookupFile="package.json"] - The file to look for in the directory
+ * @returns {string|*}
+ */
+export function findProjectRoot(startDir = process.cwd(), lookupFile = "package.json") {
+  // Convert the directory to an absolute path, and resolve the lookup file path.
+  const dir = path.resolve(startDir);
+
+  if (fs.existsSync(path.resolve(dir, lookupFile))) {
+    return dir;
+  }
+
+  const parentDir = path.dirname(dir);
+  if (parentDir === dir) {
+    throw new Error("Project root not found");
+  }
+
+  return findProjectRoot(parentDir);
+}
+
+/**
  * Downloads a file from a URL and saves it to the output path
  *
  * @param {string} url - The URL to download the file from
@@ -85,4 +108,20 @@ export async function downloadLatestReleaseBuilds({ extName, browserName = "chro
     }
   }
   await Promise.all(promises);
+}
+
+/**
+ * Converts an array buffer byte array into a base64 string.
+ *
+ * @param {Uint8Array|ArrayBuffer} buffer - Byte array of any data.
+ * @return {string} The same data, encoded as a base64 string.
+ */
+export function arrayBufferToBase64(buffer) {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
 }

@@ -18,11 +18,14 @@
 import * as browser from "webextension-polyfill";
 import { ExtendedInstallType } from "adblock-betafish/management";
 import {
+  CommandEventType,
   CommandName,
   createSafeOriginUrl,
   dismissCommand,
   doesLicenseStateMatch,
   getBehavior,
+  getCommand,
+  isCommandExpired,
   recordEvent,
 } from "../../ipm/background";
 
@@ -53,6 +56,19 @@ let newTabCounter = 0;
 const newTabMessageSendTrigger = [1, 10, 20, 100, 200];
 
 /**
+ * Registers an event with the data collection feature.
+ *
+ * @param ipmId The ipm id to register the event for
+ * @param name The event name to register
+ */
+function registerEvent(
+  ipmId: string,
+  name: CommandEventType | NewTabEventType | NewTabExitEventType | NewTabErrorEventType,
+): void {
+  void recordEvent(ipmId, CommandName.createTab, name);
+}
+
+/**
  * Event handler for the on tab updated event
  *
  * @param tabId - The id of the tab updated
@@ -71,7 +87,7 @@ const openNewtabOnUpdated = (
   const onUpdatedHandler = openNewtabOnUpdatedHandlerByIPMids.get(ipmId);
   openNewtabOnUpdatedHandlerByIPMids.delete(ipmId);
   browser.tabs.onUpdated.removeListener(onUpdatedHandler);
-  recordEvent(ipmId, CommandName.createTab, NewTabEventType.loaded);
+  registerEvent(ipmId, NewTabEventType.loaded);
 };
 
 /**
@@ -103,35 +119,49 @@ async function addBlockCountToURL(urlString: string): Promise<string | null> {
  * @param ipmId - IPM ID
  */
 async function openNewtab(ipmId: string): Promise<void> {
-  // Ignore and dismiss command if it has no behavior
   logger.debug("[new-tab]:openNewtab");
+
+  const command = getCommand(ipmId);
+  if (!command) {
+    return;
+  }
+
+  // Ignore and dismiss command if it has no behavior
   const behavior = getBehavior(ipmId);
   if (!isNewTabBehavior(behavior)) {
     logger.debug("[new-tab]: No command behavior");
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
+    registerEvent(ipmId, NewTabErrorEventType.noBehaviorFound);
     dismissCommand(ipmId);
     return;
   }
   // Ignore and dismiss command if License states doesn't match the license state of the command
   if (!(await doesLicenseStateMatch(behavior))) {
     logger.debug("[new-tab]: License state mis-match");
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.licenseStateNoMatch);
+    registerEvent(ipmId, NewTabErrorEventType.licenseStateNoMatch);
     dismissCommand(ipmId);
     return;
   }
 
   const targetUrl = createSafeOriginUrl(behavior.target);
   if (!targetUrl) {
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
+    registerEvent(ipmId, NewTabErrorEventType.noUrlFound);
     dismissCommand(ipmId);
     return;
   }
 
   const url = await addBlockCountToURL(targetUrl);
   if (url === null) {
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noUrlFound);
+    registerEvent(ipmId, NewTabErrorEventType.noUrlFound);
     dismissCommand(ipmId);
     logger.debug("[new-tab]: Invalid URL.");
+    return;
+  }
+
+  // Ignore and dismiss command if it has expired
+  if (isCommandExpired(command)) {
+    logger.error("[new-tab]: Command has expired.");
+    registerEvent(ipmId, CommandEventType.expired);
+    dismissCommand(ipmId);
     return;
   }
 
@@ -142,11 +172,11 @@ async function openNewtab(ipmId: string): Promise<void> {
 
   tab = await browser.tabs.create({ url }).catch((error) => {
     logger.error("[new-tab]: create tab error", error);
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.tabCreationError);
+    registerEvent(ipmId, NewTabErrorEventType.tabCreationError);
     return null;
   });
   if (tab !== null) {
-    recordEvent(ipmId, CommandName.createTab, NewTabEventType.created);
+    registerEvent(ipmId, NewTabEventType.created);
     dismissCommand(ipmId);
   }
 }
@@ -243,7 +273,7 @@ async function handleCommand(ipmId: string): Promise<void> {
 
   const { installType } = await browser.management.getSelf();
   if ((installType as ExtendedInstallType) === "admin") {
-    recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.admin);
+    registerEvent(ipmId, NewTabExitEventType.admin);
     dismissCommand(ipmId);
     return;
   }
@@ -252,7 +282,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   // Ignore and dismiss command if user opted-out of 'surveys'
   if (getSettings().suppress_update_page) {
     logger.debug("[new-tab]:suppress_update_page - true");
-    recordEvent(ipmId, CommandName.createTab, NewTabExitEventType.disabled);
+    registerEvent(ipmId, NewTabExitEventType.disabled);
     dismissCommand(ipmId);
     return;
   }
@@ -262,13 +292,13 @@ async function handleCommand(ipmId: string): Promise<void> {
   const behavior = getBehavior(ipmId);
   if (!isNewTabBehavior(behavior)) {
     logger.debug("[new-tab]: Invalid command behavior");
-    recordEvent(ipmId, CommandName.createTab, NewTabErrorEventType.noBehaviorFound);
+    registerEvent(ipmId, NewTabErrorEventType.noBehaviorFound);
     dismissCommand(ipmId);
     return;
   }
 
   // Let the IPM know we received the command.
-  recordEvent(ipmId, CommandName.createTab, NewTabEventType.received);
+  registerEvent(ipmId, NewTabEventType.received);
 
   // If the method is `force`, we need to create the tab right away.
   if (behavior.method === CreationMethod.force) {

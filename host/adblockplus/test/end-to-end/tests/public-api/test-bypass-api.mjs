@@ -15,52 +15,48 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
-
-const {expect} = require("chai");
-const {sendExtCommand, updateExtPrefAPIKey} = require("./shared/helpers");
-const {
+import { expect } from "chai";
+import { sendExtCommand, updateExtPrefAPIKey } from "./shared/helpers.mjs";
+import {
   addFilter,
   reloadExtension,
   waitForNewWindow,
   addFiltersToABP,
   isEdge
-} = require("../../helpers");
-const {blockHideUrl} = require("../../test-data/data-smoke-tests");
-const TestPages = require("../../page-objects/testPages.page");
+} from "../../helpers.js";
+import testData from "../../test-data/data-smoke-tests.js";
+import TestPages from "../../page-objects/testPages.page.js";
 
-module.exports = function()
-{
+const { blockHideUrl } = testData;
+
+export default function () {
   let extVersion;
 
-  before(async function()
-  {
+  before(async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-    {
+    if (isEdge()) {
       this.skip();
     }
 
     await updateExtPrefAPIKey("bypass_authorizedKeys");
     await reloadExtension();
-    ({extVersion} = this.test.parent.parent);
+    ({ extVersion } = this.test.parent.parent);
 
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
     await addFiltersToABP("/pop_ads.js");
   });
 
-  it("returns adblocking is active extension info", async function()
-  {
+  it("returns adblocking is active extension info", async function () {
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
     // verify that the page is not allowlisted
     const testPages = new TestPages(browser);
-    await testPages.checkPage({expectAllowlisted: false});
+    await testPages.checkPage({ expectAllowlisted: false });
 
     // send request extension info command
-    const {extensionInfo} = await sendExtCommand({
+    const { extensionInfo } = await sendExtCommand({
       triggerEventName: "flattr-request-payload",
       responseEventName: "flattr-payload"
     });
@@ -78,23 +74,22 @@ module.exports = function()
     expect(extensionInfo).deep.equal(expectedExtensionInfo);
   });
 
-  it("returns allowlisted page extension info", async function()
-  {
+  it("returns allowlisted page extension info", async function () {
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
     // ensure the page is initially not allowlisted
     const testPages = new TestPages(browser);
-    await testPages.checkPage({expectAllowlisted: false});
+    await testPages.checkPage({ expectAllowlisted: false });
 
     // Allowlist the page
     await addFilter("@@||adblockinc.gitlab.io^$document");
 
     // Check that the page was allowlisted
-    await testPages.checkPage({expectAllowlisted: true});
+    await testPages.checkPage({ expectAllowlisted: true });
 
     // send request extension info command
-    const {extensionInfo} = await sendExtCommand({
+    const { extensionInfo } = await sendExtCommand({
       triggerEventName: "flattr-request-payload",
       responseEventName: "flattr-payload"
     });
@@ -111,4 +106,4 @@ module.exports = function()
 
     expect(extensionInfo).deep.equal(expectedExtensionInfo);
   });
-};
+}

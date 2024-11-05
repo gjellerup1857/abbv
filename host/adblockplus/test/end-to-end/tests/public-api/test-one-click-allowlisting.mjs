@@ -15,19 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
+import { reloadExtension, waitForNewWindow, isEdge } from "../../helpers.js";
+import { updateExtPrefAPIKey, sendExtCommand } from "./shared/helpers.mjs";
+import testData from "../../test-data/data-smoke-tests.js";
+import TestPages from "../../page-objects/testPages.page.js";
 
-const {expect} = require("chai");
-const {reloadExtension, waitForNewWindow, isEdge} = require("../../helpers");
-const {updateExtPrefAPIKey, sendExtCommand} = require("./shared/helpers");
-const {blockHideUrl} = require("../../test-data/data-smoke-tests");
-const TestPages = require("../../page-objects/testPages.page");
+const { blockHideUrl } = testData;
 
-
-module.exports = function()
-{
-  before(async function()
-  {
+export default function () {
+  before(async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
     if (isEdge())
       this.skip();
@@ -37,8 +34,7 @@ module.exports = function()
     await reloadExtension();
   });
 
-  it("allowlists the page forever", async function()
-  {
+  it("allowlists the page forever", async function () {
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
@@ -56,11 +52,10 @@ module.exports = function()
 
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);
-    await testPages.checkPage({expectAllowlisted: true});
+    await testPages.checkPage({ expectAllowlisted: true });
   });
 
-  it("allowlists the page with expiration", async function()
-  {
+  it("allowlists the page with expiration", async function () {
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
@@ -68,7 +63,9 @@ module.exports = function()
     const allowlistedEvent = await sendExtCommand({
       triggerEventName: "domain_allowlisting_request",
       responseEventName: "domain_allowlisting_success",
-      options: {expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30} // 30 days
+      options: {
+        expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30 // 30 days
+      }
     });
 
     // verify that the page received the allowlisting successfully event
@@ -79,6 +76,6 @@ module.exports = function()
 
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);
-    await testPages.checkPage({expectAllowlisted: true});
+    await testPages.checkPage({ expectAllowlisted: true });
   });
-};
+}

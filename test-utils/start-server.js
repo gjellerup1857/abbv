@@ -20,5 +20,11 @@
 /* eslint-disable no-console */
 
 import {startTestPagesServer} from "./test-pages-server.js";
+import {startLicenseServer} from "./test-license-server.js";
+import {startIpmServer} from "./ipm-server/test-ipm-server.js";
 
-startTestPagesServer("localhost");
+const hostname = "localhost";
+
+startTestPagesServer(hostname);
+startLicenseServer(hostname);
+startIpmServer(hostname);

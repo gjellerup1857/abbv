@@ -31,27 +31,12 @@ const isGitlab = process.env.CI === "true";
 
 const chromeBuildMV2 =
   findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV2}`);
-const chromeBuildMV3 =
-  findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV3}`);
-const firefoxBuild = findFirstMatchingFile(
-  `../../${process.env.FIREFOX_BUILD}`);
 
 const distPath = path.join(process.cwd(), "..", "..", "dist");
 const helperExtensionMV2Path =
   path.join(distPath, "devenv", "helper-extension-mv2.zip");
 const helperExtensionMV3Path =
   path.join(distPath, "devenv", "helper-extension-mv3.zip");
-const helperExtensionMV3UnpackedPath =
-  path.join(distPath, "devenv", "helper-extension-mv3");
-
-const testConfig = {
-  allureEnabled: process.env.ENABLE_ALLURE === "true",
-  browserName: process.env.BROWSER,
-  screenshotsPath: path.join(process.cwd(), "screenshots"),
-  releasePath: path.join(distPath, "release"),
-  chromeBuildMV3,
-  helperExtensionMV3UnpackedPath
-};
 
 async function afterSequence(optionsUrl = null)
 {
@@ -68,13 +53,6 @@ async function beforeSequence({
   isSmokeTest = false
 } = {expectInstalledTab: true})
 {
-  if (isFirefox())
-  {
-    await browser.installAddOn(getFirefoxExtension(), true);
-    await browser.pause(500);
-    await browser.installAddOn(getHelperExtension("MV2"), true);
-  }
-
   const {origin, optionsUrl, popupUrl, extVersion} = await waitForExtension();
   let installedUrl;
   if (expectInstalledTab)
@@ -177,15 +155,13 @@ async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
 
 async function enablePremiumByMockServer()
 {
-  await wakeMockServer("https://qa-mock-licensing-server.glitch.me/",
-                       "Mock licensing server is up and running");
   await switchToABPOptionsTab();
   await browser.executeScript(`
     Promise.all([
       new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.set",
           key: "premium_license_check_url",
-          value: "https://qa-mock-licensing-server.glitch.me/"},
+          value: "http://localhost:3006"},
           response => {
           if (browser.runtime.lastError) {
             reject(browser.runtime.lastError);
@@ -348,11 +324,6 @@ function getExtension(extensionPath)
 function getChromiumMV2Extension()
 {
   return getExtension(chromeBuildMV2);
-}
-
-function getFirefoxExtension()
-{
-  return getExtension(firefoxBuild);
 }
 
 function getHelperExtension(manifestVersion)
@@ -601,14 +572,6 @@ async function waitForExtension()
   return {origin, optionsUrl, popupUrl, extVersion};
 }
 
-async function wakeMockServer(serverUrl, serverUpText)
-{
-  await browser.newWindow(serverUrl);
-  const generalPage = new GeneralPage(browser);
-  await generalPage.isMockServerUpTextDisplayed(serverUpText);
-  await browser.closeWindow();
-}
-
 /**
  * Gets the ID of current tab using the browser.tabs WebExtension API.
  * This is mainly used to work with the popup when it is open in a tab.
@@ -829,37 +792,17 @@ async function reloadExtension(suppressUpdatePage = true)
   await waitForSwitchToABPOptionsTab(optionsUrl, 60000);
 }
 
-/**
- * Converts an array buffer byte array into a base64 string.
- *
- * @param {Uint8Array|ArrayBuffer} buffer - Byte array of any data.
- * @return {string} The same data, encoded as a base64 string.
- */
-function arrayBufferToBase64(buffer)
-{
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < bytes.byteLength; i++)
-  {
-    binary += String.fromCharCode(bytes[i]);
-  }
-
-  return btoa(binary);
-}
-
-
 module.exports = {
   afterSequence, beforeSequence, doesTabExist,
-  executeAsyncScript, testConfig,
-  enablePremiumByMockServer, wakeMockServer, lambdatestRunChecks,
-  getChromiumMV2Extension, getFirefoxExtension, getHelperExtension,
+  executeAsyncScript,
+  enablePremiumByMockServer, lambdatestRunChecks,
+  getChromiumMV2Extension, getHelperExtension,
   getCurrentDate, getTabId, enablePremiumByUI,
-  randomIntFromInterval, globalRetriesNumber, switchToABPOptionsTab,
+  globalRetriesNumber, switchToABPOptionsTab,
   waitForExtension, getABPOptionsTabId, waitForCondition,
-  waitForSwitchToABPOptionsTab, waitForNewWindow, waitForAssertion, isChrome,
+  waitForNewWindow, waitForAssertion, isChrome,
   isFirefox, isEdge, uninstallExtension,
   addFiltersToABP, addFilter, removeFilter,
-  arrayBufferToBase64,
   reloadExtension,
   updatePrefs
 };

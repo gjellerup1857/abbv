@@ -33,17 +33,21 @@ const helperExtensionDestZip = {
 const helperExtensionSrcPath =
   path.join(process.cwd(), "test", "end-to-end", "helper-extension");
 
-async function run()
-{
-  for (const manifestVersionsItem of ["2", "3"])
-  {
+async function run() {
+  for (const manifestVersionsItem of ["2", "3"]) {
     const manifestVersion = parseInt(manifestVersionsItem, 10);
-    await fs.promises.rm(helperExtensionDestPath[`mv${manifestVersionsItem}`], {
-      recursive: true, force: true});
-    await fs.promises.rm(helperExtensionDestZip[`mv${manifestVersionsItem}`], {
-      recursive: true, force: true});
+    await fs.promises.rm(
+      helperExtensionDestPath[`mv${manifestVersionsItem}`],
+      { recursive: true, force: true }
+    );
+    await fs.promises.rm(
+      helperExtensionDestZip[`mv${manifestVersionsItem}`],
+      { recursive: true, force: true }
+    );
     await fs.promises.mkdir(
-      helperExtensionDestPath[`mv${manifestVersionsItem}`], {recursive: true});
+      helperExtensionDestPath[`mv${manifestVersionsItem}`],
+      { recursive: true }
+    );
 
     const manifestBase =
       path.join(helperExtensionSrcPath, "manifest.base.json");
@@ -52,7 +56,7 @@ async function run()
     manifest.name = `${manifest.name} MV${manifestVersion}`;
     manifest["manifest_version"] = manifestVersion;
     manifest.background = manifestVersion === 2 ?
-      {scripts: ["background.js"]} : {service_worker: "background.js"};
+      { scripts: ["background.js"] } : { service_worker: "background.js" };
 
     await fs.promises.writeFile(path.join(
       helperExtensionDestPath[`mv${manifestVersionsItem}`], "manifest.json"),
@@ -74,14 +78,10 @@ async function run()
   }
 }
 
-(async() =>
-{
-  try
-  {
+(async () => {
+  try {
     await run();
-  }
-  catch (e)
-  {
+  } catch (e) {
     console.error(e);
     process.exit(1);
   }

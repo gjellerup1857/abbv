@@ -36,7 +36,9 @@ describe("AdBlock end-to-end tests", function () {
     const buildsDirPath = path.join(process.cwd(), "dist", "release");
     const unpackedDirPath = path.join(buildsDirPath, "adblock-unpacked");
 
-    // start the browser with the extension
+    // Start the browser with the extension.
+    // Once the driver and other variables are moved on "global" object
+    // we can remove the bind(this) from the setupBrowserHook
     await setupBrowserHook.bind(this)(buildsDirPath, unpackedDirPath);
   });
 
