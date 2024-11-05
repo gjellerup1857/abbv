@@ -108,6 +108,7 @@ describe("Do-release script", function() {
 
     await recursiveCopyDirectoryWithGitignore(repoRoot, originDir, await loadGitignore());
 
+    console.log(await executeShellCommand("git status", originDir));
     if (await gitRepoHasChanges(originDir)) {
       // This commit is so that any uncommitted changes to the do-release script
       // are included in the checkout, and so are used in the test run.
@@ -120,7 +121,7 @@ describe("Do-release script", function() {
     await recursiveSymlinkNodeModules(repoRoot, checkoutDir);
 
     await configureTestGitUser(checkoutDir);
-  });
+  }, 20000);
 
   afterEach(async function() {
     await fs.rm(tempDir, { recursive: true, force: true });
