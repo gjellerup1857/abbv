@@ -127,6 +127,8 @@ export default () => {
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.executeScript("License.activate();");
+    const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
+    await premiumTab.click();
     await getDisplayedElement(driver, "#premium_status_msg", defaultTimeout);
     await driver.navigate().refresh();
 
@@ -167,64 +169,51 @@ export default () => {
     const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
     expect(await darkPopupPage.isDisplayed()).toEqual(true);
 
-    let skipCookieWallsToggle = await getDisplayedElement(
-      driver,
-      '[data-name="cookies-premium"]',
-      defaultTimeout,
-    );
-    expect(await skipCookieWallsToggle.isEnabled()).toEqual(true);
-    expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual(null);
-    let blockDistractionsToggle = await getDisplayedElement(
-      driver,
-      '[data-name="distraction-control"]',
-      defaultTimeout,
-    );
-    expect(await blockDistractionsToggle.isEnabled()).toEqual(true);
-    expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual(null);
-    await skipCookieWallsToggle.click();
-    const confirmCookieWallsButton = await getDisplayedElement(
-      driver,
-      '[data-action="confirmCookie"]',
-      defaultTimeout,
-    );
-    await confirmCookieWallsButton.click();
-    await initPopupPage(driver, popupUrl, tabId);
-    blockDistractionsToggle = await getDisplayedElement(
-      driver,
-      '[data-name="distraction-control"]',
-      defaultTimeout,
-    );
-    await blockDistractionsToggle.click();
-    const confirmDCButton = await getDisplayedElement(
-      driver,
-      '[data-action="confirmDistractions"]',
-      defaultTimeout,
-    );
-    await confirmDCButton.click();
-    await initPopupPage(driver, popupUrl, tabId);
-    skipCookieWallsToggle = await getDisplayedElement(
-      driver,
-      '[data-name="cookies-premium"]',
-      defaultTimeout,
-    );
-    expect(await skipCookieWallsToggle.getAttribute("data-is-checked")).toEqual("true");
-    blockDistractionsToggle = await getDisplayedElement(
-      driver,
-      '[data-name="distraction-control"]',
-      defaultTimeout,
-    );
-    expect(await blockDistractionsToggle.getAttribute("data-is-checked")).toEqual("true");
+    async function getToggleElement(selector) {
+      return await getDisplayedElement(driver, selector, defaultTimeout);
+    }
+    const toggleItems = [
+      {
+        toggleSelector: '[data-name="cookies-premium"]',
+        confirmButton: '[data-action="confirmCookie"]',
+      },
+      {
+        toggleSelector: '[data-name="distraction-control"]',
+        confirmButton: '[data-action="confirmDistractions"]',
+      },
+    ];
+    for (const item of toggleItems) {
+      const toggleElement = await getToggleElement(item.toggleSelector);
+      expect(await toggleElement.isEnabled()).toEqual(true);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
+    }
+    for (const item of toggleItems) {
+      const toggleElement = await getToggleElement(item.toggleSelector);
+      await toggleElement.click();
+      const confirmButton = await getToggleElement(item.confirmButton);
+      await confirmButton.click();
+      await initPopupPage(driver, popupUrl, tabId);
+    }
+    for (const item of toggleItems) {
+      const toggleElement = await getToggleElement(item.toggleSelector);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
+    }
 
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/DC-filters/DC-filters-testpage.html";
     await openNewTab(driver, url);
-    await waitForNotDisplayed(driver, "#pushnotifications-hiding-filter");
-    await waitForNotDisplayed(driver, "#pushnotifications-blocking-filter");
-    await waitForNotDisplayed(driver, "#product-video-container");
-    await waitForNotDisplayed(driver, "#autoplayvideo-blocking-filter");
-    await waitForNotDisplayed(driver, "#survey-feedback-to-left");
-    await waitForNotDisplayed(driver, "#survey-blocking-filter");
-    await waitForNotDisplayed(driver, "#newsletterMsg");
-    await waitForNotDisplayed(driver, "#newsletter-blocking-filter");
+    const dcFilters = [
+      "#pushnotifications-hiding-filter",
+      "#pushnotifications-blocking-filter",
+      "#product-video-container",
+      "#autoplayvideo-blocking-filter",
+      "#survey-feedback-to-left",
+      "#survey-blocking-filter",
+      "#newsletterMsg",
+      "#newsletter-blocking-filter",
+    ];
+    for (const dcFilter of dcFilters) {
+      await waitForNotDisplayed(driver, dcFilter);
+    }
   });
 };
