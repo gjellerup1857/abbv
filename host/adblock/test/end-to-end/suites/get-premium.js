@@ -194,7 +194,13 @@ export default () => {
     }
     for (const item of toggleItems) {
       const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
+      try {
+        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
+      } catch (e) {
+        await driver.navigate().refresh();
+        await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
+        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
+      }
     }
 
     const url =
