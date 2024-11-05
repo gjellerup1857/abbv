@@ -26,7 +26,7 @@ import {
   randomIntFromInterval,
   waitForNotDisplayed,
 } from "../utils/driver.js";
-import { initOptionsGeneralTab, initPopupPage } from "../utils/page.js";
+import { initOptionsGeneralTab, initPopupPage, sendExtMessage } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
 const { By } = webdriver;
@@ -126,7 +126,7 @@ export default () => {
     const defaultTimeout = 5000;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
-    await driver.executeScript("License.activate()");
+    await sendExtMessage({ type: "adblock:activate" });
     await driver.navigate().refresh();
     const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
     await premiumTab.click();
