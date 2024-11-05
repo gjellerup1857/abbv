@@ -53,7 +53,6 @@ export default {
           "adblock-betafish/ipm/background/index.ts",
           "adblock-betafish/onpage-dialog/background/index.ts",
           "adblock-betafish/new-tab/background/index.ts",
-          "src/yt-wall-detection/background/index.ts",
         ],
       },
       {
@@ -63,10 +62,6 @@ export default {
       {
         dest: "onpage-dialog.postload.js",
         src: ["adblock-betafish/onpage-dialog/content/dialog.ts"],
-      },
-      {
-        dest: "yt-wall-detection.preload.js",
-        src: ["src/yt-wall-detection/content/index.ts"],
       },
       {
         dest: "info-injector.preload.js",
@@ -79,6 +74,11 @@ export default {
       {
         dest: "adblock-deny-push-notifications-requests.js",
         src: ["src/premium-push-notification/content/deny-notifications-requests.ts"],
+      },
+      {
+        dest: "yt-wall-detection.preload.js",
+        package: "@eyeo/yt-wall-detection",
+        src: "/content",
       },
       // TODO (ui-components): Uncomment this when you want to integrate ui-components
       // {

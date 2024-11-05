@@ -28,6 +28,9 @@ function resolveBundleSrc(bundle) {
       packagePath = `../../${packagePath}`;
     }
     if (!existsSync(packagePath)) {
+      packagePath = `../../fragment/${bundle.package}`;
+    }
+    if (!existsSync(packagePath)) {
       throw new Error(`${bundle.package} not found. Do you need to npm install?`);
     }
 

@@ -1,0 +1,22 @@
+{
+  "author": "eyeo GmbH",
+  "name": "@eyeo/polyfills",
+  "license": "GPL-3.0",
+  "private": true,
+  "typesVersions": {
+    "*": {
+      "all": [
+        "./index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@types/webextension-polyfill": "0.8.0"
+  },
+  "devDependencies": {
+    "vitest": "2.1.3"
+  }
+}

@@ -21,6 +21,7 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import * as info from "info";
+import { start as startYtWallDection } from "@eyeo/yt-wall-detection/background";
 import { Prefs } from "./alias/prefs";
 
 import { getCustomFilterMetaData, getDebugInfo } from "./debug/background";
@@ -51,6 +52,8 @@ import { setUninstallURL } from "./alias/uninstall";
 
 import DataCollectionV2 from "./datacollection.v2";
 import LocalDataCollection from "./localdatacollection";
+import * as logger from "~/utilities/background";
+import { port } from "../adblockplusui/adblockpluschrome/lib/messaging/port";
 import ServerMessages from "~/servermessages";
 import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
@@ -700,6 +703,15 @@ initialize
     await startCdpOptOutListener();
     revalidateAllowlistingStates();
     prefs.migrateUserData();
+    startYtWallDection({
+      allowlistTab: adblockIsDomainPaused,
+      addTrustedMessageTypes: ext.addTrustedMessageTypes,
+      ewe,
+      logger,
+      port,
+      prefs: Prefs,
+      sendAdWallEvents: ServerMessages.recordAdWallMessage,
+    });
     addAllowlistingListeners();
   })
   .catch((e) => {
