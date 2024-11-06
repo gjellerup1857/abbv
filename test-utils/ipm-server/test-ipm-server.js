@@ -81,3 +81,12 @@ function start(hostname) {
 export function startIpmServer(hostname) {
   start(hostname);
 };
+
+export function stopIpmServer() {
+  server.close(function (err) {
+    if (err) {
+      throw err;
+    }
+    console.log("IPM server closed");
+  });
+}

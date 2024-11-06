@@ -19,7 +19,6 @@
 /* eslint-disable no-console */
 
 import http from "http";
-import fs from "fs";
 
 export const port = 3006;
 
@@ -33,7 +32,6 @@ const WRONG_LICENSE_STATUS = "wrong_license_status";
 const WRONG_LICENSE_VERSION = "wrong_license_version";
 
 const server = http.createServer((req, res) => {
-  fs.createReadStream("index.html").pipe(res)
   let data = "";
 
   req.on("data", (chunk) => {
@@ -42,8 +40,9 @@ const server = http.createServer((req, res) => {
 
   req.on("end", () => {
     try {
-      console.log("request received", JSON.parse(data));
-      const { cmd, u, v } = JSON.parse(data);
+      const jsonData = JSON.parse(data);
+      console.log("request received", jsonData);
+      const { cmd, u, v } = jsonData;
 
       res.setHeader("Content-Type", "application/json");
 
@@ -127,7 +126,7 @@ const server = http.createServer((req, res) => {
       }
     } catch (error) {
       // Unexpected end of JSON input
-      console.log('error', error);
+      console.log("License server error", error);
     }
   });
 });
@@ -135,5 +134,14 @@ const server = http.createServer((req, res) => {
 export function startLicenseServer(hostname) {
   server.listen(port, hostname, () => {
     console.log(`License server listening at http://${hostname}:${port}`);
+  });
+}
+
+export function stopLicenseServer() {
+  server.close(function (err) {
+    if (err) {
+      throw err;
+    }
+    console.log("License server closed");
   });
 }

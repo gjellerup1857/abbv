@@ -17,14 +17,7 @@
  */
 
 /* eslint-env node */
-/* eslint-disable no-console */
 
-import {startTestPagesServer} from "./test-pages-server.js";
-import {startLicenseServer} from "./test-license-server.js";
-import {startIpmServer} from "./ipm-server/test-ipm-server.js";
+import {runTestServer} from "./test-server-manager.js";
 
-const hostname = "localhost";
-
-startTestPagesServer(hostname);
-startLicenseServer(hostname);
-startIpmServer(hostname);
+runTestServer();

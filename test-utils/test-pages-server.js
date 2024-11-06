@@ -31,9 +31,23 @@ app.use(express.static(path.join(dirname, "host-pages")));
 
 app.post("/ping-handler", (req, res) => res.sendStatus(200));
 
+let server;
 export function startTestPagesServer(host) {
-  app.listen(testPagesPort, () => {
+  server = app.listen(testPagesPort, () => {
     console.log(`Test pages server listening at http://${host}:${testPagesPort}`);
   });
 }
 
+export function stopTestPagesServer() {
+  if (!server) {
+    return;
+  }
+
+  server.close((err) => {
+    console.log("Test pages server stopped");
+    if (err) {
+      throw err;
+    }
+  });
+  server = null;
+}

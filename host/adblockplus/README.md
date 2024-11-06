@@ -283,7 +283,6 @@ resources like the GCloud console can be granted by devops as well.
 
 [Extension releases (prior to 3.11)][abp-webext-releases]
 
-
 [abp-ext]: https://gitlab.com/adblockinc/ext/adblockplus/adblockplus
 [abp-ext-nightlies]: https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/pipelines?scope=branches
 [abp-ext-tags]: https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/tags
