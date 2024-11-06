@@ -196,15 +196,8 @@ export default () => {
       await initPopupPage(driver, popupUrl, tabId);
     }
     for (const item of toggleItems) {
-      let toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-      try {
-        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
-      } catch (e) {
-        await driver.navigate().refresh();
-        await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-        toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
-      }
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
     const url =
