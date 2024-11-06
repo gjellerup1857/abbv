@@ -197,7 +197,7 @@ export default () => {
     }
 
     const url =
-      "https://adblockinc.gitlab.io/QA-team/adblocking/DC-filters/DC-filters-testpage.html";
+      "http://testpages.adblockplus.org:3005/dc-filters.html";
     await openNewTab(driver, url);
     const dcFilters = [
       "#pushnotifications-hiding-filter",

@@ -63,8 +63,7 @@ describe("test unlock premium", function()
     await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.true;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/" +
-      "adblocking/DC-filters/DC-filters-testpage.html");
+    await browser.newWindow("http://testpages.adblockplus.org:3005/dc-filters.html");
     const testPages = new TestPages(browser);
     await testPages.switchToTab("DC filters");
     
