@@ -184,9 +184,6 @@ export default () => {
       const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       expect(await toggleElement.isEnabled()).toEqual(true);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
-    }
-    for (const item of toggleItems) {
-      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       await toggleElement.click();
       const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
       // A sliding animation can sometimes cause this to fail
