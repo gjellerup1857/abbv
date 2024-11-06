@@ -185,9 +185,12 @@ export async function start()
   let addonInfo = {
     bundledSubscriptions: rulesIndex,
     bundledSubscriptionsPath: "/data/rules/abp",
-    inlineCss: false,
     name: info.addonName,
-    version: info.addonVersion
+    version: info.addonVersion,
+    featureFlags: {
+      debugCdp: true,
+      inlineCss: false
+    }
   };
 
   let cdp = {
