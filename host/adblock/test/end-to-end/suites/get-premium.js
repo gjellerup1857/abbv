@@ -189,25 +189,15 @@ export default () => {
       const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
       await toggleElement.click();
       const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
-      try {
-        await confirmButton.click();
-      } catch (e) {
-        // A sliding animation can sometimes cause this to fail the first time
-        await driver.sleep(500);
-        await confirmButton.click();
-      }
+      // A sliding animation can sometimes cause this to fail
+      await driver.sleep(500);
+      await confirmButton.click();
+      await initOptionsGeneralTab(driver, getOptionsHandle());
       await initPopupPage(driver, popupUrl, tabId);
     }
     for (const item of toggleItems) {
-      let toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-      try {
-        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
-      } catch (e) {
-        await driver.navigate().refresh();
-        await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-        toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
-        expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
-      }
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
     const url =
