@@ -194,7 +194,10 @@ async function openNewtab(): Promise<void> {
     // eslint-disable-next-line no-await-in-loop
     if (await isCoolDownPeriodOngoing()) {
       logger.debug("[new-tab]: Cool down period still ongoing");
-      continue;
+      // We need to exit the loop here. Not only to save unneeded iterations, 
+      // but also to prevent a priority mismatch for the case the period 
+      // might end during the iteration.
+      return;
     }
 
     // Ignore and dismiss command if it has no behavior
