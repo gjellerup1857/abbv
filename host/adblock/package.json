@@ -15,7 +15,6 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
-    "build:beta": "npm run $ create.beta",
     "build:release": "npm run $ build.release",
     "build:source": "gulp source",
     "eslint": "npm run $ lint.js",
@@ -53,7 +52,6 @@
       }
     },
     "create": {
-      "beta": "gulp build -t chrome -m 3 --manifest-path ./build/beta_manifest.base.json --basename adblockbeta --unhandled-rejections=strict",
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "release": "gulp build -c release -t $1 -m $2 --unhandled-rejections=strict"
     },

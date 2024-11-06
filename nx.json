@@ -27,16 +27,6 @@
         "{projectRoot}/dist/devenv/local-mv2"
       ]
     },
-    "build:beta": {
-      "cache": true,
-      "dependsOn": [
-        "^build:release"
-      ],
-      "outputs": [
-        "{projectRoot}/dist/release/*beta*.zip",
-        "{projectRoot}/dist/release/*development*.zip"
-      ]
-    },
     "lint": {
       "cache": false,
       "dependsOn": [

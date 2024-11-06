@@ -10,7 +10,6 @@
   "scripts": {
     "$": "npm-dollar",
     "build": "npm run $ build.devenv",
-    "build:beta": "npm run $ create.beta",
     "build:local": "npm run $ create.devenv local 2",
     "build:release": "npm run $ build.release",
     "build:source": "gulp source",
@@ -51,8 +50,7 @@
         "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.release firefox 2; fi"
       }
     },
-    "create": {
-      "beta": "gulp build -c development -t chrome -m 3 --unhandled-rejections=strict",
+    "create": {      
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "dist": {
         "icons": "node build/icons-generation/index.js"

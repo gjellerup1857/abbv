@@ -73,7 +73,6 @@ build:
     - npm run build:source -- --scope=adblock
     # Create extension builds
     - npm run build:release -- --scope=adblock
-    - npm run build:beta -- --scope=adblock
   artifacts:
     name: "adblock-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -82,7 +81,6 @@ build:
       - host/adblock/dist/release/adblock-chrome-*-mv3.zip
       - host/adblock/dist/release/adblock-firefox-*-mv2.xpi
       - host/adblock/dist/release/adblock-firefox-*-mv2.xpi
-      - host/adblock/dist/release/adblockbeta-chrome-*-mv3.zip
 
 buildfromsource:
   stage: build

@@ -72,9 +72,6 @@ npm run build
 # Creates release builds
 npm run build:release
 
-# Creates release build of the beta version of the extension
-npm run build:beta
-
 # Creates the source tarballs for use in store submission
 npm run build:source
 ```
