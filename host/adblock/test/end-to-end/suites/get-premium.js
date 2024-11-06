@@ -16,10 +16,20 @@
  */
 
 import { expect } from "expect";
+import webdriver from "selenium-webdriver";
 
-import { getDisplayedElement, findUrl, randomIntFromInterval } from "../utils/driver.js";
-import { initOptionsGeneralTab } from "../utils/page.js";
+import {
+  getDisplayedElement,
+  findUrl,
+  openNewTab,
+  getTabId,
+  randomIntFromInterval,
+  waitForNotDisplayed,
+} from "../utils/driver.js";
+import { initOptionsGeneralTab, initPopupPage, sendExtMessage } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
+
+const { By } = webdriver;
 
 export default () => {
   it("activates premium", async function () {
@@ -36,8 +46,8 @@ export default () => {
     const getPremiumButton = await getDisplayedElement(driver, '[data-plan="me"]');
     await getPremiumButton.click();
     await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+    await driver.sleep(1000); // Sometimes the scrolling is not done when the element is searched for
     const completePurchaseButton = await getDisplayedElement(driver, '[i18n="complete_purchase"]');
-    await driver.sleep(500); // Sometimes the scrolling is not done when the click is performed
     await completePurchaseButton.click();
 
     try {
@@ -109,5 +119,99 @@ export default () => {
     expect(
       [`SUPPORTER SINCE ${formattedDate}`, "ACTIVE"].includes(await premiumStatusText.getText()),
     ).toEqual(true);
+  });
+
+  it("should have premium features", async function () {
+    const { driver, popupUrl } = this;
+    const timeout = 4000;
+
+    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await sendExtMessage({ type: "adblock:activate" });
+    await driver.navigate().refresh();
+    const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
+    await premiumTab.click();
+    await getDisplayedElement(driver, "#premium_status_msg", timeout);
+
+    const imageSwapTab = await getDisplayedElement(
+      driver,
+      '[href="#mab-image-swap"]',
+      timeout,
+    );
+    await imageSwapTab.click();
+    await getDisplayedElement(driver, "#cats", timeout);
+    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', timeout);
+    await themesTab.click();
+
+    await getDisplayedElement(
+      driver,
+      '[data-key="options_page"][data-theme="dark_theme"]',
+      timeout,
+    );
+    const darkThemeOptionsPageItem = await driver.findElement(
+      By.css('[data-key="options_page"][data-theme="dark_theme"] input'),
+    );
+    await darkThemeOptionsPageItem.click();
+    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", timeout);
+    expect(await darkOptionsPage.isDisplayed()).toEqual(true);
+
+    await getDisplayedElement(
+      driver,
+      '[data-key="popup_menu"][data-theme="dark_theme"]',
+      timeout,
+    );
+    const darkThemePopupItem = await driver.findElement(
+      By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
+    );
+    await darkThemePopupItem.click();
+    await openNewTab(driver, "https://example.com/");
+    const tabId = await getTabId(driver, getOptionsHandle());
+    await initPopupPage(driver, popupUrl, tabId);
+    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", timeout);
+    expect(await darkPopupPage.isDisplayed()).toEqual(true);
+
+    const toggleItems = [
+      {
+        toggleSelector: '[data-name="cookies-premium"]',
+        confirmButton: '[data-action="confirmCookie"]',
+      },
+      {
+        toggleSelector: '[data-name="distraction-control"]',
+        confirmButton: '[data-action="confirmDistractions"]',
+      },
+    ];
+    for (const item of toggleItems) {
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
+      expect(await toggleElement.isEnabled()).toEqual(true);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
+      await toggleElement.click();
+      const confirmButton = await getDisplayedElement(driver, item.confirmButton, timeout);
+      // A sliding animation can sometimes cause this to fail
+      await driver.sleep(500);
+      await confirmButton.click();
+      // Opening the Options page first eliminates a flakiness issue on Edge
+      await initOptionsGeneralTab(driver, getOptionsHandle());
+      await initPopupPage(driver, popupUrl, tabId);
+    }
+    for (const item of toggleItems) {
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
+      expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
+    }
+
+    const url =
+      "http://testpages.adblockplus.org:3005/dc-filters.html";
+    await openNewTab(driver, url);
+    const dcFilters = [
+      "#pushnotifications-hiding-filter",
+      "#pushnotifications-blocking-filter",
+      "#product-video-container",
+      "#autoplayvideo-blocking-filter",
+      "#survey-feedback-to-left",
+      "#survey-blocking-filter",
+      "#newsletterMsg",
+      "#newsletter-blocking-filter",
+    ];
+    for (const dcFilter of dcFilters) {
+      await waitForNotDisplayed(driver, dcFilter);
+    }
   });
 };
