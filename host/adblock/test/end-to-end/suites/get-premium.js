@@ -188,6 +188,7 @@ export default () => {
       // A sliding animation can sometimes cause this to fail
       await driver.sleep(500);
       await confirmButton.click();
+      // Opening the Options page first eliminates a flakiness issue on Edge
       await initOptionsGeneralTab(driver, getOptionsHandle());
       await initPopupPage(driver, popupUrl, tabId);
     }
