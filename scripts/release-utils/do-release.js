@@ -205,6 +205,13 @@ async function run() {
     }
   }
 
+  if (args.host == "adblockplus") {
+    console.log("- Uploading sourcemaps to Sentry ...");
+    await executeMaybe(`VERSION=${args.version} npm run sentry:release-new`);
+    await executeMaybe("npm run sentry:sourcemaps");
+    await executeMaybe(`VERSION=${args.version} npm run sentry:release-finalize`);
+  }
+
   await executeMaybe(`git commit --all -m 'build: Releasing ${args.host} ${args.version} [noissue]'`, args.skipGit);
   await executeMaybe(`git push origin ${branchName} -f`, args.skipGit);
   console.log(`🤖 Changes have been commited and pushed to ${branchName}`);

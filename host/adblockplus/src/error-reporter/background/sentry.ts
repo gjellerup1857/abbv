@@ -97,7 +97,7 @@ export async function initialize(
       }
     },
     integrations,
-    sampleRate: sampleRate ?? 0.01,
+    sampleRate: 1,
     beforeSend(event) {
       console.warn("Event", event);
       lastEvent = event;
@@ -148,6 +148,7 @@ export function start(): void {
       webpackDotenvPlugin.SENTRY_DSN,
       webpackDotenvPlugin.SENTRY_ENVIRONMENT
     );
+    reportError(new Error ("This is error tested by Aga"));
   } else {
     console.warn(
       "Sentry is not initialized. " +
