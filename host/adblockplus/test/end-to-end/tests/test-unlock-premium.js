@@ -67,6 +67,7 @@ describe("test unlock premium", function()
       "adblocking/DC-filters/DC-filters-testpage.html");
     const testPages = new TestPages(browser);
     await testPages.switchToTab("DC filters");
+    
     expect(await testPages.
       isPushNotificationsHidingFilterIdDisplayed()).to.be.false;
     expect(await testPages.

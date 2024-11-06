@@ -123,42 +123,41 @@ export default () => {
 
   it("should have premium features", async function () {
     const { driver, popupUrl } = this;
-    const defaultTimeout = 5000;
+    const timeout = 4000;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await sendExtMessage({ type: "adblock:activate" });
     await driver.navigate().refresh();
     const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
     await premiumTab.click();
-    await getDisplayedElement(driver, "#premium_status_msg", defaultTimeout);
-    await driver.navigate().refresh();
+    await getDisplayedElement(driver, "#premium_status_msg", timeout);
 
     const imageSwapTab = await getDisplayedElement(
       driver,
       '[href="#mab-image-swap"]',
-      defaultTimeout,
+      timeout,
     );
     await imageSwapTab.click();
-    await getDisplayedElement(driver, "#cats", defaultTimeout);
-    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', defaultTimeout);
+    await getDisplayedElement(driver, "#cats", timeout);
+    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', timeout);
     await themesTab.click();
 
     await getDisplayedElement(
       driver,
       '[data-key="options_page"][data-theme="dark_theme"]',
-      defaultTimeout,
+      timeout,
     );
     const darkThemeOptionsPageItem = await driver.findElement(
       By.css('[data-key="options_page"][data-theme="dark_theme"] input'),
     );
     await darkThemeOptionsPageItem.click();
-    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
+    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", timeout);
     expect(await darkOptionsPage.isDisplayed()).toEqual(true);
 
     await getDisplayedElement(
       driver,
       '[data-key="popup_menu"][data-theme="dark_theme"]',
-      defaultTimeout,
+      timeout,
     );
     const darkThemePopupItem = await driver.findElement(
       By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
@@ -167,7 +166,7 @@ export default () => {
     await openNewTab(driver, "https://example.com/");
     const tabId = await getTabId(driver, getOptionsHandle());
     await initPopupPage(driver, popupUrl, tabId);
-    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", defaultTimeout);
+    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", timeout);
     expect(await darkPopupPage.isDisplayed()).toEqual(true);
 
     const toggleItems = [
@@ -181,11 +180,11 @@ export default () => {
       },
     ];
     for (const item of toggleItems) {
-      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
       expect(await toggleElement.isEnabled()).toEqual(true);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
       await toggleElement.click();
-      const confirmButton = await getDisplayedElement(driver, item.confirmButton, defaultTimeout);
+      const confirmButton = await getDisplayedElement(driver, item.confirmButton, timeout);
       // A sliding animation can sometimes cause this to fail
       await driver.sleep(500);
       await confirmButton.click();
@@ -193,7 +192,7 @@ export default () => {
       await initPopupPage(driver, popupUrl, tabId);
     }
     for (const item of toggleItems) {
-      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, defaultTimeout);
+      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
