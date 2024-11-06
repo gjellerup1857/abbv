@@ -51,14 +51,19 @@ describe("test unlock premium", function()
     await popupPage.switchToTab("Example Domain");
     const tabId = await getTabId({title: "Example Domain"});
     await popupPage.init(popupUrl, tabId);
-    expect(await popupPage.
-      isBlockCookieConsentPopupsToggleUnlocked()).to.be.true;
-    expect(await popupPage.
-      isBlockCookieConsentPopupsToggleSelected()).to.be.false;
-    expect(await popupPage.
-      isBlockMoreDistractionsToggleUnlocked()).to.be.true;
-    expect(await popupPage.
-      isBlockMoreDistractionsToggleSelected()).to.be.true;
+    const expectedToggleValues = {
+      blockCookieConsentPopupsToggleUnlocked: true,
+      blockCookieConsentPopupsToggleSelected: false,
+      blockMoreDistractionsToggleUnlocked: true,
+      blockMoreDistractionsToggleSelected: true
+    }
+    const actualToggleValues = Object.fromEntries(await Promise.all([
+      ["blockCookieConsentPopupsToggleUnlocked", await popupPage.isBlockCookieConsentPopupsToggleUnlocked()],
+      ["blockCookieConsentPopupsToggleSelected", await popupPage.isBlockCookieConsentPopupsToggleSelected()],
+      ["blockMoreDistractionsToggleUnlocked", await popupPage.isBlockMoreDistractionsToggleUnlocked()],
+      ["blockMoreDistractionsToggleSelected", await popupPage.isBlockMoreDistractionsToggleSelected()]
+    ]));
+    expect(expectedToggleValues).to.deep.equal(actualToggleValues);
     await popupPage.clickBlockCookieConsentPopupsToggle();
     await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
     expect(await popupPage.
@@ -67,21 +72,26 @@ describe("test unlock premium", function()
     const testPages = new TestPages(browser);
     await testPages.switchToTab("DC filters");
     
-    expect(await testPages.
-      isPushNotificationsHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isPushNotificationsBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isAutoplayVideosHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isAutoplayVideosBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isSurveysHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isSurveysBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isNewsletterPopupsHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isNewsletterPopupsBlockingFilterIdDisplayed()).to.be.false;
+    const expectedFilterValues = {
+      pushNotificationsHidingFilterDisplayed: false,
+      pushNotificationsBlockingFilterDisplayed: false,
+      autoplayVideosHidingFilterDisplayed: false,
+      autoplayVideosBlockingFilterDisplayed: false,
+      surveysHidingFilterDisplayed: false,
+      surveysBlockingFilterDisplayed: false,
+      newsletterPopupsHidingFilterDisplayed: false,
+      newsletterPopupsBlockingFilterDisplayed: false,
+    };
+    const actualFilterValues = Object.fromEntries(await Promise.all([
+      ["pushNotificationsHidingFilterDisplayed", await testPages.isPushNotificationsHidingFilterIdDisplayed()],
+      ["pushNotificationsBlockingFilterDisplayed", await testPages.isPushNotificationsBlockingFilterIdDisplayed()],
+      ["autoplayVideosHidingFilterDisplayed", await testPages.isAutoplayVideosHidingFilterIdDisplayed()],
+      ["autoplayVideosBlockingFilterDisplayed", await testPages.isAutoplayVideosBlockingFilterIdDisplayed()],
+      ["surveysHidingFilterDisplayed", await testPages.isSurveysHidingFilterIdDisplayed()],
+      ["surveysBlockingFilterDisplayed", await testPages.isSurveysBlockingFilterIdDisplayed()],
+      ["newsletterPopupsHidingFilterDisplayed", await testPages.isNewsletterPopupsHidingFilterIdDisplayed()],
+      ["newsletterPopupsBlockingFilterDisplayed", await testPages.isNewsletterPopupsBlockingFilterIdDisplayed()]
+    ]));
+    expect(actualFilterValues).to.deep.equal(expectedFilterValues);
   });
 });
