@@ -25,6 +25,7 @@
     "prettier": "npm run $ lint.prettier",
     "prettier-fix": "npm run $ lint-fix.prettier",
     "start": "http-server ./dist/devenv/local-mv2/",
+    "sentry:login": "sentry-cli login",
     "sentry:release-new": "sentry-cli releases new \"$VERSION\" --project adblock-plus",
     "sentry:release-finalize": "sentry-cli releases finalize \"$VERSION\" --project adblock-plus",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./dist/release && sentry-cli sourcemaps upload --org eyeo --project adblock-plus ./dist/release",
