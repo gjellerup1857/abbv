@@ -1,11 +1,9 @@
-import { expect } from "expect";
-import { findUrl, getDisplayedElement, getTabId, openNewTab } from "../utils/driver.js";
-import { getOptionsHandle } from "../utils/hook.js";
+import { openNewTab } from "../utils/driver.js";
 import {
   addFiltersToAdBlock,
   blockHideUrl,
   checkBlockHidePage,
-  initPopupPage,
+  setPausedStateFromPopup,
 } from "../utils/page.js";
 
 export default () => {
@@ -18,40 +16,30 @@ export default () => {
   });
 
   it("allowlists from popup", async function () {
-    const { driver, popupUrl } = this;
+    const { driver } = this;
 
     // open new tab with the URL that will be allowlisted
-    await openNewTab(driver, blockHideUrl);
+    const websiteHandle = await openNewTab(driver, blockHideUrl);
 
     // ensure the page looks as it should before allowlisting
     await checkBlockHidePage(driver, { expectAllowlisted: false });
 
-    // initialize the popup for the above page
-    const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, popupUrl, tabId);
-
-    // click on the 'Pause on this site' button
-    const pauseButton = await getDisplayedElement(driver, "[data-text='domain_pause_adblock']");
-    await pauseButton.click();
+    // pause adblock on the page
+    await setPausedStateFromPopup(blockHideUrl, true);
 
     // switch to the page
-    await findUrl(driver, blockHideUrl);
+    await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
 
     // check weather the allowlist filters were applied,
     // blocked elements should be displayed
     await checkBlockHidePage(driver, { expectAllowlisted: true });
 
-    // re-open the popup and check if it's in allowlisted state
-    await initPopupPage(driver, popupUrl, tabId);
-
-    // check if the allowlisted
-    await getDisplayedElement(driver, "#div_domain_allowlisted_msg");
-    const unpauseButton = await getDisplayedElement(driver, "[data-text='unpause_adblock']");
-    await unpauseButton.click();
+    // unpause adblock on the page
+    await setPausedStateFromPopup(blockHideUrl, false);
 
     // switch to the page
-    await findUrl(driver, blockHideUrl);
+    await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
 
     // the page should be back to the initial state

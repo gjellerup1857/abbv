@@ -26,6 +26,7 @@ import {
   isCheckboxEnabled,
   waitForNotDisplayed,
   clickAndCloseNewTab,
+  getTabId,
 } from "./driver.js";
 import { getOptionsHandle, setOptionsHandle } from "./hook.js";
 
@@ -38,28 +39,36 @@ export const blockHideUrl =
 export async function initPopupPage(driver, popupUrl, tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
   const url = `${popupUrl}${tabIdParam}`;
-  await openNewTab(driver, url);
+  const handle = await openNewTab(driver, url);
   await getDisplayedElement(driver, ".header-logo", 5000);
+  return handle;
 }
 
 async function loadOptionsTab(driver, optionsHandle, id) {
   await driver.switchTo().window(optionsHandle);
 
-  let tabLink;
-  try {
-    tabLink = await driver.findElement(By.css(`[href="#${id}"]`));
-  } catch (err) {
-    if (err.name !== "StaleElementReferenceError") {
-      throw err;
-    }
-    // The options page has stale elements, reloading as a workaround
-    await driver.navigate().refresh();
-    // https://eyeo.atlassian.net/browse/EXT-335
-    await driver.sleep(500);
-    tabLink = await driver.findElement(By.css(`[href="#${id}"]`));
-  }
+  await driver.wait(
+    async () => {
+      try {
+        const tabLink = await driver.findElement(By.css(`[href="#${id}"]`));
+        await tabLink.click();
+        return true;
+      } catch (err) {
+        if (err.name !== "NoSuchElementError" && err.name !== "StaleElementReferenceError") {
+          throw err;
+        }
+        // The options page has stale elements, reloading as a workaround
+        await driver.navigate().refresh();
+        // https://eyeo.atlassian.net/browse/EXT-335
+        await driver.sleep(1000);
+      }
+      return false;
+    },
+    5000,
+    `Couldn't click on "${id}" options tab`,
+  );
 
-  await tabLink.click();
+  // Make sure the URL is updated
   await driver.wait(
     async () => {
       return (await driver.getCurrentUrl()).endsWith(`#${id}`);
@@ -83,7 +92,7 @@ export async function initOptionsGeneralTab(driver, optionsHandle) {
   await loadOptionsTab(driver, optionsHandle, "general");
   await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
   // https://eyeo.atlassian.net/browse/EXT-335
-  await driver.sleep(1000);
+  await driver.sleep(2500);
 }
 
 export async function initOptionsPremiumTab(driver, optionsHandle) {
@@ -105,11 +114,23 @@ export async function initOptionsBackupSyncTab(driver, optionsHandle) {
   await loadOptionsTab(driver, optionsHandle, "sync");
 }
 
-export async function initOptionsPremiumFilersTab(driver, optionsHandle) {
+export async function initOptionsPremiumFlTab(driver, optionsHandle) {
   await loadOptionsTab(driver, optionsHandle, "premium-filters");
+  await getDisplayedElement(driver, "#premium-filter-lists > div:nth-child(2)", 2000);
 }
 
-export async function setCustomFilters(driver, filters) {
+export async function getCustomFilters() {
+  const { driver } = global;
+
+  const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
+  // filters are loaded with a delay
+  await driver.sleep(2000);
+  const filters = await filtersAdvancedElem.getAttribute("value");
+  return filters.split("\n");
+}
+
+export async function setCustomFilters(filters, append = false) {
+  const { driver } = global;
   const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
 
   // The edit button functionality may take some time to be ready.
@@ -124,10 +145,13 @@ export async function setCustomFilters(driver, filters) {
   });
 
   const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
-  await filtersAdvancedElem.clear();
+  if (!append) {
+    await filtersAdvancedElem.clear();
+  }
+
   for (const filter of filters) {
-    await filtersAdvancedElem.sendKeys(filter);
     await filtersAdvancedElem.sendKeys(Key.RETURN);
+    await filtersAdvancedElem.sendKeys(filter);
   }
   await saveButton.click();
 }
@@ -271,8 +295,7 @@ export async function reloadExtension(suppressUpdatePage = true) {
 
   // Extension pages will be closed during reload,
   // create a new tab to avoid the "target window already closed" error
-  await openNewTab(driver, "https://example.com");
-  const safeHandle = await driver.getWindowHandle();
+  const safeHandle = await openNewTab(driver, "http://localhost:3005/test.html");
 
   // ensure options page is open
   await initOptionsGeneralTab(driver, getOptionsHandle());
@@ -323,9 +346,10 @@ export async function reloadExtension(suppressUpdatePage = true) {
 export async function sendExtMessage(message) {
   const { driver } = global;
   const currentHandle = await driver.getWindowHandle();
-
-  // open the options page and cleanup the allowlisting
-  await initOptionsGeneralTab(driver, getOptionsHandle());
+  const optionsHandle = getOptionsHandle();
+  if (currentHandle !== optionsHandle) {
+    await initOptionsGeneralTab(driver, getOptionsHandle());
+  }
 
   const extResponse = await driver.executeAsyncScript(async (params, callback) => {
     const result = await browser.runtime.sendMessage(params);
@@ -388,7 +412,8 @@ export async function updatePrefs(key, value) {
 }
 
 export async function checkPremiumPageHeader(driver, ctaTextSelector, ctaLinkSelector, premiumURL) {
-  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 2000, false);
+  // sometimes the elements are displayed with a delay
+  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 3000, false);
   expect(await ctaText.getText()).toEqual(
     "You’ll be an ad blocking pro with these easy-to-use add-ons.",
   );
@@ -408,5 +433,95 @@ export async function setAADefaultState(driver, expectAAEnabled) {
   // Cleanup setting the AA default state
   if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
     await clickFilterlist(driver, name, inputId, expectAAEnabled);
+  }
+}
+
+export async function checkSubscribedInfo(driver, name, inputId, timeout = 3000) {
+  const flEnabled = await isCheckboxEnabled(driver, inputId);
+  expect(flEnabled).toEqual(true);
+  await driver.wait(
+    async () => {
+      const text = await getSubscriptionInfo(driver, name);
+      return text.includes("updated") || text === "Subscribed.";
+    },
+    timeout,
+    `${name} info was not updated when adding it`,
+  );
+}
+
+export async function setPausedStateFromPopup(url, paused = true) {
+  const { driver, popupUrl } = global;
+  const pauseBtnSelector = "[data-text='domain_pause_adblock']";
+  const unpauseBtnSelector = "[data-text='unpause_adblock']";
+
+  // open new tab with the URL that will be allowlisted
+  const websiteHandle = await openNewTab(driver, url);
+
+  // initialize the popup for the above page
+  const tabId = await getTabId(driver, getOptionsHandle());
+  await initPopupPage(driver, popupUrl, tabId);
+
+  // click on the 'Pause' or 'Unpause' button
+  const btn = await getDisplayedElement(
+    driver,
+    paused ? pauseBtnSelector : unpauseBtnSelector,
+    5000,
+  );
+  await btn.click();
+
+  await driver.switchTo().window(websiteHandle);
+  await driver.navigate().refresh();
+
+  // re-open the popup and check state changed
+  await initPopupPage(driver, popupUrl, tabId);
+  await getDisplayedElement(driver, paused ? unpauseBtnSelector : pauseBtnSelector, 5000);
+  await driver.close();
+
+  // switch to the page
+  await driver.switchTo().window(websiteHandle);
+  await driver.close();
+  await driver.switchTo().window(getOptionsHandle());
+}
+
+export async function getTotalCountFromPopup() {
+  const { driver, popupUrl } = global;
+  const websiteHandle = await openNewTab(driver, "http://localhost:3005/test.html");
+  const tabId = await getTabId(driver, getOptionsHandle());
+  const popupHandle = await initPopupPage(driver, popupUrl, tabId);
+
+  const elem = await getDisplayedElement(
+    driver,
+    "#popup_sections popup-detail-stats > div:nth-child(2) > span",
+    2000,
+    false,
+  );
+
+  const totalCount = await elem.getText();
+
+  // cleanup
+  await driver.switchTo().window(websiteHandle);
+  await driver.close();
+  await driver.switchTo().window(popupHandle);
+  await driver.close();
+  await driver.switchTo().window(getOptionsHandle());
+
+  return parseInt(totalCount, 10);
+}
+
+export async function enableTemporaryPremium() {
+  const { driver } = global;
+  // activate premium
+  await sendExtMessage({ type: "adblock:activate" });
+
+  const currentDate = new Date();
+  const options = { year: "numeric", month: "long" };
+  const formattedDate = currentDate.toLocaleDateString("en-US", options).toUpperCase();
+  const expectedValues = [`SUPPORTER SINCE ${formattedDate}`, "ACTIVE"];
+
+  await initOptionsPremiumTab(driver, getOptionsHandle());
+  const premiumStatus = await getDisplayedElement(driver, "#premium_status_msg", 4000, false);
+  const premiumStatusText = await premiumStatus.getText();
+  if (!expectedValues.includes(premiumStatusText)) {
+    throw new Error(`Premium not activated.`);
   }
 }

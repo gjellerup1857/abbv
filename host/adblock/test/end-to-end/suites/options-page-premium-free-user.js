@@ -10,7 +10,7 @@ import {
   initOptionsThemesTab,
   initOptionsImageSwapTab,
   initOptionsBackupSyncTab,
-  initOptionsPremiumFilersTab,
+  initOptionsPremiumFlTab,
   checkPremiumPageHeader,
 } from "../utils/page.js";
 import { getDisplayedElement, clickAndCloseNewTab, clickAndNavigateBack } from "../utils/driver.js";
@@ -134,7 +134,7 @@ export default () => {
   it("shows premium filter lists locked in options page", async function () {
     const { driver, premiumURL } = this;
 
-    await initOptionsPremiumFilersTab(driver, getOptionsHandle());
+    await initOptionsPremiumFlTab(driver, getOptionsHandle());
     await checkPremiumPageHeader(
       driver,
       "#locked-user-pay-section-distraction-control > p",

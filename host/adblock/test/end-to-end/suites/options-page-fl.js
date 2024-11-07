@@ -29,24 +29,12 @@ import {
   initOptionsFiltersTab,
   getSubscriptionInfo,
   clickFilterlist,
+  checkSubscribedInfo,
 } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 import { getDefaultFilterLists, languageFilterLists } from "../utils/dataset.js";
 
 const { By } = webdriver;
-
-async function checkSubscribedInfo(driver, name, inputId) {
-  const flEnabled = await isCheckboxEnabled(driver, inputId);
-  expect(flEnabled).toEqual(true);
-  await driver.wait(
-    async () => {
-      const text = await getSubscriptionInfo(driver, name);
-      return text.includes("updated") || text === "Subscribed.";
-    },
-    2000,
-    `${name} info was not updated when adding it`,
-  );
-}
 
 async function setFilterListUrl(driver, url) {
   const customFLElem = await getDisplayedElement(driver, "#txtNewSubscriptionUrl");
@@ -92,7 +80,9 @@ export default () => {
       actualLanguageLists.push({ name, text });
     }
 
-    expect(actualLanguageLists).toEqual(languageFilterLists);
+    expect(actualLanguageLists).toEqual(
+      languageFilterLists.map(({ name, text }) => ({ name, text })),
+    );
   });
 
   it("updates all filter lists", async function () {

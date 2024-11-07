@@ -19,7 +19,6 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import {
-  findUrl,
   getDisplayedElement,
   openNewTab,
   isCheckboxEnabled,
@@ -40,15 +39,8 @@ import { getOptionsHandle } from "../utils/hook.js";
 const { By } = webdriver;
 
 export default () => {
-  let expectAAEnabled;
-
-  before(function () {
-    // By default AA is enabled on Chrome and disabled on Firefox
-    expectAAEnabled = this.browserName !== "firefox";
-  });
-
   after(async function () {
-    const { driver } = this;
+    const { driver, expectAAEnabled } = this;
     await setAADefaultState(driver, expectAAEnabled);
   });
 
@@ -84,7 +76,7 @@ export default () => {
       });
     };
 
-    await openNewTab(driver, url);
+    const websiteHandle = await openNewTab(driver, url);
     // A failing element is displayed before applying the filters
     await getDisplayedElement(driver, "#sitekey-fail-1");
 
@@ -92,7 +84,7 @@ export default () => {
     await driver.switchTo().window(getOptionsHandle());
     await addFiltersToAdBlock(driver, filters);
 
-    await findUrl(driver, url);
+    await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
     // A failing element is no longer displayed after applying the filters
     await waitForNotDisplayed(driver, "#sitekey-fail-1");
@@ -101,7 +93,7 @@ export default () => {
 
     await driver.switchTo().frame("sitekey-frame");
     await getDisplayedElement(driver, "#inframe-target");
-    if (manifestVersion == 3) {
+    if (manifestVersion === 3) {
       await waitForNotDisplayed(driver, "#inframe-image");
     } else {
       await getDisplayedElement(driver, "#inframe-image");
@@ -127,14 +119,14 @@ export default () => {
     const filter = "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
     const url = "https://adblockinc.gitlab.io/QA-team/adblocking/snippets/snippets-testpage.html";
 
-    await openNewTab(driver, url);
+    const websiteHandle = await openNewTab(driver, url);
     const snippetElem = await getDisplayedElement(driver, "#snippet-filter");
     expect(await snippetElem.getText()).toEqual("This should be hidden by a snippet");
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await setCustomFilters(driver, [filter]);
+    await setCustomFilters([filter]);
 
-    await findUrl(driver, url);
+    await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
     await waitForNotDisplayed(driver, "#snippet-filter", 2000);
   });
@@ -144,23 +136,23 @@ export default () => {
     const filters = ["@@adblockinc.gitlab.io$document", "/pop_ads.js"];
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
-    await setCustomFilters(driver, filters);
+    await setCustomFilters(filters);
 
-    await openNewTab(driver, blockHideUrl);
+    const websiteHandle = await openNewTab(driver, blockHideUrl);
     await checkBlockHidePage(driver, { expectAllowlisted: true });
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await setCustomFilters(driver, ["/pop_ads.js"]);
+    await setCustomFilters(["/pop_ads.js"]);
 
-    await findUrl(driver, blockHideUrl);
+    await driver.switchTo().window(websiteHandle);
     await checkBlockHidePage(driver, { expectAllowlisted: false });
     await waitForNotDisplayed(driver, "#snippet-filter");
   });
 
   it("displays acceptable ads", async function () {
-    const { browserName, driver } = this;
+    const { expectAAEnabled, driver } = this;
     const aaUrl = "http://testpages.adblockplus.org:3005/aa.html";
     const visibleSelector = "#abptest2";
     const hiddenSelector = "#abptest";
@@ -176,7 +168,7 @@ export default () => {
       2000,
       `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
     );
-    await openNewTab(driver, aaUrl);
+    const websiteHandle = await openNewTab(driver, aaUrl);
     if (expectAAEnabled) {
       await getDisplayedElement(driver, hiddenSelector);
     } else {
@@ -186,7 +178,7 @@ export default () => {
 
     await initOptionsFiltersTab(driver, getOptionsHandle());
     await clickFilterlist(driver, "acceptable_ads", aaFLButtonId, !expectAAEnabled);
-    await findUrl(driver, aaUrl);
+    await driver.switchTo().window(websiteHandle);
     await driver.wait(
       async () => {
         await driver.navigate().refresh();

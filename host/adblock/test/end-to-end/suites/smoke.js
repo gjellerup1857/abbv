@@ -34,11 +34,10 @@ import {
   getSubscriptionInfo,
   clickFilterlist,
   reloadExtension,
+  getTotalCountFromPopup,
 } from "../utils/page.js";
-import { setOptionsHandle, getOptionsHandle } from "../utils/hook.js";
+import { getOptionsHandle } from "../utils/hook.js";
 import { getDefaultFilterLists } from "../utils/dataset.js";
-
-const { By } = webdriver;
 
 export default () => {
   it("opens the install url", async function () {
@@ -106,21 +105,11 @@ export default () => {
       "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const maxAdsBlocked = 15;
 
-    const getAdsBlockedCount = async () => {
-      const countElem = await getDisplayedElement(
-        driver,
-        "popup-detail-stats > div:nth-child(2) .count-numbers",
-        2000,
-      );
-      return parseInt(await countElem.getText(), 10);
-    };
-
     const waitForAdsBlockedToBeInRange = async (min, max) => {
       let adsBlocked;
       try {
         await driver.wait(async () => {
-          await driver.navigate().refresh();
-          adsBlocked = await getAdsBlockedCount();
+          adsBlocked = await getTotalCountFromPopup();
           return adsBlocked > min && adsBlocked <= max;
         });
       } catch (err) {
@@ -131,15 +120,11 @@ export default () => {
       return adsBlocked;
     };
 
-    await openNewTab(driver, url);
-    const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, popupUrl, tabId);
-
+    const websiteHandle = await openNewTab(driver, url);
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
 
-    await findUrl(driver, url);
+    await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
-    await initPopupPage(driver, popupUrl, tabId);
 
     await waitForAdsBlockedToBeInRange(blockedFirst, maxAdsBlocked);
   });

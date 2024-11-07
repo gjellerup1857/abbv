@@ -22,19 +22,13 @@ import { initOptionsGeneralTab, initOptionsFiltersTab, setAADefaultState } from 
 import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
-  let expectAAEnabled;
-  before(function () {
-    // By default AA is enabled on Chrome and disabled on Firefox
-    expectAAEnabled = this.browserName !== "firefox";
-  });
-
   after(async function () {
-    const { driver } = this;
+    const { driver, expectAAEnabled } = this;
     await setAADefaultState(driver, expectAAEnabled);
   });
 
   it("displays AA default state", async function () {
-    const { driver } = this;
+    const { driver, expectAAEnabled } = this;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.wait(async () => {

@@ -50,22 +50,25 @@ export async function findUrl(driver, expectedUrl, timeout = 5000) {
 export async function getTabId(driver, optionsHandle) {
   const currentHandle = await driver.getWindowHandle();
   const url = await driver.getCurrentUrl();
-  const queryOptions = { url };
 
   await driver.switchTo().window(optionsHandle);
   const tabId = await driver.executeAsyncScript(
     async (params, callback) => {
       try {
-        const tabs = await browser.tabs.query(params.queryOptions);
-        if (tabs.length) {
-          callback(tabs[0].id);
-          return;
+        const tabs = await browser.tabs.query({});
+        // filtering with browser.tabs.query({ url }) does not work for all URLs
+        // e.g. http://localhost:3005/test.html
+        for (const tab of tabs) {
+          if (tab.url === params.url) {
+            callback(tab.id);
+            return;
+          }
         }
       } catch (e) {}
 
       callback(browser.tabs.TAB_ID_NONE);
     },
-    { queryOptions },
+    { url },
   );
 
   await driver.switchTo().window(currentHandle);
@@ -108,6 +111,7 @@ export async function getDisplayedElement(driver, cssSelector, timeout = 500, fo
 export async function openNewTab(driver, url) {
   await driver.switchTo().newWindow("tab");
   await driver.navigate().to(url);
+  return driver.getWindowHandle();
 }
 
 export function randomIntFromInterval(min, max) {
@@ -159,6 +163,12 @@ export function isCheckboxEnabled(driver, inputId) {
   return waitForNotNullAttribute(driver, inputId, "checked");
 }
 
+export async function waitAndClickOnElement(selector, timeout = 1000) {
+  const { driver } = global;
+  const elem = await getDisplayedElement(driver, selector, timeout, false);
+  await elem.click();
+}
+
 export async function clickAndNavigateBack(driver, selector, expectedURL) {
   const currentURL = await driver.getCurrentUrl();
   const elem = await getDisplayedElement(driver, selector);
@@ -205,8 +215,8 @@ export async function clickAndCloseNewTab(driver, selector, expectedURL) {
       const newWindowURL = await driver.getCurrentUrl();
       return newWindowURL === expectedURL;
     },
-    1000,
-    `The new tab did not navigate to the expected URL "${expectedURL}"`,
+    2000,
+    `The new tab did not navigate to the expected URL "${expectedURL}", actual URL: ${await driver.getCurrentUrl()}`,
   );
 
   // Close the new tab and switch back to the original window

@@ -16,28 +16,14 @@
  */
 
 /* eslint-disable no-console */
-import { upgradeExtension } from "../runners/helpers.js";
 import { beforeEachTasks } from "../utils/hook.js";
+import upgradeExtensionScenario from "./upgrade-extension.js";
 
 export default () => {
-  describe("My awesome upgrade", function () {
-    beforeEach(async function () {
-      const { driver, extOrigin } = global;
-      await beforeEachTasks(driver, extOrigin);
-    });
-
-    it("expect to have upgraded the extension", async function () {
-      // get the extension version before the upgrade
-      const prevExtVersion = global.extVersion;
-
-      // do the upgrade
-      await upgradeExtension();
-
-      const { extVersion } = global;
-      console.log("Extension versions after upgrade", {
-        prevExtVersion,
-        extVersion,
-      });
-    });
+  beforeEach(async function () {
+    const { driver, extOrigin } = global;
+    await beforeEachTasks(driver, extOrigin);
   });
+
+  describe("Upgrade Extension", upgradeExtensionScenario);
 };

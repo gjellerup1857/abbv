@@ -23,6 +23,7 @@ import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 import { getBrowserNameArg, getManifestVersionArg } from "./constants.js";
 import { reloadExtension } from "../utils/page.js";
 import { sleep } from "@eyeo/test-utils";
+import { getScreenshotsPath } from "./constants.js";
 
 /**
  * Extracts the extension from the release folder based on the browser name
@@ -176,4 +177,21 @@ export async function getExtensionInfo() {
   }
 
   return info;
+}
+
+/**
+ * Takes a screenshot of the current page
+ *
+ * @param {string} title - The title of the screenshot image without the extension
+ */
+export async function screenshot(title) {
+  const { driver } = global;
+
+  const data = await driver.takeScreenshot();
+  const base64Data = data.replace(/^data:image\/png;base64,/, "");
+
+  // ensure screenshots directory exists and write the screenshot to a file
+  const screenshotsPath = getScreenshotsPath();
+  await fs.promises.mkdir(screenshotsPath, { recursive: true });
+  await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
 }

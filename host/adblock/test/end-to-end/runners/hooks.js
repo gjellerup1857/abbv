@@ -17,12 +17,9 @@
 
 /* eslint-disable no-console */
 
-import fs from "fs";
-import path from "path";
-import { getScreenshotsPath } from "./constants.js";
 import { findUrl } from "../utils/driver.js";
 import { setOptionsHandle } from "../utils/hook.js";
-import { extractExtension, getExtensionInfo, startBrowser } from "./helpers.js";
+import { extractExtension, getExtensionInfo, startBrowser, screenshot } from "./helpers.js";
 
 /**
  * Hook to set up the browser before the tests
@@ -42,12 +39,14 @@ export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
   global.browserName = browserName;
   global.fullBrowserVersion = fullBrowserVersion;
   global.majorBrowserVersion = majorBrowserVersion;
+  global.expectAAEnabled = browserName !== "firefox";
 
   // [DEPRECATED]: Please use the global variables instead
   this.driver = driver;
   this.browserName = browserName;
   this.fullBrowserVersion = fullBrowserVersion;
   this.majorBrowserVersion = majorBrowserVersion;
+  this.expectAAEnabled = browserName !== "firefox";
 }
 
 /**
@@ -82,20 +81,12 @@ export async function prepareExtensionHook() {
  * @returns {Promise<void>}
  */
 export async function screenshotsHook() {
-  const { driver } = global;
-
   if (this.currentTest.state !== "failed") {
     return;
   }
 
-  const data = await driver.takeScreenshot();
-  const base64Data = data.replace(/^data:image\/png;base64,/, "");
   const title = this.currentTest.title.replaceAll(" ", "_");
-
-  // ensure screenshots directory exists and write the screenshot to a file
-  const screenshotsPath = getScreenshotsPath();
-  await fs.promises.mkdir(screenshotsPath, { recursive: true });
-  await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
+  await screenshot(title);
 }
 
 /**

@@ -16,31 +16,131 @@
  */
 
 export const languageFilterLists = [
-  { name: "easylist_plus_arabic_plus_french", text: "Arabic + French + EasyList" },
-  { name: "easylist_plus_bulgarian", text: "Bulgarian + EasyList" },
-  { name: "chinese", text: "Chinese + EasyList" },
-  { name: "czech", text: "Czech & Slovak + EasyList" },
-  { name: "dutch", text: "Dutch + EasyList" },
-  { name: "easylist_plus_french", text: "French + EasyList" },
-  { name: "easylist_plus_german", text: "German + EasyList" },
-  { name: "easylist_plus_global", text: "Global + EasyList" },
-  { name: "israeli", text: "Hebrew + EasyList" },
-  { name: "easylist_plus_hungarian", text: "Hungarian + EasyList" },
-  { name: "easylist_plus_indian", text: "IndianList + EasyList" },
-  { name: "easylist_plus_indonesian", text: "Indonesian + EasyList" },
-  { name: "italian", text: "Italian + EasyList" },
-  { name: "japanese", text: "Japanese" },
-  { name: "easylist_plun_korean", text: "Korean" },
-  { name: "latvian", text: "Latvian + EasyList" },
-  { name: "easylist_plus_lithuania", text: "Lithuanian + EasyList" },
-  { name: "nordic", text: "Nordic Filters + EasyList" },
-  { name: "easylist_plus_polish", text: "Polish" },
-  { name: "easylist_plus_portuguese", text: "Portuguese + EasyList" },
-  { name: "easylist_plus_romanian", text: "Romanian + EasyList" },
-  { name: "russian", text: "Russian & Ukrainian + EasyList" },
-  { name: "easylist_plus_spanish", text: "Spanish" },
-  { name: "turkish", text: "Turkish" },
-  { name: "easylist_plus_vietnamese", text: "Vietnamese + EasyList" },
+  {
+    name: "easylist_plus_arabic_plus_french",
+    text: "Arabic + French + EasyList",
+    inputId: "languageFilterList_0",
+  },
+  {
+    name: "easylist_plus_bulgarian",
+    text: "Bulgarian + EasyList",
+    inputId: "languageFilterList_1",
+  },
+  {
+    name: "chinese",
+    text: "Chinese + EasyList",
+    inputId: "languageFilterList_2",
+  },
+  {
+    name: "czech",
+    text: "Czech & Slovak + EasyList",
+    inputId: "languageFilterList_3",
+  },
+  {
+    name: "dutch",
+    text: "Dutch + EasyList",
+    inputId: "languageFilterList_4",
+  },
+  {
+    name: "easylist_plus_french",
+    text: "French + EasyList",
+    inputId: "languageFilterList_5",
+  },
+  {
+    name: "easylist_plus_german",
+    text: "German + EasyList",
+    inputId: "languageFilterList_6",
+  },
+  {
+    name: "easylist_plus_global",
+    text: "Global + EasyList",
+    inputId: "languageFilterList_7",
+  },
+  {
+    name: "israeli",
+    text: "Hebrew + EasyList",
+    inputId: "languageFilterList_8",
+  },
+  {
+    name: "easylist_plus_hungarian",
+    text: "Hungarian + EasyList",
+    inputId: "languageFilterList_9",
+  },
+  {
+    name: "easylist_plus_indian",
+    text: "IndianList + EasyList",
+    inputId: "languageFilterList_10",
+  },
+  {
+    name: "easylist_plus_indonesian",
+    text: "Indonesian + EasyList",
+    inputId: "languageFilterList_11",
+  },
+  {
+    name: "italian",
+    text: "Italian + EasyList",
+    inputId: "languageFilterList_12",
+  },
+  {
+    name: "japanese",
+    text: "Japanese",
+    inputId: "languageFilterList_13",
+  },
+  {
+    name: "easylist_plun_korean",
+    text: "Korean",
+    inputId: "languageFilterList_14",
+  },
+  {
+    name: "latvian",
+    text: "Latvian + EasyList",
+    inputId: "languageFilterList_15",
+  },
+  {
+    name: "easylist_plus_lithuania",
+    text: "Lithuanian + EasyList",
+    inputId: "languageFilterList_16",
+  },
+  {
+    name: "nordic",
+    text: "Nordic Filters + EasyList",
+    inputId: "languageFilterList_17",
+  },
+  {
+    name: "easylist_plus_polish",
+    text: "Polish",
+    inputId: "languageFilterList_18",
+  },
+  {
+    name: "easylist_plus_portuguese",
+    text: "Portuguese + EasyList",
+    inputId: "languageFilterList_19",
+  },
+  {
+    name: "easylist_plus_romanian",
+    text: "Romanian + EasyList",
+    inputId: "languageFilterList_20",
+  },
+  {
+    name: "russian",
+    text: "Russian & Ukrainian + EasyList",
+    inputId: "languageFilterList_21",
+  },
+  {
+    name: "easylist_plus_spanish",
+    text: "Spanish",
+    inputId: "languageFilterList_22",
+  },
+  {
+    name: "turkish",
+    text: "Turkish",
+    inputId: "languageFilterList_23",
+  },
+  {
+    name: "easylist_plus_vietnamese",
+    text: "Vietnamese + EasyList",
+    inputId: "languageFilterList_24",
+  },
 ];
 
 export function getDefaultFilterLists(browserName) {
@@ -110,3 +210,8 @@ export function getDefaultFilterLists(browserName) {
     },
   ];
 }
+
+export const premiumFilterLists = [
+  { inputId: "distraction-control", text: "Distraction Control" },
+  { inputId: "cookies-premium", text: "Cookie Consent Cutter" },
+];
