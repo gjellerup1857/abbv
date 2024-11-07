@@ -132,11 +132,7 @@ export default () => {
     await premiumTab.click();
     await getDisplayedElement(driver, "#premium_status_msg", timeout);
 
-    const imageSwapTab = await getDisplayedElement(
-      driver,
-      '[href="#mab-image-swap"]',
-      timeout,
-    );
+    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]', timeout);
     await imageSwapTab.click();
     await getDisplayedElement(driver, "#cats", timeout);
     const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', timeout);
@@ -154,11 +150,7 @@ export default () => {
     const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", timeout);
     expect(await darkOptionsPage.isDisplayed()).toEqual(true);
 
-    await getDisplayedElement(
-      driver,
-      '[data-key="popup_menu"][data-theme="dark_theme"]',
-      timeout,
-    );
+    await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]', timeout);
     const darkThemePopupItem = await driver.findElement(
       By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
     );
@@ -197,8 +189,7 @@ export default () => {
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
-    const url =
-      "http://testpages.adblockplus.org:3005/dc-filters.html";
+    const url = "http://localhost:3005/dc-filters.html";
     await openNewTab(driver, url);
     const dcFilters = [
       "#pushnotifications-hiding-filter",

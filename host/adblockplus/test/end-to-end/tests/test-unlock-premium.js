@@ -58,26 +58,21 @@ describe("test unlock premium", function()
       blockMoreDistractionsToggleSelected: true
     };
     const actualToggleValues = Object.fromEntries(await Promise.all([
-      [
-        "blockCookieConsentPopupsToggleUnlocked",
-        await popupPage.isBlockCookieConsentPopupsToggleUnlocked()
-      ], [
-        "blockCookieConsentPopupsToggleSelected",
-        await popupPage.isBlockCookieConsentPopupsToggleSelected()
-      ], [
-        "blockMoreDistractionsToggleUnlocked",
-        await popupPage.isBlockMoreDistractionsToggleUnlocked()
-      ], [
-        "blockMoreDistractionsToggleSelected",
-        await popupPage.isBlockMoreDistractionsToggleSelected()
-      ]
+      ["blockCookieConsentPopupsToggleUnlocked",
+       await popupPage.isBlockCookieConsentPopupsToggleUnlocked()],
+      ["blockCookieConsentPopupsToggleSelected",
+       await popupPage.isBlockCookieConsentPopupsToggleSelected()],
+      ["blockMoreDistractionsToggleUnlocked",
+       await popupPage.isBlockMoreDistractionsToggleUnlocked()],
+      ["blockMoreDistractionsToggleSelected",
+       await popupPage.isBlockMoreDistractionsToggleSelected()]
     ]));
     expect(expectedToggleValues).to.deep.equal(actualToggleValues);
     await popupPage.clickBlockCookieConsentPopupsToggle();
     await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
     expect(await popupPage.
       isBlockCookieConsentPopupsToggleSelected()).to.be.true;
-    await browser.newWindow("http://testpages.adblockplus.org:3005/dc-filters.html");
+    await browser.newWindow("http://localhost:3005/dc-filters.html");
     const testPages = new TestPages(browser);
     await testPages.switchToTab("DC filters");
 
@@ -92,30 +87,22 @@ describe("test unlock premium", function()
       newsletterPopupsBlockingFilterDisplayed: false
     };
     const actualFilterValues = Object.fromEntries(await Promise.all([
-      [
-        "pushNotificationsHidingFilterDisplayed",
-        await testPages.isPushNotificationsHidingFilterIdDisplayed()
-      ], [
-        "pushNotificationsBlockingFilterDisplayed",
-        await testPages.isPushNotificationsBlockingFilterIdDisplayed()
-      ], [
-        "autoplayVideosHidingFilterDisplayed",
-        await testPages.isAutoplayVideosHidingFilterIdDisplayed()
-      ], [
-        "autoplayVideosBlockingFilterDisplayed",
-        await testPages.isAutoplayVideosBlockingFilterIdDisplayed()
-      ], [
-        "surveysHidingFilterDisplayed",
-        await testPages.isSurveysHidingFilterIdDisplayed()
-      ], [
-        "surveysBlockingFilterDisplayed",
-        await testPages.isSurveysBlockingFilterIdDisplayed()
-      ], [
-        "newsletterPopupsHidingFilterDisplayed",
-        await testPages.isNewsletterPopupsHidingFilterIdDisplayed()
-      ], [
-        "newsletterPopupsBlockingFilterDisplayed",
-        await testPages.isNewsletterPopupsBlockingFilterIdDisplayed()]
+      ["pushNotificationsHidingFilterDisplayed",
+       await testPages.isPushNotificationsHidingFilterIdDisplayed()],
+      ["pushNotificationsBlockingFilterDisplayed",
+       await testPages.isPushNotificationsBlockingFilterIdDisplayed()],
+      ["autoplayVideosHidingFilterDisplayed",
+       await testPages.isAutoplayVideosHidingFilterIdDisplayed()],
+      ["autoplayVideosBlockingFilterDisplayed",
+       await testPages.isAutoplayVideosBlockingFilterIdDisplayed()],
+      ["surveysHidingFilterDisplayed",
+       await testPages.isSurveysHidingFilterIdDisplayed()],
+      ["surveysBlockingFilterDisplayed",
+       await testPages.isSurveysBlockingFilterIdDisplayed()],
+      ["newsletterPopupsHidingFilterDisplayed",
+       await testPages.isNewsletterPopupsHidingFilterIdDisplayed()],
+      ["newsletterPopupsBlockingFilterDisplayed",
+       await testPages.isNewsletterPopupsBlockingFilterIdDisplayed()]
     ]));
     expect(actualFilterValues).to.deep.equal(expectedFilterValues);
   });
