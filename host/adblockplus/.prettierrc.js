@@ -2,8 +2,9 @@
 
 "use strict";
 
+const config = require("../../core/configs/.prettierrc.js");
+
 module.exports = {
-  printWidth: 80,
-  tabWidth: 2,
+  ...config,
   trailingComma: "none"
 };

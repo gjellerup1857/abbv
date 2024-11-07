@@ -252,14 +252,13 @@ Optional environment variables:
 
 You can lint all files via `npm run lint` or lint only specific file types:
 - JavaScript/TypeScript: `npm run --workspace host/adblockplus $ lint.js`
-- CSS: `npm run --workspace host/adblockplus $ lint.css`
 - Translation files: `npm run --workspace host/adblockplus $ lint.locale`
+- Other files: `npm run --workspace host/adblockplus $ lint.prettier`
 
-**Note**: Both `eslint` and `stylelint` can help fix issues via `--fix` flag.
-You can try the example below via [npx][npx] which should be automatically
-included when you install `npm`.
+The following can help fix issues:
 
-`npx stylelint --fix css/real-file-name.css`
+- JavaScript/TypeScript: `npx eslint --fix <file path>`
+- Other files: `npm run prettier-fix`
 
 ## CI pipeline
 

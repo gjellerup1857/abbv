@@ -10,7 +10,7 @@
  * at `love.js`.
  */
 module.exports = {
-  extends: "eslint-config-eyeo",
+  extends: ["eslint-config-eyeo", "plugin:prettier/recommended"],
   root: true,
   env: {
     browser: true,
@@ -28,14 +28,12 @@ module.exports = {
     sourceType: "module"
   },
   rules: {
-    "curly": ["error", "multi-or-nest", "consistent"],
-    "spaced-comment": ["error", "always", {block: {exceptions: ["*"]}}]
+    curly: ["error", "multi-or-nest", "consistent"],
+    "spaced-comment": ["error", "always", { block: { exceptions: ["*"] } }]
   },
   overrides: [
     {
-      files: [
-        "*.cjs"
-      ],
+      files: ["*.cjs"],
       parserOptions: {
         sourceType: "script"
       }

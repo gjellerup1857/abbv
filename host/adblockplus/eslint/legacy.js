@@ -10,7 +10,7 @@
  * at `love.js`.
  */
 module.exports = {
-  extends: "eslint-config-eyeo",
+  extends: ["eslint-config-eyeo", "plugin:prettier/recommended"],
   root: true,
   env: {
     browser: true,
@@ -47,9 +47,7 @@ module.exports = {
       }
     },
     {
-      files: [
-        "*.js", "*.cjs"
-      ],
+      files: ["*.js", "*.cjs"],
       parserOptions: {
         sourceType: "script"
       }
@@ -82,8 +80,8 @@ module.exports = {
     // As long as issue 6581 is under discussion, ABP UI
     // decided to put an end to all debates and use
     // the `prefer-const` rule.
-    "prefer-const": ["error", {destructuring: "all"}],
+    "prefer-const": ["error", { destructuring: "all" }],
     "no-prototype-builtins": 0,
-    "spaced-comment": ["error", "always", {block: {exceptions: ["*"]}}]
+    "spaced-comment": ["error", "always", { block: { exceptions: ["*"] } }]
   }
 };

@@ -22,6 +22,8 @@
     "eslint:love": "eslint --ext .ts --ignore-path .gitignore src/",
     "lint": "npm run $ lint",
     "postinstall": "npx @adblockinc/rules adblockplus",
+    "prettier": "npm run $ lint.prettier",
+    "prettier-fix": "npm run $ lint-fix.prettier",
     "start": "http-server ./dist/devenv/local-mv2/",
     "test": "npm run $ test.unit",
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
@@ -68,11 +70,13 @@
       "upload-translations": "crowdin upload translations --auto-approve-imported"
     },
     "lint": {
-      "html": "prettier -c --parser html ./src/**/*.html",
-      "css": "stylelint ./src/**/*.css --ignore-path .gitignore",
       "js": "eslint --ext .cjs,.js,.mjs,.ts --ignore-path .gitignore ./",
+      "prettier": "prettier --check .",
       "ts": "tsc --noEmit",
       "locale": "node build/locale-linter ./locale/**/*.json"
+    },
+    "lint-fix": {
+      "prettier": "prettier --write ."
     },
     "test": {
       "unit": {
@@ -182,13 +186,8 @@
     "mocha": "10.0.0",
     "moment": "2.29.4",
     "node-fetch": "2.7.0",
-    "prettier": "3.2.5",
-    "stylelint": "14.9.1",
-    "stylelint-config-eyeo": "1.0.3",
+    "prettier": "3.3.3",
     "wdio-lambdatest-service": "2.1.2"
-  },
-  "overrides": {
-    "stylelint": "14.9.1"
   },
   "nx": {
     "targets": {
