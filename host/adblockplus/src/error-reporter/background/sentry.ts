@@ -148,7 +148,7 @@ export function start(): void {
       webpackDotenvPlugin.SENTRY_DSN,
       webpackDotenvPlugin.SENTRY_ENVIRONMENT
     );
-    reportError(new Error ("This is error tested by Aga"));
+    reportError(new Error("This is error tested by Aga"));
   } else {
     console.warn(
       "Sentry is not initialized. " +
