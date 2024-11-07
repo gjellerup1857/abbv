@@ -19,7 +19,7 @@ import gulp from "gulp";
 import argparse from "argparse";
 import merge from "merge-stream";
 import zip from "gulp-vinyl-zip";
-import del from "del";
+import {deleteAsync} from "del";
 import * as tasks from "./build/webext/tasks/index.mjs";
 import * as config from "./build/webext/config/index.mjs";
 import * as configParser from "./build/webext/configParser.mjs";
@@ -64,6 +64,7 @@ const args = argumentParser.parseKnownArgs()[0];
 const targetDir = `./dist/devenv/${args.target}-mv${args.manifest_version}`;
 
 const buildTasks = [
+  cleanBuild,
   tasks.buildUI,
   buildPacked
 ];
@@ -292,9 +293,32 @@ async function buildPacked()
   );
 }
 
+async function cleanBuild()
+{
+  const opts = await getBuildOptions(false);
+  const filenameTarget = (opts.channel === "release") ?
+    opts.target :
+    `${opts.target}${opts.channel}`;
+
+  const filenameParts = [
+    opts.basename,
+    filenameTarget,
+    "*",
+    `mv${opts.manifestVersion}`
+  ];
+  const filename = `${filenameParts.join("-")}${opts.archiveType}`;
+
+  return deleteAsync(`./dist/release/${filename}`);
+}
+
+function cleanSource(basename)
+{
+  return deleteAsync(`./dist/release/${basename}-*.tar.gz`);
+}
+
 function cleanDir()
 {
-  return del(targetDir);
+  return deleteAsync(targetDir);
 }
 
 export const devenv = gulp.series(...devenvTasks);
@@ -305,7 +329,7 @@ export async function source()
 {
   const options = await getBuildOptions(false, true);
   const filenameVersion = await getFilenameVersion(options);
-
+  await cleanSource(options.basename);
   return tasks.sourceDistribution(
     `./dist/release/${options.basename}-${filenameVersion}`
   );

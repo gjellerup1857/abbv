@@ -193,18 +193,33 @@ async function buildPacked() {
   );
 }
 
+async function cleanBuild() {
+  const opts = await getBuildOptions(false);
+  const filenameTarget = opts.channel === "release" ? opts.target : `${opts.target}${opts.channel}`;
+
+  const filenameParts = [opts.basename, filenameTarget, "*", `mv${opts.manifestVersion}`];
+  const filename = `${filenameParts.join("-")}${opts.archiveType}`;
+
+  return deleteAsync(`./dist/release/${filename}`);
+}
+
+function cleanSource(basename) {
+  return deleteAsync(`./dist/release/${basename}-*.tar.gz`);
+}
+
 function cleanDir() {
   return deleteAsync(targetDir);
 }
 
 export const devenv = gulp.series(cleanDir, buildDevenv);
 
-export const build = gulp.series(buildPacked);
+export const build = gulp.series(cleanBuild, buildPacked);
 
 export async function source() {
   const options = await getBuildOptions(false, true);
   const filenameVersion = await getFilenameVersion(options);
 
+  await cleanSource(options.basename);
   return tasks.sourceDistribution(`./dist/release/${options.basename}-${filenameVersion}`);
 }
 
