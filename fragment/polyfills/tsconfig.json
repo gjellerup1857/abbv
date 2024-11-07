@@ -1,19 +1,4 @@
 {
-  "compilerOptions": {
-    "target": "es2016",
-    "baseUrl": ".",
-    "module": "es2020",
-    "allowUnreachableCode": false,
-    "allowJs": true,
-    "moduleResolution": "node",
-    "removeComments": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-  },
-  "compileOnSave": false,
-  "files": [
-    "index.d.ts"
-  ]
+  "extends": "../../core/configs/tsconfig",
+  "include": ["index.d.ts"]
 }

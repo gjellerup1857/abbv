@@ -16,7 +16,7 @@
  */
 
 import * as browser from "webextension-polyfill";
-import { ExtendedInstallType } from "adblock-betafish/management";
+import { ExtendedInstallType } from "~/management";
 import {
   CommandEventType,
   CommandName,

@@ -1,0 +1,20 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowJs": true,
+    "allowUnreachableCode": false,
+    "declaration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2018",
+    "typeRoots": [
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
+  }
+}
