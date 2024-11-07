@@ -18,516 +18,461 @@
 "use strict";
 
 const BasePage = require("./base.page");
-const {isFirefox} = require("../helpers");
+const { isFirefox } = require("../helpers");
 
-class PopupPage extends BasePage
-{
-  constructor(browser)
-  {
+class PopupPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(popupUrl, tabId)
-  {
+  async init(popupUrl, tabId) {
     await browser.newWindow("about:blank");
     await browser.url(`${popupUrl}?testTabId=${tabId}`);
-    await (await this.pageStatsCounter).waitForExist({timeout: 10000});
+    await (await this.pageStatsCounter).waitForExist({ timeout: 10000 });
   }
 
-  get blockCookieConsentPopupsTitle()
-  {
-    return $("//div[@id='page-premium-cta']/a/" +
-      "span[@data-i18n='premium_cookies_title']");
+  get blockCookieConsentPopupsTitle() {
+    return $(
+      "//div[@id='page-premium-cta']/a/" +
+        "span[@data-i18n='premium_cookies_title']"
+    );
   }
 
-  get blockCookieConsentPopupsPremiumTitle()
-  {
-    return $("//div[@id='page-premium-controls']/article" +
-      "/div/span[@data-i18n='premium_cookies_title']");
+  get blockCookieConsentPopupsPremiumTitle() {
+    return $(
+      "//div[@id='page-premium-controls']/article" +
+        "/div/span[@data-i18n='premium_cookies_title']"
+    );
   }
 
-  get blockCookieConsentPopupsToggle()
-  {
-    return $("//io-circle-toggle[@id='premium-cookie-toggle']" +
-      "//*[@role='checkbox']");
+  get blockCookieConsentPopupsToggle() {
+    return $(
+      "//io-circle-toggle[@id='premium-cookie-toggle']" +
+        "//*[@role='checkbox']"
+    );
   }
 
-  get blockMoreDistractionsTitle()
-  {
-    return $("//div[@id='page-premium-cta']/a/" +
-      "span[@data-i18n='premium_distractions_title']");
+  get blockMoreDistractionsTitle() {
+    return $(
+      "//div[@id='page-premium-cta']/a/" +
+        "span[@data-i18n='premium_distractions_title']"
+    );
   }
 
-  get blockMoreDistractionsPremiumTitle()
-  {
-    return $("//div[@id='page-premium-controls']/article" +
-      "/div/span[@data-i18n='premium_distractions_title']");
+  get blockMoreDistractionsPremiumTitle() {
+    return $(
+      "//div[@id='page-premium-controls']/article" +
+        "/div/span[@data-i18n='premium_distractions_title']"
+    );
   }
 
-  get blockMoreDistractionsToggle()
-  {
-    return $("//io-circle-toggle[@id='premium-distractions-toggle']" +
-    "//*[@role='checkbox']");
+  get blockMoreDistractionsToggle() {
+    return $(
+      "//io-circle-toggle[@id='premium-distractions-toggle']" +
+        "//*[@role='checkbox']"
+    );
   }
 
-  get closeNotificationButton()
-  {
+  get closeNotificationButton() {
     return $("//button[contains(.,'Close')]");
   }
 
-  get cookieConsentPopupsPopup()
-  {
+  get cookieConsentPopupsPopup() {
     return $("#cookie-consent-modal");
   }
 
-  get cookieConsentPopupsPopupNotNowButton()
-  {
+  get cookieConsentPopupsPopupNotNowButton() {
     return $("#cookie-consent-modal-close");
   }
 
-  get cookieConsentPopupsPopupOkGotItButton()
-  {
+  get cookieConsentPopupsPopupOkGotItButton() {
     return $("#cookie-consent-modal-accept");
   }
 
-  get linkInNotificationMessage()
-  {
+  get linkInNotificationMessage() {
     return $("//p[@id='notification-message']/a");
   }
 
-  get notificationMessage()
-  {
+  get notificationMessage() {
     return $("#notification-message");
   }
 
-  get numberOfAdsBlockedThisPage()
-  {
+  get numberOfAdsBlockedThisPage() {
     return $("//div[@id='stats-page']/strong");
   }
 
-  get numberOfAdsBlockedInTotal()
-  {
+  get numberOfAdsBlockedInTotal() {
     return $("//div[@id='stats-total']/strong");
   }
 
-  get optionsButton()
-  {
+  get optionsButton() {
     return $("#options");
   }
 
-  get premiumButton()
-  {
+  get premiumButton() {
     return $("#premium-manage");
   }
 
-  get statsTotalLabel()
-  {
+  get statsTotalLabel() {
     return $("//span[@data-i18n='stats_label_total']");
   }
 
-  get stopShowingNotificationsButton()
-  {
+  get stopShowingNotificationsButton() {
     return $("//button[contains(.,'Stop showing notifications')]");
   }
 
-  get upgradeButton()
-  {
+  get upgradeButton() {
     return $("#premium-upgrade");
   }
 
-  get yesButton()
-  {
+  get yesButton() {
     return $("//p[@id='notification-message']/a");
   }
 
-  get thisDomainToggle()
-  {
+  get thisDomainToggle() {
     return $("//*[@id='page-status']/div[1]/io-circle-toggle");
   }
 
-  get thisPageToggle()
-  {
+  get thisPageToggle() {
     return $("//*[@id='page-status']/div[2]/io-circle-toggle");
   }
 
-  get blockSpecificElementButton()
-  {
+  get blockSpecificElementButton() {
     return $("//*[@id='block-element']");
   }
 
-  get blockElementCancelButton()
-  {
+  get blockElementCancelButton() {
     return $("//*[@id='block-element-cancel']");
   }
 
-  get pageStatsCounter()
-  {
+  get pageStatsCounter() {
     return $("#stats-page > strong");
   }
 
-  get refreshButton()
-  {
+  get refreshButton() {
     return $("#page-refresh").$("button");
   }
 
-  get refreshMessage()
-  {
+  get refreshMessage() {
     return $("//*[@id='page-refresh']/div/span");
   }
 
-  get nothingToBlockText()
-  {
+  get nothingToBlockText() {
     return $("//*[@id='idle-status']/h2");
   }
 
-  get reportIssueButton()
-  {
+  get reportIssueButton() {
     return $("//*[@id='issue-reporter']/span");
   }
 
-  async clickBlockCookieConsentPopupsTitle()
-  {
+  async clickBlockCookieConsentPopupsTitle() {
     await (await this.blockCookieConsentPopupsTitle).click();
   }
 
-  async clickBlockCookieConsentPopupsToggle()
-  {
+  async clickBlockCookieConsentPopupsToggle() {
     await (await this.blockCookieConsentPopupsToggle).click();
   }
 
-  async clickBlockMoreDistractionsTitle()
-  {
+  async clickBlockMoreDistractionsTitle() {
     await (await this.blockMoreDistractionsTitle).click();
   }
 
-  async clickBlockMoreDistractionsToggle()
-  {
+  async clickBlockMoreDistractionsToggle() {
     await (await this.blockMoreDistractionsToggle).click();
   }
 
-  async clickCloseNotificationButton()
-  {
+  async clickCloseNotificationButton() {
     await (await this.closeNotificationButton).click();
   }
 
-  async clickCookieConsentPopupsPopupNotNowButton()
-  {
+  async clickCookieConsentPopupsPopupNotNowButton() {
     await (await this.cookieConsentPopupsPopupNotNowButton).click();
   }
 
-
-  async clickCookieConsentPopupsPopupOkGotItButton()
-  {
+  async clickCookieConsentPopupsPopupOkGotItButton() {
     await (await this.cookieConsentPopupsPopupOkGotItButton).click();
   }
 
-  async clickLinkInNotificationMessage()
-  {
+  async clickLinkInNotificationMessage() {
     await (await this.linkInNotificationMessage).click();
   }
 
-  async clickOptionsButton()
-  {
+  async clickOptionsButton() {
     await (await this.optionsButton).click();
   }
 
-  async clickStopShowingNotificationsButton()
-  {
+  async clickStopShowingNotificationsButton() {
     await (await this.stopShowingNotificationsButton).click();
   }
 
-  async clickUpgradeButton()
-  {
+  async clickUpgradeButton() {
     await this.waitForEnabledThenClick(this.upgradeButton);
   }
 
-  async clickYesButton()
-  {
+  async clickYesButton() {
     await (await this.yesButton).click();
   }
 
-  async getNotificationBorderColor()
-  {
-    return browser.executeScript("return window.getComputedStyle" +
-      "(document.querySelector('#notification .content'),':before')." +
-      "getPropertyValue('border-top-color')", []);
+  async getNotificationBorderColor() {
+    return browser.executeScript(
+      "return window.getComputedStyle" +
+        "(document.querySelector('#notification .content'),':before')." +
+        "getPropertyValue('border-top-color')",
+      []
+    );
   }
 
-  async getNotificationMessageText()
-  {
+  async getNotificationMessageText() {
     return await (await this.notificationMessage).getText();
   }
 
-  async getNumberOfAdsBlockedOnThisPageText()
-  {
+  async getNumberOfAdsBlockedOnThisPageText() {
     return await (await this.numberOfAdsBlockedThisPage).getText();
   }
 
-  async getNumberOfAdsBlockedInTotalText()
-  {
+  async getNumberOfAdsBlockedInTotalText() {
     return await (await this.numberOfAdsBlockedInTotal).getText();
   }
 
-  async getStatsTotalLabelText()
-  {
+  async getStatsTotalLabelText() {
     return await (await this.statsTotalLabel).getText();
   }
 
-  async isBlockCookieConsentPopupsCrownIconDisplayed()
-  {
-    const bgImage = await (await this.blockCookieConsentPopupsPremiumTitle).
-      getCSSProperty("mask-image", "::before");
-    const isDisplayed = await (await this.
-      blockCookieConsentPopupsPremiumTitle).isDisplayed();
-    const hasCrownIcon = JSON.stringify(bgImage).
-      includes("/skin/icons/premium-crown.svg");
+  async isBlockCookieConsentPopupsCrownIconDisplayed() {
+    const bgImage = await (
+      await this.blockCookieConsentPopupsPremiumTitle
+    ).getCSSProperty("mask-image", "::before");
+    const isDisplayed = await (
+      await this.blockCookieConsentPopupsPremiumTitle
+    ).isDisplayed();
+    const hasCrownIcon = JSON.stringify(bgImage).includes(
+      "/skin/icons/premium-crown.svg"
+    );
     return isDisplayed && hasCrownIcon;
   }
 
-  async isBlockCookieConsentPopupsLockIconDisplayed()
-  {
-    const bgImage = await (await this.blockCookieConsentPopupsTitle).
-      getCSSProperty("background-image", "::before");
-    const isDisplayed = await (await this.
-      blockCookieConsentPopupsTitle).isDisplayed();
-    const hasLockIcon = JSON.stringify(bgImage).
-      includes("/skin/icons/premium-lock.svg");
+  async isBlockCookieConsentPopupsLockIconDisplayed() {
+    const bgImage = await (
+      await this.blockCookieConsentPopupsTitle
+    ).getCSSProperty("background-image", "::before");
+    const isDisplayed = await (
+      await this.blockCookieConsentPopupsTitle
+    ).isDisplayed();
+    const hasLockIcon = JSON.stringify(bgImage).includes(
+      "/skin/icons/premium-lock.svg"
+    );
     return isDisplayed && hasLockIcon;
   }
 
-  async isBlockCookieConsentPopupsTitleDisplayed()
-  {
+  async isBlockCookieConsentPopupsTitleDisplayed() {
     return await (await this.blockCookieConsentPopupsTitle).isDisplayed();
   }
 
-  async isBlockCookieConsentPopupsPremiumTitleDisplayed()
-  {
-    return await (await this.
-      blockCookieConsentPopupsPremiumTitle).isDisplayed();
+  async isBlockCookieConsentPopupsPremiumTitleDisplayed() {
+    return await (
+      await this.blockCookieConsentPopupsPremiumTitle
+    ).isDisplayed();
   }
 
-  async isBlockCookieConsentPopupsToggleDisplayed()
-  {
+  async isBlockCookieConsentPopupsToggleDisplayed() {
     return await (await this.blockCookieConsentPopupsToggle).isDisplayed();
   }
 
-  async isBlockCookieConsentPopupsToggleSelected()
-  {
-    return await (await this.blockCookieConsentPopupsToggle).
-      getAttribute("aria-checked") === "true";
+  async isBlockCookieConsentPopupsToggleSelected() {
+    return (
+      (await (
+        await this.blockCookieConsentPopupsToggle
+      ).getAttribute("aria-checked")) === "true"
+    );
   }
 
-  async isBlockCookieConsentPopupsToggleUnlocked()
-  {
+  async isBlockCookieConsentPopupsToggleUnlocked() {
     return await (await this.blockCookieConsentPopupsToggle).isEnabled();
   }
 
-  async isBlockMoreDistractionsCrownIconDisplayed()
-  {
-    const bgImage = await (await this.blockMoreDistractionsPremiumTitle).
-      getCSSProperty("mask-image", "::before");
-    const isDisplayed = await (await this.
-      blockMoreDistractionsPremiumTitle).isDisplayed();
-    const hasCrownIcon = JSON.stringify(bgImage).
-      includes("/skin/icons/premium-crown.svg");
+  async isBlockMoreDistractionsCrownIconDisplayed() {
+    const bgImage = await (
+      await this.blockMoreDistractionsPremiumTitle
+    ).getCSSProperty("mask-image", "::before");
+    const isDisplayed = await (
+      await this.blockMoreDistractionsPremiumTitle
+    ).isDisplayed();
+    const hasCrownIcon = JSON.stringify(bgImage).includes(
+      "/skin/icons/premium-crown.svg"
+    );
     return isDisplayed && hasCrownIcon;
   }
 
-  async isBlockMoreDistractionsLockIconDisplayed()
-  {
-    const bgImage = await (await this.blockMoreDistractionsTitle).
-      getCSSProperty("background-image", "::before");
-    const isDisplayed = await (await this.
-      blockMoreDistractionsTitle).isDisplayed();
-    const hasLockIcon = JSON.stringify(bgImage).
-      includes("/skin/icons/premium-lock.svg");
+  async isBlockMoreDistractionsLockIconDisplayed() {
+    const bgImage = await (
+      await this.blockMoreDistractionsTitle
+    ).getCSSProperty("background-image", "::before");
+    const isDisplayed = await (
+      await this.blockMoreDistractionsTitle
+    ).isDisplayed();
+    const hasLockIcon = JSON.stringify(bgImage).includes(
+      "/skin/icons/premium-lock.svg"
+    );
     return isDisplayed && hasLockIcon;
   }
 
-  async isBlockMoreDistractionsTitleDisplayed()
-  {
+  async isBlockMoreDistractionsTitleDisplayed() {
     return await (await this.blockMoreDistractionsTitle).isDisplayed();
   }
 
-  async isBlockMoreDistractionsPremiumTitleDisplayed()
-  {
+  async isBlockMoreDistractionsPremiumTitleDisplayed() {
     return await (await this.blockMoreDistractionsPremiumTitle).isDisplayed();
   }
 
-  async isBlockMoreDistractionsToggleDisplayed()
-  {
+  async isBlockMoreDistractionsToggleDisplayed() {
     return await (await this.blockMoreDistractionsToggle).isDisplayed();
   }
 
-  async isBlockMoreDistractionsToggleSelected()
-  {
-    return await (await this.blockMoreDistractionsToggle).
-      getAttribute("aria-checked") === "true";
+  async isBlockMoreDistractionsToggleSelected() {
+    return (
+      (await (
+        await this.blockMoreDistractionsToggle
+      ).getAttribute("aria-checked")) === "true"
+    );
   }
 
-  async isBlockMoreDistractionsToggleUnlocked()
-  {
+  async isBlockMoreDistractionsToggleUnlocked() {
     return await (await this.blockMoreDistractionsToggle).isEnabled();
   }
 
-  async isCloseNotificationButtonDisplayed()
-  {
+  async isCloseNotificationButtonDisplayed() {
     return await (await this.closeNotificationButton).isDisplayed();
   }
 
-  async isCookieConsentPopupsPopupDisplayed()
-  {
+  async isCookieConsentPopupsPopupDisplayed() {
     return await (await this.cookieConsentPopupsPopup).isDisplayed();
   }
 
-  async isNotificationMessageDisplayed()
-  {
+  async isNotificationMessageDisplayed() {
     return await (await this.notificationMessage).isDisplayed();
   }
 
-  async isPremiumButtonDisplayed()
-  {
+  async isPremiumButtonDisplayed() {
     return await (await this.premiumButton).isDisplayed();
   }
 
-  async isStopShowingNotificationsButtonDisplayed()
-  {
+  async isStopShowingNotificationsButtonDisplayed() {
     return await (await this.stopShowingNotificationsButton).isDisplayed();
   }
 
-  async isUpgradeButtonDisplayed()
-  {
+  async isUpgradeButtonDisplayed() {
     return await (await this.upgradeButton).isDisplayed();
   }
 
-  async switchToProblemPageTab()
-  {
-    await this.switchToTab("A browser issue has caused your ABP " +
-      "settings to be reset.", 8000);
+  async switchToProblemPageTab() {
+    await this.switchToTab(
+      "A browser issue has caused your ABP settings to be reset.",
+      8000
+    );
   }
 
-  async waitForNumberOfAdsBlockedToBeInRange(min, max)
-  {
+  async waitForNumberOfAdsBlockedToBeInRange(min, max) {
     const timeout = 8000;
     let adsBlocked;
-    try
-    {
-      await this.numberOfAdsBlockedInTotal.waitUntil(async function()
-      {
-        adsBlocked = parseInt(await this.getText(), 10);
-        return adsBlocked > min && adsBlocked <= max;
-      }, {timeout});
-    }
-    catch (err)
-    {
-      throw new Error(`Unexpected ads blocked count after ${timeout}ms. ` +
-        `Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`);
+    try {
+      await this.numberOfAdsBlockedInTotal.waitUntil(
+        async function () {
+          adsBlocked = parseInt(await this.getText(), 10);
+          return adsBlocked > min && adsBlocked <= max;
+        },
+        { timeout }
+      );
+    } catch (err) {
+      throw new Error(
+        `Unexpected ads blocked count after ${timeout}ms. ` +
+          `Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`
+      );
     }
     return adsBlocked;
   }
 
-  async clickThisDomainToggle()
-  {
+  async clickThisDomainToggle() {
     await this.waitForEnabledThenClick(this.thisDomainToggle);
   }
 
-  async isDomainToggleChecked()
-  {
-    if (isFirefox())
-    {
-      return await this.thisDomainToggle.
-      getAttribute("checked") != null;
+  async isDomainToggleChecked() {
+    if (isFirefox()) {
+      return (await this.thisDomainToggle.getAttribute("checked")) != null;
     }
-    return await this.thisDomainToggle.
-    getAttribute("checked") === "true";
+    return (await this.thisDomainToggle.getAttribute("checked")) === "true";
   }
 
-  async clickThisPageToggle()
-  {
+  async clickThisPageToggle() {
     await this.waitForEnabledThenClick(this.thisPageToggle);
   }
 
-  async isPageToggleChecked()
-  {
-    if (isFirefox())
-    {
-      return await this.thisPageToggle.
-      getAttribute("checked") != null;
+  async isPageToggleChecked() {
+    if (isFirefox()) {
+      return (await this.thisPageToggle.getAttribute("checked")) != null;
     }
-    return await this.thisPageToggle.
-    getAttribute("checked") === "true";
+    return (await this.thisPageToggle.getAttribute("checked")) === "true";
   }
 
-  async isPageToggleEnabled()
-  {
+  async isPageToggleEnabled() {
     return await this.thisPageToggle.isClickable();
   }
 
-  async isRefreshButtonDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.refreshButton,
-                                              reverseOption);
+  async isRefreshButtonDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.refreshButton,
+      reverseOption
+    );
   }
 
-  async isRefreshMessageDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.refreshMessage,
-                                              reverseOption);
+  async isRefreshMessageDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.refreshMessage,
+      reverseOption
+    );
   }
 
-  async clickRefreshButton()
-  {
+  async clickRefreshButton() {
     await this.waitForEnabledThenClick(this.refreshButton);
   }
 
-  async isPageStatsCounterDisplayed()
-  {
+  async isPageStatsCounterDisplayed() {
     return await (await this.pageStatsCounter).isDisplayed();
   }
 
-  async isBlockSpecificElementButtonDisplayed()
-  {
+  async isBlockSpecificElementButtonDisplayed() {
     return await (await this.blockSpecificElementButton).isDisplayed();
   }
 
-  async clickBlockSpecificElementButton()
-  {
+  async clickBlockSpecificElementButton() {
     await this.waitForEnabledThenClick(this.blockSpecificElementButton);
   }
 
-  async isBlockElementCancelButtonDisplayed()
-  {
+  async isBlockElementCancelButtonDisplayed() {
     return await (await this.blockElementCancelButton).isDisplayed();
   }
 
-  async clickBlockElementCancelButton()
-  {
+  async clickBlockElementCancelButton() {
     await this.waitForEnabledThenClick(this.blockElementCancelButton);
   }
 
-  async isReportAnIssueButtonDisplayed()
-  {
+  async isReportAnIssueButtonDisplayed() {
     return await (await this.reportIssueButton).isDisplayed();
   }
 
-  async clickReportAnIssueButton()
-  {
+  async clickReportAnIssueButton() {
     return await this.waitForEnabledThenClick(this.reportIssueButton);
   }
 
-  async isPageToggleDisplayed()
-  {
+  async isPageToggleDisplayed() {
     return await (await this.thisPageToggle).isDisplayed();
   }
 
-  async isDomainToggleDisplayed()
-  {
+  async isDomainToggleDisplayed() {
     return await (await this.thisDomainToggle).isDisplayed();
   }
 
-  async isNothingToBlockTextDisplayed()
-  {
+  async isNothingToBlockTextDisplayed() {
     return await (await this.nothingToBlockText).isDisplayed();
   }
 }

@@ -19,7 +19,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
 const readFile = promisify(fs.readFile);
 
@@ -29,15 +29,13 @@ const readFile = promisify(fs.readFile);
  * @returns {Promise<Object>} resolves fileName, locale and strings of the
  *                            locale file
  */
-const readJson = (filePath) =>
-{
-  return readFile(filePath, "utf8").then((data) =>
-  {
-    const {dir, base} = path.parse(filePath);
+const readJson = (filePath) => {
+  return readFile(filePath, "utf8").then((data) => {
+    const { dir, base } = path.parse(filePath);
     const locale = dir.split(path.sep).pop();
     const strings = JSON.parse(data);
-    return {fileName: base, locale, strings};
+    return { fileName: base, locale, strings };
   });
 };
 
-module.exports = {readJson};
+module.exports = { readJson };

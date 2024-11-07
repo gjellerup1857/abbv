@@ -17,48 +17,41 @@
 
 "use strict";
 
-const {beforeSequence} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence } = require("../helpers");
+const { expect } = require("chai");
 const DevToolsPanelPage = require("../page-objects/devToolsPanel.page");
 const devPanelFilteringStates =
   require("../test-data/data-dev-tools-panel").devPanelFilteringStates;
 const devPanelFilteringTypes =
   require("../test-data/data-dev-tools-panel").devPanelFilteringTypes;
 
-describe("test abp developers panel", function()
-{
-  before(async function()
-  {
+describe("test abp developers panel", function () {
+  before(async function () {
     await beforeSequence();
     const devToolsPanelPage = new DevToolsPanelPage(browser);
     await devToolsPanelPage.init();
     await devToolsPanelPage.switchToTab(/devtools-panel/);
   });
 
-  it("should display expected filtering states", async function()
-  {
+  it("should display expected filtering states", async function () {
     const devToolsPanelPage = new DevToolsPanelPage(browser);
     const filteringStateTexts =
       await devToolsPanelPage.getFilteringStateOptionsTexts();
     let filteringStatesCorrect = true;
-    for (let i = 0; i < devPanelFilteringStates.length; i++)
-    {
-      if (devPanelFilteringStates[i] != filteringStateTexts[i])
-      {
+    for (let i = 0; i < devPanelFilteringStates.length; i++) {
+      if (devPanelFilteringStates[i] != filteringStateTexts[i]) {
         filteringStatesCorrect = false;
       }
     }
     expect(filteringStatesCorrect).to.be.true;
   });
 
-  it("should display expected filtering types", async function()
-  {
+  it("should display expected filtering types", async function () {
     const devToolsPanelPage = new DevToolsPanelPage(browser);
     const filteringTypeTexts =
       await devToolsPanelPage.getFilteringTypeOptionsTexts();
     let filteringTypesCorrect = true;
-    for (let i = 0; i < devPanelFilteringTypes.length; i++)
-    {
+    for (let i = 0; i < devPanelFilteringTypes.length; i++) {
       if (devPanelFilteringTypes[i] != filteringTypeTexts[i])
         filteringTypesCorrect = false;
     }

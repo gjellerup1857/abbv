@@ -57,14 +57,26 @@ export const config = {
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   framework: "mocha",
-  reporters: allureEnabled ? [["allure", {
-    outputDir: "allure-results",
-    disableWebdriverStepsReporting: true,
-    disableWebdriverScreenshotsReporting: false
-  }]] : [["spec", {
-    realtimeReporting: true,
-    showPreface: false
-  }]],
+  reporters: allureEnabled
+    ? [
+        [
+          "allure",
+          {
+            outputDir: "allure-results",
+            disableWebdriverStepsReporting: true,
+            disableWebdriverScreenshotsReporting: false
+          }
+        ]
+      ]
+    : [
+        [
+          "spec",
+          {
+            realtimeReporting: true,
+            showPreface: false
+          }
+        ]
+      ],
   mochaOpts: {
     ui: "bdd",
     timeout: 300000
@@ -72,12 +84,15 @@ export const config = {
   // This is needed to enable DNS mapping for allowlisting
   // testpages.adblockplus.org is redirected to localhost
   services: [
-    ["firefox-profile", {
-      proxy: {
-        proxyType: "pac",
-        autoconfigUrl: `http://localhost:${testPagesPort}/proxy-config.pac`
+    [
+      "firefox-profile",
+      {
+        proxy: {
+          proxyType: "pac",
+          autoconfigUrl: `http://localhost:${testPagesPort}/proxy-config.pac`
+        }
       }
-    }]
+    ]
   ],
 
   // =====

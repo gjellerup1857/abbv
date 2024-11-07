@@ -17,37 +17,35 @@
 
 "use strict";
 
-const {beforeSequence, getABPOptionsTabId,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  getABPOptionsTabId,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const IssueReporterPage = require("../page-objects/issueReporter.page");
 const dataIssueReporter = require("../test-data/data-issue-reporter");
 let globalOrigin;
 
-describe("test issue reporter", function()
-{
+describe("test issue reporter", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should close issue reporter", async function()
-  {
+  it("should close issue reporter", async function () {
     const issueReporterPage = new IssueReporterPage(browser);
     const tabId = await getABPOptionsTabId();
     await browser.url(dataIssueReporter.testPageUrl);
     await issueReporterPage.init(globalOrigin, tabId);
     await issueReporterPage.clickCancelButton();
-    try
-    {
+    try {
       await issueReporterPage.clickCancelButton();
-    }
-    catch (NoSuchWindowException)
-    {
+    } catch (NoSuchWindowException) {
       expect(NoSuchWindowException.toString()).to.include(
-        "no such window: target window already closed");
+        "no such window: target window already closed"
+      );
     }
   });
 });

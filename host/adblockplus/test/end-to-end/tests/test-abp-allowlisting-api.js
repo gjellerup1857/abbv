@@ -17,64 +17,63 @@
 
 "use strict";
 
-const {beforeSequence, getTabId, isEdge,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
-const OneClickAllowAdsTestPage =
-  require("../page-objects/oneClickAllowAdsTest.page");
+const {
+  beforeSequence,
+  getTabId,
+  isEdge,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
+const OneClickAllowAdsTestPage = require("../page-objects/oneClickAllowAdsTest.page");
 const PaywallChunk = require("../page-objects/paywall.chunk");
 const PopupPage = require("../page-objects/popup.page");
 let popupUrl;
 
-describe("test abp allowlisting api", function()
-{
-  before(async function()
-  {
-    ({popupUrl} = await beforeSequence());
+describe("test abp allowlisting api", function () {
+  before(async function () {
+    ({ popupUrl } = await beforeSequence());
   });
 
-  it("should perform smart allowlisting", async function()
-  {
+  it("should perform smart allowlisting", async function () {
     // https://eyeo.atlassian.net/browse/EXT-301
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
     await browser.newWindow("https://allthatsinteresting.com/tag/history");
     await browser.url("https://allthatsinteresting.com/tag/science");
     const paywallChunk = new PaywallChunk(browser);
     expect(await paywallChunk.isPaywallContentDisplayed()).to.be.true;
     await paywallChunk.clickAllowAdsButton();
-    expect(await paywallChunk.
-      isPaywallContentDisplayed(true, 10000)).to.be.true;
-    const tabId = await getTabId({urlPattern: "https://allthatsinteresting.com/tag/science"});
+    expect(await paywallChunk.isPaywallContentDisplayed(true, 10000)).to.be
+      .true;
+    const tabId = await getTabId({
+      urlPattern: "https://allthatsinteresting.com/tag/science"
+    });
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
     await switchToABPOptionsTab();
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowistedWebsitesPage.
-        getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("allthatsinteresting.com");
     });
   });
 
-  it("should display message for non-partners", async function()
-  {
+  it("should display message for non-partners", async function () {
     // https://eyeo.atlassian.net/browse/EXT-301
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.init();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed()).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed()).to.be
+      .true;
     await oneClickAllowAdsTestPage.clickOneClickButton();
-    expect(await oneClickAllowAdsTestPage.
-      isWhichExtensionMessageDisplayed()).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isWhichExtensionMessageDisplayed()).to
+      .be.true;
   });
 });

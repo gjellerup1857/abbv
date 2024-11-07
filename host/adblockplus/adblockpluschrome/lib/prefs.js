@@ -19,9 +19,9 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {installHandler, port} from "~/core/messaging/background";
-import {EventEmitter} from "./events.js";
-import {info} from "../../src/info/background";
+import { installHandler, port } from "~/core/messaging/background";
+import { EventEmitter } from "./events.js";
+import { info } from "../../src/info/background";
 
 const keyPrefix = "pref:";
 
@@ -93,7 +93,8 @@ defaults.currentVersion = "";
  * @see https://adblockplus.org/en/preferences#documentation_link
  * @type {string}
  */
-defaults.documentation_link = "https://adblockplus.org/redirect?link=%LINK%&lang=%LANG%";
+defaults.documentation_link =
+  "https://adblockplus.org/redirect?link=%LINK%&lang=%LANG%";
 /**
  * The total number of requests blocked by the extension.
  *
@@ -169,7 +170,8 @@ defaults.elemhide_debug = false;
  *
  * @type {string}
  */
-defaults.remote_first_run_page_url = "https://welcome.adblockplus.org/%LANG%/installed?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%";
+defaults.remote_first_run_page_url =
+  "https://welcome.adblockplus.org/%LANG%/installed?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%";
 
 /**
  * Whether to recommend language filter lists to user.
@@ -192,7 +194,10 @@ defaults.premium_license = {
 /**
  * Origins that are trusted to open the options page
  */
-defaults.options_backlink_trusted_origins = ["https://welcome.adblockplus.org", "https://adblockplus.org"];
+defaults.options_backlink_trusted_origins = [
+  "https://welcome.adblockplus.org",
+  "https://adblockplus.org"
+];
 
 /**
  * Origin of page to activate Premium license.
@@ -213,14 +218,16 @@ defaults.premium_license_nextcheck = 0;
  *
  * @type {string}
  */
-defaults.premium_license_check_url = "https://myadblock.licensing.adblockplus.dev/license";
+defaults.premium_license_check_url =
+  "https://myadblock.licensing.adblockplus.dev/license";
 
 /**
  * Address of page to manage Premium account.
  *
  * @type {string}
  */
-defaults.premium_manage_page_url = "https://accounts.adblockplus.org/%LANG%/manage?lic=%LICENSE_CODE%&s=%SOURCE%";
+defaults.premium_manage_page_url =
+  "https://accounts.adblockplus.org/%LANG%/manage?lic=%LICENSE_CODE%&s=%SOURCE%";
 
 /**
  * Origin of page to trigger Premium onboarding
@@ -234,7 +241,8 @@ defaults.premium_onboarding_trigger_origin = "https://accounts.adblockplus.org";
  *
  * @type {string}
  */
-defaults.premium_upgrade_page_url = "https://accounts.adblockplus.org/%LANG%/premium?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%&s=%SOURCE%";
+defaults.premium_upgrade_page_url =
+  "https://accounts.adblockplus.org/%LANG%/premium?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%&s=%SOURCE%";
 
 /**
  * Premium user ID
@@ -319,7 +327,8 @@ defaults.onpage_dialog_command_stats = {};
  *
  * @type {string}
  */
-defaults.update_campaign_url = "https://adblockplus.org/%LANG%/update?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%";
+defaults.update_campaign_url =
+  "https://adblockplus.org/%LANG%/update?an=%ADDON_NAME%&av=%ADDON_VERSION%&ap=%APPLICATION_NAME%&apv=%APPLICATION_VERSION%&p=%PLATFORM_NAME%&pv=%PLATFORM_VERSION%";
 
 /**
  * Whether user has interacted with YouTube wall detection dialog
@@ -381,9 +390,9 @@ defaults.data_collection_opt_out = false;
 defaults.allowlisting_auto_extend_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 /**
-  * @namespace
-  * @static
-  */
+ * @namespace
+ * @static
+ */
 export let Prefs = {
   /**
    * Retrieves the given preference.
@@ -391,8 +400,7 @@ export let Prefs = {
    * @param {string} preference
    * @return {any}
    */
-  get(preference)
-  {
+  get(preference) {
     // We need to temporarily force-disable data collection in Firefox, while
     // we're working on improving our data collection opt-out mechanism based
     // on Mozilla's requirements
@@ -407,8 +415,7 @@ export let Prefs = {
 
     // Object preferences are mutable, so we need to clone them to avoid
     // accidentally modifying the preference when modifying the object
-    if (typeof result === "object")
-      result = JSON.parse(JSON.stringify(result));
+    if (typeof result === "object") result = JSON.parse(JSON.stringify(result));
 
     return result;
   },
@@ -420,8 +427,7 @@ export let Prefs = {
    * @return {Promise} A promise that resolves when the underlying
                        browser.storage.local.set/remove() operation completes
    */
-  reset(preference)
-  {
+  reset(preference) {
     return Prefs.set(preference, defaults[preference]);
   },
 
@@ -433,23 +439,24 @@ export let Prefs = {
    * @return {Promise} A promise that resolves when the underlying
                        browser.storage.local.set/remove() operation completes
    */
-  set(preference, value)
-  {
+  set(preference, value) {
     let defaultValue = defaults[preference];
 
     if (typeof value != typeof defaultValue)
       throw new Error("Attempt to change preference type");
 
-    if (value == defaultValue)
-    {
+    if (value == defaultValue) {
       let oldValue = overrides[preference];
       delete overrides[preference];
 
       // Firefox 66 fails to emit storage.local.onChanged events for falsey
       // values. https://bugzilla.mozilla.org/show_bug.cgi?id=1541449
-      if (!oldValue &&
-          info.platform == "gecko" && parseInt(info.platformVersion, 10) == 66)
-        onStorageChanged({[prefToKey(preference)]: {oldValue}}, "local");
+      if (
+        !oldValue &&
+        info.platform == "gecko" &&
+        parseInt(info.platformVersion, 10) == 66
+      )
+        onStorageChanged({ [prefToKey(preference)]: { oldValue } }, "local");
 
       return browser.storage.local.remove(prefToKey(preference));
     }
@@ -465,8 +472,7 @@ export let Prefs = {
    * @param {string}   preference
    * @param {function} callback
    */
-  on(preference, callback)
-  {
+  on(preference, callback) {
     eventEmitter.on(preference, callback);
   },
 
@@ -476,8 +482,7 @@ export let Prefs = {
    * @param {string}   preference
    * @param {function} callback
    */
-  off(preference, callback)
-  {
+  off(preference, callback) {
     eventEmitter.off(preference, callback);
   },
 
@@ -487,8 +492,7 @@ export let Prefs = {
    * @param {string} linkID
    * @return {string}
    */
-  getDocLink(linkID)
-  {
+  getDocLink(linkID) {
     return this.documentation_link
       .replace(/%LINK%/g, linkID)
       .replace(/%LANG%/g, browser.i18n.getUILanguage());
@@ -504,110 +508,85 @@ export let Prefs = {
   untilLoaded: null
 };
 
-function keyToPref(key)
-{
-  if (key.indexOf(keyPrefix) != 0)
-    return null;
+function keyToPref(key) {
+  if (key.indexOf(keyPrefix) != 0) return null;
 
   return key.substr(keyPrefix.length);
 }
 
-function prefToKey(pref)
-{
+function prefToKey(pref) {
   return keyPrefix + pref;
 }
 
-function savePref(pref)
-{
-  return browser.storage.local.set({[prefToKey(pref)]: overrides[pref]});
+function savePref(pref) {
+  return browser.storage.local.set({ [prefToKey(pref)]: overrides[pref] });
 }
 
 let customSave = new Map();
-if (info.platform == "gecko" && parseInt(info.platformVersion, 10) < 66)
-{
+if (info.platform == "gecko" && parseInt(info.platformVersion, 10) < 66) {
   // Saving one storage value causes all others to be saved as well for
   // Firefox versions <66. Make sure that updating ad counter doesn't cause
   // the filters data to be saved frequently as a side-effect.
   let promise = null;
-  customSave.set("blocked_total", pref =>
-  {
-    if (!promise)
-    {
-      promise = new Promise((resolve, reject) =>
-      {
-        setTimeout(
-          () =>
-          {
-            promise = null;
-            savePref(pref).then(resolve, reject);
-          },
-          60 * 1000
-        );
+  customSave.set("blocked_total", (pref) => {
+    if (!promise) {
+      promise = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          promise = null;
+          savePref(pref).then(resolve, reject);
+        }, 60 * 1000);
       });
     }
     return promise;
   });
 }
 
-function addPreference(pref)
-{
+function addPreference(pref) {
   Object.defineProperty(Prefs, pref, {
-    get()
-    {
+    get() {
       return Prefs.get(pref);
     },
-    set(value)
-    {
+    set(value) {
       Prefs.set(pref, value);
     },
     enumerable: true
   });
 }
 
-function onStorageChanged(changes)
-{
-  for (let key in changes)
-  {
+function onStorageChanged(changes) {
+  for (let key in changes) {
     let pref = keyToPref(key);
-    if (pref && pref in defaults)
-    {
+    if (pref && pref in defaults) {
       let change = changes[key];
       if ("newValue" in change && change.newValue != defaults[pref])
         overrides[pref] = change.newValue;
-      else
-        delete overrides[pref];
+      else delete overrides[pref];
 
       eventEmitter.emit(pref);
     }
   }
 }
 
-async function init()
-{
+async function init() {
   let prefs = Object.keys(defaults);
   prefs.forEach(addPreference);
 
-  let isEdgeChromium = info.application == "edge" &&
-                       info.platform == "chromium";
+  let isEdgeChromium =
+    info.application == "edge" && info.platform == "chromium";
 
   // When upgrading from EdgeHTML to Edge Chromium (v79) data stored in
   // browser.storage.local gets corrupted.
   // To fix it, we have to call JSON.parse twice.
   // See: https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/152
-  if (isEdgeChromium)
-  {
+  if (isEdgeChromium) {
     let items = await browser.storage.local.get(null);
 
     let fixedItems = {};
-    for (let key in items)
-    {
-      if (typeof items[key] == "string")
-      {
-        try
-        {
+    for (let key in items) {
+      if (typeof items[key] == "string") {
+        try {
           fixedItems[key] = JSON.parse(JSON.parse(items[key]));
-        }
-        catch (e) {}
+        } catch (e) {}
       }
     }
 
@@ -616,20 +595,14 @@ async function init()
 
   {
     let items = await browser.storage.local.get(prefs.map(prefToKey));
-    for (let key in items)
-      overrides[keyToPref(key)] = items[key];
+    for (let key in items) overrides[keyToPref(key)] = items[key];
   }
 
-  if ("managed" in browser.storage)
-  {
-    try
-    {
+  if ("managed" in browser.storage) {
+    try {
       let items = await browser.storage.managed.get(null);
-      for (let key in items)
-        defaults[key] = items[key];
-    }
-    catch (e)
-    {
+      for (let key in items) defaults[key] = items[key];
+    } catch (e) {
       // Opera doesn't support browser.storage.managed, but instead of simply
       // removing the API, it gives an asynchronous error which we ignore here.
     }
@@ -644,17 +617,13 @@ async function init()
 
   // Initialize notifications_ignoredcategories pseudo preference
   Object.defineProperty(Prefs, "notifications_ignoredcategories", {
-    get()
-    {
+    get() {
       return ignoredCategories;
     },
-    set(value)
-    {
+    set(value) {
       const categories = new Set(ignoredCategories);
-      if (value)
-        categories.add("*");
-      else
-        categories.delete("*");
+      if (value) categories.add("*");
+      else categories.delete("*");
       ignoredCategories = categories;
 
       void ewe.notifications.toggleIgnoreCategory("*", !!value);
@@ -662,22 +631,14 @@ async function init()
     enumerable: true
   });
 
-  ewe.notifications.on(
-    "ignored-category-added",
-    async() =>
-    {
-      ignoredCategories = await ewe.notifications.getIgnoredCategories();
-      eventEmitter.emit("notifications_ignoredcategories");
-    }
-  );
-  ewe.notifications.on(
-    "ignored-category-removed",
-    async() =>
-    {
-      ignoredCategories = await ewe.notifications.getIgnoredCategories();
-      eventEmitter.emit("notifications_ignoredcategories");
-    }
-  );
+  ewe.notifications.on("ignored-category-added", async () => {
+    ignoredCategories = await ewe.notifications.getIgnoredCategories();
+    eventEmitter.emit("notifications_ignoredcategories");
+  });
+  ewe.notifications.on("ignored-category-removed", async () => {
+    ignoredCategories = await ewe.notifications.getIgnoredCategories();
+    eventEmitter.emit("notifications_ignoredcategories");
+  });
 }
 
 Prefs.untilLoaded = init();
@@ -701,7 +662,7 @@ port.on("prefs.get", (message, sender) => Prefs[message.key]);
  */
 port.on(
   "prefs.set",
-  async(message, sender) => Prefs[message.key] = message.value
+  async (message, sender) => (Prefs[message.key] = message.value)
 );
 
 /**
@@ -711,12 +672,11 @@ port.on(
  * @property {string} key - The preference key
  * @returns {?boolean}
  */
-port.on("prefs.toggle", async(message, sender) =>
-{
+port.on("prefs.toggle", async (message, sender) => {
   if (message.key == "notifications_ignoredcategories")
     return ewe.notifications.toggleIgnoreCategory("*");
 
-  return Prefs[message.key] = !Prefs[message.key];
+  return (Prefs[message.key] = !Prefs[message.key]);
 });
 
 /**
@@ -727,19 +687,16 @@ port.on("prefs.toggle", async(message, sender) =>
  *   The link ID to generate the doc link for.
  * @returns {string}
  */
-port.on("prefs.getDocLink", (message, sender) =>
-{
-  let {application, platform} = info;
+port.on("prefs.getDocLink", (message, sender) => {
+  let { application, platform } = info;
   if (platform == "chromium" && application != "opera" && application != "edge")
     application = "chrome";
-  else if (platform == "gecko")
-    application = "firefox";
+  else if (platform == "gecko") application = "firefox";
 
   return Prefs.getDocLink(message.link.replace("{browser}", application));
 });
 
-installHandler("prefs", null, (emit, action) =>
-{
+installHandler("prefs", null, (emit, action) => {
   const onChanged = () => emit(Prefs[action]);
   Prefs.on(action, onChanged);
   return () => Prefs.off(action, onChanged);

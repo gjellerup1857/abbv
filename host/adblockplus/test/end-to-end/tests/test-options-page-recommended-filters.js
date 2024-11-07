@@ -17,100 +17,105 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
 let lastTest = false;
 
-describe("test options page general tab recommended filters", function()
-{
+describe("test options page general tab recommended filters", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should block additional tracking", async function()
-  {
+  it("should block additional tracking", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isBlockAdditionalTrackingCheckboxSelected(true)).to.be.true;
-    expect(await generalPage.getBlockAdditionalTrackingDescriptionText()).
-      to.equal("Protect your privacy from known entities that may track your" +
-      " online activity across websites you visit.");
+    expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected(true)).to
+      .be.true;
+    expect(
+      await generalPage.getBlockAdditionalTrackingDescriptionText()
+    ).to.equal(
+      "Protect your privacy from known entities that may track your" +
+        " online activity across websites you visit."
+    );
     await generalPage.clickBlockAdditionalTrackingCheckbox();
-    expect(await generalPage.
-      isBlockAdditionalTrackingCheckboxSelected()).to.be.true;
+    expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected()).to.be
+      .true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isEasyPrivacyFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyPrivacyFLDisplayed()).to.be.true;
     await generalPage.init();
     await generalPage.clickBlockAdditionalTrackingCheckbox();
-    expect(await generalPage.
-      isBlockAdditionalTrackingCheckboxSelected(true)).to.be.true;
+    expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected(true)).to
+      .be.true;
     await advancedPage.init();
-    expect(await advancedPage.
-      isEasyPrivacyFLDisplayed()).to.be.false;
+    expect(await advancedPage.isEasyPrivacyFLDisplayed()).to.be.false;
   });
 
-  it("should block push notifications", async function()
-  {
+  it("should block push notifications", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isBlockPushNotificationsCheckboxSelected(true)).to.be.true;
-    expect(await generalPage.getBlockPushNotificationsDescriptionText()).
-      to.equal("Stop websites from asking you to allow push notifications th" +
-      "at could track your online activity.");
+    expect(await generalPage.isBlockPushNotificationsCheckboxSelected(true)).to
+      .be.true;
+    expect(
+      await generalPage.getBlockPushNotificationsDescriptionText()
+    ).to.equal(
+      "Stop websites from asking you to allow push notifications th" +
+        "at could track your online activity."
+    );
     await generalPage.clickBlockPushNotificationsCheckbox();
-    expect(await generalPage.
-      isBlockPushNotificationsCheckboxSelected()).to.be.true;
+    expect(await generalPage.isBlockPushNotificationsCheckboxSelected()).to.be
+      .true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isFanboysNotificationsBlockingListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isFanboysNotificationsBlockingListFLDisplayed())
+      .to.be.true;
     await generalPage.init();
     await generalPage.clickBlockPushNotificationsCheckbox();
-    expect(await generalPage.
-      isBlockPushNotificationsCheckboxSelected(true)).to.be.true;
+    expect(await generalPage.isBlockPushNotificationsCheckboxSelected(true)).to
+      .be.true;
     await advancedPage.init();
-    expect(await advancedPage.
-      isFanboysNotificationsBlockingListFLDisplayed()).to.be.false;
+    expect(await advancedPage.isFanboysNotificationsBlockingListFLDisplayed())
+      .to.be.false;
   });
 
-  it("should block social media icons tracking", async function()
-  {
+  it("should block social media icons tracking", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isBlockSocialMediaIconsTrackingCheckboxSelected(true)).to.be.true;
-    expect(await generalPage.getBlockSocialMediaIconsTrackingDescriptionText())
-      .to.equal("Prevent social media networks from building a profile of yo" +
-      "u based on your browsing habits.");
+    expect(
+      await generalPage.isBlockSocialMediaIconsTrackingCheckboxSelected(true)
+    ).to.be.true;
+    expect(
+      await generalPage.getBlockSocialMediaIconsTrackingDescriptionText()
+    ).to.equal(
+      "Prevent social media networks from building a profile of yo" +
+        "u based on your browsing habits."
+    );
     await generalPage.clickBlockSocialMediaIconsTrackingCheckbox();
-    expect(await generalPage.
-      isBlockSocialMediaIconsTrackingCheckboxSelected()).to.be.true;
+    expect(await generalPage.isBlockSocialMediaIconsTrackingCheckboxSelected())
+      .to.be.true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isFanboysSocialBlockingListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isFanboysSocialBlockingListFLDisplayed()).to.be
+      .true;
     await generalPage.init();
     await generalPage.clickBlockSocialMediaIconsTrackingCheckbox();
-    expect(await generalPage.
-      isBlockSocialMediaIconsTrackingCheckboxSelected(true)).to.be.true;
+    expect(
+      await generalPage.isBlockSocialMediaIconsTrackingCheckboxSelected(true)
+    ).to.be.true;
     await advancedPage.init();
     lastTest = true;
-    expect(await advancedPage.
-      isFanboysSocialBlockingListFLDisplayed()).to.be.false;
+    expect(await advancedPage.isFanboysSocialBlockingListFLDisplayed()).to.be
+      .false;
   });
 });

@@ -16,7 +16,6 @@
  */
 
 html:not([dir="rtl"]) io-highlighter .options button,
-html[dir="rtl"] io-highlighter .options button
-{
+html[dir="rtl"] io-highlighter .options button {
   margin: 0;
 }

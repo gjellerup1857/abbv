@@ -16,7 +16,7 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {convertDoclinks} from "../common.mjs";
+import { convertDoclinks } from "../common.mjs";
 import {
   initI18n,
   setElementLinks,
@@ -25,27 +25,22 @@ import {
 
 import "../../src/first-run/ui/first-run.css";
 
-function openOptions()
-{
+function openOptions() {
   messaging.app.open("options");
 }
 
-function initLinks()
-{
+function initLinks() {
   Promise.all([
     messaging.doclinks.get("acceptable_ads_criteria"),
     messaging.doclinks.get("acceptable_ads_opt_out")
-  ]).then(([urlCriteria, urlOptOut]) =>
-  {
+  ]).then(([urlCriteria, urlOptOut]) => {
     setElementLinks("control-description", urlCriteria, urlOptOut, openOptions);
   });
 
-  messaging.doclinks.get("terms").then((url) =>
-  {
+  messaging.doclinks.get("terms").then((url) => {
     setElementLinks("fair-description", url);
   });
-  messaging.doclinks.get("eyeo").then((url) =>
-  {
+  messaging.doclinks.get("eyeo").then((url) => {
     const year = new Date().getFullYear().toString();
     const notice = document.getElementById("copyright-notice");
     setElementText(notice, "common_copyright", year);
@@ -53,51 +48,41 @@ function initLinks()
   });
 }
 
-function initWarnings()
-{
-  messaging.subscriptions.getInitIssues()
-    .then((issues) =>
-    {
-      const {dataCorrupted, reinitialized} = issues;
-      const warnings = [];
+function initWarnings() {
+  messaging.subscriptions.getInitIssues().then((issues) => {
+    const { dataCorrupted, reinitialized } = issues;
+    const warnings = [];
 
-      // Show warning if we detected some data corruption
-      if (dataCorrupted)
-      {
-        warnings.push("dataCorrupted");
-        messaging.doclinks.get("adblock_plus").then((url) =>
-        {
-          setElementLinks("dataCorrupted-reinstall", url);
-        });
-        messaging.doclinks.get("help_center").then((url) =>
-        {
-          setElementLinks(
-            "dataCorrupted-support",
-            "mailto:support@adblockplus.org",
-            url
-          );
-        });
-      }
-      // Show warning if filterlists settings were reinitialized
-      else if (reinitialized)
-      {
-        warnings.push("reinitialized");
-        setElementLinks("warning-reinitialized", openOptions);
-      }
+    // Show warning if we detected some data corruption
+    if (dataCorrupted) {
+      warnings.push("dataCorrupted");
+      messaging.doclinks.get("adblock_plus").then((url) => {
+        setElementLinks("dataCorrupted-reinstall", url);
+      });
+      messaging.doclinks.get("help_center").then((url) => {
+        setElementLinks(
+          "dataCorrupted-support",
+          "mailto:support@adblockplus.org",
+          url
+        );
+      });
+    }
+    // Show warning if filterlists settings were reinitialized
+    else if (reinitialized) {
+      warnings.push("reinitialized");
+      setElementLinks("warning-reinitialized", openOptions);
+    }
 
-      // While our design isn't optimized for it yet, multiple warnings can
-      // be shown by adding multiple strings the body's data-warnings attribute
-      if (warnings.length)
-      {
-        document.body.dataset.warnings = warnings.join(" ");
-      }
-    });
+    // While our design isn't optimized for it yet, multiple warnings can
+    // be shown by adding multiple strings the body's data-warnings attribute
+    if (warnings.length) {
+      document.body.dataset.warnings = warnings.join(" ");
+    }
+  });
 }
 
-function initApplication()
-{
-  messaging.app.get("application").then((application) =>
-  {
+function initApplication() {
+  messaging.app.get("application").then((application) => {
     document.documentElement.dataset.application = application;
   });
 }

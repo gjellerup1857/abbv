@@ -15,94 +15,96 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {params} from "./config/env.mjs";
+import { params } from "./config/env.mjs";
 import records from "./config/records.mjs";
 
-import {Prefs} from "./lib/prefs.mjs";
+import { Prefs } from "./lib/prefs.mjs";
 import utils from "./lib/utils.mjs";
 import filterStorage from "./lib/filter-storage.mjs";
 import filterNotifier from "./lib/filter-notifier.mjs";
-import {isSlowFilter, Matcher} from "./lib/matcher.mjs";
+import { isSlowFilter, Matcher } from "./lib/matcher.mjs";
 import info from "./lib/info.mjs";
-import {showOptions} from "./lib/options.mjs";
+import { showOptions } from "./lib/options.mjs";
 import recommendations from "./lib/recommendations.mjs";
-import {isDataCorrupted, isReinitialized} from "./lib/subscription-init.mjs";
+import { isDataCorrupted, isReinitialized } from "./lib/subscription-init.mjs";
 import synchronizer from "./lib/synchronizer.mjs";
-import {toggleIgnoreCategory, getLocalizedTexts} from "./lib/notification.mjs";
+import {
+  toggleIgnoreCategory,
+  getLocalizedTexts
+} from "./lib/notification.mjs";
 import {
   getActiveNotification,
   notificationClicked,
   shouldDisplay
 } from "./lib/notification-helper.mjs";
 import {
-  Filter, ActiveFilter, InvalidFilter, URLFilter
+  Filter,
+  ActiveFilter,
+  InvalidFilter,
+  URLFilter
 } from "./lib/filter-classes.mjs";
 import {
   Subscription,
   DownloadableSubscription,
   SpecialSubscription
 } from "./lib/subscription-classes.mjs";
-import {port} from "./lib/messaging.mjs";
-import {
-  filterTypes as requestBlockerFilterTypes
-} from "./lib/request-blocker.mjs";
+import { port } from "./lib/messaging.mjs";
+import { filterTypes as requestBlockerFilterTypes } from "./lib/request-blocker.mjs";
 
 port.on("composer.isPageReady", () => Boolean(params.composerActive));
 port.on("stats.getBlockedPerPage", () => 123);
 port.on("stats.getBlockedTotal", () => 12345);
-port.on("filters.isAllowlisted", () =>
-{
+port.on("filters.isAllowlisted", () => {
   return {
     hostname: Boolean(params.domainAllowlisted),
     page: Boolean(params.pageAllowlisted)
   };
 });
 
-(function()
-{
-  port.on("types.get", (message, sender) =>
-  {
+(function () {
+  port.on("types.get", (message, sender) => {
     const filterTypes = Array.from(requestBlockerFilterTypes);
     filterTypes.push(...filterTypes.splice(filterTypes.indexOf("OTHER"), 1));
     return filterTypes;
   });
 
-  function convertObject(keys, obj)
-  {
+  function convertObject(keys, obj) {
     const result = {};
-    for (const key of keys)
-    {
-      if (key in obj)
-        result[key] = obj[key];
+    for (const key of keys) {
+      if (key in obj) result[key] = obj[key];
     }
     return result;
   }
 
   const convertRecommendation = convertObject.bind(null, [
-    "languages", "title", "type", "url"
+    "languages",
+    "title",
+    "type",
+    "url"
   ]);
 
-  function convertSubscriptionFilters(subscription)
-  {
+  function convertSubscriptionFilters(subscription) {
     const filters = Array.from(subscription.filterText(), Filter.fromText);
     return filters.map(convertFilter);
   }
 
-  function convertSubscription(subscription)
-  {
-    const obj = convertObject([
-      "disabled",
-      "downloadStatus",
-      "homepage",
-      "version",
-      "lastDownload",
-      "lastSuccess",
-      "softExpiration",
-      "expires",
-      "title",
-      "updatable",
-      "url"
-    ], subscription);
+  function convertSubscription(subscription) {
+    const obj = convertObject(
+      [
+        "disabled",
+        "downloadStatus",
+        "homepage",
+        "version",
+        "lastDownload",
+        "lastSuccess",
+        "softExpiration",
+        "expires",
+        "title",
+        "updatable",
+        "url"
+      ],
+      subscription
+    );
     if (subscription instanceof SpecialSubscription)
       obj.filters = convertSubscriptionFilters(subscription);
 
@@ -117,8 +119,7 @@ port.on("filters.isAllowlisted", () =>
   //  3. filter instanceof SnippetFilter
   // for the time being, we want to simply expose the first kind
   // since there's nothing users can do to avoid others being slow
-  function convertFilter(filter)
-  {
+  function convertFilter(filter) {
     const obj = convertObject(["disabled", "text"], filter);
     obj.slow = filter instanceof URLFilter && isSlowFilter(filter);
     return obj;
@@ -135,27 +136,20 @@ port.on("filters.isAllowlisted", () =>
     ["subscription", "subscriptions.respond"]
   ]);
 
-  function sendMessage(type, action, ...args)
-  {
-    if (uiPorts.size == 0)
-      return;
+  function sendMessage(type, action, ...args) {
+    if (uiPorts.size == 0) return;
 
     const convertedArgs = [];
-    for (const arg of args)
-    {
+    for (const arg of args) {
       if (arg instanceof Subscription)
         convertedArgs.push(convertSubscription(arg));
-      else if (arg instanceof Filter)
-        convertedArgs.push(convertFilter(arg));
-      else
-        convertedArgs.push(arg);
+      else if (arg instanceof Filter) convertedArgs.push(convertFilter(arg));
+      else convertedArgs.push(arg);
     }
 
-    for (const [uiPort, filters] of uiPorts)
-    {
+    for (const [uiPort, filters] of uiPorts) {
       const actions = filters.get(type);
-      if (actions && actions.indexOf(action) != -1)
-      {
+      if (actions && actions.indexOf(action) != -1) {
         uiPort.postMessage({
           type: messageTypes.get(type),
           action,
@@ -165,23 +159,18 @@ port.on("filters.isAllowlisted", () =>
     }
   }
 
-  function addRequestListeners(tabId)
-  {
-    for (const {filter, request, subscription} of records)
-    {
+  function addRequestListeners(tabId) {
+    for (const { filter, request, subscription } of records) {
       sendMessage("requests", "hits", request, filter, [subscription]);
     }
   }
 
-  function addFilterListeners(type, actions)
-  {
-    for (const action of actions)
-    {
+  function addFilterListeners(type, actions) {
+    for (const action of actions) {
       let names = [`${type}.${action}`];
       if (type == "filter" && action == "changed")
         names = ["filterState.enabled"];
-      else if (type == "subscription" && action == "changed")
-      {
+      else if (type == "subscription" && action == "changed") {
         names = [
           "subscription.disabled",
           "subscription.downloading",
@@ -192,27 +181,18 @@ port.on("filters.isAllowlisted", () =>
         ];
       }
 
-      for (const name of names)
-      {
-        if (!(name in listenedFilterChanges))
-        {
+      for (const name of names) {
+        if (!(name in listenedFilterChanges)) {
           listenedFilterChanges[name] = null;
-          filterNotifier.on(name, (item, ...args) =>
-          {
-            if (type == "subscription" && action == "changed")
-            {
+          filterNotifier.on(name, (item, ...args) => {
+            if (type == "subscription" && action == "changed") {
               let property = name.replace(/^subscription\./, "");
-              if (property == "disabled")
-                property = "enabled";
+              if (property == "disabled") property = "enabled";
 
               sendMessage(type, action, item, property);
-            }
-            else if (type == "subscription" && action == "filtersDisabled")
-            {
+            } else if (type == "subscription" && action == "filtersDisabled") {
               sendMessage(type, action, item, ...args);
-            }
-            else
-            {
+            } else {
               sendMessage(type, action, item);
             }
           });
@@ -221,30 +201,27 @@ port.on("filters.isAllowlisted", () =>
     }
   }
 
-  function addSubscription(subscription, properties)
-  {
+  function addSubscription(subscription, properties) {
     subscription.disabled = false;
-    if ("title" in properties)
-      subscription.title = properties.title;
-    if ("homepage" in properties)
-      subscription.homepage = properties.homepage;
+    if ("title" in properties) subscription.title = properties.title;
+    if ("homepage" in properties) subscription.homepage = properties.homepage;
 
     filterStorage.addSubscription(subscription);
-    if (subscription instanceof DownloadableSubscription &&
-        !subscription.lastDownload)
+    if (
+      subscription instanceof DownloadableSubscription &&
+      !subscription.lastDownload
+    )
       synchronizer.execute(subscription);
   }
 
-  port.on("app.get", (message, sender) =>
-  {
-    if (message.what == "ctalink")
-    {
+  port.on("app.get", (message, sender) => {
+    if (message.what == "ctalink") {
       const ctaLinkNameToPrefsMap = new Map([
         ["premium-manage", "premium_manage_page_url"],
         ["premium-upgrade", "premium_upgrade_page_url"]
       ]);
 
-      const {link: ctaLinkName} = message;
+      const { link: ctaLinkName } = message;
       const prefsUrlKey = ctaLinkNameToPrefsMap.get(ctaLinkName);
 
       return Prefs[prefsUrlKey];
@@ -256,13 +233,11 @@ port.on("filters.isAllowlisted", () =>
     if (message.what == "acceptableAdsPrivacyUrl")
       return Prefs.subscriptions_exceptionsurl_privacy;
 
-    if (message.what == "doclink")
-    {
-      let {application} = info;
+    if (message.what == "doclink") {
+      let { application } = info;
       if (info.platform == "chromium" && application != "opera")
         application = "chrome";
-      else if (info.platform == "gecko")
-        application = "firefox";
+      else if (info.platform == "gecko") application = "firefox";
 
       const link = utils.getDocLink(
         message.link.replace("{browser}", application)
@@ -271,62 +246,50 @@ port.on("filters.isAllowlisted", () =>
       // Edge 42 does not always return the link as given by utils.getDocLink,
       // for some reason .toString() is enough to get it working. This seems
       // to have been fixed in Edge 44. (See issue 7222.)
-      if (info.platform == "edgehtml")
-        return link.toString();
+      if (info.platform == "edgehtml") return link.toString();
 
       return link;
     }
 
-    if (message.what == "localeInfo")
-    {
+    if (message.what == "localeInfo") {
       let bidiDir;
-      if ("chromeRegistry" in utils)
-      {
+      if ("chromeRegistry" in utils) {
         const isRtl = utils.chromeRegistry.isLocaleRTL("adblockplus");
         bidiDir = isRtl ? "rtl" : "ltr";
-      }
-      else
-        bidiDir = utils.readingDirection;
+      } else bidiDir = utils.readingDirection;
 
-      return {locale: utils.appLocale, bidiDir};
+      return { locale: utils.appLocale, bidiDir };
     }
 
-    if (message.what == "features")
-    {
+    if (message.what == "features") {
       return {
-        devToolsPanel: info.platform == "chromium" ||
-                       info.application == "firefox" &&
-                       parseInt(info.applicationVersion, 10) >= 54
+        devToolsPanel:
+          info.platform == "chromium" ||
+          (info.application == "firefox" &&
+            parseInt(info.applicationVersion, 10) >= 54)
       };
     }
 
     if (message.what == "recommendations")
       return Array.from(recommendations(), convertRecommendation);
 
-    if (message.what == "senderId")
-      return sender.tab.id;
+    if (message.what == "senderId") return sender.tab.id;
 
     return info[message.what];
   });
 
-  port.on("app.open", (message, sender) =>
-  {
-    if (message.what == "options")
-    {
-      showOptions().then(() =>
-      {
-        if (!message.action)
-          return;
+  port.on("app.open", (message, sender) => {
+    if (message.what == "options") {
+      showOptions().then(() => {
+        if (!message.action) return;
 
         sendMessage("app", message.action, ...message.args);
       });
     }
   });
 
-  class FilterError
-  {
-    constructor(type, reason = null, option = null)
-    {
+  class FilterError {
+    constructor(type, reason = null, option = null) {
       this.lineno = null;
       this.option = option;
       this.reason = reason;
@@ -334,8 +297,7 @@ port.on("filters.isAllowlisted", () =>
       this.type = type;
     }
 
-    toJSON()
-    {
+    toJSON() {
       return {
         lineno: this.lineno,
         option: this.option,
@@ -346,25 +308,22 @@ port.on("filters.isAllowlisted", () =>
     }
   }
 
-  function parseFilter(text)
-  {
+  function parseFilter(text) {
     let filter = null;
     let error = null;
 
     text = Filter.normalize(text);
-    if (text)
-    {
-      if (text[0] == "[")
-      {
+    if (text) {
+      if (text[0] == "[") {
         error = new FilterError("unexpected_filter_list_header");
-      }
-      else
-      {
+      } else {
         filter = Filter.fromText(text);
-        if (filter instanceof InvalidFilter)
-        {
-          error = new FilterError("invalid_filter", filter.reason,
-            filter.reason === "filter_unknown_option" ? filter.option : "");
+        if (filter instanceof InvalidFilter) {
+          error = new FilterError(
+            "invalid_filter",
+            filter.reason,
+            filter.reason === "filter_unknown_option" ? filter.option : ""
+          );
         }
       }
     }
@@ -374,31 +333,24 @@ port.on("filters.isAllowlisted", () =>
 
   port.on("filters.add", (message) => filtersAdd(message.text));
 
-  port.on("filters.get", (message, sender) =>
-  {
+  port.on("filters.get", (message, sender) => {
     const filters = [];
-    for (const subscription of filterStorage.subscriptions())
-    {
-      if (!(subscription instanceof SpecialSubscription))
-        continue;
+    for (const subscription of filterStorage.subscriptions()) {
+      if (!(subscription instanceof SpecialSubscription)) continue;
 
       filters.push(...convertSubscriptionFilters(subscription));
     }
     return filters;
   });
 
-  port.on("filters.importRaw", (message, sender) =>
-  {
+  port.on("filters.importRaw", (message, sender) => {
     const [filters, errors] = filtersValidate(message.text);
 
-    if (errors.length > 0)
-      return errors;
+    if (errors.length > 0) return errors;
 
     const addedFilters = new Set();
-    for (const filter of filters)
-    {
-      if (filter instanceof ActiveFilter)
-      {
+    for (const filter of filters) {
+      if (filter instanceof ActiveFilter) {
         filter.disabled = false;
       }
       filterStorage.addFilter(filter);
@@ -410,125 +362,99 @@ port.on("filters.isAllowlisted", () =>
 
   port.on("filters.remove", (message) => filtersRemove(message));
 
-  port.on("filters.replace", (message, sender) =>
-  {
+  port.on("filters.replace", (message, sender) => {
     const errors = filtersAdd(message.new);
-    if (errors.length)
-      return errors;
-    filtersRemove({text: message.old});
+    if (errors.length) return errors;
+    filtersRemove({ text: message.old });
     return [];
   });
 
-  port.on("filters.toggle", (message, sender) =>
-  {
+  port.on("filters.toggle", (message, sender) => {
     const filter = Filter.fromText(message.text);
     filter.disabled = message.disabled;
   });
 
-  port.on("filters.validate", (message, sender) =>
-  {
+  port.on("filters.validate", (message, sender) => {
     const [, errors] = filtersValidate(message.text);
     return errors;
   });
 
-  port.on("prefs.get", (message, sender) =>
-  {
+  port.on("prefs.get", (message, sender) => {
     return Prefs[message.key];
   });
 
-  port.on("prefs.set", (message, sender) =>
-  {
+  port.on("prefs.set", (message, sender) => {
     if (message.key == "notifications_ignoredcategories")
       return toggleIgnoreCategory("*", Boolean(message.value));
 
-    return Prefs[message.key] = message.value;
+    return (Prefs[message.key] = message.value);
   });
 
-  port.on("prefs.toggle", (message, sender) =>
-  {
+  port.on("prefs.toggle", (message, sender) => {
     if (message.key == "notifications_ignoredcategories")
       return toggleIgnoreCategory("*");
 
-    return Prefs[message.key] = !Prefs[message.key];
+    return (Prefs[message.key] = !Prefs[message.key]);
   });
 
-  port.on("premium.get", () =>
-  {
-    return {isActive: params.premiumIsActive};
+  port.on("premium.get", () => {
+    return { isActive: params.premiumIsActive };
   });
 
-  port.on("notifications.get", (message, sender) =>
-  {
+  port.on("notifications.get", (message, sender) => {
     const notification = getActiveNotification();
 
-    if (!notification ||
-        "displayMethod" in message &&
+    if (
+      !notification ||
+      ("displayMethod" in message &&
         !shouldDisplay(message.displayMethod, notification.type))
+    )
       return;
 
     // Determine whether to return a notification that's targeting certain sites
     // See also https://hg.adblockplus.org/adblockpluscore/file/56c681657836/lib/notification.js#l301
-    if (notification.urlFilters instanceof Array)
-    {
-      let {url} = message;
-      if (!url)
-        return;
+    if (notification.urlFilters instanceof Array) {
+      let { url } = message;
+      if (!url) return;
 
-      try
-      {
+      try {
         url = new URL(url);
-      }
-      catch (e)
-      {
+      } catch (e) {
         return;
       }
 
       const matcher = new Matcher();
-      for (const urlFilter of notification.urlFilters)
-      {
+      for (const urlFilter of notification.urlFilters) {
         matcher.add(Filter.fromText(urlFilter));
       }
 
-      const {DOCUMENT} = URLFilter.typeMap;
-      if (!matcher.matchesAny(url, DOCUMENT, url.hostname))
-        return;
+      const { DOCUMENT } = URLFilter.typeMap;
+      if (!matcher.matchesAny(url, DOCUMENT, url.hostname)) return;
     }
 
-    const texts = getLocalizedTexts(
-      notification,
-      message.locale
-    );
-    return Object.assign({texts}, notification);
+    const texts = getLocalizedTexts(notification, message.locale);
+    return Object.assign({ texts }, notification);
   });
 
-  port.on("notifications.clicked", (message, sender) =>
-  {
+  port.on("notifications.clicked", (message, sender) => {
     notificationClicked();
   });
 
-  port.on("subscriptions.add", (message, sender) =>
-  {
+  port.on("subscriptions.add", (message, sender) => {
     const subscription = Subscription.fromURL(message.url);
-    if (message.confirm)
-    {
-      if ("title" in message)
-        subscription.title = message.title;
-      if ("homepage" in message)
-        subscription.homepage = message.homepage;
+    if (message.confirm) {
+      if ("title" in message) subscription.title = message.title;
+      if ("homepage" in message) subscription.homepage = message.homepage;
 
-      showOptions().then(() =>
-      {
+      showOptions().then(() => {
         sendMessage("app", "addSubscription", subscription);
       });
-    }
-    else
-    {
+    } else {
       addSubscription(subscription, message);
     }
   });
 
-  port.on("subscriptions.enableAllFilters", (message, sender) =>
-  {
+  port.on("subscriptions.enableAllFilters", (message, sender) => {
     const subscription = Subscription.fromURL(message.url);
     const oldHasDisabledFilters = subscription.hasDisabledFilters;
 
@@ -541,22 +467,19 @@ port.on("filters.isAllowlisted", () =>
     );
   });
 
-  port.on("subscriptions.get", (message, sender) =>
-  {
+  port.on("subscriptions.get", (message, sender) => {
     const subscriptions = [];
-    for (const s of filterStorage.subscriptions())
-    {
-      if (message.ignoreDisabled && s.disabled)
-        continue;
+    for (const s of filterStorage.subscriptions()) {
+      if (message.ignoreDisabled && s.disabled) continue;
 
-      if (!(s instanceof DownloadableSubscription))
-        continue;
+      if (!(s instanceof DownloadableSubscription)) continue;
 
       const subscription = convertSubscription(s);
-      if (message.disabledFilters)
-      {
-        subscription.disabledFilters =
-          Array.from(s.filterText(), Filter.fromText)
+      if (message.disabledFilters) {
+        subscription.disabledFilters = Array.from(
+          s.filterText(),
+          Filter.fromText
+        )
           .filter((f) => f instanceof ActiveFilter && f.disabled)
           .map((f) => f.text);
       }
@@ -565,79 +488,61 @@ port.on("filters.isAllowlisted", () =>
     return subscriptions;
   });
 
-  port.on("subscriptions.getDisabledFilterCount", (message, sender) =>
-  {
+  port.on("subscriptions.getDisabledFilterCount", (message, sender) => {
     const subscription = Subscription.fromURL(message.url);
 
     return subscription.hasDisabledFilters ? subscription.filterCount : 0;
   });
 
-  port.on("subscriptions.getInitIssues", () =>
-  {
+  port.on("subscriptions.getInitIssues", () => {
     return {
       dataCorrupted: isDataCorrupted(),
       reinitialized: isReinitialized()
     };
   });
 
-  port.on("subscriptions.getRecommendations", () =>
-  {
+  port.on("subscriptions.getRecommendations", () => {
     return Array.from(recommendations(), convertRecommendation);
   });
 
-  port.on("subscriptions.remove", (message, sender) =>
-  {
+  port.on("subscriptions.remove", (message, sender) => {
     const subscription = Subscription.fromURL(message.url);
     if (filterStorage.knownSubscriptions.has(subscription.url))
       filterStorage.removeSubscription(subscription);
   });
 
-  port.on("subscriptions.toggle", (message, sender) =>
-  {
+  port.on("subscriptions.toggle", (message, sender) => {
     const subscription = Subscription.fromURL(message.url);
-    if (filterStorage.knownSubscriptions.has(subscription.url))
-    {
+    if (filterStorage.knownSubscriptions.has(subscription.url)) {
       if (subscription.disabled || message.keepInstalled)
         subscription.disabled = !subscription.disabled;
-      else
-        filterStorage.removeSubscription(subscription);
-    }
-    else
-    {
+      else filterStorage.removeSubscription(subscription);
+    } else {
       addSubscription(subscription, message);
     }
   });
 
-  port.on("subscriptions.update", (message, sender) =>
-  {
+  port.on("subscriptions.update", (message, sender) => {
     let subscriptions;
-    if (message.url)
-    {
+    if (message.url) {
       subscriptions = [Subscription.fromURL(message.url)];
-    }
-    else
-    {
+    } else {
       subscriptions = filterStorage.subscriptions();
     }
 
-    for (const subscription of subscriptions)
-    {
+    for (const subscription of subscriptions) {
       if (subscription instanceof DownloadableSubscription)
         synchronizer.execute(subscription, true);
     }
   });
 
-  function filtersAdd(text)
-  {
+  function filtersAdd(text) {
     const [filter, error] = parseFilter(text);
 
-    if (error)
-      return [error];
+    if (error) return [error];
 
-    if (filter)
-    {
-      if (filter instanceof ActiveFilter)
-      {
+    if (filter) {
+      if (filter instanceof ActiveFilter) {
         filter.disabled = false;
       }
       filterStorage.addFilter(filter);
@@ -646,35 +551,28 @@ port.on("filters.isAllowlisted", () =>
     return [];
   }
 
-  function filtersValidate(text)
-  {
+  function filtersValidate(text) {
     const filters = [];
     const errors = [];
 
     const lines = text.split("\n");
-    for (let i = 0; i < lines.length; i++)
-    {
+    for (let i = 0; i < lines.length; i++) {
       const [filter, error] = parseFilter(lines[i]);
 
-      if (error)
-      {
+      if (error) {
         // We don't treat filter headers like invalid filters,
         // instead we simply ignore them and don't show any errors
         // in order to allow pasting complete filter lists.
         // If there are no filters, we do treat it as an invalid filter
         // to inform users about it and to give them a chance to edit it.
-        if (error.type === "unexpected_filter_list_header" &&
-            lines.length > 1)
+        if (error.type === "unexpected_filter_list_header" && lines.length > 1)
           continue;
 
-        if (lines.length > 1)
-        {
+        if (lines.length > 1) {
           error.lineno = i + 1;
         }
         errors.push(error);
-      }
-      else if (filter)
-      {
+      } else if (filter) {
         filters.push(filter);
       }
     }
@@ -682,8 +580,7 @@ port.on("filters.isAllowlisted", () =>
     return [filters, errors];
   }
 
-  function filtersRemove(message)
-  {
+  function filtersRemove(message) {
     const filter = Filter.fromText(message.text);
     filterStorage.removeFilter(filter);
     // in order to behave, from consumer perspective, like any other
@@ -691,10 +588,8 @@ port.on("filters.isAllowlisted", () =>
     return [];
   }
 
-  function listen(type, filters, newFilter, message, senderTabId)
-  {
-    switch (type)
-    {
+  function listen(type, filters, newFilter, message, senderTabId) {
+    switch (type) {
       case "app":
         filters.set("app", newFilter);
         break;
@@ -708,13 +603,10 @@ port.on("filters.isAllowlisted", () =>
         break;
       case "prefs":
         filters.set("pref", newFilter);
-        for (const preference of newFilter)
-        {
-          if (!(preference in listenedPreferences))
-          {
+        for (const preference of newFilter) {
+          if (!(preference in listenedPreferences)) {
             listenedPreferences[preference] = null;
-            Prefs.on(preference, () =>
-            {
+            Prefs.on(preference, () => {
               sendMessage("pref", preference, Prefs[preference]);
             });
           }
@@ -731,27 +623,22 @@ port.on("filters.isAllowlisted", () =>
     }
   }
 
-  function onConnect(uiPort)
-  {
-    if (uiPort.name != "ui")
-      return;
+  function onConnect(uiPort) {
+    if (uiPort.name != "ui") return;
 
     const filters = new Map();
     uiPorts.set(uiPort, filters);
 
-    uiPort.onDisconnect.addListener(() =>
-    {
+    uiPort.onDisconnect.addListener(() => {
       uiPorts.delete(uiPort);
     });
 
-    uiPort.onMessage.addListener((message) =>
-    {
+    uiPort.onMessage.addListener((message) => {
       const [type, action] = message.type.split(".", 2);
 
       // For now we're only using long-lived connections for handling
       // "*.listen" messages to tackle #6440
-      if (action == "listen")
-      {
+      if (action == "listen") {
         listen(type, filters, message.filter, message, uiPort.sender.tab.id);
       }
     });

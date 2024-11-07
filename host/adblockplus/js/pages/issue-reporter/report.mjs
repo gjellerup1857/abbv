@@ -16,7 +16,7 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {$, $$} from "../../dom.mjs";
+import { $, $$ } from "../../dom.mjs";
 
 const reportData = new DOMParser().parseFromString(
   "<report></report>",
@@ -25,11 +25,9 @@ const reportData = new DOMParser().parseFromString(
 let dataGatheringTabId = null;
 let isMinimumTimeMet = false;
 
-function getOriginalTabId()
-{
+function getOriginalTabId() {
   const tabId = parseInt(location.search.replace(/^\?/, ""), 10);
-  if (!tabId && tabId !== 0)
-  {
+  if (!tabId && tabId !== 0) {
     console.warn("Missing tab id. Try appending '?1' to the end of the url.");
     throw new Error("invalid tab id");
   }
@@ -37,20 +35,16 @@ function getOriginalTabId()
   return tabId;
 }
 
-messaging.addMessageListener((message) =>
-{
-  if (message.type !== "requests.respond" || message.action !== "hits")
-    return;
+messaging.addMessageListener((message) => {
+  if (message.type !== "requests.respond" || message.action !== "hits") return;
 
   const [request, filter, subscriptions] = message.args;
   const requestsContainerElem = $("requests", reportData);
   const filtersElem = $("filters", reportData);
   // ELEMHIDE hitLog request doesn't contain url
-  if (request.url)
-  {
+  if (request.url) {
     let requestElem = $(`[location="${request.url}"]`, reportData);
-    if (!requestElem)
-    {
+    if (!requestElem) {
       requestElem = reportData.createElement("request");
       requestElem.setAttribute("location", censorURL(request.url));
       requestElem.setAttribute("type", request.type);
@@ -63,27 +57,20 @@ messaging.addMessageListener((message) =>
     const countNum = parseInt(requestElem.getAttribute("count"), 10);
     requestElem.setAttribute("count", countNum + 1);
 
-    if (filter)
-      requestElem.setAttribute("filter", filter.text);
+    if (filter) requestElem.setAttribute("filter", filter.text);
   }
-  if (filter)
-  {
+  if (filter) {
     const escapedText = CSS.escape(filter.text);
     const existingFilter = $(`[text="${escapedText}"]`, reportData);
-    if (existingFilter)
-    {
-      const countNum = parseInt(
-        existingFilter.getAttribute("hitCount"),
-        10
-      );
+    if (existingFilter) {
+      const countNum = parseInt(existingFilter.getAttribute("hitCount"), 10);
       existingFilter.setAttribute("hitCount", countNum + 1);
-    }
-    else
-    {
+    } else {
       const filterElem = reportData.createElement("filter");
       filterElem.setAttribute("text", filter.text);
-      const subscriptionUrls = subscriptions
-        .map((subscription) => subscription.url);
+      const subscriptionUrls = subscriptions.map(
+        (subscription) => subscription.url
+      );
       filterElem.setAttribute("subscriptions", subscriptionUrls.join(" "));
       filterElem.setAttribute("hitCount", 1);
       filtersElem.appendChild(filterElem);
@@ -91,99 +78,96 @@ messaging.addMessageListener((message) =>
   }
 });
 
-function collectRequests(tabId)
-{
+function collectRequests(tabId) {
   reportData.documentElement.appendChild(reportData.createElement("requests"));
   reportData.documentElement.appendChild(reportData.createElement("filters"));
-  return browser.tabs.get(tabId).then(tab =>
-  {
-    return browser.tabs.create({active: false, url: tab.url});
-  }).then((tab) =>
-  {
-    dataGatheringTabId = tab.id;
-    messaging.requests.listen(["hits"], dataGatheringTabId);
+  return browser.tabs
+    .get(tabId)
+    .then((tab) => {
+      return browser.tabs.create({ active: false, url: tab.url });
+    })
+    .then((tab) => {
+      dataGatheringTabId = tab.id;
+      messaging.requests.listen(["hits"], dataGatheringTabId);
 
-    function minimumTimeMet()
-    {
-      if (isMinimumTimeMet)
-        return;
+      function minimumTimeMet() {
+        if (isMinimumTimeMet) return;
 
-      isMinimumTimeMet = true;
-      document.getElementById("showData").disabled = false;
-      $("io-steps").dispatchEvent(new CustomEvent("requestcollected"));
-      validateCommentsPage();
-    }
-    browser.tabs.onUpdated.addListener((updatedTabId, changeInfo) =>
-    {
-      if (updatedTabId == dataGatheringTabId && changeInfo.status == "complete")
-        minimumTimeMet();
+        isMinimumTimeMet = true;
+        document.getElementById("showData").disabled = false;
+        $("io-steps").dispatchEvent(new CustomEvent("requestcollected"));
+        validateCommentsPage();
+      }
+      browser.tabs.onUpdated.addListener((updatedTabId, changeInfo) => {
+        if (
+          updatedTabId == dataGatheringTabId &&
+          changeInfo.status == "complete"
+        )
+          minimumTimeMet();
+      });
+      window.setTimeout(minimumTimeMet, 5000);
+      window.addEventListener("beforeunload", (event) => {
+        closeRequestsCollectingTab();
+      });
     });
-    window.setTimeout(minimumTimeMet, 5000);
-    window.addEventListener("beforeunload", (event) =>
-    {
-      closeRequestsCollectingTab();
-    });
-  });
 }
 
 let closedRequestsCollectingTab;
-export function closeRequestsCollectingTab()
-{
+export function closeRequestsCollectingTab() {
   if (!closedRequestsCollectingTab)
     closedRequestsCollectingTab = browser.tabs.remove(dataGatheringTabId);
 
   return closedRequestsCollectingTab;
 }
 
-function retrieveAddonInfo()
-{
+function retrieveAddonInfo() {
   const element = reportData.createElement("adblock-plus");
-  return browser.runtime.sendMessage({
-    type: "app.get",
-    what: "addonVersion"
-  }).then(addonVersion =>
-  {
-    element.setAttribute("version", addonVersion);
-    return browser.runtime.sendMessage({
+  return browser.runtime
+    .sendMessage({
       type: "app.get",
-      what: "localeInfo"
+      what: "addonVersion"
+    })
+    .then((addonVersion) => {
+      element.setAttribute("version", addonVersion);
+      return browser.runtime.sendMessage({
+        type: "app.get",
+        what: "localeInfo"
+      });
+    })
+    .then(({ locale }) => {
+      element.setAttribute("locale", locale);
+      reportData.documentElement.appendChild(element);
     });
-  }).then(({locale}) =>
-  {
-    element.setAttribute("locale", locale);
-    reportData.documentElement.appendChild(element);
-  });
 }
 
-function retrieveApplicationInfo()
-{
+function retrieveApplicationInfo() {
   const element = reportData.createElement("application");
-  return browser.runtime.sendMessage({
-    type: "app.get",
-    what: "application"
-  }).then(application =>
-  {
-    element.setAttribute("name", capitalize(application));
-    return browser.runtime.sendMessage({
+  return browser.runtime
+    .sendMessage({
       type: "app.get",
-      what: "applicationVersion"
+      what: "application"
+    })
+    .then((application) => {
+      element.setAttribute("name", capitalize(application));
+      return browser.runtime.sendMessage({
+        type: "app.get",
+        what: "applicationVersion"
+      });
+    })
+    .then((applicationVersion) => {
+      element.setAttribute("version", applicationVersion);
+      element.setAttribute("vendor", navigator.vendor);
+      element.setAttribute("userAgent", navigator.userAgent);
+      reportData.documentElement.appendChild(element);
     });
-  }).then(applicationVersion =>
-  {
-    element.setAttribute("version", applicationVersion);
-    element.setAttribute("vendor", navigator.vendor);
-    element.setAttribute("userAgent", navigator.userAgent);
-    reportData.documentElement.appendChild(element);
-  });
 }
 
-function retrievePlatformInfo()
-{
+function retrievePlatformInfo() {
   const element = reportData.createElement("platform");
-  const {getBrowserInfo, sendMessage} = browser.runtime;
+  const { getBrowserInfo, sendMessage } = browser.runtime;
   return Promise.all([
     // Only Firefox supports browser.runtime.getBrowserInfo()
-    (getBrowserInfo) ? getBrowserInfo() : null,
+    getBrowserInfo ? getBrowserInfo() : null,
     sendMessage({
       type: "app.get",
       what: "platform"
@@ -192,11 +176,8 @@ function retrievePlatformInfo()
       type: "app.get",
       what: "platformVersion"
     })
-  ])
-  .then(([browserInfo, platform, platformVersion]) =>
-  {
-    if (browserInfo)
-    {
+  ]).then(([browserInfo, platform, platformVersion]) => {
+    if (browserInfo) {
       element.setAttribute("build", browserInfo.buildID);
     }
     element.setAttribute("name", capitalize(platform));
@@ -205,14 +186,12 @@ function retrievePlatformInfo()
   });
 }
 
-async function retrieveWindowInfo(tabId)
-{
+async function retrieveWindowInfo(tabId) {
   const tab = await browser.tabs.get(tabId);
   let openerUrl = null;
   let referrerUrl = null;
 
-  if (tab.openerTabId)
-  {
+  if (tab.openerTabId) {
     const openerTab = await browser.tabs.get(tab.openerTabId);
     openerUrl = openerTab.url;
   }
@@ -220,112 +199,106 @@ async function retrieveWindowInfo(tabId)
   // We need to use both browser.tabs.executeScript and
   // browser.scripting.executeScript because they're exclusive to
   // Manifest v2 and v3 respectively
-  if (browser.scripting)
-  {
+  if (browser.scripting) {
     const [frameResult] = await browser.scripting.executeScript({
-      target: {tabId},
+      target: { tabId },
       // Despite being an arrow function, its content is evaluated
       // in the context of the target page
       func: () => document.referrer
     });
     referrerUrl = frameResult.result;
-  }
-  else
-  {
+  } else {
     [referrerUrl] = await browser.tabs.executeScript(tabId, {
       code: "document.referrer"
     });
   }
 
   const element = reportData.createElement("window");
-  if (openerUrl)
-  {
+  if (openerUrl) {
     element.setAttribute("opener", censorURL(openerUrl));
   }
-  if (referrerUrl)
-  {
+  if (referrerUrl) {
     element.setAttribute("referrer", censorURL(referrerUrl));
   }
   element.setAttribute("url", censorURL(tab.url));
   reportData.documentElement.appendChild(element);
 }
 
-function retrieveSubscriptions()
-{
-  return messaging.subscriptions.get({
-    ignoreDisabled: true,
-    disabledFilters: true
-  }).then(subscriptions =>
-  {
-    const element = reportData.createElement("subscriptions");
-    for (const subscription of subscriptions)
-    {
-      if (!/^(http|https|ftp):/.test(subscription.url))
-        continue;
+function retrieveSubscriptions() {
+  return messaging.subscriptions
+    .get({
+      ignoreDisabled: true,
+      disabledFilters: true
+    })
+    .then((subscriptions) => {
+      const element = reportData.createElement("subscriptions");
+      for (const subscription of subscriptions) {
+        if (!/^(http|https|ftp):/.test(subscription.url)) continue;
 
-      const now = Math.round(Date.now() / 1000);
-      const subscriptionElement = reportData.createElement("subscription");
-      subscriptionElement.setAttribute("id", subscription.url);
-      if (subscription.version)
-        subscriptionElement.setAttribute("version", subscription.version);
-      if (subscription.lastDownload)
-      {
-        subscriptionElement.setAttribute("lastDownloadAttempt",
-                                         subscription.lastDownload - now);
+        const now = Math.round(Date.now() / 1000);
+        const subscriptionElement = reportData.createElement("subscription");
+        subscriptionElement.setAttribute("id", subscription.url);
+        if (subscription.version)
+          subscriptionElement.setAttribute("version", subscription.version);
+        if (subscription.lastDownload) {
+          subscriptionElement.setAttribute(
+            "lastDownloadAttempt",
+            subscription.lastDownload - now
+          );
+        }
+        if (subscription.lastSuccess) {
+          subscriptionElement.setAttribute(
+            "lastDownloadSuccess",
+            subscription.lastSuccess - now
+          );
+        }
+        if (subscription.softExpiration) {
+          subscriptionElement.setAttribute(
+            "softExpiration",
+            subscription.softExpiration - now
+          );
+        }
+        if (subscription.expires) {
+          subscriptionElement.setAttribute(
+            "hardExpiration",
+            subscription.expires - now
+          );
+        }
+        if (subscription.downloadStatus) {
+          subscriptionElement.setAttribute(
+            "downloadStatus",
+            subscription.downloadStatus
+          );
+        }
+        subscriptionElement.setAttribute(
+          "disabledFilters",
+          subscription.disabledFilters.length
+        );
+        element.appendChild(subscriptionElement);
       }
-      if (subscription.lastSuccess)
-      {
-        subscriptionElement.setAttribute("lastDownloadSuccess",
-                                         subscription.lastSuccess - now);
-      }
-      if (subscription.softExpiration)
-      {
-        subscriptionElement.setAttribute("softExpiration",
-                                         subscription.softExpiration - now);
-      }
-      if (subscription.expires)
-      {
-        subscriptionElement.setAttribute("hardExpiration",
-                                         subscription.expires - now);
-      }
-      if (subscription.downloadStatus)
-      {
-        subscriptionElement.setAttribute("downloadStatus",
-                                         subscription.downloadStatus);
-      }
-      subscriptionElement.setAttribute("disabledFilters",
-                                       subscription.disabledFilters.length);
-      element.appendChild(subscriptionElement);
-    }
-    reportData.documentElement.appendChild(element);
-  });
+      reportData.documentElement.appendChild(element);
+    });
 }
 
-function setConfigurationInfo(configInfo)
-{
+function setConfigurationInfo(configInfo) {
   let extensionsContainer = $("extensions", reportData);
   let optionsContainer = $("options", reportData);
 
-  if (!configInfo)
-  {
-    if (extensionsContainer)
-    {
+  if (!configInfo) {
+    if (extensionsContainer) {
       extensionsContainer.parentNode.removeChild(extensionsContainer);
     }
-    if (optionsContainer)
-    {
+    if (optionsContainer) {
       optionsContainer.parentNode.removeChild(optionsContainer);
     }
     return;
   }
 
-  if (!extensionsContainer)
-  {
+  if (!extensionsContainer) {
     extensionsContainer = reportData.createElement("extensions");
     reportData.documentElement.appendChild(extensionsContainer);
   }
-  if (!optionsContainer)
-  {
+  if (!optionsContainer) {
     optionsContainer = reportData.createElement("options");
     reportData.documentElement.appendChild(optionsContainer);
   }
@@ -333,24 +306,21 @@ function setConfigurationInfo(configInfo)
   extensionsContainer.innerHTML = "";
   optionsContainer.innerHTML = "";
 
-  const {extensions, options} = configInfo;
+  const { extensions, options } = configInfo;
 
-  for (const id in options)
-  {
+  for (const id in options) {
     const element = reportData.createElement("option");
     element.setAttribute("id", id);
     element.textContent = options[id];
     optionsContainer.appendChild(element);
   }
 
-  for (const extension of extensions)
-  {
+  for (const extension of extensions) {
     const element = reportData.createElement("extension");
     element.setAttribute("id", extension.id);
     element.setAttribute("name", extension.name);
     element.setAttribute("type", extension.type);
-    if (extension.version)
-    {
+    if (extension.version) {
       element.setAttribute("version", extension.version);
     }
     extensionsContainer.appendChild(element);
@@ -361,17 +331,13 @@ function setConfigurationInfo(configInfo)
 // extension's permissions so we need to proxy our calls through a frame that
 // loads after we request the necessary permissions
 // https://bugs.chromium.org/p/chromium/issues/detail?id=594703
-function proxyApiCall(apiId, ...args)
-{
-  return new Promise((resolve) =>
-  {
+function proxyApiCall(apiId, ...args) {
+  return new Promise((resolve) => {
     const iframe = document.createElement("iframe");
     iframe.hidden = true;
     iframe.src = browser.runtime.getURL("proxy.html");
-    iframe.onload = () =>
-    {
-      function callback(...results)
-      {
+    iframe.onload = () => {
+      function callback(...results) {
         document.body.removeChild(iframe);
         resolve(results[0]);
       }
@@ -380,39 +346,29 @@ function proxyApiCall(apiId, ...args)
       // promise polyfill. Therefore we simplify things by proxying calls even
       // if the API has been made available to us in the same frame.
       const proxy = iframe.contentWindow.browser;
-      switch (apiId)
-      {
+      switch (apiId) {
         case "contentSettings.cookies":
-          if ("contentSettings" in proxy)
-          {
+          if ("contentSettings" in proxy) {
             // browser.contentSettings is not supported by webextension-polyfill
             // so we need to fall back to using callbacks as defined by Chrome
             proxy.contentSettings.cookies.get(...args, callback);
-          }
-          else
-          {
+          } else {
             callback(null);
           }
           break;
         case "contentSettings.javascript":
-          if ("contentSettings" in proxy)
-          {
+          if ("contentSettings" in proxy) {
             // browser.contentSettings is not supported by webextension-polyfill
             // so we need to fall back to using callbacks as defined by Chrome
             proxy.contentSettings.javascript.get(...args, callback);
-          }
-          else
-          {
+          } else {
             callback(null);
           }
           break;
         case "management.getAll":
-          if ("getAll" in proxy.management)
-          {
+          if ("getAll" in proxy.management) {
             proxy.management.getAll(...args).then(callback);
-          }
-          else
-          {
+          } else {
             callback(null);
           }
           break;
@@ -422,17 +378,13 @@ function proxyApiCall(apiId, ...args)
   });
 }
 
-function retrieveExtensions()
-{
+function retrieveExtensions() {
   return proxyApiCall("management.getAll")
-    .then((installed) =>
-    {
+    .then((installed) => {
       const extensions = [];
 
-      for (const extension of installed)
-      {
-        if (!extension.enabled || extension.type != "extension")
-          continue;
+      for (const extension of installed) {
+        if (!extension.enabled || extension.type != "extension") continue;
 
         extensions.push({
           id: extension.id,
@@ -442,9 +394,8 @@ function retrieveExtensions()
         });
       }
 
-      const {plugins} = navigator;
-      for (const plugin of plugins)
-      {
+      const { plugins } = navigator;
+      for (const plugin of plugins) {
         extensions.push({
           id: plugin.filename,
           name: plugin.name,
@@ -454,33 +405,27 @@ function retrieveExtensions()
 
       return extensions;
     })
-    .catch((err) =>
-    {
+    .catch((err) => {
       console.error("Could not retrieve list of extensions");
       return [];
     });
 }
 
-function retrieveOptions()
-{
+function retrieveOptions() {
   // Firefox doesn't support browser.contentSettings API
-  if (!("contentSettings" in browser))
-    return Promise.resolve({});
+  if (!("contentSettings" in browser)) return Promise.resolve({});
 
   let tabId;
-  try
-  {
+  try {
     tabId = getOriginalTabId();
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     return Promise.reject(ex);
   }
 
-  return browser.tabs.get(tabId)
-    .then((tab) =>
-    {
-      const details = {primaryUrl: tab.url, incognito: tab.incognito};
+  return browser.tabs
+    .get(tabId)
+    .then((tab) => {
+      const details = { primaryUrl: tab.url, incognito: tab.incognito };
 
       return Promise.all([
         proxyApiCall("contentSettings.cookies", details),
@@ -488,78 +433,60 @@ function retrieveOptions()
         tab.incognito
       ]);
     })
-    .then(([cookies, javascript, incognito]) =>
-    {
+    .then(([cookies, javascript, incognito]) => {
       return {
-        cookieBehavior: cookies.setting == "allow" ||
-          cookies.setting == "session_only",
+        cookieBehavior:
+          cookies.setting == "allow" || cookies.setting == "session_only",
         javascript: javascript.setting == "allow",
         privateBrowsing: incognito
       };
     })
-    .catch((err) =>
-    {
+    .catch((err) => {
       console.error("Could not retrieve configuration options");
       return {};
     });
 }
 
-export function updateConfigurationInfo(isAccessible)
-{
-  if (!isAccessible)
-  {
+export function updateConfigurationInfo(isAccessible) {
+  if (!isAccessible) {
     setConfigurationInfo(null);
     return Promise.resolve();
   }
 
-  return Promise.all([
-    retrieveExtensions(),
-    retrieveOptions()
-  ])
-  .then(([extensions, options]) =>
-  {
-    setConfigurationInfo({extensions, options});
-  });
+  return Promise.all([retrieveExtensions(), retrieveOptions()]).then(
+    ([extensions, options]) => {
+      setConfigurationInfo({ extensions, options });
+    }
+  );
 }
 
-function capitalize(str)
-{
+function capitalize(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-function censorURL(url)
-{
+function censorURL(url) {
   return url.replace(/([?;&/#][^?;&/#]+?=)[^?;&/#]+/g, "$1*");
 }
 
-function setReportType(event)
-{
+function setReportType(event) {
   reportData.documentElement.setAttribute("type", event.target.value);
 }
 
-for (const typeElement of $$("#typeSelectorGroup input"))
-{
+for (const typeElement of $$("#typeSelectorGroup input")) {
   typeElement.addEventListener("change", setReportType);
 }
 
 let commentElement = null;
-$("#comment").addEventListener("input", (event) =>
-{
+$("#comment").addEventListener("input", (event) => {
   const comment = event.target.value;
-  if (!comment)
-  {
-    if (commentElement)
-    {
+  if (!comment) {
+    if (commentElement) {
       commentElement.parentNode.removeChild(commentElement);
       commentElement = null;
     }
-  }
-  else if (commentElement)
-  {
+  } else if (commentElement) {
     commentElement.textContent = comment;
-  }
-  else
-  {
+  } else {
     commentElement = reportData.createElement("comment");
     commentElement.textContent = comment;
     reportData.documentElement.appendChild(commentElement);
@@ -572,45 +499,37 @@ emailField.addEventListener("input", validateCommentsPage);
 anonSubmissionField.addEventListener("click", validateCommentsPage);
 
 const emailElement = reportData.createElement("email");
-function validateCommentsPage()
-{
+function validateCommentsPage() {
   const sendButton = $("#send");
   $("#anonymousSubmissionWarning").setAttribute(
     "data-invisible",
     !anonSubmissionField.checked
   );
-  if (anonSubmissionField.checked)
-  {
+  if (anonSubmissionField.checked) {
     emailField.value = "";
     emailField.disabled = true;
     sendButton.disabled = !isMinimumTimeMet;
     if (emailElement.parentNode)
       emailElement.parentNode.removeChild(emailElement);
-  }
-  else
-  {
+  } else {
     emailField.disabled = false;
 
     const value = emailField.value.trim();
     emailElement.textContent = value;
     reportData.documentElement.appendChild(emailElement);
-    sendButton.disabled = (value == "" || !emailField.validity.valid ||
-      !isMinimumTimeMet);
+    sendButton.disabled =
+      value == "" || !emailField.validity.valid || !isMinimumTimeMet;
   }
   $("io-steps").dispatchEvent(
-    new CustomEvent("formvalidated", {detail: !sendButton.disabled})
+    new CustomEvent("formvalidated", { detail: !sendButton.disabled })
   );
 }
 
-export function collectData()
-{
+export function collectData() {
   let tabId;
-  try
-  {
+  try {
     tabId = getOriginalTabId();
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     return Promise.reject(ex);
   }
 

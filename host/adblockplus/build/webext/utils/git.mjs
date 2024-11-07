@@ -16,70 +16,64 @@
  */
 
 import argparse from "argparse";
-import {pathToFileURL} from "url";
-import {execFile as execFileSync} from "child_process";
-import {promisify} from "util";
-import {EOL} from "os";
+import { pathToFileURL } from "url";
+import { execFile as execFileSync } from "child_process";
+import { promisify } from "util";
+import { EOL } from "os";
 
 const BUILDNUM_OFFSET = 10000;
 
-export async function execFile(...args)
-{
-  const {stdout} = await promisify(execFileSync)(...args);
+export async function execFile(...args) {
+  const { stdout } = await promisify(execFileSync)(...args);
   return stdout.trim();
 }
 
-export async function getBuildnum(revision = "HEAD")
-{
-  const until = await execFile(
-    "git",
-    ["log", "--pretty=%ct", "-n1", revision]
-  );
+export async function getBuildnum(revision = "HEAD") {
+  const until = await execFile("git", ["log", "--pretty=%ct", "-n1", revision]);
 
-  const buildNumberString = await execFile(
-    "git",
-    ["rev-list", "--count", "--until", until, "origin/main", revision]
-  );
+  const buildNumberString = await execFile("git", [
+    "rev-list",
+    "--count",
+    "--until",
+    until,
+    "origin/main",
+    revision
+  ]);
   return BUILDNUM_OFFSET + parseInt(buildNumberString, 10);
 }
 
-export async function getCommitHash()
-{
+export async function getCommitHash() {
   return await execFile("git", ["rev-parse", "--short", "HEAD"]);
 }
 
-export async function hasTag(tag)
-{
+export async function hasTag(tag) {
   const tagsString = await execFile("git", ["tag", "--points-at", "HEAD"]);
   const tags = tagsString.split(EOL);
   return tags.includes(tag);
 }
 
-export async function lsFiles(directory)
-{
-  const fileString = await execFile(
-    "git",
-    ["ls-files", "--recurse-submodules", directory]
-  );
+export async function lsFiles(directory) {
+  const fileString = await execFile("git", [
+    "ls-files",
+    "--recurse-submodules",
+    directory
+  ]);
   return fileString.split(EOL);
 }
 
-if (import.meta.url == pathToFileURL(process.argv[1]))
-{
+if (import.meta.url == pathToFileURL(process.argv[1])) {
   const parser = argparse.ArgumentParser();
-  parser.addArgument(["-r", "--revision"],
-                     {required: false, defaultValue: "HEAD"});
+  parser.addArgument(["-r", "--revision"], {
+    required: false,
+    defaultValue: "HEAD"
+  });
   const args = parser.parseArgs();
 
-  (async() =>
-  {
-    try
-    {
+  (async () => {
+    try {
       /* eslint-disable-next-line no-console */
       console.log(await getBuildnum(args.revision));
-    }
-    catch (err)
-    {
+    } catch (err) {
       console.error(err);
       process.exit(1);
     }

@@ -32,9 +32,6 @@ export default {
   },
   translations: {
     dest: "_locales",
-    src: [
-      "!locale/es_AR/*.json",
-      "!locale/es_CL/*.json"
-    ]
+    src: ["!locale/es_AR/*.json", "!locale/es_CL/*.json"]
   }
 };

@@ -16,7 +16,7 @@
  */
 
 import IOElement from "./io-element.mjs";
-import {relativeCoordinates} from "./dom.mjs";
+import { relativeCoordinates } from "./dom.mjs";
 
 // use native requestIdleCallback where available, fallback to setTimeout
 const requestIdleCb = window.requestIdleCallback || setTimeout;
@@ -24,10 +24,8 @@ const requestIdleCb = window.requestIdleCallback || setTimeout;
 // at this point this is just a helper class
 // for op-highlighter component but it could
 // become a generic draw-on-canvas helper too
-class DrawingHandler
-{
-  constructor(canvas, maxSize)
-  {
+class DrawingHandler {
+  constructor(canvas, maxSize) {
     this.paths = new Set();
     this.canvas = canvas;
     this.maxSize = maxSize;
@@ -43,25 +41,22 @@ class DrawingHandler
     this.ratio = (maxSize / canvas.width) * (window.devicePixelRatio || 1);
 
     // it also needs to intercept all events
-    if ("onpointerup" in canvas)
-    {
+    if ("onpointerup" in canvas) {
       // the instance is the handler itself, no need to bind anything
-      canvas.addEventListener("pointerdown", this, {passive: false});
-      canvas.addEventListener("pointermove", this, {passive: false});
-      canvas.addEventListener("pointerup", this, {passive: false});
-      document.addEventListener("pointerup", this, {passive: false});
-    }
-    else
-    {
+      canvas.addEventListener("pointerdown", this, { passive: false });
+      canvas.addEventListener("pointermove", this, { passive: false });
+      canvas.addEventListener("pointerup", this, { passive: false });
+      document.addEventListener("pointerup", this, { passive: false });
+    } else {
       // some browser might not have pointer events.
       // the fallback should be regular mouse events
       this.onmousedown = this.onpointerdown;
       this.onmousemove = this.onpointermove;
       this.onmouseup = this.onpointerup;
-      canvas.addEventListener("mousedown", this, {passive: false});
-      canvas.addEventListener("mousemove", this, {passive: false});
-      canvas.addEventListener("mouseup", this, {passive: false});
-      document.addEventListener("mouseup", this, {passive: false});
+      canvas.addEventListener("mousedown", this, { passive: false });
+      canvas.addEventListener("mousemove", this, { passive: false });
+      canvas.addEventListener("mouseup", this, { passive: false });
+      document.addEventListener("mouseup", this, { passive: false });
     }
   }
 
@@ -70,10 +65,9 @@ class DrawingHandler
   // It returns a promise that will resolve only
   // once the image has been fully processed.
   // Meanwhile, it is possible to draw rectangles on top.
-  changeColorDepth(image)
-  {
+  changeColorDepth(image) {
     this.clear();
-    const {naturalWidth, naturalHeight} = image;
+    const { naturalWidth, naturalHeight } = image;
     const canvasWidth = this.canvas.width * this.ratio;
     const canvasHeight = (canvasWidth * naturalHeight) / naturalWidth;
     // resize the canvas to the displayed image size
@@ -86,32 +80,33 @@ class DrawingHandler
     // draw resized image accordingly with new dimensions
     this.ctx.drawImage(
       image,
-      0, 0, naturalWidth, naturalHeight,
-      0, 0, canvasWidth, canvasHeight
+      0,
+      0,
+      naturalWidth,
+      naturalHeight,
+      0,
+      0,
+      canvasWidth,
+      canvasHeight
     );
     // collect all info to process the iamge data
     this.imageData = this.ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     const data = this.imageData.data;
     const length = data.length;
-    const mapping = [0x00, 0x55, 0xAA, 0xFF];
+    const mapping = [0x00, 0x55, 0xaa, 0xff];
     // don't loop all pixels at once, assuming devices
     // capable of HiDPi images have also enough power
     // to handle all those pixels.
     const avoidBlocking = Math.round(5000 * this.ratio);
-    return new Promise(resolve =>
-    {
-      const remap = i =>
-      {
-        for (; i < length; i++)
-        {
+    return new Promise((resolve) => {
+      const remap = (i) => {
+        for (; i < length; i++) {
           data[i] = mapping[data[i] >> 6];
-          if (i > 0 && i % avoidBlocking == 0)
-          {
+          if (i > 0 && i % avoidBlocking == 0) {
             notifyColorDepthChanges.call(this, i, length);
             // faster when possible, otherwise less intrusive
             // than a promise based on setTimeout as in legacy code
-            return requestIdleCb(() =>
-            {
+            return requestIdleCb(() => {
               this.draw();
               requestIdleCb(() => remap(i + 1));
             });
@@ -125,10 +120,8 @@ class DrawingHandler
   }
 
   // setup the context the first time, and clean the area
-  clear()
-  {
-    if (!this.ctx)
-    {
+  clear() {
+    if (!this.ctx) {
       this.ctx = this.canvas.getContext("2d");
     }
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -140,15 +133,12 @@ class DrawingHandler
 
   // draw the image during or after it's being processed
   // and draw on top all rectangles
-  draw()
-  {
+  draw() {
     this.clear();
-    if (this.imageData)
-    {
+    if (this.imageData) {
       this.ctx.putImageData(this.imageData, 0, 0);
     }
-    for (const rect of this.paths)
-    {
+    for (const rect of this.paths) {
       const method = `${rect.type}Rect`;
       this.ctx[method](
         rect.x * this.ratio,
@@ -161,17 +151,14 @@ class DrawingHandler
 
   // central event dispatcher
   // https://dom.spec.whatwg.org/#interface-eventtarget
-  handleEvent(event)
-  {
+  handleEvent(event) {
     this[`on${event.type}`](event);
   }
 
   // pointer events to draw on canvas
-  onpointerdown(event)
-  {
+  onpointerdown(event) {
     // avoid multiple pointers/fingers
-    if (this.drawing || !IOElement.utils.event.isLeftClick(event))
-      return;
+    if (this.drawing || !IOElement.utils.event.isLeftClick(event)) return;
 
     // react only if not drawing already
     stopEvent(event);
@@ -188,11 +175,9 @@ class DrawingHandler
     this.paths.add(this.rect);
   }
 
-  onpointermove(event)
-  {
+  onpointermove(event) {
     // only if drawing
-    if (!this.drawing)
-      return;
+    if (!this.drawing) return;
 
     // update the current rect coordinates
     stopEvent(event);
@@ -201,39 +186,31 @@ class DrawingHandler
     this.draw();
   }
 
-  onpointerup(event)
-  {
+  onpointerup(event) {
     // drop only if drawing
     // avoid issues when this event happens
     // outside the expected DOM node (or outside the browser)
-    if (!this.drawing)
-      return;
+    if (!this.drawing) return;
 
     stopEvent(event);
-    if (event.currentTarget === this.canvas)
-    {
+    if (event.currentTarget === this.canvas) {
       this.updateRect(event);
     }
     this.draw();
     this.drawing = false;
 
     // get out of here if the mouse didn't move at all
-    if (!this.rect.width && !this.rect.height)
-    {
+    if (!this.rect.width && !this.rect.height) {
       // also drop current rect from the list: it's useless.
       this.paths.delete(this.rect);
       return;
     }
     const rect = this.rect;
     const parent = this.canvas.parentNode;
-    const closeCoords = getRelativeCoordinates(
-      this.canvas,
-      rect,
-      {
-        x: rect.x + rect.width,
-        y: rect.y + rect.height
-      }
-    );
+    const closeCoords = getRelativeCoordinates(this.canvas, rect, {
+      x: rect.x + rect.width,
+      y: rect.y + rect.height
+    });
 
     // use the DOM to show the close event
     //  - always visible, even outside the canvas
@@ -242,19 +219,15 @@ class DrawingHandler
     parent.appendChild(IOElement.wire()`
       <span
         class="closer"
-        onclick="${
-          evt =>
-          {
-            if (!IOElement.utils.event.isLeftClick(evt))
-              return;
-            // when clicked, remove the related rectangle
-            // and draw the canvas again
-            stopEvent(evt);
-            parent.removeChild(evt.currentTarget);
-            this.paths.delete(rect);
-            this.draw();
-          }
-        }"
+        onclick="${(evt) => {
+          if (!IOElement.utils.event.isLeftClick(evt)) return;
+          // when clicked, remove the related rectangle
+          // and draw the canvas again
+          stopEvent(evt);
+          parent.removeChild(evt.currentTarget);
+          this.paths.delete(rect);
+          this.draw();
+        }}"
         style="${{
           // always top right corner
           top: closeCoords.y + "px",
@@ -266,34 +239,30 @@ class DrawingHandler
   }
 
   // update current rectangle size
-  updateRect(event)
-  {
+  updateRect(event) {
     const coords = relativeCoordinates(event);
     this.rect.width = coords.x - this.rect.x;
     this.rect.height = coords.y - this.rect.y;
   }
 }
 
-function notifyColorDepthChanges(value, max)
-{
-  const info = {detail: {value, max}};
+function notifyColorDepthChanges(value, max) {
+  const info = { detail: { value, max } };
   const ioHighlighter = this.canvas.closest("io-highlighter");
   ioHighlighter.dispatchEvent(new CustomEvent("changecolordepth", info));
 }
 
 // helper to retrieve absolute page coordinates
 // of a generic target node
-function getRelativeCoordinates(canvas, start, end)
-{
+function getRelativeCoordinates(canvas, start, end) {
   const x = Math.max(start.x, end.x) + canvas.offsetLeft;
   const y = Math.min(start.y, end.y) + canvas.offsetTop;
-  return {x: Math.round(x), y: Math.round(y)};
+  return { x: Math.round(x), y: Math.round(y) };
 }
 
 // prevent events from doing anything
 // in the current node, and every parent too
-function stopEvent(event)
-{
+function stopEvent(event) {
   event.preventDefault();
   event.stopPropagation();
 }

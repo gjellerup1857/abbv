@@ -19,76 +19,66 @@
 
 let extensionUrl;
 
-function openOptionsPage()
-{
-  chrome.management.getAll(extensions =>
-  {
-    for (const extension of extensions)
-    {
+function openOptionsPage() {
+  chrome.management.getAll((extensions) => {
+    for (const extension of extensions) {
       if (
         extension.type == "extension" &&
         extension.installType == "development" &&
         extension.id != chrome.runtime.id &&
         extension.name != "Chrome Automation Extension"
-      )
-      {
+      ) {
         extensionUrl = extension.optionsUrl;
-        chrome.tabs.create({url: extension.optionsUrl});
+        chrome.tabs.create({ url: extension.optionsUrl });
       }
     }
   });
 }
 
-function openDevToolsPanelPage()
-{
-  const devToolsPanelUrl = extensionUrl.match(/.*\//)[0] + "devtools-panel.html";
-  chrome.tabs.create({url: devToolsPanelUrl});
+function openDevToolsPanelPage() {
+  const devToolsPanelUrl =
+    extensionUrl.match(/.*\//)[0] + "devtools-panel.html";
+  chrome.tabs.create({ url: devToolsPanelUrl });
 }
 
-chrome.webNavigation.onCompleted.addListener(details =>
-{
-  if (
-    details.url === "https://adblockplus.org/openDevToolsPanelPage" &&
-    details.tabId
-  )
-  {
-    openDevToolsPanelPage();
-  }
-}, {url: [{hostEquals: "adblockplus.org"}]});
+chrome.webNavigation.onCompleted.addListener(
+  (details) => {
+    if (
+      details.url === "https://adblockplus.org/openDevToolsPanelPage" &&
+      details.tabId
+    ) {
+      openDevToolsPanelPage();
+    }
+  },
+  { url: [{ hostEquals: "adblockplus.org" }] }
+);
 
-function openServiceWorkerPage()
-{
-  chrome.tabs.update({url: "chrome://serviceworker-internals/"});
+function openServiceWorkerPage() {
+  chrome.tabs.update({ url: "chrome://serviceworker-internals/" });
 }
 
-chrome.webNavigation.onCompleted.addListener(details =>
-{
-  if (
-    details.url === "https://adblockplus.org/openServiceWorkerPage" &&
-    details.tabId
-  )
-  {
-    openServiceWorkerPage();
-  }
-}, {url: [{hostEquals: "adblockplus.org"}]});
+chrome.webNavigation.onCompleted.addListener(
+  (details) => {
+    if (
+      details.url === "https://adblockplus.org/openServiceWorkerPage" &&
+      details.tabId
+    ) {
+      openServiceWorkerPage();
+    }
+  },
+  { url: [{ hostEquals: "adblockplus.org" }] }
+);
 
 openOptionsPage();
 
-const closeDataTabInterval = setInterval(() =>
-{
-  chrome.tabs.query({}, tabs =>
-  {
-    for (const tab of tabs)
-    {
-      if (!tab.url.startsWith("data"))
-        continue;
+const closeDataTabInterval = setInterval(() => {
+  chrome.tabs.query({}, (tabs) => {
+    for (const tab of tabs) {
+      if (!tab.url.startsWith("data")) continue;
 
-      chrome.tabs.remove(tab.id, () =>
-      {
-        if (chrome.runtime.lastError)
-          console.error(chrome.runtime.lastError);
-        else
-          clearInterval(closeDataTabInterval);
+      chrome.tabs.remove(tab.id, () => {
+        if (chrome.runtime.lastError) console.error(chrome.runtime.lastError);
+        else clearInterval(closeDataTabInterval);
       });
     }
   });

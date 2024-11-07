@@ -17,26 +17,22 @@
 
 @import "../../theme/ui/light.css";
 
-*
-{
+* {
   box-sizing: border-box;
   font-family: "Lucida Grande", "Segoe UI", Ubuntu, Tahoma, Arial, sans-serif;
   font-size: 11px;
 }
 
-html
-{
+html {
   overflow: hidden;
   height: 100%;
 }
 
-a
-{
+a {
   color: inherit;
 }
 
-body
-{
+body {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -44,53 +40,44 @@ body
   color: #303942;
 }
 
-body.default
-{
+body.default {
   background-color: var(--background-color-primary);
 }
 
-body.dark
-{
+body.dark {
   color: #fff;
 }
 
-table
-{
+table {
   table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
 }
 
-table *
-{
+table * {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-td
-{
+td {
   padding: 3px;
   border-left: 1px solid #cdcdcd;
   white-space: nowrap;
 }
 
-td:first-child
-{
+td:first-child {
   border-left-style: none;
 }
 
-col:nth-child(2)
-{
+col:nth-child(2) {
   width: 115px;
 }
 
-col:nth-child(3)
-{
+col:nth-child(3) {
   width: 50%;
 }
 
-header
-{
+header {
   overflow-y: scroll;
   border-bottom: 1px solid #cdcdcd;
   flex-shrink: 0;
@@ -100,19 +87,16 @@ header
  * We have to add a scrollbar to the header to have the columns there aligned
  * with the table below. But we don't want the scrollbar to be visible there.
  */
-header::-webkit-scrollbar
-{
+header::-webkit-scrollbar {
   visibility: hidden;
 }
 
-#items
-{
+#items {
   overflow-y: scroll;
   flex-grow: 1;
 }
 
-#items table
-{
+#items table {
   line-height: 17px;
 
   /* This background image gives every other row a gray background.
@@ -123,86 +107,71 @@ header::-webkit-scrollbar
   background-repeat: repeat;
 }
 
-body.dark #items table
-{
+body.dark #items table {
   background-image: url(data:image/gif;base64,R0lGODdhAQBQAIACACQkJExMTCwAAAAAAQBQAAACC4yPqcsID6OctMYCADs=);
 }
 
-#items tr
-{
+#items tr {
   height: 40px;
 }
 
-#items tr[data-state=blocked]
-{
+#items tr[data-state="blocked"] {
   color: var(--color-brand-primary);
 }
 
-body.dark #items tr[data-state=blocked]
-{
+body.dark #items tr[data-state="blocked"] {
   color: #ff3a3a;
 }
 
-#items tr[data-state=allowlisted]
-{
+#items tr[data-state="allowlisted"] {
   color: #080;
 }
 
-body.dark #items tr[data-state=allowlisted]
-{
+body.dark #items tr[data-state="allowlisted"] {
   color: #389c22;
 }
 
-#items[data-filter-state=blocked]       tr:not([data-state=blocked]),
-#items[data-filter-state=allowlisted]   tr:not([data-state=allowlisted])
-{
+#items[data-filter-state="blocked"] tr:not([data-state="blocked"]),
+#items[data-filter-state="allowlisted"] tr:not([data-state="allowlisted"]) {
   display: none;
 }
 
 .changed,
-.unnamed
-{
-  font-style: italic
+.unnamed {
+  font-style: italic;
 }
 
 .request-wrapper,
-.filter-wrapper
-{
+.filter-wrapper {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-tr:not(:hover) .action
-{
+tr:not(:hover) .action {
   display: none;
 }
 
-.url
-{
+.url {
   width: 100%;
 }
 
 .url > a,
-.url-rewritten > a
-{
+.url-rewritten > a {
   text-decoration: none;
 }
 
 .url > a:hover,
-.url-rewritten > a:hover
-{
+.url-rewritten > a:hover {
   text-decoration: underline;
 }
 
-.action-wrapper
-{
+.action-wrapper {
   display: flex;
   width: 100%;
 }
 
-.action
-{
+.action {
   flex-shrink: 0;
   margin: auto;
   margin-left: 5px;
@@ -217,8 +186,7 @@ tr:not(:hover) .action
 .filter-wrapper,
 .filter,
 .origin,
-.domain
-{
+.domain {
   flex-grow: 1;
 }
 
@@ -226,13 +194,11 @@ tr:not(:hover) .action
 .origin,
 .changed .request-wrapper,
 .changed .filter-wrapper,
-.changed .type
-{
+.changed .type {
   opacity: 0.6;
 }
 
-footer
-{
+footer {
   width: 100%;
   height: 23px;
   margin-bottom: -23px;
@@ -241,25 +207,21 @@ footer
   flex-shrink: 0;
 }
 
-.has-changes + footer
-{
+.has-changes + footer {
   margin-bottom: 0;
   transition: margin-bottom 0.5s;
 }
 
-footer > a
-{
+footer > a {
   color: #00f;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.filtered-by-search
-{
+.filtered-by-search {
   display: none;
 }
 
-body.dark #reload
-{
+body.dark #reload {
   color: #2a67e7;
 }

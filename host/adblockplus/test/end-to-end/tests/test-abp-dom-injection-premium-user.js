@@ -17,68 +17,85 @@
 
 "use strict";
 
-const {beforeSequence, afterSequence, waitForNewWindow, switchToABPOptionsTab,
-       executeAsyncScript, enablePremiumByMockServer} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  afterSequence,
+  waitForNewWindow,
+  switchToABPOptionsTab,
+  executeAsyncScript,
+  enablePremiumByMockServer
+} = require("../helpers");
+const { expect } = require("chai");
 const abpDomInjectionData =
   require("../test-data/data-abp-dom-injection").abpDomInjectionData;
 let appVersion;
 let id;
 
-describe("test abp DOM injection for premium user", function()
-{
-  before(async function()
-  {
+describe("test abp DOM injection for premium user", function () {
+  before(async function () {
     await beforeSequence();
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html");
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html"
+    );
     await switchToABPOptionsTab();
-    appVersion = await browser.
-      executeScript("return browser.runtime.getManifest().version;", []);
-    id = await executeAsyncScript("return browser.runtime." +
-      "sendMessage({type: 'prefs.get', key: 'installation_id'});");
+    appVersion = await browser.executeScript(
+      "return browser.runtime.getManifest().version;",
+      []
+    );
+    id = await executeAsyncScript(
+      "return browser.runtime." +
+        "sendMessage({type: 'prefs.get', key: 'installation_id'});"
+    );
     await enablePremiumByMockServer();
   });
 
-  afterEach(async function()
-  {
+  afterEach(async function () {
     await afterSequence();
   });
 
-  abpDomInjectionData.forEach(async(dataSet) =>
-  {
-    it("should return correct values for: " + dataSet.testName, async function()
-    {
-      await waitForNewWindow(dataSet.url);
-      let abpInfo;
-      await browser.waitUntil(async() =>
-      {
-        try
-        {
-          abpInfo = JSON.parse(await browser.executeScript("return document." +
-            "getElementById('__adblock-plus-extension-info').textContent;", [])
-          );
-          return true;
-        }
-        catch (e)
-        {
-          await browser.refresh();
-        }
-      }, {timeoutMsg: `abpInfo was not found on ${dataSet.url}`});
-      const dataAbpInfo = JSON.parse(await browser.
-        executeScript("return document.get" +
-        'ElementsByTagName("html")[0].getAttribute' +
-        '("data-adblock-plus-extension-info");', []));
-      expect(abpInfo.isPremium == true).to.be.true;
-      expect(abpInfo.premiumId == "valid_user_id").to.be.true;
-      expect(abpInfo.version == appVersion).to.be.true;
-      expect(abpInfo.id == id).to.be.true;
-      expect(dataAbpInfo.isPremium == true).to.be.true;
-      expect(dataAbpInfo.premiumId == "valid_user_id").to.be.true;
-      expect(dataAbpInfo.version == appVersion).to.be.true;
-      expect(dataAbpInfo.id == id).to.be.true;
-      expect(dataAbpInfo.blockCount != 0).to.be.true;
-      expect(dataAbpInfo.blockCount == abpInfo.blockCount).to.be.true;
-      await browser.closeWindow();
-    });
+  abpDomInjectionData.forEach(async (dataSet) => {
+    it(
+      "should return correct values for: " + dataSet.testName,
+      async function () {
+        await waitForNewWindow(dataSet.url);
+        let abpInfo;
+        await browser.waitUntil(
+          async () => {
+            try {
+              abpInfo = JSON.parse(
+                await browser.executeScript(
+                  "return document." +
+                    "getElementById('__adblock-plus-extension-info').textContent;",
+                  []
+                )
+              );
+              return true;
+            } catch (e) {
+              await browser.refresh();
+            }
+          },
+          { timeoutMsg: `abpInfo was not found on ${dataSet.url}` }
+        );
+        const dataAbpInfo = JSON.parse(
+          await browser.executeScript(
+            "return document.get" +
+              'ElementsByTagName("html")[0].getAttribute' +
+              '("data-adblock-plus-extension-info");',
+            []
+          )
+        );
+        expect(abpInfo.isPremium == true).to.be.true;
+        expect(abpInfo.premiumId == "valid_user_id").to.be.true;
+        expect(abpInfo.version == appVersion).to.be.true;
+        expect(abpInfo.id == id).to.be.true;
+        expect(dataAbpInfo.isPremium == true).to.be.true;
+        expect(dataAbpInfo.premiumId == "valid_user_id").to.be.true;
+        expect(dataAbpInfo.version == appVersion).to.be.true;
+        expect(dataAbpInfo.id == id).to.be.true;
+        expect(dataAbpInfo.blockCount != 0).to.be.true;
+        expect(dataAbpInfo.blockCount == abpInfo.blockCount).to.be.true;
+        await browser.closeWindow();
+      }
+    );
   });
 });

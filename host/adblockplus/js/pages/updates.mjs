@@ -15,12 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {bind, wire} from "hyperhtml";
+import { bind, wire } from "hyperhtml";
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {convertDoclinks} from "../common.mjs";
-import {$} from "../dom.mjs";
-import {initI18n} from "../../src/i18n/index.ts";
+import { convertDoclinks } from "../common.mjs";
+import { $ } from "../dom.mjs";
+import { initI18n } from "../../src/i18n/index.ts";
 
 import "../../src/updates/ui/updates.css";
 // We need to import io-element to initialize the i18n intent we're using
@@ -29,27 +29,19 @@ import "../landing.mjs";
 
 const localeInfo = messaging.app.get("localeInfo");
 
-async function addUpdates(container, updates)
-{
+async function addUpdates(container, updates) {
   const [appLanguage, appRegion] = (await localeInfo).locale.split("-");
 
-  updates = updates.filter(({exceptions}) =>
-  {
-    if (!exceptions)
-      return true;
+  updates = updates.filter(({ exceptions }) => {
+    if (!exceptions) return true;
 
-    const {locales} = exceptions;
+    const { locales } = exceptions;
 
-    if (locales)
-    {
-      for (const locale of locales)
-      {
+    if (locales) {
+      for (const locale of locales) {
         const [language, region] = locale.split("-");
 
-        if (
-          language === appLanguage &&
-          (!region || region === appRegion)
-        )
+        if (language === appLanguage && (!region || region === appRegion))
           return false;
       }
     }
@@ -57,37 +49,30 @@ async function addUpdates(container, updates)
     return true;
   });
 
-  if (!updates.length)
-  {
+  if (!updates.length) {
     container.hidden = true;
     return;
   }
 
-  const items = updates.map((update) =>
-  {
+  const items = updates.map((update) => {
     let link = null;
-    if (update.doclink)
-    {
+    if (update.doclink) {
       link = wire()`<p>
         <a href="#" target="_blank">
-          ${{i18n: "updates_link"}}
+          ${{ i18n: "updates_link" }}
         </a>
       </p>`;
-      messaging.doclinks.get(update.doclink).then((url) =>
-      {
+      messaging.doclinks.get(update.doclink).then((url) => {
         $("a", link).href = url;
       });
     }
 
     let media = null;
-    if (update.image)
-    {
+    if (update.image) {
       media = wire()`<img
         src="${update.image.url}"
         alt="${browser.i18n.getMessage(`updates_update_${update.id}_image`)}">`;
-    }
-    else if (update.video)
-    {
+    } else if (update.video) {
       const videoDescription = `updates_update_${update.id}_video`;
       media = wire()`<video
         autoplay loop muted
@@ -101,17 +86,20 @@ async function addUpdates(container, updates)
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1588360
       media.muted = true;
       const fallback = wire()`<div class="fallback">
-        ${{i18n: videoDescription}}
+        ${{ i18n: videoDescription }}
       </div>`;
-      media.addEventListener("error", () =>
-      {
-        media.parentElement.replaceChild(fallback, media);
-      }, true);
+      media.addEventListener(
+        "error",
+        () => {
+          media.parentElement.replaceChild(fallback, media);
+        },
+        true
+      );
     }
 
     return wire()`<li>
-      <h3>${{i18n: `updates_update_${update.id}_title`}}</h3>
-      <p>${{i18n: `updates_update_${update.id}_description`}}</p>
+      <h3>${{ i18n: `updates_update_${update.id}_title` }}</h3>
+      <p>${{ i18n: `updates_update_${update.id}_description` }}</p>
       ${link}
       ${media}
     </li>`;
@@ -121,30 +109,24 @@ async function addUpdates(container, updates)
   bind(list)`${items}`;
 }
 
-function initUpdates()
-{
+function initUpdates() {
   fetch("data/updates.json")
-  .then((resp) => resp.json())
-  .then((updates) =>
-  {
-    $("#hero > img").src = updates.title.image;
-    addUpdates($("#improvements"), updates.improvements);
-    addUpdates($("#fixes"), updates.fixes);
-  });
+    .then((resp) => resp.json())
+    .then((updates) => {
+      $("#hero > img").src = updates.title.image;
+      addUpdates($("#improvements"), updates.improvements);
+      addUpdates($("#fixes"), updates.fixes);
+    });
 }
 
-function initVersion()
-{
-  messaging.app.get("addonVersion").then((addonVersion) =>
-  {
+function initVersion() {
+  messaging.app.get("addonVersion").then((addonVersion) => {
     $("#version").textContent = `v${addonVersion}`;
   });
 }
 
-function initContribute()
-{
-  messaging.app.getInfo().then(({store}) =>
-  {
+function initContribute() {
+  messaging.app.getInfo().then(({ store }) => {
     document.body.dataset.store = store;
     let contributeSubtitleId = "updates_contribute_subtitle";
     if (store === "edge")
@@ -152,15 +134,13 @@ function initContribute()
 
     const contributeSubtitle = browser.i18n.getMessage(contributeSubtitleId);
     $("#contribute-subtitle").textContent = contributeSubtitle;
-    messaging.doclinks.get(`${store}_review`).then((url) =>
-    {
+    messaging.doclinks.get(`${store}_review`).then((url) => {
       $("#contribute-rate a").href = url;
     });
   });
 }
 
-function load()
-{
+function load() {
   convertDoclinks();
   initI18n();
   initContribute();

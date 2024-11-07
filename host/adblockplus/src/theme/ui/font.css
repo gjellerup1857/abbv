@@ -15,41 +15,37 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 300;
-  src: local("Source Sans Pro Light"),
+  src:
+    local("Source Sans Pro Light"),
     local("SourceSansPro-Light"),
-    url(/skin/fonts/source-sans-pro-300.woff2)
-    format("woff2");
+    url(/skin/fonts/source-sans-pro-300.woff2) format("woff2");
 }
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 400;
-  src: local("Source Sans Pro Regular"),
+  src:
+    local("Source Sans Pro Regular"),
     local("SourceSansPro-Regular"),
-    url(/skin/fonts/source-sans-pro-400.woff2)
-    format("woff2");
+    url(/skin/fonts/source-sans-pro-400.woff2) format("woff2");
 }
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 700;
-  src: local("Source Sans Pro Bold"),
+  src:
+    local("Source Sans Pro Bold"),
     local("SourceSansPro-Bold"),
-    url(/skin/fonts/source-sans-pro-700.woff2)
-    format("woff2");
+    url(/skin/fonts/source-sans-pro-700.woff2) format("woff2");
 }
 
-body
-{
+body {
   font-family: "Source Sans Pro", sans-serif;
   font-size: inherit;
 }

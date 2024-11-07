@@ -17,46 +17,39 @@
 
 "use strict";
 
-const {ResultGroup, reStringId} = require("../common");
+const { ResultGroup, reStringId } = require("../common");
 
 const rePlaceholders = /\$([^$]+)\$/g;
 
-function getPlaceholders(string)
-{
+function getPlaceholders(string) {
   const placeholders = new Set();
 
   let placeholder;
-  while (placeholder = rePlaceholders.exec(string))
-  {
+  while ((placeholder = rePlaceholders.exec(string))) {
     placeholders.add(placeholder[1]);
   }
 
   return placeholders;
 }
 
-function validate(string, placeholderInfo)
-{
+function validate(string, placeholderInfo) {
   const results = new ResultGroup("Validate placeholders");
 
   const placeholders = getPlaceholders(string);
   const expected = Object.keys(placeholderInfo || {});
 
-  if (expected.length < placeholders.size)
-  {
+  if (expected.length < placeholders.size) {
     results.push("Unexpected placeholders");
     return results;
   }
 
-  for (const placeholder of expected)
-  {
-    if (!reStringId.test(placeholder))
-    {
+  for (const placeholder of expected) {
+    if (!reStringId.test(placeholder)) {
       results.push(`Invalid placeholder name '${placeholder}'`);
       continue;
     }
 
-    if (!placeholders.has(placeholder))
-    {
+    if (!placeholders.has(placeholder)) {
       results.push("Missing placeholders");
     }
   }

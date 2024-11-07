@@ -15,35 +15,25 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function EventEmitter()
-{
+export function EventEmitter() {
   this._listeners = Object.create(null);
 }
 EventEmitter.prototype = {
-  on(name, listener)
-  {
-    if (name in this._listeners)
-      this._listeners[name].push(listener);
-    else
-      this._listeners[name] = [listener];
+  on(name, listener) {
+    if (name in this._listeners) this._listeners[name].push(listener);
+    else this._listeners[name] = [listener];
   },
-  off(name, listener)
-  {
+  off(name, listener) {
     const listeners = this._listeners[name];
-    if (listeners)
-    {
+    if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx != -1)
-        listeners.splice(idx, 1);
+      if (idx != -1) listeners.splice(idx, 1);
     }
   },
-  emit(name, ...args)
-  {
+  emit(name, ...args) {
     const listeners = this._listeners[name];
-    if (listeners)
-    {
-      for (const listener of listeners)
-        listener(...args);
+    if (listeners) {
+      for (const listener of listeners) listener(...args);
     }
   }
 };

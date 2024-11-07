@@ -15,9 +15,9 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {default as base} from "./base.mjs";
-export {default as chrome} from "./chrome.mjs";
-export {default as firefox} from "./firefox.mjs";
-export {default as local} from "./local.mjs";
-export {default as rulesV3} from "./rules.v3.mjs";
-export {default as webpack} from "./webpack.config.mjs";
+export { default as base } from "./base.mjs";
+export { default as chrome } from "./chrome.mjs";
+export { default as firefox } from "./firefox.mjs";
+export { default as local } from "./local.mjs";
+export { default as rulesV3 } from "./rules.v3.mjs";
+export { default as webpack } from "./webpack.config.mjs";

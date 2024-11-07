@@ -17,29 +17,34 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       doesTabExist} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  doesTabExist
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 
-describe("test features for German language", function()
-{
+describe("test features for German language", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display features for German language", async function()
-  {
+  it("should display features for German language", async function () {
     const generalPage = new GeneralPage(browser);
     expect(await doesTabExist(/first-run\.html/)).to.be.true;
-    expect(await doesTabExist("https://welcome.adblockplus.org/en/installed")).to.be.false;
+    expect(await doesTabExist("https://welcome.adblockplus.org/en/installed"))
+      .to.be.false;
     await generalPage.switchToTab(/options\.html/);
-    expect(await generalPage.
-      isNotifyLanguageFilterListsCheckboxDisplayed(true)).to.be.true;
+    expect(await generalPage.isNotifyLanguageFilterListsCheckboxDisplayed(true))
+      .to.be.true;
     await generalPage.clickContributeButton();
-    expect(await doesTabExist("https://adblockplus.org/de/contribute?link=contribute&lang=de")).to.be.true;
+    expect(
+      await doesTabExist(
+        "https://adblockplus.org/de/contribute?link=contribute&lang=de"
+      )
+    ).to.be.true;
   });
 });

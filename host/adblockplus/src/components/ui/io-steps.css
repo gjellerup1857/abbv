@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-steps
-{
+io-steps {
   display: flex;
   position: relative;
   margin: 0;
@@ -26,8 +25,7 @@ io-steps
 }
 
 /* this element is used only to decorate via horizontal line */
-io-steps::before
-{
+io-steps::before {
   position: absolute;
   z-index: -1;
   top: 12px;
@@ -40,26 +38,23 @@ io-steps::before
 }
 
 html:not([dir="rtl"]) io-steps button,
-html[dir="rtl"] io-steps button
-{
+html[dir="rtl"] io-steps button {
   margin: initial;
   padding: initial;
 }
 
-io-steps button
-{
+io-steps button {
   min-width: 80px;
   border: 0;
   outline: none;
-  color: #0797E1;
+  color: #0797e1;
   background: #f3f3f3;
   font-size: small;
   font-weight: initial;
   text-transform: inherit;
 }
 
-io-steps button::before
-{
+io-steps button::before {
   display: block;
   width: 24px;
   height: 24px;
@@ -67,38 +62,32 @@ io-steps button::before
   margin-bottom: 8px;
   border-radius: 12px;
   color: #fafbfd;
-  background-color: #0797E1;
+  background-color: #0797e1;
   font-size: 0.8rem;
   font-weight: 400;
   line-height: 24px;
   content: attr(data-value);
 }
 
-io-steps button:disabled::before
-{
+io-steps button:disabled::before {
   background-color: #9b9b9b;
 }
 
-io-steps button:disabled
-{
+io-steps button:disabled {
   color: #d8d8d8;
 }
 
-io-steps button.completed::before
-{
+io-steps button.completed::before {
   content: "✔";
   animation: io-steps-completed 0.3s ease-in-out;
 }
 
-@keyframes io-steps-completed
-{
-  0%
-  {
+@keyframes io-steps-completed {
+  0% {
     content: " ";
   }
 
-  30%
-  {
+  30% {
     font-size: 0;
     content: "✔";
     transform: scale(0.5);

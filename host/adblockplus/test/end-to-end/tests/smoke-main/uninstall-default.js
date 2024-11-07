@@ -17,33 +17,29 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 
-const {uninstallExtension, isEdge} = require("../../helpers");
-const checkInstallUninstallUrl =
-  require("./shared/check-install-uninstall-url");
+const { uninstallExtension, isEdge } = require("../../helpers");
+const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url");
 
-module.exports = function()
-{
-  before(function()
-  {
+module.exports = function () {
+  before(function () {
     this.test.parent.parent.lastTest = true;
   });
 
-  it("uninstalls the extension with default settings", async function()
-  {
+  it("uninstalls the extension with default settings", async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
-    const appVersion = await browser.
-      executeScript("return browser.runtime.getManifest().version;", []);
+    const appVersion = await browser.executeScript(
+      "return browser.runtime.getManifest().version;",
+      []
+    );
 
     const url = await uninstallExtension();
 
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (url === null)
-      this.skip();
+    if (url === null) this.skip();
 
     expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
     await checkInstallUninstallUrl(url, appVersion);

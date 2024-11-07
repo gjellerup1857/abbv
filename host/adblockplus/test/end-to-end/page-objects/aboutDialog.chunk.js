@@ -19,71 +19,57 @@
 
 const BasePage = require("./base.page");
 
-class AboutDialogChunk extends BasePage
-{
-  constructor(browser)
-  {
+class AboutDialogChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get closeButton()
-  {
+  get closeButton() {
     return $("//button[@data-action='close-dialog']");
   }
 
-  get copyrightText()
-  {
+  get copyrightText() {
     return $("//*[@id='copyright']");
   }
 
-  get dialog()
-  {
+  get dialog() {
     return $("//*[@id='dialog']");
   }
 
-  get eyeoGmbhLink()
-  {
+  get eyeoGmbhLink() {
     return $("//a[text()='eyeo GmbH']");
   }
 
-  get privacyPolicyLink()
-  {
+  get privacyPolicyLink() {
     return $("//*[@id='privacy-policy']");
   }
 
-  async clickCloseButton()
-  {
+  async clickCloseButton() {
     await (await this.closeButton).click();
   }
 
-  async clickEyeoGmbhLink()
-  {
+  async clickEyeoGmbhLink() {
     await (await this.eyeoGmbhLink).click();
   }
 
-  async clickPrivacyPolicyLink()
-  {
+  async clickPrivacyPolicyLink() {
     await (await this.privacyPolicyLink).click();
   }
 
-  async getCopyrightText()
-  {
+  async getCopyrightText() {
     return await (await this.copyrightText).getText();
   }
 
-  async isDialogDisplayed()
-  {
+  async isDialogDisplayed() {
     return await (await this.dialog).isDisplayed();
   }
 
-  async switchToImprintTab()
-  {
+  async switchToImprintTab() {
     await this.switchToTab("Imprint");
   }
 
-  async switchToPrivacyPolicyTab()
-  {
+  async switchToPrivacyPolicyTab() {
     await this.switchToTab("Privacy Policy");
   }
 }

@@ -15,18 +15,17 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {equal, deepEqual} from "assert";
-import {TestEnvironment} from "../env.js";
+import { equal, deepEqual } from "assert";
+import { TestEnvironment } from "../env.js";
 import basichtml from "basichtml";
-import {DOMParser, XMLSerializer} from "@xmldom/xmldom";
+import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
-import {$, $$, asIndentedString, relativeCoordinates} from "../../js/dom.mjs";
+import { $, $$, asIndentedString, relativeCoordinates } from "../../js/dom.mjs";
 
 let document;
 let env;
 
-function addHtmlContent()
-{
+function addHtmlContent() {
   document.documentElement.innerHTML = `
   <head></head>
   <body>
@@ -42,10 +41,8 @@ function addHtmlContent()
   </body>`;
 }
 
-describe("Testing dom.js API", () =>
-{
-  beforeEach(() =>
-  {
+describe("Testing dom.js API", () => {
+  beforeEach(() => {
     const window = basichtml.init({});
     document = window.document;
     const defaultGlobals = {
@@ -55,9 +52,8 @@ describe("Testing dom.js API", () =>
           getMessage: (name, args) => `[${name}-${args}]`
         },
         runtime: {
-          async getBrowserInfo()
-          {
-            return {name: "Chrome"};
+          async getBrowserInfo() {
+            return { name: "Chrome" };
           }
         }
       }
@@ -69,21 +65,18 @@ describe("Testing dom.js API", () =>
     });
   });
 
-  afterEach(() =>
-  {
+  afterEach(() => {
     env.restore();
     env = null;
   });
 
-  it("$() should return first match", () =>
-  {
+  it("$() should return first match", () => {
     addHtmlContent();
     // Note: By default, basichtml accepts only node, .class, or #id
     equal($("span", document).textContent, "inside first span");
   });
 
-  it("$$() should return all matches", () =>
-  {
+  it("$$() should return all matches", () => {
     addHtmlContent();
     // Note: By default, basichtml accepts only node, .class, or #id
     const spans = $$("span", document);
@@ -92,9 +85,8 @@ describe("Testing dom.js API", () =>
     equal(spans[1].textContent, "inside second span");
   });
 
-  it("asIndentedString() should return string  representation of DOM", () =>
-  {
-    env.setGlobals({Node: basichtml.Node, XMLSerializer});
+  it("asIndentedString() should return string  representation of DOM", () => {
+    env.setGlobals({ Node: basichtml.Node, XMLSerializer });
 
     const xml = new DOMParser().parseFromString(
       "<a attr='value'><b><c>text</c><d/></b></a>",
@@ -113,14 +105,16 @@ describe("Testing dom.js API", () =>
     equal(asIndentedString(xml), result);
   });
 
-  it("relativeCoordinates() Should return relative coordinates to the" +
-    " closest positioned element", () =>
-  {
-    const resultA = {x: 158, y: 78};
-    const eventA = {
-      offsetX: 158,
-      offsetY: 78
-    };
-    deepEqual(relativeCoordinates(eventA), resultA);
-  });
+  it(
+    "relativeCoordinates() Should return relative coordinates to the" +
+      " closest positioned element",
+    () => {
+      const resultA = { x: 158, y: 78 };
+      const eventA = {
+        offsetX: 158,
+        offsetY: 78
+      };
+      deepEqual(relativeCoordinates(eventA), resultA);
+    }
+  );
 });

@@ -15,138 +15,115 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {getErrorMessage} from "./common.mjs";
+import { getErrorMessage } from "./common.mjs";
 import IOElement from "./io-element.mjs";
 import IOFilterList from "./io-filter-list.mjs";
 import IOFilterSearch from "./io-filter-search.mjs";
 
-import {$, clipboard} from "./dom.mjs";
+import { $, clipboard } from "./dom.mjs";
 
 // io-filter-table is a basic controller
 // used to relate the search and the list
-class IOFilterTable extends IOElement
-{
-  static get booleanAttributes()
-  {
+class IOFilterTable extends IOElement {
+  static get booleanAttributes() {
     return ["disabled"];
   }
 
-  static get observedAttributes()
-  {
+  static get observedAttributes() {
     return ["match"];
   }
 
-  get defaultState()
-  {
-    return {filters: [], match: -1, ready: false};
+  get defaultState() {
+    return { filters: [], match: -1, ready: false };
   }
 
-  created()
-  {
+  created() {
     this._showing = null;
     this.search = this.appendChild(new IOFilterSearch());
-    this.search.addEventListener(
-      "filter:add",
-      event => this.onFilterAdd(event)
+    this.search.addEventListener("filter:add", (event) =>
+      this.onFilterAdd(event)
     );
-    this.search.addEventListener(
-      "filter:match",
-      event => this.onFilterMatch(event)
+    this.search.addEventListener("filter:match", (event) =>
+      this.onFilterMatch(event)
     );
-    this.search.addEventListener(
-      "filter:none",
-      () =>
-      {
-        this.list.selected = [];
-        this.updateFooter();
-      }
-    );
+    this.search.addEventListener("filter:none", () => {
+      this.list.selected = [];
+      this.updateFooter();
+    });
     this.list = this.appendChild(new IOFilterList());
-    this.list.addEventListener(
-      "filter:removed",
-      event => this.onFilterRemoved(event)
+    this.list.addEventListener("filter:removed", (event) =>
+      this.onFilterRemoved(event)
     );
     this.footer = this.appendChild(IOElement.wire()`<div class="footer" />`);
     this.addEventListener("click", this);
     this.addEventListener("error", this);
-    this.setState({ready: true});
+    this.setState({ ready: true });
   }
 
-  attributeChangedCallback(name, prev, value)
-  {
-    if (name === "match")
-      this.setState({match: value}, false);
+  attributeChangedCallback(name, prev, value) {
+    if (name === "match") this.setState({ match: value }, false);
     this.render();
   }
 
-  get filters()
-  {
+  get filters() {
     return this.state.filters;
   }
 
-  set filters(value)
-  {
-    this.setState({filters: value});
+  set filters(value) {
+    this.setState({ filters: value });
   }
 
-  get match()
-  {
+  get match() {
     return this.state.match;
   }
 
-  set match(value)
-  {
-    this.setState({match: value});
+  set match(value) {
+    this.setState({ match: value });
   }
 
-  onclick(event)
-  {
-    if (event.target.closest("io-checkbox"))
-    {
+  onclick(event) {
+    if (event.target.closest("io-checkbox")) {
       cleanErrors.call(this);
     }
   }
 
-  onerror(event)
-  {
+  onerror(event) {
     // force the footer to be visible since errors are shown there
     this.updateFooter();
     this.footer.classList.add("visible");
-    const {errors} = event.detail;
+    const { errors } = event.detail;
     const footerError = $(".footer .error", this);
 
     const errorMessages = errors.map(getErrorMessage);
     IOElement.bind(footerError)`
-      ${errorMessages.map(mssg => `<li>${mssg}</li>`)}`;
+      ${errorMessages.map((mssg) => `<li>${mssg}</li>`)}`;
     footerError.removeAttribute("hidden");
   }
 
-  onfooterclick(event)
-  {
-    const {classList} = event.currentTarget;
-    switch (true)
-    {
+  onfooterclick(event) {
+    const { classList } = event.currentTarget;
+    switch (true) {
       case classList.contains("delete"):
         const filterTexts = [];
-        for (const filter of this.list.selected)
-        {
+        for (const filter of this.list.selected) {
           this.list.selected.delete(filter);
           this.filters.splice(this.filters.indexOf(filter), 1);
           filterTexts.push(filter.text);
         }
-        void browser.runtime.sendMessage({
-          type: "filters.removeBatch",
-          texts: filterTexts
-        }).then(
-          () => updateList(this.list),
-          (errors) => this.onerror({detail: {errors}})
-        );
+        void browser.runtime
+          .sendMessage({
+            type: "filters.removeBatch",
+            texts: filterTexts
+          })
+          .then(
+            () => updateList(this.list),
+            (errors) => this.onerror({ detail: { errors } })
+          );
         cleanErrors.call(this);
         break;
       case classList.contains("copy"):
         const filters = [];
-        for (const filter of this.list.selected)
-        {
+        for (const filter of this.list.selected) {
           filters.push(filter.text);
         }
         clipboard.copy(filters.join("\n"));
@@ -154,93 +131,79 @@ class IOFilterTable extends IOElement
     }
   }
 
-  onFilterAdd(event)
-  {
+  onFilterAdd(event) {
     this.search.disabled = true;
 
     const filters = event.detail.split(/(?:\r\n|\n)/);
 
     cleanErrors.call(this);
-    browser.runtime.sendMessage({
-      type: "filters.importRaw",
-      text: filters.join("\n")
-    })
-    .then(([errors, filterTexts]) =>
-    {
-      if (!errors.length)
-      {
-        filterTexts.reverse();
-        let added = false;
-        for (const text of filterTexts)
-        {
-          // We don't treat filter headers like invalid filters,
-          // instead we simply ignore them and don't show any errors
-          // in order to allow pasting complete filter lists
-          if (text[0] === "[")
-            continue;
+    browser.runtime
+      .sendMessage({
+        type: "filters.importRaw",
+        text: filters.join("\n")
+      })
+      .then(([errors, filterTexts]) => {
+        if (!errors.length) {
+          filterTexts.reverse();
+          let added = false;
+          for (const text of filterTexts) {
+            // We don't treat filter headers like invalid filters,
+            // instead we simply ignore them and don't show any errors
+            // in order to allow pasting complete filter lists
+            if (text[0] === "[") continue;
 
-          added = true;
-          const i = this.filters.findIndex(flt => flt.text === text);
-          const [filter] = i < 0 ? [{text}] : this.filters.splice(i, 1);
-          this.filters.unshift(filter);
+            added = true;
+            const i = this.filters.findIndex((flt) => flt.text === text);
+            const [filter] = i < 0 ? [{ text }] : this.filters.splice(i, 1);
+            this.filters.unshift(filter);
+          }
+
+          this.search.value = "";
+          if (!added) return;
+
+          this.render();
+          updateList(this.list);
+          this.list.scrollTo(this.filters[0]);
+          this.updateFooter();
+        } else {
+          this.onerror({ detail: { errors } });
         }
 
-        this.search.value = "";
-        if (!added)
-          return;
-
-        this.render();
-        updateList(this.list);
-        this.list.scrollTo(this.filters[0]);
-        this.updateFooter();
-      }
-      else
-      {
-        this.onerror({detail: {errors}});
-      }
-
-      this.search.disabled = false;
-    });
+        this.search.disabled = false;
+      });
   }
 
-  onFilterMatch(event)
-  {
-    const {accuracy, filter, matches} = event.detail;
+  onFilterMatch(event) {
+    const { accuracy, filter, matches } = event.detail;
     this.list.selected = matches;
     // scroll either to the exact match or the first close match
     this.list.scrollTo(accuracy === 1 ? filter : matches[0]);
     this.updateFooter();
   }
 
-  onFilterRemoved()
-  {
+  onFilterRemoved() {
     cleanErrors.call(this);
     this.updateFooter();
   }
 
-  render()
-  {
-    const {disabled} = this;
-    const {filters, match, ready} = this.state;
-    if (!ready || !filters.length)
-      return;
+  render() {
+    const { disabled } = this;
+    const { filters, match, ready } = this.state;
+    if (!ready || !filters.length) return;
 
     // update inner components setting filters
     // only if necessary
     this.search.disabled = disabled;
     this.search.match = match;
-    if (this.search.filters !== filters)
-      this.search.filters = filters;
+    if (this.search.filters !== filters) this.search.filters = filters;
 
     this.list.disabled = disabled;
-    if (this.list.filters !== filters)
-      this.list.filters = filters;
+    if (this.list.filters !== filters) this.list.filters = filters;
 
     this.updateFooter();
   }
 
-  updateFooter()
-  {
+  updateFooter() {
     const disabled = !this.list.selected.size;
     IOElement.bind(this.footer)`
       <button
@@ -248,13 +211,13 @@ class IOFilterTable extends IOElement
         onclick="${this}"
         disabled="${disabled}"
         data-call="onfooterclick"
-      >${{i18n: "delete"}}</button>
+      >${{ i18n: "delete" }}</button>
       <button
         class="copy"
         onclick="${this}"
         disabled="${disabled}"
         data-call="onfooterclick"
-      >${{i18n: "copy_selected"}}</button>
+      >${{ i18n: "copy_selected" }}</button>
       <ul class="error" hidden></ul>
     `;
   }
@@ -262,19 +225,16 @@ class IOFilterTable extends IOElement
 
 IOFilterTable.define("io-filter-table");
 
-function cleanErrors()
-{
+function cleanErrors() {
   const footerError = $(".footer .error", this);
-  if (footerError)
-  {
+  if (footerError) {
     footerError.setAttribute("hidden", true);
     IOElement.bind(footerError)``;
   }
   this.updateFooter();
 }
 
-function updateList(list)
-{
+function updateList(list) {
   list.render();
   list.updateScrollbar();
 }

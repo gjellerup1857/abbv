@@ -20,24 +20,25 @@
 import rulesIndex from "@adblockinc/rules/adblockplus";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {startTelemetry, initializeCDP, initializeEyeometryMACCounting} from
-  "../../src/ipm/background/index.ts";
+import {
+  startTelemetry,
+  initializeCDP,
+  initializeEyeometryMACCounting
+} from "../../src/ipm/background/index.ts";
 import * as premium from "../../src/premium/background/index.ts";
-import {startOptionLinkListener} from "../../src/options/background";
-import {info} from "../../src/info/background";
-import {setReadyState, ReadyState} from
-  "../../src/testing/ready-state/background/index.ts";
-import {port} from "~/core/messaging/background";
-import {revalidateAllowlistingStates} from "./allowlisting.js";
-import {initDisabledFilterCounters} from "./filterConfiguration.js";
-import {initNotifications} from "./notificationHelper.js";
-import {Prefs} from "./prefs.js";
+import { startOptionLinkListener } from "../../src/options/background";
+import { info } from "../../src/info/background";
 import {
-  start as startUnloadCleanup
-} from "../../src/unload-cleanup/background/index.ts";
-import {
-  start as startIPMPingListener
-} from "../../src/testing/ping-ipm/background";
+  setReadyState,
+  ReadyState
+} from "../../src/testing/ready-state/background/index.ts";
+import { port } from "~/core/messaging/background";
+import { revalidateAllowlistingStates } from "./allowlisting.js";
+import { initDisabledFilterCounters } from "./filterConfiguration.js";
+import { initNotifications } from "./notificationHelper.js";
+import { Prefs } from "./prefs.js";
+import { start as startUnloadCleanup } from "../../src/unload-cleanup/background/index.ts";
+import { start as startIPMPingListener } from "../../src/testing/ping-ipm/background";
 
 let firstRun;
 let userNotificationCallback = null;
@@ -59,13 +60,11 @@ let dataCorrupted = false;
  *
  * @return {Promise}
  */
-async function detectFirstRun(foundSubscriptions, foundStorage)
-{
+async function detectFirstRun(foundSubscriptions, foundStorage) {
   let userFilters = await ewe.filters.getUserFilters();
   firstRun = !foundSubscriptions && !userFilters.length;
 
-  if (firstRun && (foundStorage || Prefs.currentVersion))
-    reinitialized = true;
+  if (firstRun && (foundStorage || Prefs.currentVersion)) reinitialized = true;
 
   Prefs.currentVersion = info.addonVersion;
 }
@@ -77,26 +76,21 @@ async function detectFirstRun(foundSubscriptions, foundStorage)
  *
  * @param {boolean} value
  */
-function setDataCorrupted(value)
-{
+function setDataCorrupted(value) {
   dataCorrupted = value;
   ewe.notifications.ignored = value;
 }
 
-async function addSubscriptionsAndNotifyUser()
-{
-  if (firstRun || reinitialized)
-    await ewe.subscriptions.addDefaults();
+async function addSubscriptionsAndNotifyUser() {
+  if (firstRun || reinitialized) await ewe.subscriptions.addDefaults();
 
   // Attempt to fix the issue where the user has no subscriptions we expect
   // them to have at least the default subscriptions.
   // See: https://eyeo.atlassian.net/browse/EXT-375
   const isMV3 = browser.runtime.getManifest().manifest_version === 3;
-  if (isMV3)
-  {
+  if (isMV3) {
     const subscriptions = await ewe.subscriptions.getSubscriptions();
-    if (subscriptions.length === 0)
-    {
+    if (subscriptions.length === 0) {
       // Enable default subscriptions: EasyList, Anti-CV and Acceptable Ads
       await ewe.subscriptions.addDefaults(null, true);
 
@@ -113,49 +107,39 @@ async function addSubscriptionsAndNotifyUser()
     }
   }
 
-  for (let url of Prefs.additional_subscriptions)
-  {
-    try
-    {
+  for (let url of Prefs.additional_subscriptions) {
+    try {
       await ewe.subscriptions.add(url);
       await ewe.subscriptions.sync(url);
-    }
-    catch (ex)
-    {
+    } catch (ex) {
       console.error(`Failed to add additional subscription: ${url}`);
     }
   }
 
   if (userNotificationCallback)
-    userNotificationCallback({dataCorrupted, firstRun, reinitialized});
+    userNotificationCallback({ dataCorrupted, firstRun, reinitialized });
 }
 
 /**
  * We need to check whether we can safely write to/read from storage
  * before we start relying on it for storing preferences.
  */
-async function testStorage()
-{
+async function testStorage() {
   let testKey = "readwrite_test";
   let testValue = Math.random();
 
-  try
-  {
-    await browser.storage.local.set({[testKey]: testValue});
+  try {
+    await browser.storage.local.set({ [testKey]: testValue });
     let result = await browser.storage.local.get(testKey);
     if (result[testKey] != testValue)
       throw new Error("Storage test: Failed to read and write value");
-  }
-  finally
-  {
+  } finally {
     await browser.storage.local.remove(testKey);
   }
 }
 
-function initElementHidingDebugMode()
-{
-  Prefs.on("elemhide_debug", () =>
-  {
+function initElementHidingDebugMode() {
+  Prefs.on("elemhide_debug", () => {
     void ewe.debugging.setElementHidingDebugMode(Prefs.elemhide_debug);
   });
 
@@ -166,7 +150,9 @@ function initElementHidingDebugMode()
       ["outline", "solid #f00"]
     ],
     [
-      ["background", `
+      [
+        "background",
+        `
         repeating-linear-gradient(
           to bottom,
           #e67370 0,
@@ -174,14 +160,14 @@ function initElementHidingDebugMode()
           #fff 9px,
           #fff 10px
         )
-      `],
+      `
+      ],
       ["outline", "solid #f00"]
     ]
   );
 }
 
-export async function start()
-{
+export async function start() {
   let addonInfo = {
     bundledSubscriptions: rulesIndex,
     bundledSubscriptionsPath: "/data/rules/abp",
@@ -198,23 +184,23 @@ export async function start()
     aggregateUrl: webpackDotenvPlugin.CDP_AGGREGATE_URL,
     bearer: webpackDotenvPlugin.CDP_BEARER
   };
-  if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer)
-    addonInfo.cdp = cdp;
+  if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) addonInfo.cdp = cdp;
 
   let telemetry = {
     url: webpackDotenvPlugin.EYEOMETRY_URL,
     bearer: webpackDotenvPlugin.EYEOMETRY_BEARER
   };
 
-  if (telemetry.url && telemetry.bearer)
-
-    addonInfo.telemetry = telemetry;
-
+  if (telemetry.url && telemetry.bearer) addonInfo.telemetry = telemetry;
 
   const [eweFirstRun] = await Promise.all([
     ewe.start(addonInfo),
-    Prefs.untilLoaded.catch(() => { setDataCorrupted(true); }),
-    testStorage().catch(() => { setDataCorrupted(true); })
+    Prefs.untilLoaded.catch(() => {
+      setDataCorrupted(true);
+    }),
+    testStorage().catch(() => {
+      setDataCorrupted(true);
+    })
   ]);
 
   (await ewe.filters.getMigrationErrors()).forEach(console.error);
@@ -269,8 +255,7 @@ export async function start()
  *
  * @return {boolean}
  */
-export function isDataCorrupted()
-{
+export function isDataCorrupted() {
   return dataCorrupted;
 }
 
@@ -280,7 +265,6 @@ export function isDataCorrupted()
  *
  * @param {function} callback
  */
-export function setNotifyUserCallback(callback)
-{
+export function setNotifyUserCallback(callback) {
   userNotificationCallback = callback;
 }

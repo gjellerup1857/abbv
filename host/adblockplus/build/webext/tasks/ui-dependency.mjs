@@ -15,58 +15,48 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 import gulp from "gulp";
 import fs from "fs";
-import {promisify} from "util";
+import { promisify } from "util";
 import glob from "glob";
-import {exec} from "child_process";
-import {Readable} from "stream";
+import { exec } from "child_process";
+import { Readable } from "stream";
 import Vinyl from "vinyl";
 
 const lastBuildTimeFilePath = "./dist/tmp/.last_ui_build";
 
-async function getMTime(file)
-{
+async function getMTime(file) {
   return (await fs.promises.stat(file)).mtimeMs;
 }
 
-function createBuild()
-{
+function createBuild() {
   // If that ever changes, please update any documentation regarding partial
   // builds!
-  return (promisify(exec))("bash -c \"npm run dist\"");
+  return promisify(exec)('bash -c "npm run dist"');
 }
 
-async function mustBuildUI(lastUIBuildTime)
-{
-  const matches = await (promisify(glob))(
-    "./{build/icons-generation}/**"
-  );
-  matches.push(
-    "./package.json",
-    "../../package-lock.json"
-  );
+async function mustBuildUI(lastUIBuildTime) {
+  const matches = await promisify(glob)("./{build/icons-generation}/**");
+  matches.push("./package.json", "../../package-lock.json");
 
-  return await new Promise((resolve, reject) =>
-  {
-    Promise.all(matches.map(filename =>
-      getMTime(filename).then(mtime =>
-      {
-        if (mtime > lastUIBuildTime)
-          resolve(true);
-      })
-    )).then(() => { resolve(false); }, reject);
+  return await new Promise((resolve, reject) => {
+    Promise.all(
+      matches.map((filename) =>
+        getMTime(filename).then((mtime) => {
+          if (mtime > lastUIBuildTime) resolve(true);
+        })
+      )
+    ).then(() => {
+      resolve(false);
+    }, reject);
   });
 }
 
-function updateLastUIBuildTime()
-{
+function updateLastUIBuildTime() {
   return fs.promises.utimes(lastBuildTimeFilePath, new Date(), new Date());
 }
 
-function createLastUIBuildTime()
-{
+function createLastUIBuildTime() {
   return new Readable.from([
     new Vinyl({
       path: lastBuildTimeFilePath,
@@ -75,26 +65,20 @@ function createLastUIBuildTime()
   ]).pipe(gulp.dest("."));
 }
 
-export async function buildUI(cb)
-{
+export async function buildUI(cb) {
   let lastUIBuildTime;
 
-  try
-  {
+  try {
     lastUIBuildTime = await getMTime(lastBuildTimeFilePath);
-  }
-  catch (e)
-  {
+  } catch (e) {
     await createBuild();
     return createLastUIBuildTime();
   }
 
-  if (await mustBuildUI(lastUIBuildTime))
-  {
+  if (await mustBuildUI(lastUIBuildTime)) {
     await createBuild();
     return updateLastUIBuildTime();
   }
 
   return cb();
 }
-

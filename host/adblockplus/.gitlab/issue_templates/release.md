@@ -22,10 +22,9 @@
 - [ ] **Chrome latest** (Link to testrun) _[@person_responsible]_
 - [ ] **Firefox latest** (Link to testrun) _[@person_responsible]_
 
-
 ### Filterlist updates
 
-- [ ]  E2E autotests are passing (filterlists pipeline)
+- [ ] E2E autotests are passing (filterlists pipeline)
 
 ### Post-testing
 

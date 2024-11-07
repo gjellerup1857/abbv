@@ -17,73 +17,82 @@
 
 "use strict";
 
-const {getTabId, switchToABPOptionsTab,
-       waitForCondition, addFiltersToABP
+const {
+  getTabId,
+  switchToABPOptionsTab,
+  waitForCondition,
+  addFiltersToABP
 } = require("../../helpers");
-const {expect} = require("chai");
+const { expect } = require("chai");
 const PopupPage = require("../../page-objects/popup.page");
 const TestPage = require("../../page-objects/testPages.page");
-const AllowlistedWebsitesPage =
-  require("../../page-objects/allowlistedWebsites.page");
+const AllowlistedWebsitesPage = require("../../page-objects/allowlistedWebsites.page");
 const testData = require("../../test-data/data-smoke-tests");
 
-module.exports = function()
-{
+module.exports = function () {
   let popupUrl;
 
-  before(function()
-  {
-    (popupUrl = this.test.parent.parent.popupUrl);
+  before(function () {
+    popupUrl = this.test.parent.parent.popupUrl;
   });
 
-  beforeEach(async function()
-  {
+  beforeEach(async function () {
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
     await addFiltersToABP("/pop_ads.js");
   });
 
-  it("should allow allowlisting from popup", async function()
-  {
+  it("should allow allowlisting from popup", async function () {
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
     await testPage.switchToTab("Blocking and hiding");
-    const tabId = await getTabId({title: "Blocking and hiding"});
+    const tabId = await getTabId({ title: "Blocking and hiding" });
     expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js was blocked");
+      "pop_ads.js was blocked"
+    );
     expect(await testPage.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked");
-    expect(await testPage.
-       isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPage.
-       isAdContainerDivDisplayed()).to.be.false;
+      "bannerads/* was blocked"
+    );
+    expect(await testPage.isSearchAdDivDisplayed()).to.be.false;
+    expect(await testPage.isAdContainerDivDisplayed()).to.be.false;
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisDomainToggle();
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
     await popupPage.clickRefreshButton();
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
-    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
-                           "pop_ads.js blocking filter should block this");
+    await waitForCondition(
+      "getPopadsFilterText",
+      3000,
+      testPage,
+      true,
+      200,
+      "pop_ads.js blocking filter should block this"
+    );
     expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this");
+      "pop_ads.js blocking filter should block this"
+    );
     expect(await testPage.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this");
+      "first bannerads/* blocking filter should block this"
+    );
     expect(await testPage.getSearchAdDivText()).to.include(
-      "search-ad id hiding filter should hide this");
+      "search-ad id hiding filter should hide this"
+    );
     expect(await testPage.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this");
+      "AdContainer class hiding filter should hide this"
+    );
 
     await switchToABPOptionsTab();
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    let attributesOfAllowlistingTableItems = await allowistedWebsitesPage.
-        getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    let attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("adblockinc.gitlab.io");
     });
     await testPage.switchToTab("Blocking and hiding");
@@ -94,20 +103,21 @@ module.exports = function()
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
     expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js was blocked");
+      "pop_ads.js was blocked"
+    );
     expect(await testPage.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked");
-    expect(await testPage.
-       isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPage.
-       isAdContainerDivDisplayed()).to.be.false;
+      "bannerads/* was blocked"
+    );
+    expect(await testPage.isSearchAdDivDisplayed()).to.be.false;
+    expect(await testPage.isAdContainerDivDisplayed()).to.be.false;
 
     await switchToABPOptionsTab();
     await allowistedWebsitesPage.init();
-    attributesOfAllowlistingTableItems = await allowistedWebsitesPage.
-        getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("empty-placeholder");
     });
   });

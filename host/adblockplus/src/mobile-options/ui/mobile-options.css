@@ -19,40 +19,34 @@
 @import "../../theme/ui/light.css";
 
 body,
-input
-{
+input {
   font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
 }
 
-body
-{
+body {
   margin: 0;
   text-align: center;
   color: #494949;
 }
 
 main,
-[role="dialog"]
-{
+[role="dialog"] {
   text-align: start;
 }
 
-main
-{
+main {
   padding: 20px 45px;
 }
 
-h1
-{
+h1 {
   position: relative;
   font-size: 1em;
   line-height: 20px;
   color: #000;
 }
 
-h1::before
-{
+h1::before {
   position: absolute;
   left: -25px;
   width: 20px;
@@ -63,56 +57,48 @@ h1::before
   content: "";
 }
 
-html[dir="rtl"] h1::before
-{
+html[dir="rtl"] h1::before {
   left: auto;
   right: -25px;
 }
 
-h2
-{
+h2 {
   font-size: 1em;
 }
 
 a:link,
-a:visited
-{
+a:visited {
   text-decoration: none;
-  color: #099DD1;
+  color: #099dd1;
 }
 
-[hidden]
-{
+[hidden] {
   display: none !important;
 }
 
-#acceptableAds-more
-{
+#acceptableAds-more {
   white-space: nowrap;
 }
 
 /* Lists */
 
-ul
-{
+ul {
   margin: 0;
   padding: 0;
 }
 
-ul > li
-{
+ul > li {
   display: flex;
   align-items: center;
   box-sizing: border-box;
   min-height: 46px;
   padding: 5px 10px;
-  border: 1px solid #BBB;
+  border: 1px solid #bbb;
   border-bottom: none;
   list-style: none;
 }
 
-ul > li > span
-{
+ul > li > span {
   flex: auto;
   overflow: hidden;
   padding: 10px;
@@ -121,48 +107,40 @@ ul > li > span
 
 /* Form elements */
 
-input[type="text"]
-{
+input[type="text"] {
   min-width: 220px;
   padding: 5px 0;
   border: 0;
-  border-bottom: 1px solid #BBB;
+  border-bottom: 1px solid #bbb;
 }
 
-input[type="text"]::placeholder
-{
-  color: #BBB;
+input[type="text"]::placeholder {
+  color: #bbb;
   opacity: 1; /* Firefox sets opacity so we need to override it */
 }
 
-input[type="text"]:focus::placeholder
-{
+input[type="text"]:focus::placeholder {
   color: transparent;
 }
 
 input[type="text"]:not(:focus):placeholder-shown ~ label,
-input[type="text"]:not(:placeholder-shown) ~ .error
-{
-  visibility: hidden
+input[type="text"]:not(:placeholder-shown) ~ .error {
+  visibility: hidden;
 }
 
-.toggle-container
-{
+.toggle-container {
   display: flex;
 }
 
-.toggle-container > span
-{
+.toggle-container > span {
   flex: auto;
 }
 
-.toggle-container input
-{
+.toggle-container input {
   display: none;
 }
 
-.toggle-image
-{
+.toggle-image {
   display: inline-block;
   flex-shrink: 0;
   width: 36px;
@@ -170,24 +148,21 @@ input[type="text"]:not(:placeholder-shown) ~ .error
   background-image: url(/skin/icons/mobile/toggle.svg#off);
 }
 
-input:checked + .toggle-image
-{
+input:checked + .toggle-image {
   background-image: url(/skin/icons/mobile/toggle.svg#on);
 }
 
-button
-{
+button {
   width: 100%;
   border: none;
   font-weight: 700;
   text-transform: uppercase;
-  color: #099DD1;
+  color: #099dd1;
   background: none;
 }
 
 button.primary,
-button.secondary
-{
+button.secondary {
   height: auto;
   margin: 5px 0;
   padding: 10px;
@@ -195,57 +170,49 @@ button.secondary
   border-radius: 2px;
 }
 
-button.primary
-{
-  border-color: #099DD1;
-  color: #FFF;
-  background-color: #099DD1;
+button.primary {
+  border-color: #099dd1;
+  color: #fff;
+  background-color: #099dd1;
 }
 
-button.secondary
-{
-  border-color: #BBB;
+button.secondary {
+  border-color: #bbb;
 }
 
-button.add::before
-{
+button.add::before {
   content: "+ ";
 }
 
-button.remove
-{
+button.remove {
   width: 36px;
   height: 36px;
   padding: 0;
-  background-color: #099DD1;
+  background-color: #099dd1;
   mask: url(/skin/icons/mobile/trash.svg) center/19px no-repeat;
 }
 
-ul + button
-{
+ul + button {
   flex-shrink: 0;
   width: 100%;
   min-height: 46px; /* equal to min-height of list item */
   padding: 15px 20px; /* based on margin and padding of list item */
-  border: 1px solid #BBB;
+  border: 1px solid #bbb;
   text-align: start;
 }
 
-#enabled-container
-{
+#enabled-container {
   align-items: center;
 }
 
-#enabled-container #enabled-domain
-{
+#enabled-container #enabled-domain {
   display: block;
   font-style: normal;
 }
 
 /* Dialogs */
 
-#dialog
-{
+#dialog {
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -259,46 +226,39 @@ ul + button
   background: rgba(0, 0, 0, 0.7);
 }
 
-[role="dialog"]
-{
+[role="dialog"] {
   max-width: 25em;
   padding: 0;
-  border: 1px solid #BBB;
+  border: 1px solid #bbb;
   background-color: var(--background-color-primary);
 }
 
-[role="dialog"] h2
-{
+[role="dialog"] h2 {
   margin: 0;
 }
 
-[role="dialog"] form
-{
+[role="dialog"] form {
   padding: 20px;
 }
 
-[role="dialog"] p
-{
+[role="dialog"] p {
   display: flex;
   flex-direction: column;
   margin: 5px 0;
 }
 
-[role="dialog"] label
-{
+[role="dialog"] label {
   order: 1;
   display: block;
   margin: 5px 0;
   font-size: 10px;
 }
 
-[role="dialog"] input[type="text"]
-{
+[role="dialog"] input[type="text"] {
   order: 2;
 }
 
-[role="dialog"] .error
-{
+[role="dialog"] .error {
   order: 3;
   margin-top: 5px;
   font-size: 12px;
@@ -306,55 +266,46 @@ ul + button
 }
 
 #dialog-subscribe [name="title"]:placeholder-shown,
-#dialog-subscribe [name="title"]:placeholder-shown ~ *
-{
+#dialog-subscribe [name="title"]:placeholder-shown ~ * {
   display: none;
 }
 
 [role="dialog"]:not([data-error]) .error,
-#dialog-subscribe:not([data-error="url"]) .error[data-error="url"]
-{
+#dialog-subscribe:not([data-error="url"]) .error[data-error="url"] {
   visibility: hidden;
 }
 
-#dialog-subscribe[data-error="url"] [name="url"]:placeholder-shown
-{
+#dialog-subscribe[data-error="url"] [name="url"]:placeholder-shown {
   border-color: var(--color-brand-primary);
 }
 
 body:not([data-dialog]) #dialog,
 body:not([data-dialog="recommended"]) #dialog-recommended,
-body:not([data-dialog="subscribe"]) #dialog-subscribe
-{
+body:not([data-dialog="subscribe"]) #dialog-subscribe {
   display: none;
 }
 
-#dialog-recommended
-{
+#dialog-recommended {
   display: flex;
   flex-direction: column;
   max-height: 100%;
 }
 
-#dialog-recommended ul
-{
+#dialog-recommended ul {
   overflow-y: auto;
   width: auto;
   margin: 0;
 }
 
-#dialog-recommended ul li
-{
+#dialog-recommended ul li {
   border: none;
 }
 
-#dialog-recommended ul li.installed
-{
-  color: #BBB;
+#dialog-recommended ul li.installed {
+  color: #bbb;
 }
 
-#dialog-recommended ul li::before
-{
+#dialog-recommended ul li::before {
   flex-shrink: 0;
   width: 13px;
   height: 11px;
@@ -362,27 +313,23 @@ body:not([data-dialog="subscribe"]) #dialog-subscribe
   content: "";
 }
 
-#dialog-recommended ul li.installed::before
-{
-  background-color: #BBB;
+#dialog-recommended ul li.installed::before {
+  background-color: #bbb;
   mask: url(/skin/icons/mobile/checkmark.svg) center/cover no-repeat;
 }
 
-#dialog-recommended > button
-{
+#dialog-recommended > button {
   border-width: 1px 0 0;
   text-align: center;
 }
 
 /* Footer */
 
-footer
-{
+footer {
   margin-top: 40px;
 }
 
-footer > a:last-child::before
-{
+footer > a:last-child::before {
   margin: 0 10px;
   content: "\2022";
 }

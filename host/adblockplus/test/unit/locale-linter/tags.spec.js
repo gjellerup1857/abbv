@@ -17,79 +17,68 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 
-const {validate} = require("../../../build/locale-linter/validators/tags");
+const { validate } = require("../../../build/locale-linter/validators/tags");
 
-
-describe("Locale Linter: Tag Validator", () =>
-{
-  it("should approve valid tags", () =>
-  {
+describe("Locale Linter: Tag Validator", () => {
+  it("should approve valid tags", () => {
     const input = "abc <a>def</a> ghi <a>jkl</a> mno";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should approve valid tag with index", () =>
-  {
+  it("should approve valid tag with index", () => {
     const input = "<a0>foo</a0>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should reject invalid tag order", () =>
-  {
+  it("should reject invalid tag order", () => {
     const input = "</a>foo<a>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject an invalid closing tag", () =>
-  {
+  it("should reject an invalid closing tag", () => {
     const input = "<a0>foo</a>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject invalid tag hierarchy", () =>
-  {
+  it("should reject invalid tag hierarchy", () => {
     const input = "<a>foo<strong>bar</a></strong>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject unknown tag names", () =>
-  {
+  it("should reject unknown tag names", () => {
     const input = "<b>foo</b>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject invalid slot tag syntax", () =>
-  {
+  it("should reject invalid slot tag syntax", () => {
     const input = "<slot>foo</slot>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject whitespace after opening tag", () =>
-  {
+  it("should reject whitespace after opening tag", () => {
     const input = "<a> foo</a>";
     const result = validate(input);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject whitespace before closing tag", () =>
-  {
+  it("should reject whitespace before closing tag", () => {
     const input = "<a>foo </a>";
     const result = validate(input);
 

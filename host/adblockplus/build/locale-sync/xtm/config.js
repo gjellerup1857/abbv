@@ -20,9 +20,23 @@
 const fs = require("fs");
 
 const sourceLanguage = "en_US";
-const targetLanguages = ["ar_EG", "de_DE", "el_GR", "es_ES", "fr_FR", "hu_HU",
-                         "it_IT", "ja_JP", "ko_KR", "nl_NL", "pl_PL", "pt_BR",
-                         "ru_RU", "tr_TR", "zh_CN"];
+const targetLanguages = [
+  "ar_EG",
+  "de_DE",
+  "el_GR",
+  "es_ES",
+  "fr_FR",
+  "hu_HU",
+  "it_IT",
+  "ja_JP",
+  "ko_KR",
+  "nl_NL",
+  "pl_PL",
+  "pt_BR",
+  "ru_RU",
+  "tr_TR",
+  "zh_CN"
+];
 const localesDir = "./locale";
 const restApiUrl = "https://www.xtm-cloud.com/rest-api";
 const customerId = 4419;
@@ -35,16 +49,12 @@ const subjectMatterId = 24234;
  * Maps XTM's locales to locales we use
  * @returns {Object}
  */
-function generateXtmToLocalesMap()
-{
+function generateXtmToLocalesMap() {
   const xtmToLocalesMap = {};
-  for (const locale of fs.readdirSync(localesDir))
-  {
+  for (const locale of fs.readdirSync(localesDir)) {
     const [language, country] = locale.split("_");
-    if (country)
-      xtmToLocalesMap[locale] = locale;
-    else
-      xtmToLocalesMap[`${language}_${language.toUpperCase()}`] = language;
+    if (country) xtmToLocalesMap[locale] = locale;
+    else xtmToLocalesMap[`${language}_${language.toUpperCase()}`] = language;
   }
   // Hardcoding locales, for which country codes can't be extracted:
   xtmToLocalesMap["ar_EG"] = "ar";

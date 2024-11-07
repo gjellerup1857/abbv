@@ -20,43 +20,39 @@
 const nodeCanvas = require("canvas");
 const fs = require("fs");
 const path = require("path");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
 const fsWriteFile = promisify(fs.writeFile);
 
 const baseIcons = {
-  abp: {width: 59, height: 25},
-  background: {width: 64, height: 64},
-  bell: {width: 32, height: 46}
+  abp: { width: 59, height: 25 },
+  background: { width: 64, height: 64 },
+  bell: { width: 32, height: 46 }
 };
 const iconSizes = [16, 20, 32, 40];
 const iconVariants = [
-  {type: "default", content: "abp", color: "ED1E45"},
-  {type: "disabled", content: "abp", color: "A7A7A7"},
-  {type: "notification", content: "bell", color: "0797E1"}
+  { type: "default", content: "abp", color: "ED1E45" },
+  { type: "disabled", content: "abp", color: "A7A7A7" },
+  { type: "notification", content: "bell", color: "0797E1" }
 ];
 const inputDir = "skin/icons/toolbar";
 const outputDir = inputDir;
 
-function hexToRGB(hex)
-{
+function hexToRGB(hex) {
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
   return [r, g, b];
 }
 
-function setColor(ctx, width, height, hexColor)
-{
+function setColor(ctx, width, height, hexColor) {
   const rgbColor = hexToRGB(hexColor);
   const imageData = ctx.getImageData(0, 0, width, height);
-  const {data} = imageData;
+  const { data } = imageData;
   const len = data.length;
 
-  for (let i = 0; i < len; i += 4)
-  {
-    if (data[i + 3] === 0)
-      continue;
+  for (let i = 0; i < len; i += 4) {
+    if (data[i + 3] === 0) continue;
 
     data[i] = rgbColor[0];
     data[i + 1] = rgbColor[1];
@@ -66,23 +62,15 @@ function setColor(ctx, width, height, hexColor)
   ctx.putImageData(imageData, 0, 0);
 }
 
-async function loadImage(name)
-{
+async function loadImage(name) {
   const filepath = path.join(inputDir, `${name}.svg`);
   return nodeCanvas.loadImage(filepath);
 }
 
-async function createIcon(variant, size)
-{
-  const {color, content, type} = variant;
-  const {
-    width: bgWidth,
-    height: bgHeight
-  } = baseIcons.background;
-  const {
-    width: contentWidth,
-    height: contentHeight
-  } = baseIcons[content];
+async function createIcon(variant, size) {
+  const { color, content, type } = variant;
+  const { width: bgWidth, height: bgHeight } = baseIcons.background;
+  const { width: contentWidth, height: contentHeight } = baseIcons[content];
 
   const canvas = nodeCanvas.createCanvas(size, size);
   const ctx = canvas.getContext("2d");
@@ -114,22 +102,17 @@ async function createIcon(variant, size)
   console.log(`Created icon ${outputFilepath}`);
 }
 
-function createIcons()
-{
+function createIcons() {
   const promises = [];
-  for (const variant of iconVariants)
-  {
-    for (const size of iconSizes)
-    {
+  for (const variant of iconVariants) {
+    for (const size of iconSizes) {
       promises.push(createIcon(variant, size));
     }
   }
   return Promise.all(promises);
 }
 
-createIcons()
-  .catch((err) =>
-  {
-    console.error(err);
-    process.exit(1);
-  });
+createIcons().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

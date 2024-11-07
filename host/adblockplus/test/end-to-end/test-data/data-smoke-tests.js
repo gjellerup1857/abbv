@@ -17,16 +17,17 @@
 
 "use strict";
 
-module.exports =
-{
-  allowlistingUrl: "https://adblockinc.gitlab.io/QA-team/adblocking/" +
+module.exports = {
+  allowlistingUrl:
+    "https://adblockinc.gitlab.io/QA-team/adblocking/" +
     "blocking-hiding/blocking-hiding-testpage.html",
   an_chromium: "adblockpluschrome",
   an_firefox: "adbockplusfirefox",
   ap_chrome: "chrome",
   ap_edge: "edge",
   ap_firefox: "firefox",
-  blockHideUrl: "https://adblockinc.gitlab.io/QA-team/adblocking/blocking" +
+  blockHideUrl:
+    "https://adblockinc.gitlab.io/QA-team/adblocking/blocking" +
     "-hiding/blocking-hiding-testpage.html",
   p_chromium: "chromium",
   p_firefox: "gecko",
@@ -40,6 +41,7 @@ module.exports =
   regexMajorBrowserVersion: /(?<=browserVersion":").*?(?=\.)/,
   regexMajorBrowserVersionFF: /(?<=rv:)\d+/,
   regexManifestVersion: /(?<="version": ").*?(?=")/,
-  snippetsPageUrl: "https://adblockinc.gitlab.io/QA-team/adblocking/snippets" +
+  snippetsPageUrl:
+    "https://adblockinc.gitlab.io/QA-team/adblocking/snippets" +
     "/snippets-testpage.html"
 };

@@ -17,81 +17,79 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const notificationScripts =
   require("../test-data/data-notifications-appearance").notificationScripts;
 let popupUrl;
 let lastTest = false;
 
-describe("test client side notifications appearance", function()
-{
+describe("test client side notifications appearance", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({popupUrl} = await beforeSequence());
+  before(async function () {
+    ({ popupUrl } = await beforeSequence());
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should display default notification", async function()
-  {
+  it("should display default notification", async function () {
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
     await browser.executeScript(notificationScripts.defaultNotification, []);
-    expect(await popupPage.
-      getNotificationBorderColor()).to.equal("rgb(255, 143, 0)");
-    expect(await popupPage.
-      isCloseNotificationButtonDisplayed()).to.be.true;
-    expect(await popupPage.
-      isStopShowingNotificationsButtonDisplayed()).to.be.true;
+    expect(await popupPage.getNotificationBorderColor()).to.equal(
+      "rgb(255, 143, 0)"
+    );
+    expect(await popupPage.isCloseNotificationButtonDisplayed()).to.be.true;
+    expect(await popupPage.isStopShowingNotificationsButtonDisplayed()).to.be
+      .true;
     await popupPage.clickLinkInNotificationMessage();
-    await popupPage.switchToTab("Adblock Plus | The world's " +
-      "#1 free ad blocker");
+    await popupPage.switchToTab(
+      "Adblock Plus | The world's #1 free ad blocker"
+    );
     expect(await popupPage.getCurrentUrl()).to.equal(
-      "https://adblockplus.org/");
+      "https://adblockplus.org/"
+    );
   });
 
-  it("should display information notification", async function()
-  {
+  it("should display information notification", async function () {
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
     await browser.executeScript(
-      notificationScripts.informationNotification, []);
-    expect(await popupPage.
-      getNotificationBorderColor()).to.equal("rgb(7, 151, 225)");
-    expect(await popupPage.
-      isCloseNotificationButtonDisplayed()).to.be.true;
-    expect(await popupPage.
-      isStopShowingNotificationsButtonDisplayed()).to.be.true;
+      notificationScripts.informationNotification,
+      []
+    );
+    expect(await popupPage.getNotificationBorderColor()).to.equal(
+      "rgb(7, 151, 225)"
+    );
+    expect(await popupPage.isCloseNotificationButtonDisplayed()).to.be.true;
+    expect(await popupPage.isStopShowingNotificationsButtonDisplayed()).to.be
+      .true;
     await popupPage.clickStopShowingNotificationsButton();
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 
-  it("should display critical notification", async function()
-  {
+  it("should display critical notification", async function () {
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
     await browser.executeScript(notificationScripts.criticalNotification, []);
-    expect(await popupPage.
-      getNotificationBorderColor()).to.equal("rgb(237, 30, 69)");
-    expect(await popupPage.
-      isCloseNotificationButtonDisplayed()).to.be.true;
-    expect(await popupPage.
-      isStopShowingNotificationsButtonDisplayed()).to.be.false;
+    expect(await popupPage.getNotificationBorderColor()).to.equal(
+      "rgb(237, 30, 69)"
+    );
+    expect(await popupPage.isCloseNotificationButtonDisplayed()).to.be.true;
+    expect(await popupPage.isStopShowingNotificationsButtonDisplayed()).to.be
+      .false;
     await popupPage.clickCloseNotificationButton();
     lastTest = true;
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 });

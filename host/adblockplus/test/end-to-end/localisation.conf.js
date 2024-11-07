@@ -33,16 +33,14 @@ exports.config = {
       browserVersion: "latest",
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--lang=de"],
         prefs: {
           "intl.accept_languages": "de-DE",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -62,16 +60,14 @@ exports.config = {
       browserVersion: "latest",
       platformName: "macOS Monterey",
       "ms:edgeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--start-maximized", "--lang=de"],
         prefs: {
           "intl.accept_languages": "de,DE",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -91,16 +87,14 @@ exports.config = {
       browserVersion: "latest-1",
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--lang=ar_SA"],
         prefs: {
           "intl.accept_languages": "ar_SA",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -122,16 +116,14 @@ exports.config = {
       browserVersion: "latest-1",
       platformName: "macOS Monterey",
       "ms:edgeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--start-maximized", "--lang=ar_SA"],
         prefs: {
           "intl.accept_languages": "ar_SA",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -153,16 +145,14 @@ exports.config = {
       browserVersion: "latest-2",
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--lang=ca_CA"],
         prefs: {
           "intl.accept_languages": "ca_CA",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -183,16 +173,14 @@ exports.config = {
       browserVersion: "latest-2",
       platformName: "macOS Monterey",
       "ms:edgeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--start-maximized", "--lang=ca_CA"],
         prefs: {
           "intl.accept_languages": "ca_CA",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]

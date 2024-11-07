@@ -17,219 +17,208 @@
 
 "use strict";
 
-const {beforeSequence,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const multipleFilters =
   require("../test-data/data-custom-filters").multipleFilters;
 
-describe("test advanced tab adding and removing custom filters", function()
-{
+describe("test advanced tab adding and removing custom filters", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    try
-    {
+  afterEach(async function () {
+    try {
       const advancedPage = new AdvancedPage(browser);
       await advancedPage.init();
       await advancedPage.clickCustomFLTableHeadCheckbox();
       await advancedPage.clickDeleteCustomFLButton();
-    }
-    catch (Exception) {}
+    } catch (Exception) {}
   });
 
-  it("should display default state", async function()
-  {
+  it("should display default state", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isCustomFilterListsTableDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isCustomFilterListsTableContentDisplayed()).to.be.false;
-    expect(await advancedPage.
-      isCopyCustomFLButtonDisplayed()).to.be.false;
-    expect(await advancedPage.
-      isDeleteCustomFLButtonDisplayed()).to.be.false;
-    expect(await advancedPage.
-      isAddCustomFilterListButtonEnabled(true)).to.be.true;
+    expect(await advancedPage.isCustomFilterListsTableDisplayed()).to.be.true;
+    expect(await advancedPage.isCustomFilterListsTableContentDisplayed()).to.be
+      .false;
+    expect(await advancedPage.isCopyCustomFLButtonDisplayed()).to.be.false;
+    expect(await advancedPage.isDeleteCustomFLButtonDisplayed()).to.be.false;
+    expect(await advancedPage.isAddCustomFilterListButtonEnabled(true)).to.be
+      .true;
   });
 
-  it("should add a custom filter", async function()
-  {
+  it("should add a custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "test/filter.png");
-    expect(await advancedPage.
-      isAddCustomFilterListButtonEnabled()).to.be.true;
+    await advancedPage.typeTextToAddCustomFilterListInput("test/filter.png");
+    expect(await advancedPage.isAddCustomFilterListButtonEnabled()).to.be.true;
     await advancedPage.clickAddCustomFilterListButton();
-    expect(await advancedPage.
-      isCustomFilterListsTableDisplayed()).to.be.true;
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("test/filter.png")).to.be.true;
-    expect(await advancedPage.
-      isCustomFilterListsFirstItemToggleSelected()).to.be.true;
+    expect(await advancedPage.isCustomFilterListsTableDisplayed()).to.be.true;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable("test/filter.png")
+    ).to.be.true;
+    expect(await advancedPage.isCustomFilterListsFirstItemToggleSelected()).to
+      .be.true;
   });
 
-  it("should add a slow custom filter", async function()
-  {
+  it("should add a slow custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "slow-filter");
+    await advancedPage.typeTextToAddCustomFilterListInput("slow-filter");
     await advancedPage.clickAddCustomFilterListButton();
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("slow-filter")).to.be.true;
-    expect(await advancedPage.
-      isCustomFilterListsFirstItemAlertIconDisplayed()).to.be.true;
+    expect(await advancedPage.verifyTextPresentInCustomFLTable("slow-filter"))
+      .to.be.true;
+    expect(await advancedPage.isCustomFilterListsFirstItemAlertIconDisplayed())
+      .to.be.true;
     await advancedPage.hoverCustomFilterListsFirstItemAlertIcon();
-    expect(await advancedPage.
-      isCustomFLFirstItemAlertIconTooltipDisplayed()).to.be.true;
+    expect(await advancedPage.isCustomFLFirstItemAlertIconTooltipDisplayed()).to
+      .be.true;
   });
 
-  it("should add a comment custom filter", async function()
-  {
+  it("should add a comment custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "!comment");
+    await advancedPage.typeTextToAddCustomFilterListInput("!comment");
     await advancedPage.clickAddCustomFilterListButton();
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("!comment")).to.be.true;
-    expect(await advancedPage.
-      isCustomFilterListsFirstItemToggleDisplayed()).to.be.false;
+    expect(await advancedPage.verifyTextPresentInCustomFLTable("!comment")).to
+      .be.true;
+    expect(await advancedPage.isCustomFilterListsFirstItemToggleDisplayed()).to
+      .be.false;
   });
 
-  it("should support multiline paste", async function()
-  {
+  it("should support multiline paste", async function () {
     // Skip for MV2 because of bug
-    if (process.env.MANIFEST_VERSION === "3")
-    {
+    if (process.env.MANIFEST_VERSION === "3") {
       const advancedPage = new AdvancedPage(browser);
       await advancedPage.init();
-      const multilineString =
-        `##.hiding_filter
+      const multilineString = `##.hiding_filter
         /blocking/filter/*
         duplicate
 
         duplicate
         ! comment`;
-      await advancedPage.typeTextToAddCustomFilterListInput(
-        "");
+      await advancedPage.typeTextToAddCustomFilterListInput("");
       await browser.executeScript(
-        `navigator.clipboard.writeText(\`${multilineString}\`);`, []);
-      const platform = await browser.
-        executeScript("return navigator.platform", []);
+        `navigator.clipboard.writeText(\`${multilineString}\`);`,
+        []
+      );
+      const platform = await browser.executeScript(
+        "return navigator.platform",
+        []
+      );
       let pasteKey = "Control";
-      if (platform.includes("Mac"))
-      {
+      if (platform.includes("Mac")) {
         pasteKey = "Command";
       }
       await browser.keys([pasteKey, "V"]);
-      try
-      {
-        await advancedPage.
-          waitForCustomFilterListsNthItemTextToEqual("##.hiding_filter", "1");
-      }
-      catch (Exception)
-      {
-        await advancedPage.typeTextToAddCustomFilterListInput(
-          "");
+      try {
+        await advancedPage.waitForCustomFilterListsNthItemTextToEqual(
+          "##.hiding_filter",
+          "1"
+        );
+      } catch (Exception) {
+        await advancedPage.typeTextToAddCustomFilterListInput("");
         await browser.pause(1000);
         await browser.keys([pasteKey, "V"]);
-        await advancedPage.
-          waitForCustomFilterListsNthItemTextToEqual("##.hiding_filter", "1");
+        await advancedPage.waitForCustomFilterListsNthItemTextToEqual(
+          "##.hiding_filter",
+          "1"
+        );
       }
-      expect(await advancedPage.
-        verifyTextPresentInCustomFLTable("##.hiding_filter")).to.be.true;
-      expect(await advancedPage.
-        verifyTextPresentInCustomFLTable("/blocking/filter/*")).to.be.true;
-      expect(await advancedPage.
-        verifyTextPresentInCustomFLTable("duplicate")).to.be.true;
-      expect(await advancedPage.
-        verifyTextPresentInCustomFLTable("! comment")).to.be.true;
+      expect(
+        await advancedPage.verifyTextPresentInCustomFLTable("##.hiding_filter")
+      ).to.be.true;
+      expect(
+        await advancedPage.verifyTextPresentInCustomFLTable(
+          "/blocking/filter/*"
+        )
+      ).to.be.true;
+      expect(await advancedPage.verifyTextPresentInCustomFLTable("duplicate"))
+        .to.be.true;
+      expect(await advancedPage.verifyTextPresentInCustomFLTable("! comment"))
+        .to.be.true;
     }
   });
 
-  it("should delete a custom filter", async function()
-  {
+  it("should delete a custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "test/remove-filter.png");
+      "test/remove-filter.png"
+    );
     await advancedPage.clickAddCustomFilterListButton();
     await advancedPage.init();
     await advancedPage.clickCustomFilterListsNthItemCheckbox("1");
     await advancedPage.clickDeleteCustomFLButton();
     await advancedPage.init();
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("test/remove-filter.png")).to.be.false;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable(
+        "test/remove-filter.png"
+      )
+    ).to.be.false;
   });
 
-  it("should delete multiple custom filters", async function()
-  {
+  it("should delete multiple custom filters", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "");
+    await advancedPage.typeTextToAddCustomFilterListInput("");
     await browser.executeScript(
-      `navigator.clipboard.writeText(\`${multipleFilters}\`);`, []);
-    const platform = await browser.
-      executeScript("return navigator.platform", []);
+      `navigator.clipboard.writeText(\`${multipleFilters}\`);`,
+      []
+    );
+    const platform = await browser.executeScript(
+      "return navigator.platform",
+      []
+    );
     let pasteKey = "Control";
-    if (platform.includes("Mac"))
-    {
+    if (platform.includes("Mac")) {
       pasteKey = "Command";
     }
     await browser.keys([pasteKey, "V"]);
-    try
-    {
-      await advancedPage.
-        verifyTextPresentInCustomFLTable("duplicate");
-    }
-    catch (Exception)
-    {
-      await advancedPage.typeTextToAddCustomFilterListInput(
-        "");
+    try {
+      await advancedPage.verifyTextPresentInCustomFLTable("duplicate");
+    } catch (Exception) {
+      await advancedPage.typeTextToAddCustomFilterListInput("");
       await browser.pause(1000);
       await browser.keys([pasteKey, "V"]);
-      await advancedPage.
-        verifyTextPresentInCustomFLTable("duplicate");
+      await advancedPage.verifyTextPresentInCustomFLTable("duplicate");
     }
     await advancedPage.clickCustomFilterListsNthItemCheckbox("3");
     await advancedPage.clickCustomFilterListsNthItemCheckbox("4");
     await advancedPage.clickDeleteCustomFLButton();
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("##.hiding_filter")).to.be.true;
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("/blocking/filter/*")).to.be.true;
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("duplicate", 1000)).to.be.false;
-    expect(await advancedPage.
-      verifyTextPresentInCustomFLTable("! comment", 1000)).to.be.false;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable("##.hiding_filter")
+    ).to.be.true;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable("/blocking/filter/*")
+    ).to.be.true;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable("duplicate", 1000)
+    ).to.be.false;
+    expect(
+      await advancedPage.verifyTextPresentInCustomFLTable("! comment", 1000)
+    ).to.be.false;
   });
 
-  it("should add a duplicated custom filter", async function()
-  {
+  it("should add a duplicated custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "duplicated/filter.png");
+      "duplicated/filter.png"
+    );
     await advancedPage.clickAddCustomFilterListButton();
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "duplicated/filter.png");
-    expect(await advancedPage.
-      isAddCustomFilterListButtonEnabled(true)).to.be.true;
-    expect(await advancedPage.
-      isCustomFilterListsNthItemCheckboxChecked("1")).to.be.true;
+      "duplicated/filter.png"
+    );
+    expect(await advancedPage.isAddCustomFilterListButtonEnabled(true)).to.be
+      .true;
+    expect(await advancedPage.isCustomFilterListsNthItemCheckboxChecked("1")).to
+      .be.true;
     await advancedPage.clickCustomFLTableHeadCheckbox();
   });
 });

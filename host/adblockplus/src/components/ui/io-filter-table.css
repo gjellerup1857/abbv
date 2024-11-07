@@ -19,76 +19,63 @@
 @import "./io-filter-search.css";
 @import "./io-filter-list.css";
 
-io-filter-table
-{
+io-filter-table {
   display: flex;
   flex-direction: column;
 }
 
-io-filter-table[disabled]
-{
+io-filter-table[disabled] {
   opacity: 0.6;
 }
 
-io-filter-table > io-filter-search
-{
+io-filter-table > io-filter-search {
   z-index: 1;
 }
 
-io-filter-table > io-filter-search > input
-{
+io-filter-table > io-filter-search > input {
   padding-right: 24px;
   padding-left: 24px;
 }
 
-io-filter-table > io-filter-list > table
-{
+io-filter-table > io-filter-list > table {
   border-top: 0;
 }
 
-io-filter-table .footer
-{
+io-filter-table .footer {
   display: flex;
   flex-direction: row;
   margin-top: 16px;
   align-items: center;
 }
 
-io-filter-table .footer > *
-{
+io-filter-table .footer > * {
   font-weight: 700;
 }
 
-io-filter-table .footer button
-{
+io-filter-table .footer button {
   padding: 4px;
   text-transform: uppercase;
 }
 
-io-filter-table .footer button[disabled]
-{
+io-filter-table .footer button[disabled] {
   display: none;
 }
 
-io-filter-table .footer button:not(:first-child)
-{
+io-filter-table .footer button:not(:first-child) {
   margin: auto 16px;
 }
 
-io-filter-table .footer .delete
-{
+io-filter-table .footer .delete {
   border: 2px solid var(--color-brand-primary);
   color: var(--color-brand-primary);
 }
 
-io-filter-table .footer .copy
-{
+io-filter-table .footer .copy {
   border: 2px solid #337ba2;
   color: #337ba2;
 }
 
-io-filter-table .footer button::before
-{
+io-filter-table .footer button::before {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -98,19 +85,15 @@ io-filter-table .footer button::before
   transform: translateY(0.1em);
 }
 
-
-io-filter-table .footer .delete::before
-{
+io-filter-table .footer .delete::before {
   background-image: url(/skin/icons/trash.svg?error#error);
 }
 
-io-filter-table .footer .copy::before
-{
+io-filter-table .footer .copy::before {
   background-image: url(/skin/icons/copy.svg);
 }
 
-io-filter-table .footer ul.error
-{
+io-filter-table .footer ul.error {
   border: 0;
   padding: 0;
   color: var(--color-error);
@@ -120,32 +103,28 @@ io-filter-table .footer ul.error
   list-style: none;
 }
 
-io-filter-table .footer ul.error li
-{
+io-filter-table .footer ul.error li {
   padding: var(--padding-secondary) var(--padding-primary);
   margin-bottom: var(--margin-secondary);
   border-radius: 4px;
-  background-color: #ED1E4526;
+  background-color: #ed1e4526;
 }
 
-io-filter-table .footer .error strong
-{
+io-filter-table .footer .error strong {
   border: 1px dashed #bcbcbc;
   border-radius: 5px;
   padding: 5px;
-  background-color: #F3F3F3;
+  background-color: #f3f3f3;
   color: #000;
   font-family: monospace;
 }
 
 html:not([dir="rtl"]) io-filter-table .footer .delete::before,
-html:not([dir="rtl"]) io-filter-table .footer .copy::before
-{
+html:not([dir="rtl"]) io-filter-table .footer .copy::before {
   margin-right: 4px;
 }
 
 html[dir="rtl"] io-filter-table .footer .delete::before,
-html[dir="rtl"] io-filter-table .footer .copy::before
-{
+html[dir="rtl"] io-filter-table .footer .copy::before {
   margin-left: 4px;
 }

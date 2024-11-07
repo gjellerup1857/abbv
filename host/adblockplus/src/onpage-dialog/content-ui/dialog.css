@@ -15,61 +15,54 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-:root
-{
-  --color-premium: #EDA51E;
-  --color-premium-hover: #EB9B05;
+:root {
+  --color-premium: #eda51e;
+  --color-premium-hover: #eb9b05;
 }
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 300;
-  src: local("Source Sans Pro Light"),
+  src:
+    local("Source Sans Pro Light"),
     local("SourceSansPro-Light"),
-    var(--abp-overlay-onpage-dialog-url-font-300)
-    format("woff2");
+    var(--abp-overlay-onpage-dialog-url-font-300) format("woff2");
 }
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 400;
-  src: local("Source Sans Pro Regular"),
+  src:
+    local("Source Sans Pro Regular"),
     local("SourceSansPro-Regular"),
-    var(--abp-overlay-onpage-dialog-url-font-400)
-    format("woff2");
+    var(--abp-overlay-onpage-dialog-url-font-400) format("woff2");
 }
 
-@font-face
-{
+@font-face {
   font-family: "Source Sans Pro";
   font-style: normal;
   font-weight: 700;
-  src: local("Source Sans Pro Bold"),
+  src:
+    local("Source Sans Pro Bold"),
     local("SourceSansPro-Bold"),
-    var(--abp-overlay-onpage-dialog-url-font-700)
-    format("woff2");
+    var(--abp-overlay-onpage-dialog-url-font-700) format("woff2");
 }
 
-body
-{
+body {
   margin: 16px;
   font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
   color: #333;
-  background-color: #FFF;
+  background-color: #fff;
 }
 
-button
-{
+button {
   cursor: pointer;
 }
 
-.flex
-{
+.flex {
   flex: 1;
 }
 
@@ -77,42 +70,36 @@ button
  * Header
  ******************************************************************************/
 
-header
-{
+header {
   display: flex;
   align-items: center;
   margin-bottom: 12px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #C6C6C6;
+  border-bottom: 1px solid #c6c6c6;
   font-size: 16px;
 }
 
 html:not([dir="rtl"]) header > *:not(:last-child),
-html[dir="rtl"] header > *:not(:first-child)
-{
+html[dir="rtl"] header > *:not(:first-child) {
   margin-right: 4px;
 }
 
-#logo
-{
+#logo {
   width: auto;
   height: 20px;
 }
 
-#close
-{
+#close {
   padding: 0px;
   border: 0px;
   background-color: transparent;
 }
 
-#close:hover
-{
+#close:hover {
   filter: brightness(2);
 }
 
-#close::before
-{
+#close::before {
   display: block;
   width: 10px;
   height: 10px;
@@ -122,8 +109,7 @@ html[dir="rtl"] header > *:not(:first-child)
   content: "";
 }
 
-h1
-{
+h1 {
   margin-bottom: 16px;
   font-size: 16px;
 }
@@ -132,21 +118,18 @@ h1
  * Body
  ******************************************************************************/
 
-#body
-{
+#body {
   display: flex;
   flex-direction: column;
   line-height: 1.4em;
 }
 
 html:not([dir="rtl"]) #body > *:not(:last-child),
-html[dir="rtl"] #body > *:not(:first-child)
-{
+html[dir="rtl"] #body > *:not(:first-child) {
   margin-bottom: 1em;
 }
 
-#body p
-{
+#body p {
   margin: 0;
 }
 
@@ -154,26 +137,23 @@ html[dir="rtl"] #body > *:not(:first-child)
  * Footer
  ******************************************************************************/
 
-footer
-{
+footer {
   margin-top: 16px;
   font-size: 16px;
 }
 
-#continue
-{
+#continue {
   width: 100%;
   padding: 14px;
   border: none;
   border-radius: 4px;
   font-size: 16px;
   font-weight: 700;
-  color: #FFF;
+  color: #fff;
   text-transform: uppercase;
   background-color: var(--color-premium);
 }
 
-#continue:hover
-{
+#continue:hover {
   background-color: var(--color-premium-hover);
 }

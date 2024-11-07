@@ -19,313 +19,249 @@
 
 const BasePage = require("./base.page");
 
-class IssueReporterPage extends BasePage
-{
-  constructor(browser)
-  {
+class IssueReporterPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin, tabId)
-  {
+  async init(origin, tabId) {
     await browser.newWindow(`${origin}/issue-reporter.html?${tabId}`);
     await browser.url(`${origin}/issue-reporter.html?${tabId}`);
-    await (await this.cancelButton).waitForExist({timeout: 10000});
+    await (await this.cancelButton).waitForExist({ timeout: 10000 });
   }
 
-  get anonymousSubmissionCheckbox()
-  {
+  get anonymousSubmissionCheckbox() {
     return $("#anonymousSubmission");
   }
 
-  get cancelButton()
-  {
+  get cancelButton() {
     return $("#cancel");
   }
 
-  get commentTextbox()
-  {
+  get commentTextbox() {
     return $("#comment");
   }
 
-  get continueButton()
-  {
+  get continueButton() {
     return $("#continue");
   }
 
-  get detailsButton()
-  {
+  get detailsButton() {
     return $("//button[text()='Details']");
   }
 
-  get doneButton()
-  {
+  get doneButton() {
     return $("//button[text()='Done']");
   }
 
-  get emailTextbox()
-  {
+  get emailTextbox() {
     return $("#email");
   }
 
-  get highlightButton()
-  {
+  get highlightButton() {
     return $("//button[@class='highlight']");
   }
 
-  get highlightIssueHeader()
-  {
+  get highlightIssueHeader() {
     return $("//h1[text()='Highlight issue']");
   }
 
-  get includeConfigCheckbox()
-  {
+  get includeConfigCheckbox() {
     return $("#includeConfig");
   }
 
-  get iStillSeeAdsButton()
-  {
+  get iStillSeeAdsButton() {
     return $("#typeFalseNegative");
   }
 
-  get markIssueButton()
-  {
+  get markIssueButton() {
     return $("//button[text()='Mark issue']");
   }
 
-  get otherIssues()
-  {
+  get otherIssues() {
     return $("#other-issues");
   }
 
-  get pageIsBrokenButton()
-  {
+  get pageIsBrokenButton() {
     return $("#typeFalsePositive");
   }
 
-  get privacyPolicyLink()
-  {
+  get privacyPolicyLink() {
     return $("#privacyPolicy");
   }
 
-  get reportSavedLink()
-  {
+  get reportSavedLink() {
     return $("#link");
   }
 
-  get reportSavedText()
-  {
+  get reportSavedText() {
     return $("//body/p");
   }
 
-  get screenshotArea()
-  {
+  get screenshotArea() {
     return $("//canvas");
   }
 
-  get selectIssueButton()
-  {
+  get selectIssueButton() {
     return $("//button[text()='Select issue']");
   }
 
-  get sendReportButton()
-  {
+  get sendReportButton() {
     return $("#send");
   }
 
-  get sendReportIFrame()
-  {
+  get sendReportIFrame() {
     return $("#result");
   }
 
-  get showReportDataButton()
-  {
+  get showReportDataButton() {
     return $("#showData");
   }
 
-  get showDataValue()
-  {
+  get showDataValue() {
     return $("#showDataValue");
   }
 
-  get topNotification()
-  {
+  get topNotification() {
     return $("#notification-text");
   }
 
-  async clickAnonymousSubmissionCheckbox()
-  {
+  async clickAnonymousSubmissionCheckbox() {
     await this.waitForEnabledThenClick(this.anonymousSubmissionCheckbox);
   }
 
-  async clickCancelButton()
-  {
+  async clickCancelButton() {
     await this.waitForEnabledThenClick(this.cancelButton);
   }
 
-  async clickContinueButton()
-  {
+  async clickContinueButton() {
     await this.waitForEnabledThenClick(this.continueButton, 5000);
   }
 
-  async clickHighlightButton()
-  {
+  async clickHighlightButton() {
     await this.waitForEnabledThenClick(this.highlightButton);
   }
 
-  async clickIncludeConfigCheckbox()
-  {
+  async clickIncludeConfigCheckbox() {
     await this.waitForEnabledThenClick(this.includeConfigCheckbox);
   }
 
-  async clickIStillSeeAdsButton()
-  {
+  async clickIStillSeeAdsButton() {
     await this.waitForEnabledThenClick(this.iStillSeeAdsButton);
   }
 
-  async clickPageIsBrokenButton()
-  {
+  async clickPageIsBrokenButton() {
     await this.waitForEnabledThenClick(this.pageIsBrokenButton);
   }
 
-  async clickPrivacyPolicyLink()
-  {
+  async clickPrivacyPolicyLink() {
     await this.waitForEnabledThenClick(this.privacyPolicyLink);
   }
 
-  async clickReportSavedLink()
-  {
+  async clickReportSavedLink() {
     await browser.switchToFrame(await this.sendReportIFrame);
     await this.waitForEnabledThenClick(this.reportSavedLink);
     await browser.switchToParentFrame();
   }
 
-  async clickSendReportButton()
-  {
+  async clickSendReportButton() {
     await this.waitForEnabledThenClick(this.sendReportButton);
   }
 
-  async clickShowReportDataButton()
-  {
+  async clickShowReportDataButton() {
     await this.waitForEnabledThenClick(this.showReportDataButton);
   }
 
-  async getOtherIssuesText()
-  {
-    return await (await
-    this.otherIssues).getText();
+  async getOtherIssuesText() {
+    return await (await this.otherIssues).getText();
   }
 
-  async getReportSavedText()
-  {
+  async getReportSavedText() {
     await browser.switchToFrame(await this.sendReportIFrame);
-    const savedText = await (await
-    this.reportSavedText).getText();
+    const savedText = await (await this.reportSavedText).getText();
     await browser.switchToParentFrame();
     return savedText;
   }
 
-  async getShowDataValueText()
-  {
-    return await (await
-    this.showDataValue).getText();
+  async getShowDataValueText() {
+    return await (await this.showDataValue).getText();
   }
 
-  async getTopNotificationText()
-  {
-    return await (await
-    this.topNotification).getText();
+  async getTopNotificationText() {
+    return await (await this.topNotification).getText();
   }
 
-  async isCancelButtonDisplayed()
-  {
+  async isCancelButtonDisplayed() {
     return await (await this.cancelButton).isExisting();
   }
 
-  async isCancelButtonEnabled()
-  {
+  async isCancelButtonEnabled() {
     return await (await this.cancelButton).isEnabled();
   }
 
-  async isContinueButtonDisplayed()
-  {
+  async isContinueButtonDisplayed() {
     return await (await this.continueButton).isExisting();
   }
 
-  async isContinueButtonEnabled()
-  {
+  async isContinueButtonEnabled() {
     return await (await this.continueButton).isEnabled();
   }
 
-  async isDetailsButtonDisplayed()
-  {
+  async isDetailsButtonDisplayed() {
     return await (await this.detailsButton).isExisting();
   }
 
-  async isDetailsButtonEnabled()
-  {
+  async isDetailsButtonEnabled() {
     return await (await this.detailsButton).isEnabled();
   }
 
-  async isDoneButtonDisplayed()
-  {
+  async isDoneButtonDisplayed() {
     return await (await this.doneButton).isExisting();
   }
 
-  async isDoneButtonEnabled()
-  {
+  async isDoneButtonEnabled() {
     return await (await this.doneButton).isEnabled();
   }
 
-  async isHighlightIssueHeaderDisplayed()
-  {
+  async isHighlightIssueHeaderDisplayed() {
     return await (await this.highlightIssueHeader).isDisplayed();
   }
 
-  async isMarkIssueButtonDisplayed()
-  {
+  async isMarkIssueButtonDisplayed() {
     return await (await this.markIssueButton).isExisting();
   }
 
-  async isMarkIssueButtonEnabled()
-  {
+  async isMarkIssueButtonEnabled() {
     return await (await this.markIssueButton).isEnabled();
   }
 
-  async isSelectIssueButtonDisplayed()
-  {
+  async isSelectIssueButtonDisplayed() {
     return await (await this.selectIssueButton).isExisting();
   }
 
-  async isScreenshotAreaDisplayed()
-  {
+  async isScreenshotAreaDisplayed() {
     return await (await this.screenshotArea).isDisplayed();
   }
 
-  async isSelectIssueButtonEnabled()
-  {
+  async isSelectIssueButtonEnabled() {
     return await (await this.selectIssueButton).isEnabled();
   }
 
-  async switchToIssueReportLoadingTab()
-  {
+  async switchToIssueReportLoadingTab() {
     await this.switchToTab("Issue report being processed");
   }
 
-  async switchToPrivacyPolicyTab()
-  {
+  async switchToPrivacyPolicyTab() {
     await this.switchToTab("Privacy Policy");
   }
 
-  async typeTextToCommentTextbox(text)
-  {
+  async typeTextToCommentTextbox(text) {
     await (await this.commentTextbox).click();
     await browser.keys(text);
   }
 
-  async typeTextToEmailTextbox(text)
-  {
+  async typeTextToEmailTextbox(text) {
     await (await this.emailTextbox).click();
     await browser.keys(text);
   }

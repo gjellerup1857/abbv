@@ -15,21 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function updateFromURL(data)
-{
-  if (window.top.location.search)
-  {
+function updateFromURL(data) {
+  if (window.top.location.search) {
     const params = window.top.location.search.substr(1).split("&");
 
-    for (const param of params)
-    {
+    for (const param of params) {
       const parts = param.split("=", 2);
-      if (parts.length == 2 && parts[0] in data)
-      {
+      if (parts.length == 2 && parts[0] in data) {
         let value = decodeURIComponent(parts[1]);
-        if (value === "false" || value === "true")
-        {
-          value = (value === "true");
+        if (value === "false" || value === "true") {
+          value = value === "true";
         }
         data[parts[0]] = value;
       }

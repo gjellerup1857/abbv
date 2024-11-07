@@ -20,4 +20,4 @@
 const localesDir = "locale";
 const defaultLocale = "en_US";
 
-module.exports = {localesDir, defaultLocale};
+module.exports = { localesDir, defaultLocale };

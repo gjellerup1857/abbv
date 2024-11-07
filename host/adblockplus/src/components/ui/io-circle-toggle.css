@@ -15,14 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-circle-toggle
-{
+io-circle-toggle {
   outline: none;
   cursor: pointer;
 }
 
-io-circle-toggle[disabled]
-{
+io-circle-toggle[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -35,8 +33,7 @@ io-circle-toggle[disabled]
 
 io-circle-toggle .outer-circle,
 io-circle-toggle .on,
-io-circle-toggle .off
-{
+io-circle-toggle .off {
   transition: all 0.5s cubic-bezier(0.8, 0, 0.25, 1);
 }
 
@@ -47,18 +44,15 @@ io-circle-toggle .off
  * https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/598
  */
 io-circle-toggle[checked] .on,
-io-circle-toggle .off
-{
+io-circle-toggle .off {
   clip-path: circle(100% at 50% 50%);
 }
 
-io-circle-toggle .on
-{
+io-circle-toggle .on {
   clip-path: circle(100% at -100% 50%);
 }
 
-io-circle-toggle[checked] .off
-{
+io-circle-toggle[checked] .off {
   clip-path: circle(100% at 200% 50%);
 }
 
@@ -67,42 +61,35 @@ io-circle-toggle[checked] .off
  * basic shape values for clip-path yet
  */
 io-circle-toggle:not([checked]) .on,
-io-circle-toggle[checked] .off
-{
+io-circle-toggle[checked] .off {
   opacity: 0;
 }
 
-io-circle-toggle .outer-circle
-{
+io-circle-toggle .outer-circle {
   transform: translateX(-32.2px);
   fill: #585858;
   stroke-width: 0;
 }
 
-io-circle-toggle[checked] .outer-circle
-{
+io-circle-toggle[checked] .outer-circle {
   transform: translateX(-11.4px);
-  fill: #0797E1;
+  fill: #0797e1;
 }
 
-io-circle-toggle:not([checked]) .on
-{
+io-circle-toggle:not([checked]) .on {
   transform: translateX(12px);
 }
 
-io-circle-toggle:not([checked]) .off
-{
+io-circle-toggle:not([checked]) .off {
   transform: translateX(14.8px);
 }
 
-io-circle-toggle:focus .outer-circle
-{
+io-circle-toggle:focus .outer-circle {
   stroke: rgba(88, 88, 88, 0.8);
   stroke-width: 5;
 }
 
-io-circle-toggle[checked]:focus .outer-circle
-{
+io-circle-toggle[checked]:focus .outer-circle {
   stroke: rgba(6, 136, 203, 0.8);
   stroke-width: 5;
 }

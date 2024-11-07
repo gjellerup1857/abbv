@@ -17,54 +17,44 @@
 
 import IOElement from "./io-element.mjs";
 import DrawingHandler from "./drawing-handler.mjs";
-import {$} from "./dom.mjs";
+import { $ } from "./dom.mjs";
 
 // <io-highlighter data-max-size=800 />
-class IOHighlighter extends IOElement
-{
+class IOHighlighter extends IOElement {
   // define an initial state per each new instance
   // https://viperhtml.js.org/hyperhtml/documentation/#components-2
-  get defaultState()
-  {
-    return {drawing: "", changeDepth: null};
+  get defaultState() {
+    return { drawing: "", changeDepth: null };
   }
 
   // resolves once the image depth has been fully changed
   // comp.changeDepth.then(...)
-  get changeDepth()
-  {
+  get changeDepth() {
     return this.state.changeDepth;
   }
 
   // returns true if there were hidden/highlighted areas
-  get edited()
-  {
+  get edited() {
     return this.drawingHandler ? this.drawingHandler.paths.size > 0 : false;
   }
 
   // process an image and setup changeDepth promise
   // returns the component for chainability sake
   // comp.edit(imageOrString).changeDepth.then(...);
-  edit(source)
-  {
+  edit(source) {
     return this.setState({
-      changeDepth: new Promise((res, rej) =>
-      {
-        const changeDepth = image =>
-        {
+      changeDepth: new Promise((res, rej) => {
+        const changeDepth = (image) => {
           this.drawingHandler.changeColorDepth(image).then(res, rej);
         };
 
-        if (typeof source === "string")
-        {
+        if (typeof source === "string") {
           // create an image and use the source as data
           const img = this.ownerDocument.createElement("img");
           img.onload = () => changeDepth(img);
           img.onerror = rej;
           img.src = source;
-        }
-        else
-        {
+        } else {
           // assume the source is an Image already
           // (or anything that can be drawn on a canvas)
           changeDepth(source);
@@ -74,12 +64,9 @@ class IOHighlighter extends IOElement
   }
 
   // the component content (invoked automatically on state change too)
-  render()
-  {
-    if (this.state.drawing)
-      this.setAttribute("drawing", this.state.drawing);
-    else
-      this.removeAttribute("drawing");
+  render() {
+    if (this.state.drawing) this.setAttribute("drawing", this.state.drawing);
+    else this.removeAttribute("drawing");
 
     this.html`
     <div class="split">
@@ -87,28 +74,22 @@ class IOHighlighter extends IOElement
         <button
           tabindex="-1"
           class="highlight"
-          onclick="${
-            event =>
-            {
-              if (IOElement.utils.event.isLeftClick(event))
-                changeMode(this, "highlight");
-            }
-          }"
+          onclick="${(event) => {
+            if (IOElement.utils.event.isLeftClick(event))
+              changeMode(this, "highlight");
+          }}"
         >
-          ${{i18n: "issueReporter_screenshot_highlight"}}
+          ${{ i18n: "issueReporter_screenshot_highlight" }}
         </button>
         <button
           tabindex="-1"
           class="hide"
-          onclick="${
-            event =>
-            {
-              if (IOElement.utils.event.isLeftClick(event))
-                changeMode(this, "hide");
-            }
-          }"
+          onclick="${(event) => {
+            if (IOElement.utils.event.isLeftClick(event))
+              changeMode(this, "hide");
+          }}"
         >
-          ${{i18n: "issueReporter_screenshot_hide"}}
+          ${{ i18n: "issueReporter_screenshot_hide" }}
         </button>
       </div>
       <canvas />
@@ -124,17 +105,15 @@ class IOHighlighter extends IOElement
   }
 
   // shortcut for internal canvas.toDataURL()
-  toDataURL()
-  {
+  toDataURL() {
     return $("canvas", this).toDataURL();
   }
 }
 
 IOHighlighter.define("io-highlighter");
 
-const changeMode = (self, mode) =>
-{
+const changeMode = (self, mode) => {
   const drawing = self.state.drawing === mode ? "" : mode;
   self.drawingHandler.mode = mode === "hide" ? "fill" : "stroke";
-  self.setState({drawing});
+  self.setState({ drawing });
 };

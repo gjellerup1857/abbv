@@ -16,67 +16,52 @@
  */
 
 import filterNotifier from "./filter-notifier.mjs";
-import {Subscription} from "./subscription-classes.mjs";
-import {subscriptionDetails, USER_ID} from "../config/subscriptions.mjs";
+import { Subscription } from "./subscription-classes.mjs";
+import { subscriptionDetails, USER_ID } from "../config/subscriptions.mjs";
 
 const knownSubscriptions = new Map();
-for (const url in subscriptionDetails)
-{
-  if (!subscriptionDetails[url].installed)
-    continue;
+for (const url in subscriptionDetails) {
+  if (!subscriptionDetails[url].installed) continue;
 
-  knownSubscriptions.set(
-    url,
-    Subscription.fromURL(url)
-  );
+  knownSubscriptions.set(url, Subscription.fromURL(url));
 }
 
 const customSubscription = knownSubscriptions.get(USER_ID);
 
 const filterStorage = {
-  *subscriptions()
-  {
+  *subscriptions() {
     yield* this.knownSubscriptions.values();
   },
 
-  get knownSubscriptions()
-  {
+  get knownSubscriptions() {
     return knownSubscriptions;
   },
 
-  addSubscription(subscription)
-  {
-    const {fromURL} = Subscription;
+  addSubscription(subscription) {
+    const { fromURL } = Subscription;
 
-    if (!knownSubscriptions.has(subscription.url))
-    {
+    if (!knownSubscriptions.has(subscription.url)) {
       knownSubscriptions.set(subscription.url, fromURL(subscription.url));
       filterNotifier.emit("subscription.added", subscription);
     }
   },
 
-  removeSubscription(subscription)
-  {
-    if (knownSubscriptions.has(subscription.url))
-    {
+  removeSubscription(subscription) {
+    if (knownSubscriptions.has(subscription.url)) {
       knownSubscriptions.delete(subscription.url);
       filterNotifier.emit("subscription.removed", subscription);
     }
   },
 
-  addFilter(filter)
-  {
-    for (const text of customSubscription.filterText())
-    {
-      if (text == filter.text)
-        return;
+  addFilter(filter) {
+    for (const text of customSubscription.filterText()) {
+      if (text == filter.text) return;
     }
     customSubscription.addFilterText(filter.text);
     filterNotifier.emit("filter.added", filter);
   },
 
-  removeFilter(filter)
-  {
+  removeFilter(filter) {
     customSubscription.removeFilter(filter.text);
   }
 };

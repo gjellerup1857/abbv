@@ -19,31 +19,25 @@
 
 const BasePage = require("./base.page");
 
-class TestPage extends BasePage
-{
-  constructor(browser)
-  {
+class TestPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get _progress()
-  {
+  get _progress() {
     return $("[data-progress='done']");
   }
 
-  async init()
-  {
-    await (await this._progress).waitForExist({timeout: 10000});
+  async init() {
+    await (await this._progress).waitForExist({ timeout: 10000 });
   }
 
-  async getFailureCountText()
-  {
+  async getFailureCountText() {
     return (await $("#mocha-stats .failures > em")).getText();
   }
 
-  async getFailureDescriptionsText()
-  {
+  async getFailureDescriptionsText() {
     const failureElements = await $$(".fail > h2, .fail .error");
     const descriptions = await Promise.all(
       failureElements.map((element) => element.getText())
@@ -51,8 +45,7 @@ class TestPage extends BasePage
     return descriptions.join(", ");
   }
 
-  async getSuccessCountText()
-  {
+  async getSuccessCountText() {
     return (await $("#mocha-stats .passes > em")).getText();
   }
 }

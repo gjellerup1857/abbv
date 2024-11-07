@@ -19,95 +19,78 @@
 
 const BasePage = require("./base.page");
 
-class PremiumHeaderChunk extends BasePage
-{
-  constructor(browser)
-  {
+class PremiumHeaderChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get learnMorePremium()
-  {
+  get learnMorePremium() {
     return $("//p[@id='premium-upgrade-description']/a");
   }
 
-  get manageMySubscriptionButton()
-  {
+  get manageMySubscriptionButton() {
     return $("//a[@data-i18n='options_premium_manage']");
   }
 
-  get premiumButton()
-  {
+  get premiumButton() {
     return $("//a[@class='button premium-label']");
   }
 
-  get premiumHeader()
-  {
+  get premiumHeader() {
     return $("//aside[@class='premium-banner-container']");
   }
 
-  get premiumUpgradeText()
-  {
+  get premiumUpgradeText() {
     return $("#premium-upgrade-description");
   }
 
-  get upgradeButton()
-  {
+  get upgradeButton() {
     return $("//div/a[@data-i18n='options_upgrade_button']");
   }
 
-  async clickLearnMorePremiumLink()
-  {
+  async clickLearnMorePremiumLink() {
     await this.waitForEnabledThenClick(this.learnMorePremium);
   }
 
-  async clickManageMySubscriptionButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      manageMySubscriptionButton);
+  async clickManageMySubscriptionButton() {
+    await this.waitForEnabledThenClick(this.manageMySubscriptionButton);
   }
 
-  async clickPremiumButton()
-  {
+  async clickPremiumButton() {
     await this.waitForEnabledThenClick(this.premiumButton);
   }
 
-  async clickUpgradeButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      upgradeButton);
+  async clickUpgradeButton() {
+    await this.waitForEnabledThenClick(this.upgradeButton);
   }
 
-  async getPremiumUpgradeText()
-  {
+  async getPremiumUpgradeText() {
     return await (await this.premiumUpgradeText).getText();
   }
 
-  async isLearnMorePremiumLinkDisplayed()
-  {
+  async isLearnMorePremiumLinkDisplayed() {
     return await this.waitForDisplayedNoError(this.learnMorePremium);
   }
 
-  async isManageMySubscriptionButtonDisplayed()
-  {
+  async isManageMySubscriptionButtonDisplayed() {
     return await (await this.manageMySubscriptionButton).isDisplayed();
   }
 
-  async isPremiumButtonDisplayed()
-  {
+  async isPremiumButtonDisplayed() {
     return await (await this.premiumButton).isDisplayed();
   }
 
-  async isPremiumHeaderDisplayed()
-  {
+  async isPremiumHeaderDisplayed() {
     return await this.waitForDisplayedNoError(this.premiumHeader);
   }
 
-  async isUpgradeButtonDisplayed(timeout)
-  {
+  async isUpgradeButtonDisplayed(timeout) {
     return await this.waitForDisplayedNoError(
-      this.upgradeButton, false, timeout);
+      this.upgradeButton,
+      false,
+      timeout
+    );
   }
 }
 

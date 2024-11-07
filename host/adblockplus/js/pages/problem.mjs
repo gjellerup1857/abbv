@@ -16,25 +16,22 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {convertDoclinks} from "../common.mjs";
-import {$} from "../dom.mjs";
-import {initI18n} from "../../src/i18n/index.ts";
+import { convertDoclinks } from "../common.mjs";
+import { $ } from "../dom.mjs";
+import { initI18n } from "../../src/i18n/index.ts";
 
 import "../../src/problem/ui/problem.css";
 import "../landing.mjs";
 
-messaging.app.getInfo().then((info) =>
-{
+messaging.app.getInfo().then((info) => {
   document.body.dataset.application = info.application;
 
-  messaging.doclinks.get(`${info.store}_store`).then((url) =>
-  {
+  messaging.doclinks.get(`${info.store}_store`).then((url) => {
     $("#store-link").href = url;
   });
 });
 
-function initOSReference(name, idx)
-{
+function initOSReference(name, idx) {
   const element = $(`#solution em[data-i18n-index="${idx}"]`);
   element.classList.add("os", name);
   element.title = browser.i18n.getMessage(`problem_os_${name}`);

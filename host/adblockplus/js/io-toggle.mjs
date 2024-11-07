@@ -17,49 +17,42 @@
 
 import IOElement from "./io-element.mjs";
 
-class IOToggle extends IOElement
-{
+class IOToggle extends IOElement {
   // action, checked, and disabled should be reflected down the button
-  static get observedAttributes()
-  {
+  static get observedAttributes() {
     return ["checked", "disabled"];
   }
 
-  static get booleanAttributes()
-  {
+  static get booleanAttributes() {
     return ["checked", "disabled"];
   }
 
-  attributeChangedCallback()
-  {
+  attributeChangedCallback() {
     this.render();
   }
 
-  created()
-  {
+  created() {
     this.addEventListener("click", this);
     this.render();
   }
 
-  onclick(event)
-  {
-    if (!this.disabled)
-    {
+  onclick(event) {
+    if (!this.disabled) {
       this.checked = !this.checked;
-      if (this.ownerDocument.activeElement !== this.child)
-      {
+      if (this.ownerDocument.activeElement !== this.child) {
         this.child.focus();
       }
-      this.firstElementChild.dispatchEvent(new CustomEvent("change", {
-        bubbles: true,
-        cancelable: true,
-        detail: this.checked
-      }));
+      this.firstElementChild.dispatchEvent(
+        new CustomEvent("change", {
+          bubbles: true,
+          cancelable: true,
+          detail: this.checked
+        })
+      );
     }
   }
 
-  render()
-  {
+  render() {
     this.html`
     <button
       role="checkbox"

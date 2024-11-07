@@ -19,23 +19,18 @@
 
 const BasePage = require("./base.page");
 
-class ManagePremiumAccountPage extends BasePage
-{
-  constructor(browser)
-  {
+class ManagePremiumAccountPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get needAFewMinutesError()
-  {
+  get needAFewMinutesError() {
     return $("#card2-error-6");
   }
 
-  async isNeedAFewMinutesErrorDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-      needAFewMinutesError);
+  async isNeedAFewMinutesErrorDisplayed() {
+    return await this.waitForDisplayedNoError(this.needAFewMinutesError);
   }
 }
 

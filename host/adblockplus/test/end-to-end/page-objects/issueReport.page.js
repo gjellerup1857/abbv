@@ -19,232 +19,188 @@
 
 const BasePage = require("./base.page");
 
-class IssueReportPage extends BasePage
-{
-  constructor(browser)
-  {
+class IssueReportPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get commentLabelCell()
-  {
+  get commentLabelCell() {
     return $("//*[@id='commentRow']/td[1]");
   }
 
-  get commentValueCell()
-  {
+  get commentValueCell() {
     return $("//*[@id='commentRow']/td[2]");
   }
 
-  get emailLabelCell()
-  {
+  get emailLabelCell() {
     return $("//*[@id='emailRow']/td");
   }
 
-  get emailValueCell()
-  {
+  get emailValueCell() {
     return $("//*[@id='emailCell']/a");
   }
 
-  get filtersTabButton()
-  {
+  get filtersTabButton() {
     return $("#filtersTab");
   }
 
-  get filtersTable()
-  {
+  get filtersTable() {
     return $("#filters");
   }
 
-  get issueTypeLabelCell()
-  {
+  get issueTypeLabelCell() {
     return $("//*[@id='typeRow']/td[1]");
   }
 
-  get issueTypeValueCell()
-  {
+  get issueTypeValueCell() {
     return $("//*[@id='typeRow']/td[2]");
   }
 
-  get reportBeingProcessedText()
-  {
+  get reportBeingProcessedText() {
     return $("//body/div");
   }
 
-  get requestsTabButton()
-  {
+  get requestsTabButton() {
     return $("#requestsTab");
   }
 
-  get requestsTable()
-  {
+  get requestsTable() {
     return $("#requests");
   }
 
-  get screenshotTabButton()
-  {
+  get screenshotTabButton() {
     return $("#screenshotTab");
   }
 
-  get screenshotTabImage()
-  {
+  get screenshotTabImage() {
     return $("//*[@id='screenshotBox']/p/img");
   }
 
-  get statusLabelCell()
-  {
+  get statusLabelCell() {
     return $("//*[@id='statusRow']/td[1]");
   }
 
-  get statusValueCell()
-  {
+  get statusValueCell() {
     return $("#statusCell");
   }
 
-  get subscriptionsTabButton()
-  {
+  get subscriptionsTabButton() {
     return $("#subscriptionsTab");
   }
 
-  get subscriptionsTable()
-  {
+  get subscriptionsTable() {
     return $("#subscriptions");
   }
 
-  get timeLabelCell()
-  {
+  get timeLabelCell() {
     return $("//*[@id='timeRow']/td[1]");
   }
 
-  get timeValueCell()
-  {
+  get timeValueCell() {
     return $("//*[@id='timeRow']/td[2]");
   }
 
-  get websiteLabelCell()
-  {
+  get websiteLabelCell() {
     return $("//*[@id='mainURLRow']/td[1]");
   }
 
-  get websiteValueCell()
-  {
+  get websiteValueCell() {
     return $("//*[@id='mainURLRow']/td[2]/a");
   }
 
-  async clickFiltersTabButton()
-  {
+  async clickFiltersTabButton() {
     await this.waitForEnabledThenClick(this.filtersTabButton);
   }
 
-  async clickRequestsTabButton()
-  {
+  async clickRequestsTabButton() {
     await this.waitForEnabledThenClick(this.requestsTabButton);
   }
 
-  async clickScreenshotTabButton()
-  {
+  async clickScreenshotTabButton() {
     await this.waitForEnabledThenClick(this.screenshotTabButton);
   }
 
-  async clickSubscriptionsTabButton()
-  {
+  async clickSubscriptionsTabButton() {
     await this.waitForEnabledThenClick(this.subscriptionsTabButton);
   }
 
-  async getCommentLabelText()
-  {
+  async getCommentLabelText() {
     return await (await this.commentLabelCell).getText();
   }
 
-  async getCommentValueText()
-  {
+  async getCommentValueText() {
     return await (await this.commentValueCell).getText();
   }
 
-  async getEmailLabelCellText()
-  {
+  async getEmailLabelCellText() {
     return await (await this.emailLabelCell).getText();
   }
 
-  async getEmailValueCellText()
-  {
+  async getEmailValueCellText() {
     return await (await this.emailValueCell).getText();
   }
 
-  async getIssueTypeLabelText()
-  {
+  async getIssueTypeLabelText() {
     return await (await this.issueTypeLabelCell).getText();
   }
 
-  async getIssueTypeValueText()
-  {
+  async getIssueTypeValueText() {
     return await (await this.issueTypeValueCell).getText();
   }
 
-  async getNumberOfRows(tableElement)
-  {
+  async getNumberOfRows(tableElement) {
     return (await tableElement.$$("tr")).length;
   }
 
-  async getNumberOfRowsForFilters()
-  {
+  async getNumberOfRowsForFilters() {
     return this.getNumberOfRows(await this.filtersTable);
   }
 
-  async getNumberOfRowsForRequests()
-  {
+  async getNumberOfRowsForRequests() {
     return this.getNumberOfRows(await this.requestsTable);
   }
 
-  async getNumberOfRowsForSubscriptions()
-  {
+  async getNumberOfRowsForSubscriptions() {
     return this.getNumberOfRows(await this.subscriptionsTable);
   }
 
-  async getReportBeingProcessedText()
-  {
+  async getReportBeingProcessedText() {
     return await (await this.reportBeingProcessedText).getText();
   }
 
-  async getStatusLabelCellText()
-  {
+  async getStatusLabelCellText() {
     return await (await this.statusLabelCell).getText();
   }
 
-  async getStatusValueCellText()
-  {
+  async getStatusValueCellText() {
     return await (await this.statusValueCell).getText();
   }
 
-  async getTimeLabelCellText()
-  {
+  async getTimeLabelCellText() {
     return await (await this.timeLabelCell).getText();
   }
 
-  async getTimeValueCellText()
-  {
+  async getTimeValueCellText() {
     return await (await this.timeValueCell).getText();
   }
 
-  async getWebsiteLabelCellText()
-  {
+  async getWebsiteLabelCellText() {
     return await (await this.websiteLabelCell).getText();
   }
 
-  async getWebsiteValueCellHref()
-  {
+  async getWebsiteValueCellHref() {
     return await (await this.websiteValueCell).getAttribute("href");
   }
 
-  async isScreenshotDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.screenshotTabImage,
-                                              reverseOption);
+  async isScreenshotDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.screenshotTabImage,
+      reverseOption
+    );
   }
 
-  async switchToIssueReportTab()
-  {
+  async switchToIssueReportTab() {
     await this.switchToTab("Issue report for adblockinc.gitlab.io", 90000);
   }
 }

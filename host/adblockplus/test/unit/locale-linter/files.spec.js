@@ -17,45 +17,39 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 const path = require("path");
 
-const {validate} = require("../../../build/locale-linter/validators/files");
+const { validate } = require("../../../build/locale-linter/validators/files");
 
-describe("Locale Linter: File Validator", () =>
-{
+describe("Locale Linter: File Validator", () => {
   const pathToData = path.resolve(__dirname, "./data");
 
-  it("should approve a valid file", async() =>
-  {
+  it("should approve a valid file", async () => {
     const result = await validate(`${pathToData}/en_US/file.json`);
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should reject a file with an invalid extension", async() =>
-  {
+  it("should reject a file with an invalid extension", async () => {
     const result = await validate(`${pathToData}/en_US/file.xml`);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject a file path to a non-existent file", async() =>
-  {
+  it("should reject a file path to a non-existent file", async () => {
     const result = await validate(`${pathToData}/en_US/no-such-file.json`);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject a file path argument with an invalid locale", async() =>
-  {
+  it("should reject a file path argument with an invalid locale", async () => {
     const result = await validate(`${pathToData}/en-US/file.json`);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject a file that's not valid JSON", async() =>
-  {
+  it("should reject a file that's not valid JSON", async () => {
     const result = await validate(`${pathToData}/en_US/invalid.json`);
 
     expect(result.hasErrors()).to.be.true;

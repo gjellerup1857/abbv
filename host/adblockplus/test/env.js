@@ -25,41 +25,33 @@ const origModules = new Map();
 const origOverrides = new Set();
 const origRequire = metaModule.prototype.require;
 
-class TestEnvironment
-{
-  constructor(config)
-  {
+class TestEnvironment {
+  constructor(config) {
     this._globals = config.globals;
     this.setGlobals(config.globals);
 
     this._modules = {};
-    if (config.modules)
-    {
+    if (config.modules) {
       this._modules = config.modules;
       this.setModules(config.modules);
     }
   }
 
-  get globals()
-  {
+  get globals() {
     return this._globals;
   }
 
-  get modules()
-  {
+  get modules() {
     return this._modules;
   }
 
-  override(parent, name, override)
-  {
-    origOverrides.add({parent, name, original: parent[name]});
+  override(parent, name, override) {
+    origOverrides.add({ parent, name, original: parent[name] });
     parent[name] = override;
   }
 
-  requireModule(modulePath)
-  {
-    for (const key of Object.keys(require.cache))
-    {
+  requireModule(modulePath) {
+    for (const key of Object.keys(require.cache)) {
       delete require.cache[key];
     }
 
@@ -67,50 +59,41 @@ class TestEnvironment
     return origRequire.call(this, require.resolve(modulePath));
   }
 
-  _restoreGlobals()
-  {
-    for (const name of origGlobals.keys())
-    {
+  _restoreGlobals() {
+    for (const name of origGlobals.keys()) {
       global[name] = origGlobals.get(name);
     }
     origGlobals.clear();
   }
 
-  _restoreModules()
-  {
+  _restoreModules() {
     metaModule.prototype.require = origRequire;
     origModules.clear();
   }
 
-  _restoreOverrides()
-  {
-    for (const {parent, name, original} of origOverrides)
-    {
+  _restoreOverrides() {
+    for (const { parent, name, original } of origOverrides) {
       parent[name] = original;
     }
     origOverrides.clear();
   }
 
-  restore()
-  {
+  restore() {
     this._restoreGlobals();
     this._restoreModules();
     this._restoreOverrides();
   }
 
-  setGlobals(overrides)
-  {
-    for (const name in overrides)
-    {
+  setGlobals(overrides) {
+    for (const name in overrides) {
       origGlobals.set(name, global[name]);
       global[name] = overrides[name];
     }
   }
 
-  setModules(overrides)
-  {
-    metaModule.prototype.require =
-      (name) => overrides[name] || this._modules[name];
+  setModules(overrides) {
+    metaModule.prototype.require = (name) =>
+      overrides[name] || this._modules[name];
   }
 }
 exports.TestEnvironment = TestEnvironment;

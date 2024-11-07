@@ -26,8 +26,7 @@ const { blockHideUrl } = testData;
 export default function () {
   before(async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
     // update the authorized keys and reload extension
     await updateExtPrefAPIKey("allowlisting_authorizedKeys");

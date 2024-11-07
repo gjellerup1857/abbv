@@ -19,18 +19,18 @@ import gulp from "gulp";
 import mergeTranslations from "../utils/gulp-merge-translations.mjs";
 import changePath from "../utils/gulp-change-path.mjs";
 
-export function translations(locales)
-{
-  return gulp.src(locales.src)
-    .pipe(mergeTranslations(
-      {
+export function translations(locales) {
+  return gulp
+    .src(locales.src)
+    .pipe(
+      mergeTranslations({
         fileName: "messages.json"
-      }))
+      })
+    )
     .pipe(changePath(locales.dest));
 }
 
-function getRequiredInfo(manifest)
-{
+function getRequiredInfo(manifest) {
   const result = {};
   const limits = {
     name: 12,
@@ -40,9 +40,8 @@ function getRequiredInfo(manifest)
   };
 
   result.fields = Object.values(manifest)
-    .filter(value => typeof value == "string" && value.match("__MSG"))
-    .map(name =>
-    {
+    .filter((value) => typeof value == "string" && value.match("__MSG"))
+    .map((name) => {
       const parsed = name.replace(/(__MSG_)|(__)/g, "");
       return {
         name: parsed,
@@ -55,19 +54,19 @@ function getRequiredInfo(manifest)
   return result;
 }
 
-export function chromeTranslations(locales, manifest)
-{
-  return gulp.src(locales.src)
-    .pipe(mergeTranslations(
-      {
+export function chromeTranslations(locales, manifest) {
+  return gulp
+    .src(locales.src)
+    .pipe(
+      mergeTranslations({
         fileName: "messages.json",
         defaults: getRequiredInfo(manifest)
-      }))
-    .pipe(changePath(
-      locales.dest,
-      {
+      })
+    )
+    .pipe(
+      changePath(locales.dest, {
         match: /es_MX/g,
         replace: "es_419"
-      }
-    ));
+      })
+    );
 }

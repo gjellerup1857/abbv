@@ -15,85 +15,74 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function Page(source)
-{
+export function Page(source) {
   this._source = source;
 }
-Page.prototype =
-{
-  sendMessage(message)
-  {
-    this._source.postMessage({
-      type: "message",
-      messageId: -1,
-      payload: message
-    }, "*");
+Page.prototype = {
+  sendMessage(message) {
+    this._source.postMessage(
+      {
+        type: "message",
+        messageId: -1,
+        payload: message
+      },
+      "*"
+    );
   }
 };
 
-export const onMessage =
-{
-  addListener(listener)
-  {
-    listener._extWrapper = function(event)
-    {
-      if (event.data.type != "message")
-        return;
+export const onMessage = {
+  addListener(listener) {
+    listener._extWrapper = function (event) {
+      if (event.data.type != "message") return;
 
-      const {messageId} = event.data;
+      const { messageId } = event.data;
       const sender = {
         page: new Page(event.source)
       };
-      const callback = function(message)
-      {
-        event.source.postMessage({
-          type: "response",
-          messageId,
-          payload: message
-        }, "*");
+      const callback = function (message) {
+        event.source.postMessage(
+          {
+            type: "response",
+            messageId,
+            payload: message
+          },
+          "*"
+        );
       };
       listener(event.data.payload, sender, callback);
     };
     window.addEventListener("message", listener._extWrapper, false);
   },
 
-  removeListener(listener)
-  {
+  removeListener(listener) {
     if ("_extWrapper" in listener)
       window.removeEventListener("message", listener._extWrapper, false);
   }
 };
 
-export class Port
-{
-  constructor(id, name)
-  {
+export class Port {
+  constructor(id, name) {
     this._id = id;
     this._name = name;
   }
 
-  get name()
-  {
+  get name() {
     return this._name;
   }
 
-  get onDisconnect()
-  {
+  get onDisconnect() {
     return {
       addListener() {}
     };
   }
 
-  get onMessage()
-  {
+  get onMessage() {
     const id = this._id;
     return {
-      addListener(listener)
-      {
-        window.addEventListener("message", (event) =>
-        {
-          if (event.data.type != "port" || event.data.id != id)
-            return;
+      addListener(listener) {
+        window.addEventListener("message", (event) => {
+          if (event.data.type != "port" || event.data.id != id) return;
 
           listener(event.data.payload);
         });
@@ -101,10 +90,9 @@ export class Port
     };
   }
 
-  get sender()
-  {
+  get sender() {
     return {
-      tab: {id: -1}
+      tab: { id: -1 }
     };
   }
 }

@@ -17,137 +17,121 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
 let lastTest = false;
 
-describe("test options page general tab language", function()
-{
+describe("test options page general tab language", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should have english in language table", async function()
-  {
+  it("should have english in language table", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(await generalPage.isEnglishLanguageTableItemDisplayed()).to.be.true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isEasyListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyListFLDisplayed()).to.be.true;
   });
 
-  it("should add a language", async function()
-  {
+  it("should add a language", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickAddALanguageButton();
-    expect(await generalPage.
-      isLanguagesDropdownDisplayed()).to.be.true;
+    expect(await generalPage.isLanguagesDropdownDisplayed()).to.be.true;
     await generalPage.clickDeutschPlusEnglishListItem();
-    expect(await generalPage.
-      isLanguagesDropdownDisplayed(true)).to.be.true;
-    expect(await generalPage.
-      isDeutschPlusEnglishLanguageTableItemDisplayed()).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageTableItemDisplayed()).to.be.true;
-    expect(await generalPage.
-      isDeutschPlusEnglishLanguageTrashIconDisplayed()).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageTrashIconDisplayed()).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageChangeButtonDisplayed()).to.be.false;
+    expect(await generalPage.isLanguagesDropdownDisplayed(true)).to.be.true;
+    expect(await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed())
+      .to.be.true;
+    expect(await generalPage.isEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(await generalPage.isDeutschPlusEnglishLanguageTrashIconDisplayed())
+      .to.be.true;
+    expect(await generalPage.isEnglishLanguageTrashIconDisplayed()).to.be.true;
+    expect(await generalPage.isEnglishLanguageChangeButtonDisplayed()).to.be
+      .false;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isEasyListFLDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isEasyListGermanyPlusEasyListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyListGermanyPlusEasyListFLDisplayed()).to.be
+      .true;
   });
 
-  it("should remove a language", async function()
-  {
+  it("should remove a language", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickAddALanguageButton();
     await generalPage.clickDeutschPlusEnglishListItem();
     await browser.pause(1500);
     await generalPage.clickDeutschPlusEnglishLanguageTrashIcon();
     await browser.pause(1500);
-    if (await generalPage.
-      isDeutschPlusEnglishLanguageTableItemDisplayed(true) == false)
-    {
+    if (
+      (await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed(
+        true
+      )) == false
+    ) {
       await generalPage.clickDeutschPlusEnglishLanguageTrashIcon();
       await browser.pause(1500);
     }
-    expect(await generalPage.
-      isDeutschPlusEnglishLanguageTableItemDisplayed(true)).to.be.true;
+    expect(
+      await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed(true)
+    ).to.be.true;
     await browser.pause(500);
-    expect(await generalPage.
-      isEnglishLanguageChangeButtonDisplayed()).to.be.true;
+    expect(await generalPage.isEnglishLanguageChangeButtonDisplayed()).to.be
+      .true;
     await browser.pause(500);
-    expect(await generalPage.
-      isEnglishLanguageTrashIconDisplayed()).to.be.false;
+    expect(await generalPage.isEnglishLanguageTrashIconDisplayed()).to.be.false;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isEasyListGermanyPlusEasyListFLDisplayed()).to.be.false;
+    expect(await advancedPage.isEasyListGermanyPlusEasyListFLDisplayed()).to.be
+      .false;
   }, 2);
 
-  it("should have filter list suggestions checkbox disabled", async function()
-  {
+  it("should have filter list suggestions checkbox disabled", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isFilterListsSuggestionsCheckboxSelected(5000, true)).to.be.true;
+    expect(
+      await generalPage.isFilterListsSuggestionsCheckboxSelected(5000, true)
+    ).to.be.true;
     await generalPage.clickFilterListsSuggestionsCheckbox();
-    expect(await generalPage.
-      isFilterListsSuggestionsCheckboxSelected()).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(await generalPage.isFilterListsSuggestionsCheckboxSelected()).to.be
+      .true;
+    expect(await generalPage.isEnglishLanguageTableItemDisplayed()).to.be.true;
     await generalPage.clickFilterListsSuggestionsCheckbox();
-    expect(await generalPage.
-      isFilterListsSuggestionsCheckboxSelected(5000, true)).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(
+      await generalPage.isFilterListsSuggestionsCheckboxSelected(5000, true)
+    ).to.be.true;
+    expect(await generalPage.isEnglishLanguageTableItemDisplayed()).to.be.true;
   });
 
-  it("should change a language", async function()
-  {
+  it("should change a language", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickEnglishLanguageChangeButton();
-    if (await generalPage.
-      isLanguagesDropdownDisplayed() == false)
-    {
+    if ((await generalPage.isLanguagesDropdownDisplayed()) == false) {
       await generalPage.clickEnglishLanguageChangeButton();
     }
-    expect(await generalPage.
-      isLanguagesDropdownDisplayed()).to.be.true;
+    expect(await generalPage.isLanguagesDropdownDisplayed()).to.be.true;
     await generalPage.clickDeutschPlusEnglishListItem();
-    expect(await generalPage.
-      isLanguagesDropdownDisplayed(true)).to.be.true;
-    expect(await generalPage.
-      isDeutschPlusEnglishLanguageTableItemDisplayed()).to.be.true;
-    expect(await generalPage.
-      isEnglishLanguageTableItemDisplayed(true)).to.be.true;
+    expect(await generalPage.isLanguagesDropdownDisplayed(true)).to.be.true;
+    expect(await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed())
+      .to.be.true;
+    expect(await generalPage.isEnglishLanguageTableItemDisplayed(true)).to.be
+      .true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     lastTest = true;
-    expect(await advancedPage.
-      isEasyListFLDisplayed()).to.be.false;
-    expect(await advancedPage.
-      isEasyListGermanyPlusEasyListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyListFLDisplayed()).to.be.false;
+    expect(await advancedPage.isEasyListGermanyPlusEasyListFLDisplayed()).to.be
+      .true;
   });
 });

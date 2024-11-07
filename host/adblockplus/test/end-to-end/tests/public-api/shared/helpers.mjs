@@ -103,7 +103,8 @@ export async function sendExtCommand({
 
       // if the event is not received in 5 seconds, consider it failed
       setTimeout(() => callback(null), 5000);
-    }, {
+    },
+    {
       domain,
       signature,
       timestamp,

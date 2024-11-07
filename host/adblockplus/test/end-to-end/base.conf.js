@@ -19,12 +19,15 @@
 
 "use strict";
 
-const {suites} = require("./suites.js");
+const { suites } = require("./suites.js");
 const commitHash = require("child_process")
   .execSync("git rev-parse --short HEAD")
-  .toString().trim();
+  .toString()
+  .trim();
 
-const buildNumber = process.env.CI_COMMIT_SHORT_SHA ? process.env.CI_COMMIT_SHORT_SHA : `local-run-${commitHash}`;
+const buildNumber = process.env.CI_COMMIT_SHORT_SHA
+  ? process.env.CI_COMMIT_SHORT_SHA
+  : `local-run-${commitHash}`;
 
 exports.config = {
   buildNumber,
@@ -42,16 +45,24 @@ exports.config = {
   path: "/wd/hub",
   hostname: "hub-virginia.lambdatest.com",
   services: [
-    ["lambdatest", {
-      tunnel: false
-    }]
+    [
+      "lambdatest",
+      {
+        tunnel: false
+      }
+    ]
   ],
   framework: "mocha",
-  reporters: [["allure", {
-    outputDir: "allure-results",
-    disableWebdriverStepsReporting: true,
-    disableWebdriverScreenshotsReporting: false
-  }]],
+  reporters: [
+    [
+      "allure",
+      {
+        outputDir: "allure-results",
+        disableWebdriverStepsReporting: true,
+        disableWebdriverScreenshotsReporting: false
+      }
+    ]
+  ],
   mochaOpts: {
     ui: "bdd",
     timeout: 900000

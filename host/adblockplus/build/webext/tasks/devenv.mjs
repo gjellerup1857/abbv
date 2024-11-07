@@ -15,11 +15,10 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Readable} from "stream";
+import { Readable } from "stream";
 import Vinyl from "vinyl";
 
-export function addDevEnvVersion()
-{
+export function addDevEnvVersion() {
   const randNumber = Number(new Date()).toString();
 
   return new Readable.from([

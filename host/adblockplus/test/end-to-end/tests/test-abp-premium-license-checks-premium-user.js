@@ -17,28 +17,30 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       enablePremiumByUI, switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  enablePremiumByUI,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 
-describe("test abp premium license checks for premium user", function()
-{
+describe("test abp premium license checks for premium user", function () {
   let optionsUrl;
 
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({optionsUrl} = await beforeSequence());
+  before(async function () {
+    ({ optionsUrl } = await beforeSequence());
   });
 
-  it("should display active license status for premium user", async function()
-  {
+  it("should display active license status for premium user", async function () {
     await enablePremiumByUI();
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isPremiumButtonDisplayed()).to.be.true;
-    const licenseStatusText = await browser.executeScript(`
+    const licenseStatusText = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.get",
           key: "premium_license"}, response => {
@@ -49,10 +51,12 @@ describe("test abp premium license checks for premium user", function()
           }
         });
       });
-    `, []);
-    expect(JSON.stringify(licenseStatusText)).
-      to.match(/status.*:.*active/);
-    const nextLicenseCheck = await browser.executeScript(`
+    `,
+      []
+    );
+    expect(JSON.stringify(licenseStatusText)).to.match(/status.*:.*active/);
+    const nextLicenseCheck = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ type: "prefs.get",
           key: "premium_license_nextcheck" }, response => {
@@ -63,19 +67,24 @@ describe("test abp premium license checks for premium user", function()
           }
         });
       });
-    `, []);
+    `,
+      []
+    );
     const nextLicenseCheckFullDate = new Date(nextLicenseCheck);
-    const dateOfTomorrow = new Date(new Date().
-      setDate(new Date().getDate() + 1)).toLocaleDateString("en-CA");
+    const dateOfTomorrow = new Date(
+      new Date().setDate(new Date().getDate() + 1)
+    ).toLocaleDateString("en-CA");
     let timeNow = new Date();
     timeNow = `${timeNow.getHours()}}`;
-    expect(nextLicenseCheckFullDate.
-      toLocaleDateString("en-CA").toString()).to.include(dateOfTomorrow);
+    expect(
+      nextLicenseCheckFullDate.toLocaleDateString("en-CA").toString()
+    ).to.include(dateOfTomorrow);
     const nextLicenseCheckTime = `${nextLicenseCheckFullDate.getHours()}}`;
     expect(nextLicenseCheckTime).to.include(timeNow);
 
-    await switchToABPOptionsTab({optionsUrl});
-    const secondNextLicenseCheck = await browser.executeScript(`
+    await switchToABPOptionsTab({ optionsUrl });
+    const secondNextLicenseCheck = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ type: "prefs.get",
           key: "premium_license_nextcheck" }, response => {
@@ -86,7 +95,9 @@ describe("test abp premium license checks for premium user", function()
           }
         });
       });
-    `, []);
+    `,
+      []
+    );
     expect(secondNextLicenseCheck).to.equal(nextLicenseCheck);
   });
 });

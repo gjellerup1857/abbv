@@ -19,69 +19,56 @@
 
 const BasePage = require("./base.page");
 
-class IPMChunk extends BasePage
-{
-  constructor(browser)
-  {
+class IPMChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
+  async init() {
     const iframe = await this.ipmIframe;
-    await iframe.waitForExist({timeout: 10000});
+    await iframe.waitForExist({ timeout: 10000 });
     await browser.switchToFrame(await this.ipmIframe);
     await this.waitForDisplayedNoError(this.ipmTitle);
   }
 
-  get ipmCTAButton()
-  {
+  get ipmCTAButton() {
     return $("#continue");
   }
 
-  get ipmBody()
-  {
+  get ipmBody() {
     return $("#body");
   }
 
-  get ipmDialog()
-  {
+  get ipmDialog() {
     return $("#__abp-overlay-onpage-dialog");
   }
 
-  get ipmIframe()
-  {
+  get ipmIframe() {
     return $("//iframe[@frameborder='0']");
   }
 
-  get ipmTitle()
-  {
+  get ipmTitle() {
     return $("#title");
   }
 
-  async clickIPMCTAButton()
-  {
+  async clickIPMCTAButton() {
     await (await this.ipmCTAButton).click();
   }
 
-  async getIPMBodyText()
-  {
+  async getIPMBodyText() {
     return await (await this.ipmBody).getText();
   }
 
-  async getIPMTitleText()
-  {
+  async getIPMTitleText() {
     return await (await this.ipmTitle).getText();
   }
 
-  async isIPMDialogDisplayed()
-  {
+  async isIPMDialogDisplayed() {
     return await (await this.ipmDialog).isDisplayed();
   }
 
-  async isIPMiFrameExisting()
-  {
+  async isIPMiFrameExisting() {
     return await (await this.ipmIframe).isExisting();
   }
 }

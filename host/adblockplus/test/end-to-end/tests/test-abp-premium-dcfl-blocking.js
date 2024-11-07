@@ -17,42 +17,42 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  enablePremiumByMockServer,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const TestPages = require("../page-objects/testPages.page");
 
-describe("test DC filterlist blocking for premium users", function()
-{
+describe("test DC filterlist blocking for premium users", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should block distraction control content", async function()
-  {
+  it("should block distraction control content", async function () {
     await enablePremiumByMockServer();
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/" +
-      "adblocking/DC-filters/DC-filters-testpage.html");
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/" +
+        "adblocking/DC-filters/DC-filters-testpage.html"
+    );
     const testPages = new TestPages(browser);
     await testPages.switchToTab("DC filters");
-    expect(await testPages.
-      isPushNotificationsHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isPushNotificationsBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isAutoplayVideosHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isAutoplayVideosBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isSurveysHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isSurveysBlockingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isNewsletterPopupsHidingFilterIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isNewsletterPopupsBlockingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.isPushNotificationsHidingFilterIdDisplayed()).to.be
+      .false;
+    expect(await testPages.isPushNotificationsBlockingFilterIdDisplayed()).to.be
+      .false;
+    expect(await testPages.isAutoplayVideosHidingFilterIdDisplayed()).to.be
+      .false;
+    expect(await testPages.isAutoplayVideosBlockingFilterIdDisplayed()).to.be
+      .false;
+    expect(await testPages.isSurveysHidingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.isSurveysBlockingFilterIdDisplayed()).to.be.false;
+    expect(await testPages.isNewsletterPopupsHidingFilterIdDisplayed()).to.be
+      .false;
+    expect(await testPages.isNewsletterPopupsBlockingFilterIdDisplayed()).to.be
+      .false;
   });
 });

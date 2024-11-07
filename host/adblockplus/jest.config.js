@@ -16,10 +16,7 @@ module.exports = {
   },
   resetMocks: true,
   restoreMocks: true,
-  setupFiles: [
-    "jest-webextension-mock",
-    "./mocks/js/jest-polyfill.js"
-  ],
+  setupFiles: ["jest-webextension-mock", "./mocks/js/jest-polyfill.js"],
   testEnvironment: "./mocks/js/jest-jsdom.mjs",
   testMatch: ["**/*.spec.ts"]
 };

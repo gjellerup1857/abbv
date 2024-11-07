@@ -16,12 +16,10 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {setElementLinks, setElementText} from "../src/i18n/index.ts";
+import { setElementLinks, setElementText } from "../src/i18n/index.ts";
 
-function initCopyrightNotice()
-{
-  messaging.doclinks.get("eyeo").then((url) =>
-  {
+function initCopyrightNotice() {
+  messaging.doclinks.get("eyeo").then((url) => {
     const year = new Date().getFullYear().toString();
     const notice = document.getElementById("copyright-notice");
     setElementText(notice, "common_copyright", year);

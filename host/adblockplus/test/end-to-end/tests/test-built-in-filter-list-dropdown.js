@@ -17,17 +17,17 @@
 
 "use strict";
 
-const {beforeSequence} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence } = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
-const {defaultFilterLists} = require("../test-data/data-built-in-filter-lists");
+const {
+  defaultFilterLists
+} = require("../test-data/data-built-in-filter-lists");
 let flNames;
 
 // eslint-disable-next-line max-len
-describe("test built in filter list dropdown - default filter lists", function()
-{
-  before(async function()
-  {
+describe("test built in filter list dropdown - default filter lists", function () {
+  before(async function () {
     await beforeSequence();
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -35,24 +35,18 @@ describe("test built in filter list dropdown - default filter lists", function()
     flNames = await advancedPage.getBuiltInFilterListsItemsNames();
   });
 
-  defaultFilterLists.forEach(async(dataSet) =>
-  {
-    it("should display filter list: " + dataSet.flName, async function()
-    {
-      if (dataSet.flName == "Snippets")
-      {
-        if (process.env.MANIFEST_VERSION === "3")
-        {
-          dataSet.flId = "ABP filters (compliance) " +
+  defaultFilterLists.forEach(async (dataSet) => {
+    it("should display filter list: " + dataSet.flName, async function () {
+      if (dataSet.flName == "Snippets") {
+        if (process.env.MANIFEST_VERSION === "3") {
+          dataSet.flId =
+            "ABP filters (compliance) " +
             "(ABP Anti-Circumvention Filter List)";
         }
       }
-      if (dataSet.flStatus == "present")
-      {
+      if (dataSet.flStatus == "present") {
         expect(flNames).to.include(dataSet.flId);
-      }
-      else
-      {
+      } else {
         expect(flNames).to.not.include(dataSet.flId);
       }
     });

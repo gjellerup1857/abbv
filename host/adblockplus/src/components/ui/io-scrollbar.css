@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-scrollbar
-{
+io-scrollbar {
   /*
     related to the container height, as in ░▓░░░░░░░░░░░
     or width, in case it's a vertical scrollbar
@@ -28,15 +27,13 @@ io-scrollbar
 }
 
 io-scrollbar,
-io-scrollbar > .slider
-{
+io-scrollbar > .slider {
   display: block;
   box-sizing: border-box;
   padding: 0;
 }
 
-io-scrollbar > .slider
-{
+io-scrollbar > .slider {
   margin: 0;
   border: 1px solid #979797;
   background-color: #d8d8d8;
@@ -44,25 +41,21 @@ io-scrollbar > .slider
   line-height: 0;
 }
 
-io-scrollbar[direction="horizontal"]
-{
+io-scrollbar[direction="horizontal"] {
   height: var(--size);
 }
 
-io-scrollbar[direction="vertical"]
-{
+io-scrollbar[direction="vertical"] {
   width: var(--size);
 }
 
-io-scrollbar[direction="horizontal"] > .slider
-{
+io-scrollbar[direction="horizontal"] > .slider {
   width: var(--slider-size, var(--size));
   height: 100%;
   transform: translateX(var(--position, 0));
 }
 
-io-scrollbar[direction="vertical"] > .slider
-{
+io-scrollbar[direction="vertical"] > .slider {
   width: 100%;
   height: var(--slider-size, var(--size));
   transform: translateY(var(--position, 0));

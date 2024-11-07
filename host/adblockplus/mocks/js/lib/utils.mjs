@@ -15,19 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {subscriptionUrls} from "../config/subscriptions.mjs";
+import { subscriptionUrls } from "../config/subscriptions.mjs";
 
 const utils = {
-  getDocLink(link)
-  {
+  getDocLink(link) {
     return `${subscriptionUrls.URL_DOCLINK_BASE}${encodeURIComponent(link)}`;
   },
-  get appLocale()
-  {
+  get appLocale() {
     return browser.i18n.getUILanguage();
   },
-  get readingDirection()
-  {
+  get readingDirection() {
     return /^(?:ar|fa|he|ug|ur)\b/.test(this.appLocale) ? "rtl" : "ltr";
   }
 };

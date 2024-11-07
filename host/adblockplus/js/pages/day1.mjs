@@ -16,8 +16,8 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {convertDoclinks} from "../common.mjs";
-import {$} from "../dom.mjs";
+import { convertDoclinks } from "../common.mjs";
+import { $ } from "../dom.mjs";
 import {
   initI18n,
   setElementText,
@@ -27,46 +27,34 @@ import {
 import "../../src/day1/ui/day1.css";
 import "../landing.mjs";
 
-function initContact()
-{
+function initContact() {
   const email = "support@adblockplus.org";
   const subject = browser.i18n.getMessage("day1_community_contact_subject");
   const uri = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
   $("#contact").href = uri;
 }
 
-function initPopupDummy()
-{
+function initPopupDummy() {
   const popupDummy = $("iframe");
   // Accessing the frame's Window from here causes the browser API to become
   // unavailable to the frame. Therefore we're using our own instead.
-  window.addEventListener("message", (ev) =>
-  {
-    if (!ev.data || ev.data.type !== "popup-dummy.resize")
-      return;
+  window.addEventListener("message", (ev) => {
+    if (!ev.data || ev.data.type !== "popup-dummy.resize") return;
 
     popupDummy.height = ev.data.height;
   });
 }
 
-function initTitle()
-{
-  messaging.stats.getBlockedTotal()
-    .then((blockedTotal) =>
-    {
-      blockedTotal = blockedTotal.toLocaleString();
-      setElementText(
-        $("#content-message"),
-        "day1_header_title",
-        [blockedTotal]
-      );
+function initTitle() {
+  messaging.stats.getBlockedTotal().then((blockedTotal) => {
+    blockedTotal = blockedTotal.toLocaleString();
+    setElementText($("#content-message"), "day1_header_title", [blockedTotal]);
 
-      const message = browser.i18n.getMessage(
-        "day1_header_title",
-        [blockedTotal]
-      );
-      $("title").textContent = stripTagsUnsafe(message);
-    });
+    const message = browser.i18n.getMessage("day1_header_title", [
+      blockedTotal
+    ]);
+    $("title").textContent = stripTagsUnsafe(message);
+  });
 }
 
 convertDoclinks();

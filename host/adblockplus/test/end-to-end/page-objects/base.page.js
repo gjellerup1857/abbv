@@ -17,182 +17,171 @@
 
 "use strict";
 
-class BasePage
-{
-  constructor(browser)
-  {
+class BasePage {
+  constructor(browser) {
     this.browser = browser;
   }
 
-  get contentIFrame()
-  {
+  get contentIFrame() {
     return $("#content");
   }
 
-  async mockServerUpText(text)
-  {
-    return $("body[contains(text()," +
-    "'" + text + "')]");
+  async mockServerUpText(text) {
+    return $("body[contains(text(),'" + text + "')]");
   }
 
-  get truckerIFrame()
-  {
+  get truckerIFrame() {
     return $("#slave-2-1");
   }
 
-  async getCurrentUrl()
-  {
+  async getCurrentUrl() {
     return await browser.getUrl();
   }
 
-  async getCurrentTitle()
-  {
+  async getCurrentTitle() {
     return await browser.getTitle();
   }
 
-  async getElementBySelector(selector)
-  {
+  async getElementBySelector(selector) {
     return $(selector);
   }
 
-  async isElementDisplayed(selector, reverseOption = false, timeout = 10000)
-  {
+  async isElementDisplayed(selector, reverseOption = false, timeout = 10000) {
     return await this.waitForDisplayedNoError(
-      this.getElementBySelector(selector), reverseOption, timeout);
+      this.getElementBySelector(selector),
+      reverseOption,
+      timeout
+    );
   }
 
-  async isMockServerUpTextDisplayed(serverUpText, reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      mockServerUpText(serverUpText), reverseOption, 45000);
+  async isMockServerUpTextDisplayed(serverUpText, reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.mockServerUpText(serverUpText),
+      reverseOption,
+      45000
+    );
   }
 
-  async scrollIntoViewAndClick(element)
-  {
-    await (await element).waitForClickable({timeout: 3000});
+  async scrollIntoViewAndClick(element) {
+    await (await element).waitForClickable({ timeout: 3000 });
     await (await element).scrollIntoView();
     return (await element).click();
   }
 
-  switchToTab(title, timeout = 5000)
-  {
-    return browser.waitUntil(async() =>
-    {
-      try
+  switchToTab(title, timeout = 5000) {
+    return browser.waitUntil(
+      async () => {
+        try {
+          await browser.switchWindow(title);
+          return true;
+        } catch (e) {}
+      },
       {
-        await browser.switchWindow(title);
-        return true;
+        timeout,
+        timeoutMsg: `Could not switch to tab "${title}" after ${timeout}ms`
       }
-      catch (e) {}
-    }, {
-      timeout,
-      timeoutMsg: `Could not switch to tab "${title}" after ${timeout}ms`
-    });
+    );
   }
 
-  async waitForDisplayedNoError(element,
-                                reverseOption = false, timeoutMs = 5000)
-  {
-    try
-    {
-      return await (await element).
-      waitForDisplayed({reverse: reverseOption, timeout: timeoutMs});
-    }
-    catch (ElementNotVisibleException)
-    {
+  async waitForDisplayedNoError(
+    element,
+    reverseOption = false,
+    timeoutMs = 5000
+  ) {
+    try {
+      return await (
+        await element
+      ).waitForDisplayed({ reverse: reverseOption, timeout: timeoutMs });
+    } catch (ElementNotVisibleException) {
       return false;
     }
   }
 
-  async waitForEnabledNoError(element,
-                              reverseOption = false, timeoutMs = 5000)
-  {
-    try
-    {
-      return await (await element).
-        waitForEnabled({reverse: reverseOption, timeout: timeoutMs});
-    }
-    catch (ElementNotVisibleException)
-    {
+  async waitForEnabledNoError(
+    element,
+    reverseOption = false,
+    timeoutMs = 5000
+  ) {
+    try {
+      return await (
+        await element
+      ).waitForEnabled({ reverse: reverseOption, timeout: timeoutMs });
+    } catch (ElementNotVisibleException) {
       return false;
     }
   }
 
-  async waitForEnabledThenClick(element, timeoutMs = 3000)
-  {
-    await (await element).waitForClickable({timeout: timeoutMs});
+  async waitForEnabledThenClick(element, timeoutMs = 3000) {
+    await (await element).waitForClickable({ timeout: timeoutMs });
     await browser.pause(700);
     return (await element).click();
   }
 
-  async waitForSelectedNoError(element,
-                               reverse = false, timeoutMs = 5000)
-  {
+  async waitForSelectedNoError(element, reverse = false, timeoutMs = 5000) {
     let status;
-    try
-    {
-      status = await (await element).
-      waitUntil(async function()
-      {
-        if (reverse)
+    try {
+      status = await (
+        await element
+      ).waitUntil(
+        async function () {
+          if (reverse) {
+            return (await await this.isSelected()) === false;
+          }
+          return (await await this.isSelected()) === true;
+        },
         {
-          return await (await this.isSelected()) === false;
+          timeout: timeoutMs,
+          timeoutMsg: "Timeout while waiting on condition."
         }
-        return await (await this.isSelected()) === true;
-      }, {
-        timeout: timeoutMs,
-        timeoutMsg: "Timeout while waiting on condition."
-      });
-    }
-    catch (error)
-    {
+      );
+    } catch (error) {
       status = false;
     }
     return status;
   }
 
-
-  async waitUntilAttributeValueIs(element, attribute,
-                                  expectedValue, timeoutVal = 5000,
-                                  reverse = false)
-  {
-    await (await element).waitForEnabled({timeout: 2000});
+  async waitUntilAttributeValueIs(
+    element,
+    attribute,
+    expectedValue,
+    timeoutVal = 5000,
+    reverse = false
+  ) {
+    await (await element).waitForEnabled({ timeout: 2000 });
     let status;
-    try
-    {
-      status = await (await element).
-      waitUntil(async function()
-      {
-        if (reverse)
+    try {
+      status = await (
+        await element
+      ).waitUntil(
+        async function () {
+          if (reverse) {
+            return (await await this.getAttribute(attribute)) !== expectedValue;
+          }
+          return (await await this.getAttribute(attribute)) === expectedValue;
+        },
         {
-          return await (await this.
-          getAttribute(attribute)) !== expectedValue;
+          timeout: timeoutVal,
+          timeoutMsg: "Timeout while waiting on condition."
         }
-        return await (await this.
-        getAttribute(attribute)) === expectedValue;
-      }, {
+      );
+    } catch (error) {
+      status = false;
+    }
+    return status;
+  }
+
+  async waitUntilTextIs(element, text, timeoutVal = 5000) {
+    return await (
+      await element
+    ).waitUntil(
+      async function () {
+        return (await await this.getText()) === text;
+      },
+      {
         timeout: timeoutVal,
         timeoutMsg: "Timeout while waiting on condition."
-      });
-    }
-    catch (error)
-    {
-      status = false;
-    }
-    return status;
-  }
-
-  async waitUntilTextIs(element, text,
-                        timeoutVal = 5000)
-  {
-    return await (await element).
-    waitUntil(async function()
-    {
-      return await (await this.getText()) === text;
-    }, {
-      timeout: timeoutVal,
-      timeoutMsg: "Timeout while waiting on condition."
-    });
+      }
+    );
   }
 }
 

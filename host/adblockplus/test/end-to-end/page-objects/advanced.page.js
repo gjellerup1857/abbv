@@ -19,1267 +19,1225 @@
 
 const BasePage = require("./base.page");
 
-class AdvancedPage extends BasePage
-{
-  constructor(browser)
-  {
+class AdvancedPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get _advancedTabButton()
-  {
+  get _advancedTabButton() {
     return $("#tab-advanced");
   }
 
-  async init()
-  {
+  async init() {
     await this.waitForEnabledThenClick(this._advancedTabButton);
   }
 
-  get abpFiltersFL()
-  {
+  get abpFiltersFL() {
     let abpFiltersText = "ABP filters";
     if (process.env.MANIFEST_VERSION === "3")
       abpFiltersText = "ABP filters (compliance)";
     return $("//li[@aria-label='" + abpFiltersText + "']");
   }
 
-  get abpFiltersFLErrorIcon()
-  {
+  get abpFiltersFLErrorIcon() {
     let abpFiltersText = "ABP filters";
     if (process.env.MANIFEST_VERSION === "3")
       abpFiltersText = "ABP filters (compliance)";
     return $("//li[@aria-label='" + abpFiltersText + "']/div/io-popout");
   }
 
-  get abpFiltersFLLastUpdatedText()
-  {
+  get abpFiltersFLLastUpdatedText() {
     let abpFiltersText = "ABP filters";
     if (process.env.MANIFEST_VERSION === "3")
       abpFiltersText = "ABP filters (compliance)";
-    return $("//li[@aria-label='" + abpFiltersText +
-      "']/div/span[@class='last-update']");
+    return $(
+      "//li[@aria-label='" +
+        abpFiltersText +
+        "']/div/span[@class='last-update']"
+    );
   }
 
-  get abpFiltersFLStatusToggle()
-  {
+  get abpFiltersFLStatusToggle() {
     let abpFiltersText = "ABP filters";
     if (process.env.MANIFEST_VERSION === "3")
       abpFiltersText = "ABP filters (compliance)";
     return $("//li[@aria-label='" + abpFiltersText + "']/div/io-toggle/button");
   }
 
-  get abpFiltersFLTrashButton()
-  {
+  get abpFiltersFLTrashButton() {
     let abpFiltersText = "ABP filters";
     if (process.env.MANIFEST_VERSION === "3")
       abpFiltersText = "ABP filters (compliance)";
-    return $("//li[@aria-label='" + abpFiltersText + "']/div/button" +
-      "[@data-action='remove-subscription']");
+    return $(
+      "//li[@aria-label='" +
+        abpFiltersText +
+        "']/div/button" +
+        "[@data-action='remove-subscription']"
+    );
   }
 
-  get abpTestFilterErrorIcon()
-  {
+  get abpTestFilterErrorIcon() {
     return $("//li[@aria-label='ABP_TEST_FILTER']/div/io-popout");
   }
 
-  get addAFilterListButton()
-  {
+  get addAFilterListButton() {
     return $("//button[@data-action='validate-import-subscription']");
   }
 
-  get addBuiltinFilterListButton()
-  {
+  get addBuiltinFilterListButton() {
     return $("#filters-boxlabel");
   }
 
-  get addCustomFilterListButton()
-  {
+  get addCustomFilterListButton() {
     return $("//io-filter-table/io-filter-search/button");
   }
 
-  get addCustomFilterListInput()
-  {
+  get addCustomFilterListInput() {
     return $("//io-filter-search/input");
   }
 
-  get addNewFilterListButton()
-  {
+  get addNewFilterListButton() {
     return $("//button[@data-i18n='options_filterList_add']");
   }
 
-  get addNewFilterListDialog()
-  {
+  get addNewFilterListDialog() {
     return $("#filterlist-by-url");
   }
 
-  get allowNonintrusiveAdvertisingFL()
-  {
+  get allowNonintrusiveAdvertisingFL() {
     return $("//li[@aria-label='Allow nonintrusive advertising']");
   }
 
-  get allowNonintrusiveAdvertisingFLLastUpdatedText()
-  {
-    return $("//li[@aria-label='Allow nonintrusive advertising']" +
-      "/div/span[@class='last-update']");
+  get allowNonintrusiveAdvertisingFLLastUpdatedText() {
+    return $(
+      "//li[@aria-label='Allow nonintrusive advertising']" +
+        "/div/span[@class='last-update']"
+    );
   }
 
-  get allowNonintrusiveAdvertisingFLStatusToggle()
-  {
-    return $("//li[@aria-label='Allow nonintrusive advertising']" +
-      "/div/io-toggle/button");
+  get allowNonintrusiveAdvertisingFLStatusToggle() {
+    return $(
+      "//li[@aria-label='Allow nonintrusive advertising']" +
+        "/div/io-toggle/button"
+    );
   }
 
-  get allowNonintrusiveAdvertisingFLTrashButton()
-  {
-    return $("//li[@aria-label='Allow nonintrusive advertising']/div/button" +
-      "[@data-action='remove-subscription']");
+  get allowNonintrusiveAdvertisingFLTrashButton() {
+    return $(
+      "//li[@aria-label='Allow nonintrusive advertising']/div/button" +
+        "[@data-action='remove-subscription']"
+    );
   }
 
-  get allowNonintrusiveAdvertisingWithoutTrackingFL()
-  {
-    return $("//li[@aria-label='Allow nonintrusive advertising " +
-      "without third-party tracking']");
+  get allowNonintrusiveAdvertisingWithoutTrackingFL() {
+    return $(
+      "//li[@aria-label='Allow nonintrusive advertising " +
+        "without third-party tracking']"
+    );
   }
 
-  get builtInFilterListsItems()
-  {
+  get builtInFilterListsItems() {
     return $$("//io-list-box[@id='filters-box']/ul/li[@role='option']");
   }
 
-  async builtInFilterListsTableItem(text)
-  {
+  async builtInFilterListsTableItem(text) {
     return $("//li[contains(text(), '" + text + "')]");
   }
 
-  get cancelAddingFLButton()
-  {
+  get cancelAddingFLButton() {
     return $("//button[@data-action='close-filterlist-by-url']");
   }
 
-  get copyCustomFLButton()
-  {
+  get copyCustomFLButton() {
     return $("//button[@class='copy']");
   }
 
-  get customFilterListsErrorText()
-  {
+  get customFilterListsErrorText() {
     return $("//div[@class='footer visible']/ul/li");
   }
 
-  get customFilterListsFirstItemAlertIcon()
-  {
+  get customFilterListsFirstItemAlertIcon() {
     return $("//tbody/tr[1]/td[4]/img[@src='skin/icons/alert.svg']");
   }
 
-  get customFilterListsFirstItemErrorIcon()
-  {
+  get customFilterListsFirstItemErrorIcon() {
     return $("//tbody/tr[1]/td[4]/img[@src='skin/icons/error.svg']");
   }
 
-  get customFilterListsFirstItemAlertText()
-  {
+  get customFilterListsFirstItemAlertText() {
     return $("//tbody/tr[1]/td[4]/img[contains(@title, 'Slow filter')]");
   }
 
-  async customFilterListsNthItemCheckbox(n)
-  {
+  async customFilterListsNthItemCheckbox(n) {
     return $("//tbody/tr[" + n + "]/td[1]/io-checkbox/button");
   }
 
-  async customFilterListsNthItemText(n)
-  {
+  async customFilterListsNthItemText(n) {
     return $("//io-filter-list/table/tbody/tr[" + n + "]/td[3]/div");
   }
 
-  get customFilterListsFirstItemToggle()
-  {
+  get customFilterListsFirstItemToggle() {
     return $("//io-filter-list/table/tbody/tr[1]/td[2]/io-toggle/button");
   }
 
-  get customFilterListsTable()
-  {
+  get customFilterListsTable() {
     return $("//io-filter-table");
   }
 
-  get customFilterListsTableContent()
-  {
+  get customFilterListsTableContent() {
     return $("//io-filter-list");
   }
 
-  async customFilterListsTableElementText(text)
-  {
+  async customFilterListsTableElementText(text) {
     return $("//div[@title='" + text + "']");
   }
 
-  get customFilterListsTableRowsTexts()
-  {
+  get customFilterListsTableRowsTexts() {
     return $("//io-filter-list/table").$$("//div[@class='content']");
   }
 
-  get customFLTableHeadAlertIcon()
-  {
+  get customFLTableHeadAlertIcon() {
     return $("//io-filter-list/table/thead/tr/th[4]/img");
   }
 
-  get customFLTableHeadArrow()
-  {
+  get customFLTableHeadArrow() {
     return $("//io-filter-list/table/thead/tr/th[2]");
   }
 
-  get customFLTableHeadCheckbox()
-  {
-    return $("//io-filter-list/table/thead/tr/th[1]/" +
-      "io-checkbox/button");
+  get customFLTableHeadCheckbox() {
+    return $("//io-filter-list/table/thead/tr/th[1]/io-checkbox/button");
   }
 
-  get customFLTableHeadFilterRule()
-  {
+  get customFLTableHeadFilterRule() {
     return $("//io-filter-list/table/thead/tr/th[3]");
   }
 
-  get deleteCustomFLButton()
-  {
+  get deleteCustomFLButton() {
     return $("//button[@class='delete']");
   }
 
-  get easyListEnglishFLDropdownItem()
-  {
-    return $("//*[@id='filters-boxpopup']/" +
-      "li[contains(text(),'EasyList (English)')]");
+  get easyListEnglishFLDropdownItem() {
+    return $(
+      "//*[@id='filters-boxpopup']/" +
+        "li[contains(text(),'EasyList (English)')]"
+    );
   }
 
-  get easyListFL()
-  {
+  get easyListFL() {
     return $("//li[@aria-label='EasyList']");
   }
 
-  get easyListFLGearIcon()
-  {
-    return $("//li[@aria-label='EasyList']" +
-      "/div/io-popout[@type='menubar']");
+  get easyListFLGearIcon() {
+    return $("//li[@aria-label='EasyList']/div/io-popout[@type='menubar']");
   }
 
-  get easyListFLLastUpdatedText()
-  {
+  get easyListFLLastUpdatedText() {
     // eslint-disable-next-line max-len
     return $("//li[@aria-label='EasyList']/div/span[@class='last-update']");
   }
 
-  get easyListFLSourceButton()
-  {
-    return $("//li[@aria-label='EasyList']" +
-      "/div/io-popout[@type='menubar']" +
-      "/div/div/ul/li/a[@data-i18n='options_filterList_source']");
+  get easyListFLSourceButton() {
+    return $(
+      "//li[@aria-label='EasyList']" +
+        "/div/io-popout[@type='menubar']" +
+        "/div/div/ul/li/a[@data-i18n='options_filterList_source']"
+    );
   }
 
-  get easyListFLStatusToggle()
-  {
+  get easyListFLStatusToggle() {
     return $("//li[@aria-label='EasyList']/div/io-toggle/button");
   }
 
-  get easyListFLTrashButton()
-  {
-    return $("//li[@aria-label='EasyList']/div/button" +
-      "[@data-action='remove-subscription']");
+  get easyListFLTrashButton() {
+    return $(
+      "//li[@aria-label='EasyList']/div/button" +
+        "[@data-action='remove-subscription']"
+    );
   }
 
-  get easyListFLUpdateNowButton()
-  {
-    return $("//li[@aria-label='EasyList']" +
-      "/div/io-popout[@type='menubar']" +
-      "/div/div/ul/li/button[@data-i18n='options_filterList_updateNow']");
+  get easyListFLUpdateNowButton() {
+    return $(
+      "//li[@aria-label='EasyList']" +
+        "/div/io-popout[@type='menubar']" +
+        "/div/div/ul/li/button[@data-i18n='options_filterList_updateNow']"
+    );
   }
 
-  get easyListFLWebsiteButton()
-  {
-    return $("//li[@aria-label='EasyList']" +
-      "/div/io-popout[@type='menubar']" +
-      "/div/div/ul/li/a[@data-i18n='options_filterList_website']");
+  get easyListFLWebsiteButton() {
+    return $(
+      "//li[@aria-label='EasyList']" +
+        "/div/io-popout[@type='menubar']" +
+        "/div/div/ul/li/a[@data-i18n='options_filterList_website']"
+    );
   }
 
-  get easyListGermanyPlusEasyListFL()
-  {
+  get easyListGermanyPlusEasyListFL() {
     return $("//li[@aria-label='EasyList Germany+EasyList']");
   }
 
-  get easyPrivacyFL()
-  {
+  get easyPrivacyFL() {
     return $("//li[@aria-label='EasyPrivacy']");
   }
 
-  get enableThemButton()
-  {
+  get enableThemButton() {
     return $("//a[@data-action='enable-filters']");
   }
 
-  get fanboysNotificationsBlockingListFL()
-  {
-    return $("//li[@aria-label=\"Fanboy's Notifications Blocking List\"]");
+  get fanboysNotificationsBlockingListFL() {
+    return $('//li[@aria-label="Fanboy\'s Notifications Blocking List"]');
   }
 
-  get fanboysSocialBlockingListFL()
-  {
-    return $("//li[@aria-label=\"Fanboy's Social Blocking List\"]");
+  get fanboysSocialBlockingListFL() {
+    return $('//li[@aria-label="Fanboy\'s Social Blocking List"]');
   }
 
-  get filterListsDropdown()
-  {
+  get filterListsDropdown() {
     return $("#filters-boxpopup");
   }
 
-  get filterListErrorPopout()
-  {
-    return $("//io-popout[@data-template-i18n-body=" +
-      "'options_filterList_errorPopup_title']");
+  get filterListErrorPopout() {
+    return $(
+      "//io-popout[@data-template-i18n-body=" +
+        "'options_filterList_errorPopup_title']"
+    );
   }
 
-  get filterListErrorTooltip()
-  {
-    return $("//io-popout[@data-template-i18n-body=" +
-      "'options_filterList_errorPopup_title']/div/div[@role='tooltip']");
+  get filterListErrorTooltip() {
+    return $(
+      "//io-popout[@data-template-i18n-body=" +
+        "'options_filterList_errorPopup_title']/div/div[@role='tooltip']"
+    );
   }
 
-  get filterListErrorTooltipText()
-  {
-    return $("//io-popout[@data-template-i18n-body=" +
-      "'options_filterList_errorPopup_title']/div/div[@role='tooltip']/p");
+  get filterListErrorTooltipText() {
+    return $(
+      "//io-popout[@data-template-i18n-body=" +
+        "'options_filterList_errorPopup_title']/div/div[@role='tooltip']/p"
+    );
   }
 
-  get filterListErrorTooltipFirstErrorText()
-  {
-    return $("//io-popout[@data-template-i18n-body=" +
-      "'options_filterList_errorPopup_title']/div/div[@role='tooltip']/ul/li");
+  get filterListErrorTooltipFirstErrorText() {
+    return $(
+      "//io-popout[@data-template-i18n-body=" +
+        "'options_filterList_errorPopup_title']/div/div[@role='tooltip']/ul/li"
+    );
   }
 
-  get filterListsLearnMoreLink()
-  {
-    return $("//a[contains(@data-doclink, 'subscriptions')" +
-        "and text()='Learn more']");
+  get filterListsLearnMoreLink() {
+    return $(
+      "//a[contains(@data-doclink, 'subscriptions')" +
+        "and text()='Learn more']"
+    );
   }
 
-  get filterListUrlInput()
-  {
+  get filterListUrlInput() {
     return $("#import-list-url");
   }
 
-  get flTableEmptyPlaceholder()
-  {
-    return $("//*[@id='all-filter-lists-table']/" +
-      "li[@class='empty-placeholder']");
+  get flTableEmptyPlaceholder() {
+    return $(
+      "//*[@id='all-filter-lists-table']/li[@class='empty-placeholder']"
+    );
   }
 
-  get iDontCareAboutCookiesFL()
-  {
-    return $("//li[@aria-label=\"I don't care about cookies\"]");
+  get iDontCareAboutCookiesFL() {
+    return $('//li[@aria-label="I don\'t care about cookies"]');
   }
 
-  get learnHowToWriteFiltersLink()
-  {
+  get learnHowToWriteFiltersLink() {
     return $("//a[text()='Learn how to write filters (English only)']");
   }
 
-  get listeFREasyListFL()
-  {
+  get listeFREasyListFL() {
     return $("//li[@aria-label='Liste FR+EasyList']");
   }
 
-  get listeFREasyListFLDropdownItem()
-  {
-    return $("//*[@id='filters-boxpopup']/" +
-      "li[contains(text(),'Liste FR+EasyList (français + English)')]");
+  get listeFREasyListFLDropdownItem() {
+    return $(
+      "//*[@id='filters-boxpopup']/" +
+        "li[contains(text(),'Liste FR+EasyList (français + English)')]"
+    );
   }
 
-  get listeFREasyListFLStatusToggle()
-  {
+  get listeFREasyListFLStatusToggle() {
     return $("//li[@aria-label='Liste FR+EasyList']/div/io-toggle/button");
   }
 
-  get premiumBlockCookieConsentPopupsFL()
-  {
+  get premiumBlockCookieConsentPopupsFL() {
     return $("//li[@aria-label='Premium - Block cookie consent pop-ups']");
   }
 
-  get premiumBlockCookieConsentPopupsFLStatusToggle()
-  {
-    return $("//li[@aria-label='Premium - Block cookie consent pop-ups']" +
-      "/div/io-toggle/button");
+  get premiumBlockCookieConsentPopupsFLStatusToggle() {
+    return $(
+      "//li[@aria-label='Premium - Block cookie consent pop-ups']" +
+        "/div/io-toggle/button"
+    );
   }
 
-  get premiumBlockCookieConsentPopupsFLTrashButton()
-  {
-    return $("//li[@aria-label='Premium - Block cookie consent pop-ups']" +
-      "/div/button[@data-action='remove-subscription']");
+  get premiumBlockCookieConsentPopupsFLTrashButton() {
+    return $(
+      "//li[@aria-label='Premium - Block cookie consent pop-ups']" +
+        "/div/button[@data-action='remove-subscription']"
+    );
   }
 
-  get premiumDistractionControlFL()
-  {
+  get premiumDistractionControlFL() {
     return $("//li[@aria-label='Premium - Distraction Control']");
   }
 
-  get premiumDistractionControlFLStatusToggle()
-  {
-    return $("//li[@aria-label='Premium - Distraction Control']" +
-      "/div/io-toggle/button");
+  get premiumDistractionControlFLStatusToggle() {
+    return $(
+      "//li[@aria-label='Premium - Distraction Control']" +
+        "/div/io-toggle/button"
+    );
   }
 
-  get premiumBlockMoreDistractionsFLTrashButton()
-  {
-    return $("//li[@aria-label='Premium - Distraction Control']" +
-      "/div/button[@data-action='remove-subscription']");
+  get premiumBlockMoreDistractionsFLTrashButton() {
+    return $(
+      "//li[@aria-label='Premium - Distraction Control']" +
+        "/div/button[@data-action='remove-subscription']"
+    );
   }
 
-  get showAdblockPlusPanelCheckbox()
-  {
+  get showAdblockPlusPanelCheckbox() {
     return $("//li[@data-pref='show_devtools_panel']/button");
   }
 
-  get showAdblockPlusPanelTooltipIcon()
-  {
-    return $("//li[@data-pref='show_devtools_panel']" +
-        "/io-popout");
+  get showAdblockPlusPanelTooltipIcon() {
+    return $("//li[@data-pref='show_devtools_panel']/io-popout");
   }
 
-  get showAdblockPlusPanelTooltipText()
-  {
-    return $("//li[@data-pref='show_devtools_panel']" +
-        "/io-popout/div/div/p");
+  get showAdblockPlusPanelTooltipText() {
+    return $("//li[@data-pref='show_devtools_panel']/io-popout/div/div/p");
   }
 
-  get showBlockElementCheckbox()
-  {
+  get showBlockElementCheckbox() {
     return $("//li[@data-pref='shouldShowBlockElementMenu']/button");
   }
 
-  get showBlockElementTooltipIcon()
-  {
-    return $("//li[@data-pref='shouldShowBlockElementMenu']" +
-        "/io-popout");
+  get showBlockElementTooltipIcon() {
+    return $("//li[@data-pref='shouldShowBlockElementMenu']/io-popout");
   }
 
-  get showBlockElementTooltipText()
-  {
-    return $("//li[@data-pref='shouldShowBlockElementMenu']" +
-        "/io-popout/div/div/p");
+  get showBlockElementTooltipText() {
+    return $(
+      "//li[@data-pref='shouldShowBlockElementMenu']/io-popout/div/div/p"
+    );
   }
 
-  get showNumberOfAdsBlockedCheckbox()
-  {
+  get showNumberOfAdsBlockedCheckbox() {
     return $("//li[@data-pref='show_statsinicon']/button");
   }
 
-  get showUsefulNotificationsCheckbox()
-  {
+  get showUsefulNotificationsCheckbox() {
     return $("//li[@data-pref='notifications_ignoredcategories']/button");
   }
 
-  get showUsefulNotificationsTooltipIcon()
-  {
-    return $("//li[@data-pref='notifications_ignoredcategories']" +
-        "/io-popout");
+  get showUsefulNotificationsTooltipIcon() {
+    return $("//li[@data-pref='notifications_ignoredcategories']/io-popout");
   }
 
-  get showUsefulNotificationsTooltipText()
-  {
-    return $("//li[@data-pref='notifications_ignoredcategories']" +
-        "/io-popout/div/div/p");
+  get showUsefulNotificationsTooltipText() {
+    return $(
+      "//li[@data-pref='notifications_ignoredcategories']" +
+        "/io-popout/div/div/p"
+    );
   }
 
-  get testFilterList()
-  {
+  get testFilterList() {
     return $("//li[@aria-label='https://test-filterlist.txt']");
   }
 
-  get testFilterListNoHtttps()
-  {
+  get testFilterListNoHtttps() {
     return $("//li[@aria-label='test-filterlist.txt']");
   }
 
-  get testFilterListStatusToggle()
-  {
-    return $("//li[@aria-label='https://test-filterlist.txt']" +
-      "/div/io-toggle/button");
+  get testFilterListStatusToggle() {
+    return $(
+      "//li[@aria-label='https://test-filterlist.txt']" +
+        "/div/io-toggle/button"
+    );
   }
 
-  get turnOnDebugElementCheckbox()
-  {
+  get turnOnDebugElementCheckbox() {
     return $("//li[@data-pref='elemhide_debug']/button");
   }
 
-  get turnOnDebugElementTooltipIcon()
-  {
-    return $("//li[@data-pref='elemhide_debug']" +
-        "/io-popout");
+  get turnOnDebugElementTooltipIcon() {
+    return $("//li[@data-pref='elemhide_debug']/io-popout");
   }
 
-  get turnOnDebugElementTooltipText()
-  {
-    return $("//li[@data-pref='elemhide_debug']" +
-        "/io-popout/div/div/p");
+  get turnOnDebugElementTooltipText() {
+    return $("//li[@data-pref='elemhide_debug']/io-popout/div/div/p");
   }
 
-  get updateAllFilterlistsButton()
-  {
+  get updateAllFilterlistsButton() {
     return $("#update");
   }
 
-  get urlErrorMessage()
-  {
-    return $("//span[contains(@class, 'error-msg')" +
-        "and text()='URL must start with https://.']");
+  get urlErrorMessage() {
+    return $(
+      "//span[contains(@class, 'error-msg')" +
+        "and text()='URL must start with https://.']"
+    );
   }
 
-  async addCustomFiltersOneByOne(filters)
-  {
-    for (const filter of filters)
-    {
+  async addCustomFiltersOneByOne(filters) {
+    for (const filter of filters) {
       await this.typeTextToAddCustomFilterListInput(filter);
       await this.clickAddCustomFilterListButton();
       await this.verifyTextPresentInCustomFLTable(filter);
     }
   }
 
-  async clickAbpFiltersFLErrorIcon()
-  {
+  async clickAbpFiltersFLErrorIcon() {
     await (await this.abpFiltersFLErrorIcon).click();
   }
 
-  async clickAbpTestFilterErrorIcon()
-  {
+  async clickAbpTestFilterErrorIcon() {
     await (await this.abpTestFilterErrorIcon).click();
   }
 
-  async clickAbpFiltersFLTrashButton()
-  {
+  async clickAbpFiltersFLTrashButton() {
     await this.waitForEnabledThenClick(this.abpFiltersFLTrashButton);
   }
 
-  async clickAddAFilterListButton()
-  {
+  async clickAddAFilterListButton() {
     await this.waitForEnabledThenClick(this.addAFilterListButton);
   }
 
-  async clickAddBuiltinFilterListButton()
-  {
+  async clickAddBuiltinFilterListButton() {
     await (await this.addBuiltinFilterListButton).click();
   }
 
-  async clickAddCustomFilterListButton()
-  {
+  async clickAddCustomFilterListButton() {
     await this.waitForEnabledThenClick(this.addCustomFilterListButton);
   }
 
-  async clickAddNewFilterListButton()
-  {
+  async clickAddNewFilterListButton() {
     await this.waitForEnabledThenClick(this.addNewFilterListButton);
   }
 
-  async clickAllowNonintrusiveAdvertisingFLTrashButton()
-  {
+  async clickAllowNonintrusiveAdvertisingFLTrashButton() {
     await this.waitForEnabledThenClick(
-      this.allowNonintrusiveAdvertisingFLTrashButton);
+      this.allowNonintrusiveAdvertisingFLTrashButton
+    );
   }
 
-  async clickBuiltInFLTableItem(text)
-  {
+  async clickBuiltInFLTableItem(text) {
     await this.scrollIntoViewAndClick(this.builtInFilterListsTableItem(text));
   }
 
-  async clickCancelAddingFLButton()
-  {
+  async clickCancelAddingFLButton() {
     await (await this.cancelAddingFLButton).click();
   }
 
-  async clickCopyCustomFLButton()
-  {
+  async clickCopyCustomFLButton() {
     await this.scrollIntoViewAndClick(this.copyCustomFLButton);
   }
 
-  async clickCustomFilterListsNthItemCheckbox(n)
-  {
+  async clickCustomFilterListsNthItemCheckbox(n) {
     await this.scrollIntoViewAndClick(
-      await this.customFilterListsNthItemCheckbox(n));
+      await this.customFilterListsNthItemCheckbox(n)
+    );
   }
 
-  async clickCustomFilterListsNthItemText(n)
-  {
+  async clickCustomFilterListsNthItemText(n) {
     await this.scrollIntoViewAndClick(
-      await this.customFilterListsNthItemText(n));
+      await this.customFilterListsNthItemText(n)
+    );
   }
 
-  async clickCustomFilterListsFirstItemToggle()
-  {
+  async clickCustomFilterListsFirstItemToggle() {
     await this.scrollIntoViewAndClick(this.customFilterListsFirstItemToggle);
   }
 
-  async clickCustomFLTableHeadAlertIcon()
-  {
+  async clickCustomFLTableHeadAlertIcon() {
     await (await this.customFLTableHeadAlertIcon).click();
   }
 
-  async clickCustomFLTableHeadArrow()
-  {
+  async clickCustomFLTableHeadArrow() {
     await (await this.customFLTableHeadArrow).click();
   }
 
-  async clickCustomFLTableHeadCheckbox()
-  {
+  async clickCustomFLTableHeadCheckbox() {
     await this.scrollIntoViewAndClick(this.customFLTableHeadCheckbox);
   }
 
-  async clickCustomFLTableHeadFilterRule()
-  {
+  async clickCustomFLTableHeadFilterRule() {
     await (await this.customFLTableHeadFilterRule).click();
   }
 
-  async clickDeleteCustomFLButton()
-  {
+  async clickDeleteCustomFLButton() {
     await this.scrollIntoViewAndClick(this.deleteCustomFLButton);
   }
 
-  async clickEasyListEnglishFL()
-  {
+  async clickEasyListEnglishFL() {
     await this.scrollIntoViewAndClick(this.easyListEnglishFLDropdownItem);
   }
 
-  async clickEasyListFLGearIcon()
-  {
+  async clickEasyListFLGearIcon() {
     await this.waitForEnabledThenClick(this.easyListFLGearIcon);
   }
 
-  async clickEasyListFLSourceButton()
-  {
+  async clickEasyListFLSourceButton() {
     await (await this.easyListFLSourceButton).click();
   }
 
-  async clickEasyListFLStatusToggle()
-  {
+  async clickEasyListFLStatusToggle() {
     await (await this.easyListFLStatusToggle).click();
   }
 
-  async clickEasyListFLTrashButton()
-  {
+  async clickEasyListFLTrashButton() {
     await this.waitForEnabledThenClick(this.easyListFLTrashButton);
   }
 
-  async clickEasyListFLUpdateNowButton()
-  {
+  async clickEasyListFLUpdateNowButton() {
     await this.waitForEnabledThenClick(this.easyListFLUpdateNowButton);
   }
 
-  async clickEasyListFLWebsiteButton()
-  {
+  async clickEasyListFLWebsiteButton() {
     await (await this.easyListFLWebsiteButton).click();
   }
 
-  async clickEnableThemButton()
-  {
+  async clickEnableThemButton() {
     await (await this.enableThemButton).click();
   }
 
-  async clickFilterListsLearnMoreLink()
-  {
+  async clickFilterListsLearnMoreLink() {
     await (await this.filterListsLearnMoreLink).click();
   }
 
-  async clickLearnHowToWriteFiltersLink()
-  {
+  async clickLearnHowToWriteFiltersLink() {
     await (await this.learnHowToWriteFiltersLink).click();
   }
 
-  async clickListeFREasyListFL()
-  {
+  async clickListeFREasyListFL() {
     await this.scrollIntoViewAndClick(this.listeFREasyListFLDropdownItem);
   }
 
-  async clickPremiumBlockCookieConsentPopupsFLStatusToggle()
-  {
+  async clickPremiumBlockCookieConsentPopupsFLStatusToggle() {
     await this.scrollIntoViewAndClick(
-      this.premiumBlockCookieConsentPopupsFLStatusToggle);
+      this.premiumBlockCookieConsentPopupsFLStatusToggle
+    );
   }
 
-  async clickPremiumBlockCookieConsentPopupsFLTrashButton()
-  {
+  async clickPremiumBlockCookieConsentPopupsFLTrashButton() {
     await (await this.premiumBlockCookieConsentPopupsFLTrashButton).click();
   }
 
-  async clickPremiumDistractionControlFLStatusToggle()
-  {
+  async clickPremiumDistractionControlFLStatusToggle() {
     await this.scrollIntoViewAndClick(
-      this.premiumDistractionControlFLStatusToggle);
+      this.premiumDistractionControlFLStatusToggle
+    );
   }
 
-  async clickPremiumBlockMoreDistractionsFLTrashButton()
-  {
+  async clickPremiumBlockMoreDistractionsFLTrashButton() {
     await this.scrollIntoViewAndClick(
-      this.premiumBlockMoreDistractionsFLTrashButton);
+      this.premiumBlockMoreDistractionsFLTrashButton
+    );
   }
 
-  async clickShowAdblockPlusPanelCheckbox()
-  {
+  async clickShowAdblockPlusPanelCheckbox() {
     await (await this.showAdblockPlusPanelCheckbox).click();
   }
 
-  async clickShowAdblockPlusPanelTooltipIcon()
-  {
-    await this.waitForEnabledThenClick(this.
-      showAdblockPlusPanelTooltipIcon);
+  async clickShowAdblockPlusPanelTooltipIcon() {
+    await this.waitForEnabledThenClick(this.showAdblockPlusPanelTooltipIcon);
   }
 
-  async clickShowBlockElementCheckbox()
-  {
+  async clickShowBlockElementCheckbox() {
     await (await this.showBlockElementCheckbox).click();
   }
 
-  async clickShowBlockElementTooltipIcon()
-  {
-    await this.waitForEnabledThenClick(this.
-      showBlockElementTooltipIcon);
+  async clickShowBlockElementTooltipIcon() {
+    await this.waitForEnabledThenClick(this.showBlockElementTooltipIcon);
   }
 
-  async clickShowNumberOfAdsBlockedCheckbox()
-  {
+  async clickShowNumberOfAdsBlockedCheckbox() {
     await (await this.showNumberOfAdsBlockedCheckbox).click();
   }
 
-  async clickShowUsefulNotificationsCheckbox()
-  {
+  async clickShowUsefulNotificationsCheckbox() {
     await (await this.showUsefulNotificationsCheckbox).click();
   }
 
-  async clickShowUsefulNotificationsTooltipIcon()
-  {
-    await this.waitForEnabledThenClick(this.
-      showUsefulNotificationsTooltipIcon);
+  async clickShowUsefulNotificationsTooltipIcon() {
+    await this.waitForEnabledThenClick(this.showUsefulNotificationsTooltipIcon);
   }
 
-  async clickTurnOnDebugElementCheckbox()
-  {
+  async clickTurnOnDebugElementCheckbox() {
     await (await this.turnOnDebugElementCheckbox).click();
   }
 
-  async clickTurnOnDebugElementTooltipIcon()
-  {
-    await this.waitForEnabledThenClick(this.
-      turnOnDebugElementTooltipIcon);
+  async clickTurnOnDebugElementTooltipIcon() {
+    await this.waitForEnabledThenClick(this.turnOnDebugElementTooltipIcon);
   }
 
-  async clickUpdateAllFilterlistsButton()
-  {
+  async clickUpdateAllFilterlistsButton() {
     await (await this.updateAllFilterlistsButton).click();
   }
 
-  async getBuiltInFilterListsItemsNames()
-  {
+  async getBuiltInFilterListsItemsNames() {
     const flItems = await this.builtInFilterListsItems;
     return await flItems.map((e) => e.getText());
   }
 
-  async getCustomFilterListsErrorText()
-  {
+  async getCustomFilterListsErrorText() {
     return await (await this.customFilterListsErrorText).getText();
   }
 
-  async getFilterListErrorTooltipText()
-  {
+  async getFilterListErrorTooltipText() {
     let completeTooltipText = "";
-    completeTooltipText +=
-      await (await this.filterListErrorTooltipText).getText();
-    completeTooltipText +=
-      await (await this.filterListErrorTooltipFirstErrorText).getText();
+    completeTooltipText += await (
+      await this.filterListErrorTooltipText
+    ).getText();
+    completeTooltipText += await (
+      await this.filterListErrorTooltipFirstErrorText
+    ).getText();
     return completeTooltipText;
   }
 
-  async getFlTableEmptyPlaceholderText()
-  {
+  async getFlTableEmptyPlaceholderText() {
     return await (await this.flTableEmptyPlaceholder).getText();
   }
 
-  async getShowAdblockPlusPanelTooltipText()
-  {
+  async getShowAdblockPlusPanelTooltipText() {
     return await (await this.showAdblockPlusPanelTooltipText).getText();
   }
 
-  async getShowBlockElementTooltipText()
-  {
+  async getShowBlockElementTooltipText() {
     return await (await this.showBlockElementTooltipText).getText();
   }
 
-  async getShowUsefulNotificationsTooltipText()
-  {
+  async getShowUsefulNotificationsTooltipText() {
     return await (await this.showUsefulNotificationsTooltipText).getText();
   }
 
-  async getTurnOnDebugElementTooltipText()
-  {
+  async getTurnOnDebugElementTooltipText() {
     return await (await this.turnOnDebugElementTooltipText).getText();
   }
 
-  async isAbpFiltersFLDisplayed()
-  {
+  async isAbpFiltersFLDisplayed() {
     return await this.waitForDisplayedNoError(this.abpFiltersFL);
   }
 
-  async isAbpFiltersFLStatusToggleSelected()
-  {
-    return await (await this.abpFiltersFLStatusToggle).
-      getAttribute("aria-checked") === "true";
+  async isAbpFiltersFLStatusToggleSelected() {
+    return (
+      (await (
+        await this.abpFiltersFLStatusToggle
+      ).getAttribute("aria-checked")) === "true"
+    );
   }
 
-  async isAbpFiltersFLUpdating(timeout = 5000, reverse = false)
-  {
+  async isAbpFiltersFLUpdating(timeout = 5000, reverse = false) {
     return await this.waitUntilAttributeValueIs(
-      this.abpFiltersFL, "class", "show-message", timeout, reverse);
+      this.abpFiltersFL,
+      "class",
+      "show-message",
+      timeout,
+      reverse
+    );
   }
 
-  async isAbpFiltersFLUpdatingDone()
-  {
+  async isAbpFiltersFLUpdatingDone() {
     return await this.waitUntilAttributeValueIs(
-      this.abpFiltersFL, "class",
-      "show-message", 10000, true);
+      this.abpFiltersFL,
+      "class",
+      "show-message",
+      10000,
+      true
+    );
   }
 
-  async isAbpFiltersFLErrorIconDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.abpFiltersFLErrorIcon,
-                                              reverseOption);
+  async isAbpFiltersFLErrorIconDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.abpFiltersFLErrorIcon,
+      reverseOption
+    );
   }
 
-  async isAbpTestFilterErrorIconDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.abpTestFilterErrorIcon,
-                                              reverseOption);
+  async isAbpTestFilterErrorIconDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.abpTestFilterErrorIcon,
+      reverseOption
+    );
   }
 
-  async isAddCustomFilterListButtonEnabled(reverseOption = false,
-                                           timeoutMs = 3000)
-  {
-    return await this.waitForEnabledNoError(this.addCustomFilterListButton,
-                                            reverseOption, timeoutMs);
+  async isAddCustomFilterListButtonEnabled(
+    reverseOption = false,
+    timeoutMs = 3000
+  ) {
+    return await this.waitForEnabledNoError(
+      this.addCustomFilterListButton,
+      reverseOption,
+      timeoutMs
+    );
   }
 
-  async isAddNewFilterListDialogDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.addNewFilterListDialog,
-                                              reverseOption);
+  async isAddNewFilterListDialogDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.addNewFilterListDialog,
+      reverseOption
+    );
   }
 
-  async isAllowNonintrusiveAdvertisingFLDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-    allowNonintrusiveAdvertisingFL);
+  async isAllowNonintrusiveAdvertisingFLDisplayed() {
+    return await this.waitForDisplayedNoError(
+      this.allowNonintrusiveAdvertisingFL
+    );
   }
 
-  async isAllowNonintrusiveAdvertisingFLStatusToggleEnabled()
-  {
-    return await (await this.allowNonintrusiveAdvertisingFLStatusToggle).
-      isEnabled();
+  async isAllowNonintrusiveAdvertisingFLStatusToggleEnabled() {
+    return await (
+      await this.allowNonintrusiveAdvertisingFLStatusToggle
+    ).isEnabled();
   }
 
-  async isAllowNonintrusiveAdvertisingFLUpdating(timeout = 5000,
-                                                 reverse = false)
-  {
+  async isAllowNonintrusiveAdvertisingFLUpdating(
+    timeout = 5000,
+    reverse = false
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.allowNonintrusiveAdvertisingFL, "class", "show-message",
-      timeout, reverse);
+      this.allowNonintrusiveAdvertisingFL,
+      "class",
+      "show-message",
+      timeout,
+      reverse
+    );
   }
 
-  async isAllowNonintrusiveAdvertisingFLUpdatingDone()
-  {
+  async isAllowNonintrusiveAdvertisingFLUpdatingDone() {
     return await this.waitUntilAttributeValueIs(
-      this.allowNonintrusiveAdvertisingFL, "class",
-      "show-message", 10000, true);
+      this.allowNonintrusiveAdvertisingFL,
+      "class",
+      "show-message",
+      10000,
+      true
+    );
   }
 
-  async isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-    allowNonintrusiveAdvertisingWithoutTrackingFL);
+  async isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed() {
+    return await this.waitForDisplayedNoError(
+      this.allowNonintrusiveAdvertisingWithoutTrackingFL
+    );
   }
 
-  async isCopyCustomFLButtonDisplayed()
-  {
+  async isCopyCustomFLButtonDisplayed() {
     return await (await this.copyCustomFLButton).isDisplayed();
   }
 
-  async isCustomFilterListsFirstItemAlertIconDisplayed(reverseOption = false)
-  {
+  async isCustomFilterListsFirstItemAlertIconDisplayed(reverseOption = false) {
     return await this.waitForDisplayedNoError(
       this.customFilterListsFirstItemAlertIcon,
-      reverseOption);
+      reverseOption
+    );
   }
 
-  async isCustomFilterListsFirstItemErrorIconDisplayed(reverseOption = false)
-  {
+  async isCustomFilterListsFirstItemErrorIconDisplayed(reverseOption = false) {
     return await this.waitForDisplayedNoError(
       this.customFilterListsFirstItemErrorIcon,
-      reverseOption);
+      reverseOption
+    );
   }
 
-  async isCustomFLFirstItemAlertIconTooltipDisplayed(expectedValue = "",
-                                                     timeoutVal = 5000)
-  {
-    expectedValue = "Slow filter. Please check the length of the pattern " +
+  async isCustomFLFirstItemAlertIconTooltipDisplayed(
+    expectedValue = "",
+    timeoutVal = 5000
+  ) {
+    expectedValue =
+      "Slow filter. Please check the length of the pattern " +
       "and ensure it doesn't contain a regular expression.";
     await this.waitUntilAttributeValueIs(
-      this.customFilterListsFirstItemAlertIcon, "title",
-      expectedValue, timeoutVal);
+      this.customFilterListsFirstItemAlertIcon,
+      "title",
+      expectedValue,
+      timeoutVal
+    );
     // Wait until tooltip is displayed
     await browser.pause(2500);
     return await (await this.customFilterListsFirstItemAlertText).isDisplayed();
   }
 
-  async isCustomFilterListsNthItemCheckboxChecked(n, reverseOption = false)
-  {
+  async isCustomFilterListsNthItemCheckboxChecked(n, reverseOption = false) {
     await (await this.customFilterListsNthItemCheckbox(n)).scrollIntoView();
     return await this.waitUntilAttributeValueIs(
-      this.customFilterListsNthItemCheckbox(n), "aria-checked",
-      "true", 3000, reverseOption);
+      this.customFilterListsNthItemCheckbox(n),
+      "aria-checked",
+      "true",
+      3000,
+      reverseOption
+    );
   }
 
-  async isCustomFilterListsFirstItemToggleDisplayed()
-  {
+  async isCustomFilterListsFirstItemToggleDisplayed() {
     return await (await this.customFilterListsFirstItemToggle).isDisplayed();
   }
 
-  async isCustomFilterListsFirstItemToggleSelected(reverseOption = false)
-  {
+  async isCustomFilterListsFirstItemToggleSelected(reverseOption = false) {
     return await this.waitUntilAttributeValueIs(
-      this.customFilterListsFirstItemToggle, "aria-checked",
-      "true", 3000, reverseOption);
+      this.customFilterListsFirstItemToggle,
+      "aria-checked",
+      "true",
+      3000,
+      reverseOption
+    );
   }
 
-  async isCustomFilterListsTableDisplayed()
-  {
+  async isCustomFilterListsTableDisplayed() {
     return await (await this.customFilterListsTable).isDisplayed();
   }
 
-  async isCustomFilterListsTableContentDisplayed()
-  {
+  async isCustomFilterListsTableContentDisplayed() {
     return await (await this.customFilterListsTableContent).isDisplayed();
   }
 
-  async isCustomFLTableHeadCheckboxClickable()
-  {
+  async isCustomFLTableHeadCheckboxClickable() {
     return await (await this.customFLTableHeadCheckbox).isClickable();
   }
 
-  async isDeleteCustomFLButtonDisplayed()
-  {
+  async isDeleteCustomFLButtonDisplayed() {
     return await (await this.deleteCustomFLButton).isDisplayed();
   }
 
-  async isEasyListFLDisplayed()
-  {
+  async isEasyListFLDisplayed() {
     return await this.waitForDisplayedNoError(this.easyListFL);
   }
 
-  async isEasyListFLStatusToggleSelected()
-  {
-    return await (await this.easyListFLStatusToggle).
-    getAttribute("aria-checked") === "true";
+  async isEasyListFLStatusToggleSelected() {
+    return (
+      (await (
+        await this.easyListFLStatusToggle
+      ).getAttribute("aria-checked")) === "true"
+    );
   }
 
-  async isEasyListFLUpdating()
-  {
+  async isEasyListFLUpdating() {
     return await this.waitUntilAttributeValueIs(
-      this.easyListFL, "class", "show-message");
+      this.easyListFL,
+      "class",
+      "show-message"
+    );
   }
 
-  async isEasyListFLUpdatingDone()
-  {
+  async isEasyListFLUpdatingDone() {
     return await this.waitUntilAttributeValueIs(
-      this.easyListFL, "class",
-      "show-message", 10000, true);
+      this.easyListFL,
+      "class",
+      "show-message",
+      10000,
+      true
+    );
   }
 
-  async isEasyListGermanyPlusEasyListFLDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-      easyListGermanyPlusEasyListFL);
+  async isEasyListGermanyPlusEasyListFLDisplayed() {
+    return await this.waitForDisplayedNoError(
+      this.easyListGermanyPlusEasyListFL
+    );
   }
 
-  async isEasyPrivacyFLDisplayed()
-  {
+  async isEasyPrivacyFLDisplayed() {
     return await this.waitForDisplayedNoError(this.easyPrivacyFL);
   }
 
-  async isFanboysNotificationsBlockingListFLDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-    fanboysNotificationsBlockingListFL);
+  async isFanboysNotificationsBlockingListFLDisplayed() {
+    return await this.waitForDisplayedNoError(
+      this.fanboysNotificationsBlockingListFL
+    );
   }
 
-  async isFanboysSocialBlockingListFLDisplayed()
-  {
-    return await this.waitForDisplayedNoError(this.
-    fanboysSocialBlockingListFL);
+  async isFanboysSocialBlockingListFLDisplayed() {
+    return await this.waitForDisplayedNoError(this.fanboysSocialBlockingListFL);
   }
 
-  async isFilterListErrorPopoutDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.filterListErrorPopout,
-                                              reverseOption);
+  async isFilterListErrorPopoutDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.filterListErrorPopout,
+      reverseOption
+    );
   }
 
-  async isFilterListErrorTooltipDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.filterListErrorTooltip,
-                                              reverseOption);
+  async isFilterListErrorTooltipDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.filterListErrorTooltip,
+      reverseOption
+    );
   }
 
-  async isFilterListsDropdownDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.filterListsDropdown,
-                                              reverseOption);
+  async isFilterListsDropdownDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.filterListsDropdown,
+      reverseOption
+    );
   }
 
-  async isIDontCareAboutCookiesFLDisplayed()
-  {
+  async isIDontCareAboutCookiesFLDisplayed() {
     return await this.waitForDisplayedNoError(this.iDontCareAboutCookiesFL);
   }
 
-  async isListeFREasyListFLDisplayed()
-  {
+  async isListeFREasyListFLDisplayed() {
     return await this.waitForDisplayedNoError(this.listeFREasyListFL);
   }
 
-  async isListeFREasyListFLStatusToggleSelected(expectedValue = "true",
-                                                timeoutVal = 3000)
-  {
+  async isListeFREasyListFLStatusToggleSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.listeFREasyListFLStatusToggle, "aria-checked",
-      expectedValue, timeoutVal);
+      this.listeFREasyListFLStatusToggle,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isPremiumBlockCookieConsentPopupsFLDisplayed(reverseOption = false)
-  {
-    return await this.
-      waitForDisplayedNoError(this.premiumBlockCookieConsentPopupsFL,
-                              reverseOption);
+  async isPremiumBlockCookieConsentPopupsFLDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.premiumBlockCookieConsentPopupsFL,
+      reverseOption
+    );
   }
 
   async isPremiumBlockCookieConsentPopupsFLStatusToggleSelected(
     expectedValue = "true",
-    timeoutVal = 3000)
-  {
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.premiumBlockCookieConsentPopupsFLStatusToggle, "aria-checked",
-      expectedValue, timeoutVal);
+      this.premiumBlockCookieConsentPopupsFLStatusToggle,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isPremiumDistractionControlFLDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.premiumDistractionControlFL,
-                                              reverseOption);
+  async isPremiumDistractionControlFLDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.premiumDistractionControlFL,
+      reverseOption
+    );
   }
 
   async isPremiumDistractionControlFLStatusToggleSelected(
     expectedValue = "true",
-    timeoutVal = 3000)
-  {
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.premiumDistractionControlFLStatusToggle, "aria-checked",
-      expectedValue, timeoutVal);
+      this.premiumDistractionControlFLStatusToggle,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isShowAdblockPlusPanelCheckboxSelected(expectedValue = "true",
-                                               timeoutVal = 3000)
-  {
+  async isShowAdblockPlusPanelCheckboxSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.showAdblockPlusPanelCheckbox, "aria-checked",
-      expectedValue, timeoutVal);
+      this.showAdblockPlusPanelCheckbox,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isShowAdblockPlusPanelTooltipTextDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      showAdblockPlusPanelTooltipText, reverseOption);
+  async isShowAdblockPlusPanelTooltipTextDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.showAdblockPlusPanelTooltipText,
+      reverseOption
+    );
   }
 
-  async isShowBlockElementCheckboxSelected(expectedValue = "true",
-                                           timeoutVal = 3000)
-  {
+  async isShowBlockElementCheckboxSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.showBlockElementCheckbox, "aria-checked",
-      expectedValue, timeoutVal);
+      this.showBlockElementCheckbox,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isShowBlockElementTooltipTextDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      showBlockElementTooltipText, reverseOption);
+  async isShowBlockElementTooltipTextDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.showBlockElementTooltipText,
+      reverseOption
+    );
   }
 
-  async isShowNumberOfAdsBlockedCheckboxSelected(expectedValue = "true",
-                                                 timeoutVal = 3000)
-  {
+  async isShowNumberOfAdsBlockedCheckboxSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.showNumberOfAdsBlockedCheckbox, "aria-checked",
-      expectedValue, timeoutVal);
+      this.showNumberOfAdsBlockedCheckbox,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isShowUsefulNotificationsCheckboxSelected(expectedValue = "true",
-                                                  timeoutVal = 3000)
-  {
+  async isShowUsefulNotificationsCheckboxSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.showUsefulNotificationsCheckbox, "aria-checked",
-      expectedValue, timeoutVal);
+      this.showUsefulNotificationsCheckbox,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isShowUsefulNotificationsTooltipTextDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      showUsefulNotificationsTooltipText, reverseOption);
+  async isShowUsefulNotificationsTooltipTextDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.showUsefulNotificationsTooltipText,
+      reverseOption
+    );
   }
 
-  async isTestFilterListDisplayed()
-  {
+  async isTestFilterListDisplayed() {
     return await (await this.testFilterList).isExisting();
   }
 
-  async isTestFilterListNoHtttpsDisplayed()
-  {
+  async isTestFilterListNoHtttpsDisplayed() {
     return await (await this.testFilterListNoHtttps).isExisting();
   }
 
-  async isTestFilterListStatusToggleSelected()
-  {
-    return await (await this.testFilterListStatusToggle).
-    getAttribute("aria-checked") === "true";
+  async isTestFilterListStatusToggleSelected() {
+    return (
+      (await (
+        await this.testFilterListStatusToggle
+      ).getAttribute("aria-checked")) === "true"
+    );
   }
 
-  async isTurnOnDebugElementCheckboxSelected(expectedValue = "true",
-                                             timeoutVal = 3000)
-  {
+  async isTurnOnDebugElementCheckboxSelected(
+    expectedValue = "true",
+    timeoutVal = 3000
+  ) {
     return await this.waitUntilAttributeValueIs(
-      this.turnOnDebugElementCheckbox, "aria-checked",
-      expectedValue, timeoutVal);
+      this.turnOnDebugElementCheckbox,
+      "aria-checked",
+      expectedValue,
+      timeoutVal
+    );
   }
 
-  async isTurnOnDebugElementTooltipTextDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      turnOnDebugElementTooltipText, reverseOption);
+  async isTurnOnDebugElementTooltipTextDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.turnOnDebugElementTooltipText,
+      reverseOption
+    );
   }
 
-  async isUrlErrorMessageDisplayed()
-  {
+  async isUrlErrorMessageDisplayed() {
     return await this.waitForDisplayedNoError(this.urlErrorMessage);
   }
 
-  async hoverCustomFilterListsFirstItemAlertIcon()
-  {
+  async hoverCustomFilterListsFirstItemAlertIcon() {
     await (await this.customFilterListsFirstItemAlertIcon).scrollIntoView();
     await (await this.customFilterListsFirstItemAlertIcon).moveTo();
   }
 
-  async switchToEasylistSourceTab()
-  {
+  async switchToEasylistSourceTab() {
     await this.switchToTab(/easylist-downloads/);
   }
 
-  async switchToEasylisttoTab()
-  {
+  async switchToEasylisttoTab() {
     await this.switchToTab(/easylist.to/);
   }
 
-  async switchToHowToWriteFiltersTab()
-  {
+  async switchToHowToWriteFiltersTab() {
     await this.switchToTab(/360062733293/);
   }
 
-  async switchToSubscriptionsTab()
-  {
+  async switchToSubscriptionsTab() {
     await this.switchToTab(/subscriptions/);
   }
 
-  async typeTextToFilterListUrlInput(text, noClearValue = false)
-  {
+  async typeTextToFilterListUrlInput(text, noClearValue = false) {
     await (await this.filterListUrlInput).click();
-    if (noClearValue)
-    {
+    if (noClearValue) {
       await (await this.filterListUrlInput).click();
-      for (let i = 0; i < 75; i++)
-      {
+      for (let i = 0; i < 75; i++) {
         await browser.keys("Backspace");
       }
-    }
-    else
-    {
+    } else {
       await (await this.filterListUrlInput).clearValue();
     }
     await browser.keys(text);
   }
 
-  async typeTextToAddCustomFilterListInput(text, noClearValue = false)
-  {
+  async typeTextToAddCustomFilterListInput(text, noClearValue = false) {
     await (await this.addCustomFilterListInput).click();
-    if (noClearValue)
-    {
+    if (noClearValue) {
       await (await this.addCustomFilterListInput).click();
-      for (let i = 0; i < 75; i++)
-      {
+      for (let i = 0; i < 75; i++) {
         await browser.keys("Backspace");
       }
-    }
-    else
-    {
+    } else {
       await (await this.addCustomFilterListInput).clearValue();
     }
     await browser.keys(text);
   }
 
-  async verifyTextPresentInCustomFLTable(text, timeoutVal = 3000)
-  {
-    try
-    {
+  async verifyTextPresentInCustomFLTable(text, timeoutVal = 3000) {
+    try {
       const element = await this.customFilterListsTableElementText(text);
-      await element.waitForExist({timeout: timeoutVal});
-      if (!(await element.isDisplayedInViewport()))
-      {
+      await element.waitForExist({ timeout: timeoutVal });
+      if (!(await element.isDisplayedInViewport())) {
         await element.scrollIntoView();
       }
       return true;
-    }
-    catch (error)
-    {
+    } catch (error) {
       return false;
     }
   }
 
-  async waitForAbpFiltersFLLastUpdatedTextToEqual(text, timeoutVal = 10000)
-  {
-    return await this.waitUntilTextIs(this.abpFiltersFLLastUpdatedText,
-                                      text, timeoutVal);
+  async waitForAbpFiltersFLLastUpdatedTextToEqual(text, timeoutVal = 10000) {
+    return await this.waitUntilTextIs(
+      this.abpFiltersFLLastUpdatedText,
+      text,
+      timeoutVal
+    );
   }
 
-  async waitForAllowNonintrusiveFLLastUpdatedTextToEqual(text,
-                                                         timeoutVal = 10000)
-  {
+  async waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
+    text,
+    timeoutVal = 10000
+  ) {
     return await this.waitUntilTextIs(
       this.allowNonintrusiveAdvertisingFLLastUpdatedText,
-      text, timeoutVal);
+      text,
+      timeoutVal
+    );
   }
 
-  async waitForCustomFilterListsNthItemTextToEqual(text, n,
-                                                   timeoutVal = 5000)
-  {
-    if (!(await (await this.customFilterListsNthItemText(n)).
-      isDisplayedInViewport()))
-    {
+  async waitForCustomFilterListsNthItemTextToEqual(text, n, timeoutVal = 5000) {
+    if (
+      !(await (
+        await this.customFilterListsNthItemText(n)
+      ).isDisplayedInViewport())
+    ) {
       await (await this.customFilterListsNthItemText(n)).scrollIntoView();
     }
     return await this.waitUntilTextIs(
       this.customFilterListsNthItemText(n),
-      text, timeoutVal);
+      text,
+      timeoutVal
+    );
   }
 
-  async waitForEasyListFLLastUpdatedTextToEqual(text, timeoutVal = 10000)
-  {
-    return await this.waitUntilTextIs(this.easyListFLLastUpdatedText,
-                                      text, timeoutVal);
+  async waitForEasyListFLLastUpdatedTextToEqual(text, timeoutVal = 10000) {
+    return await this.waitUntilTextIs(
+      this.easyListFLLastUpdatedText,
+      text,
+      timeoutVal
+    );
   }
 }
 

@@ -15,57 +15,46 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {params} from "../config/env.mjs";
+import { params } from "../config/env.mjs";
 import filterState from "./filter-state.mjs";
 
-export class Filter
-{
-  static fromText(text)
-  {
-    const {filterError, filterOption} = params;
+export class Filter {
+  static fromText(text) {
+    const { filterError, filterOption } = params;
     if (filterError)
       return new InvalidFilter(text, `filter_${filterError}`, filterOption);
 
-    if (text[0] === "!")
-      return new CommentFilter(text);
+    if (text[0] === "!") return new CommentFilter(text);
 
     return new URLFilter(text);
   }
 
-  static normalize(text)
-  {
+  static normalize(text) {
     return text;
   }
 
-  constructor(text)
-  {
+  constructor(text) {
     this.text = text;
   }
 }
 
-export class ActiveFilter extends Filter
-{
-  constructor(text)
-  {
+export class ActiveFilter extends Filter {
+  constructor(text) {
     super(text);
     this.disabled = false;
   }
-  get disabled()
-  {
+  get disabled() {
     return !filterState.isEnabled(this.text);
   }
-  set disabled(value)
-  {
+  set disabled(value) {
     filterState.setEnabled(this.text, !value);
   }
 }
 
 class CommentFilter extends Filter {}
 
-export class InvalidFilter extends Filter
-{
-  constructor(text, reason, option)
-  {
+export class InvalidFilter extends Filter {
+  constructor(text, reason, option) {
     super(text);
     this.reason = reason;
     this.option = option;

@@ -15,10 +15,10 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {getUUID} from "../../../src/id/shared/index.ts";
-import {convertDoclinks} from "../../common.mjs";
-import {$, asIndentedString} from "../../dom.mjs";
-import {initI18n, setElementLinks} from "../../../src/i18n/index.ts";
+import { getUUID } from "../../../src/id/shared/index.ts";
+import { convertDoclinks } from "../../common.mjs";
+import { $, asIndentedString } from "../../dom.mjs";
+import { initI18n, setElementLinks } from "../../../src/i18n/index.ts";
 import {
   collectData,
   closeRequestsCollectingTab,
@@ -29,30 +29,22 @@ import stepsManager from "./steps-manager.mjs";
 import "../../../src/issue-reporter/ui/issue-reporter.css";
 
 const optionalPermissions = {
-  permissions: [
-    "contentSettings",
-    "management"
-  ]
+  permissions: ["contentSettings", "management"]
 };
 
 convertDoclinks();
 initI18n();
 
-function containsPermissions()
-{
+function containsPermissions() {
   // Firefox doesn't trigger the promise's catch() but instead throws
-  try
-  {
+  try {
     return browser.permissions.contains(optionalPermissions);
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     return Promise.reject(ex);
   }
 }
 
-document.addEventListener("DOMContentLoaded", async() =>
-{
+document.addEventListener("DOMContentLoaded", async () => {
   const supportEmail = "support@adblockplus.org";
   setElementLinks("sr-warning", `mailto:${supportEmail}`);
   setElementLinks(
@@ -62,49 +54,43 @@ document.addEventListener("DOMContentLoaded", async() =>
 
   const cancelButton = $("#cancel");
   cancelButton.addEventListener("click", closeMe);
-  $("#hide-notification").addEventListener("click", () =>
-  {
+  $("#hide-notification").addEventListener("click", () => {
     $("#notification").setAttribute("aria-hidden", true);
   });
 
-  const screenshot = await browser.tabs.captureVisibleTab(
-    null,
-    {format: "png"}
-  );
+  const screenshot = await browser.tabs.captureVisibleTab(null, {
+    format: "png"
+  });
   // activate current tab and let the user report
   const tab = await browser.tabs.getCurrent();
-  await browser.tabs.update(tab.id, {active: true});
-  const manageSteps = stepsManager({screenshot});
+  await browser.tabs.update(tab.id, { active: true });
+  const manageSteps = stepsManager({ screenshot });
 
   // Steps manager is waiting for the data to be collected, so to avoid race
   // conditions, we need to wait for it to be initialized before collection
-  const collectedData = collectData().catch(e =>
-  {
+  const collectedData = collectData().catch((e) => {
     console.error(e);
     alert(e);
     closeMe();
   });
 
-  $("#send").addEventListener("click", function sendAll(event)
-  {
+  $("#send").addEventListener("click", function sendAll(event) {
     const sendButton = event.currentTarget;
     const lastStep = $("io-steps button:last-child");
     sendButton.removeEventListener("click", sendAll);
     sendButton.disabled = true;
     lastStep.disabled = false;
     lastStep.click();
-    $("io-highlighter").addEventListener("changecolordepth", evt =>
-    {
+    $("io-highlighter").addEventListener("changecolordepth", (evt) => {
       const progress = $("#sendingProgress");
-      const {max, value} = evt.detail;
+      const { max, value } = evt.detail;
       // do not fulfill the bar with this info only
       // the idea is to show a general progress for
       // both the color depth and the sending report
       progress.max = max * 2;
       progress.value = value;
     });
-    Promise.all([collectedData, manageSteps]).then(results =>
-    {
+    Promise.all([collectedData, manageSteps]).then((results) => {
       // At this point the report is sent,
       // and there will be a link within an iframe
       // that navigates, within the same page, to the
@@ -117,77 +103,64 @@ document.addEventListener("DOMContentLoaded", async() =>
       cancelButton.disabled = true;
       cancelButton.hidden = true;
       sendReport(reportWithScreenshot(...results));
-      sendButton.textContent =
-        browser.i18n.getMessage("issueReporter_closeButton_label");
+      sendButton.textContent = browser.i18n.getMessage(
+        "issueReporter_closeButton_label"
+      );
       $("io-steps").setCompleted(-1, true);
     });
   });
 
   // We query our permissions here to find out whether the browser supports them
   containsPermissions()
-    .then(() =>
-    {
+    .then(() => {
       const includeConfig = $("#includeConfig");
-      includeConfig.addEventListener("change", (event) =>
-      {
-        if (!includeConfig.checked)
-        {
+      includeConfig.addEventListener("change", (event) => {
+        if (!includeConfig.checked) {
           updateConfigurationInfo(false);
           return;
         }
 
         event.preventDefault();
 
-        browser.permissions.request(optionalPermissions)
-          .then((granted) =>
-          {
-            return updateConfigurationInfo(granted)
-              .then(() =>
-              {
-                includeConfig.checked = granted;
-              });
+        browser.permissions
+          .request(optionalPermissions)
+          .then((granted) => {
+            return updateConfigurationInfo(granted).then(() => {
+              includeConfig.checked = granted;
+            });
           })
           // Catch error here already to ensure permission is removed
           // even if we are unable to update the report data
           .catch(console.error)
           .then(() => browser.permissions.remove(optionalPermissions))
-          .then((success) =>
-          {
-            if (!success)
-              throw new Error("Failed to remove permissions");
+          .then((success) => {
+            if (!success) throw new Error("Failed to remove permissions");
           })
           .catch(console.error);
       });
     })
-    .catch((err) =>
-    {
+    .catch((err) => {
       // No need to ask for more data if we won't be able to access it anyway
       const includeConfig = $("#includeConfigContainer");
       includeConfig.hidden = true;
     });
 
   const showDataOverlay = $("#showDataOverlay");
-  $("#showData").addEventListener("click", event =>
-  {
+  $("#showData").addEventListener("click", (event) => {
     event.preventDefault();
 
-    collectedData.then(
-      xmlReport =>
-      {
-        closeRequestsCollectingTab().then(() =>
-        {
-          showDataOverlay.hidden = false;
+    collectedData.then((xmlReport) => {
+      closeRequestsCollectingTab().then(() => {
+        showDataOverlay.hidden = false;
 
-          reportWithScreenshot(xmlReport, {screenshot: $("io-highlighter")});
-          const element = $("#showDataValue");
-          element.textContent = asIndentedString(xmlReport);
-          element.focus();
-        });
-      }
-    );
+        reportWithScreenshot(xmlReport, { screenshot: $("io-highlighter") });
+        const element = $("#showDataValue");
+        element.textContent = asIndentedString(xmlReport);
+        element.focus();
+      });
+    });
   });
-  $("#showDataClose").addEventListener("click", event =>
-  {
+  $("#showDataClose").addEventListener("click", (event) => {
     showDataOverlay.hidden = true;
     $("#showData").focus();
   });
@@ -195,23 +168,23 @@ document.addEventListener("DOMContentLoaded", async() =>
 
 let notifyClosing = true;
 window.addEventListener("beforeunload", closeMe);
-function closeMe()
-{
-  if (notifyClosing)
-  {
+function closeMe() {
+  if (notifyClosing) {
     notifyClosing = false;
-    browser.runtime.sendMessage({
-      type: "app.get",
-      what: "senderId"
-    }).then(tabId => browser.tabs.remove(tabId));
+    browser.runtime
+      .sendMessage({
+        type: "app.get",
+        what: "senderId"
+      })
+      .then((tabId) => browser.tabs.remove(tabId));
   }
 }
 
-function reportWithScreenshot(xmlReport, stepsData)
-{
-  const {edited, data} = stepsData.screenshot;
-  const element = $("screenshot", xmlReport.documentElement) ||
-                  xmlReport.createElement("screenshot");
+function reportWithScreenshot(xmlReport, stepsData) {
+  const { edited, data } = stepsData.screenshot;
+  const element =
+    $("screenshot", xmlReport.documentElement) ||
+    xmlReport.createElement("screenshot");
   element.setAttribute("edited", edited);
   const proc = browser.i18n.getMessage("issueReporter_processing_screenshot");
   element.textContent = data || `data:image/png;base64,...${proc}...`;
@@ -219,59 +192,49 @@ function reportWithScreenshot(xmlReport, stepsData)
   return xmlReport;
 }
 
-function sendReport(reportData)
-{
+function sendReport(reportData) {
   // Passing a sequence to URLSearchParams() constructor only works starting
   // with Firefox 53, add values "manually" for now.
   const params = new URLSearchParams();
   for (const [param, value] of [
     ["version", 1],
     ["guid", getUUID()],
-    ["lang", $("adblock-plus", reportData)
-                       .getAttribute("locale")]
-  ])
-  {
+    ["lang", $("adblock-plus", reportData).getAttribute("locale")]
+  ]) {
     params.append(param, value);
   }
 
   const url = "https://reports.adblockplus.org/submitReport?" + params;
 
-  const reportSent = event =>
-  {
+  const reportSent = (event) => {
     let success = false;
     let errorMessage = browser.i18n.getMessage(
       "filters_subscription_lastDownload_connectionError"
     );
-    try
-    {
+    try {
       success = request.status == 200;
       if (request.status != 0)
         errorMessage = request.status + " " + request.statusText;
-    }
-    catch (e)
-    {
+    } catch (e) {
       // Getting request status might throw if no connection was established
     }
 
     let result;
-    try
-    {
+    try {
       result = request.responseText;
-    }
-    catch (e)
-    {
+    } catch (e) {
       result = "";
     }
 
-    if (!success)
-    {
+    if (!success) {
       const errorElement = document.getElementById("error");
-      const template = browser.i18n.getMessage("issueReporter_errorMessage")
-                                    .replace(/[\r\n\s]+/g, " ");
+      const template = browser.i18n
+        .getMessage("issueReporter_errorMessage")
+        .replace(/[\r\n\s]+/g, " ");
 
-      const [, before, linkText, after] =
-              /(.*)\[link\](.*)\[\/link\](.*)/.exec(template) ||
-              [null, "", template, ""];
+      const [, before, linkText, after] = /(.*)\[link\](.*)\[\/link\](.*)/.exec(
+        template
+      ) || [null, "", template, ""];
       const beforeLink = before.replace(/\?1\?/g, errorMessage);
       const afterLink = after.replace(/\?1\?/g, errorMessage);
 
@@ -280,15 +243,15 @@ function sendReport(reportData)
 
       const link = document.createElement("a");
       link.textContent = linkText;
-      browser.runtime.sendMessage({
-        type: "app.get",
-        what: "doclink",
-        link: "reporter_connect_issue"
-      }).then(supportUrl =>
-      {
-        link.href = supportUrl;
-      });
-
+      browser.runtime
+        .sendMessage({
+          type: "app.get",
+          what: "doclink",
+          link: "reporter_connect_issue"
+        })
+        .then((supportUrl) => {
+          link.href = supportUrl;
+        });
 
       errorElement.appendChild(document.createTextNode(beforeLink));
       errorElement.appendChild(link);
@@ -305,24 +268,22 @@ function sendReport(reportData)
       /%KNOWNISSUE%/g,
       encodeHTML(browser.i18n.getMessage("issueReporter_knownIssueMessage"))
     );
-    const {direction} = window.getComputedStyle(document.documentElement, "");
-    result = result.replace(
-      /(<html)\b/,
-      `$1 dir="${encodeHTML(direction)}"`
-    );
+    const { direction } = window.getComputedStyle(document.documentElement, "");
+    result = result.replace(/(<html)\b/, `$1 dir="${encodeHTML(direction)}"`);
 
     document.getElementById("sendReportMessage").hidden = true;
     document.getElementById("sendingProgressContainer").hidden = true;
 
     const resultFrame = document.getElementById("result");
-    resultFrame.setAttribute("src", "data:text/html;charset=utf-8," +
-                                    encodeURIComponent(result));
+    resultFrame.setAttribute(
+      "src",
+      "data:text/html;charset=utf-8," + encodeURIComponent(result)
+    );
     resultFrame.hidden = false;
 
     document.getElementById("continue").disabled = false;
 
-    if (success)
-    {
+    if (success) {
       $("#send").disabled = false;
       $("#send").addEventListener("click", closeMe);
     }
@@ -335,13 +296,10 @@ function sendReport(reportData)
   request.addEventListener("load", reportSent);
   request.addEventListener("error", reportSent);
   const progress = document.getElementById("sendingProgress");
-  request.upload.addEventListener("progress", event =>
-  {
-    if (!event.lengthComputable)
-      return;
+  request.upload.addEventListener("progress", (event) => {
+    if (!event.lengthComputable) return;
 
-    if (event.loaded > 0)
-    {
+    if (event.loaded > 0) {
       // normalize the ratio between previous loading and the current one
       // previous one stopped at 50, so it starts from 50
       progress.max = 100;
@@ -351,14 +309,17 @@ function sendReport(reportData)
   request.send(asIndentedString(reportData));
 }
 
-function encodeHTML(str)
-{
-  return str.replace(/[&<>"]/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;"
-  }[c]));
+function encodeHTML(str) {
+  return str.replace(
+    /[&<>"]/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;"
+      })[c]
+  );
 }
 
 document.body.hidden = false;

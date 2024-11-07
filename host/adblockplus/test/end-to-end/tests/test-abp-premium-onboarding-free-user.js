@@ -17,31 +17,29 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const WelcomeToPremiumPage = require("../page-objects/welcomeToPremium.page");
 let globalOrigin;
 
-describe("test abp premium onboarding free user", function()
-{
+describe("test abp premium onboarding free user", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should test onboarding page for free user", async function()
-  {
+  it("should test onboarding page for free user", async function () {
     await browser.newWindow(`${globalOrigin}/premium-onboarding.html`);
     const welcomeToPremiumPage = new WelcomeToPremiumPage(browser);
     await welcomeToPremiumPage.switchToTab("Welcome to Adblock Plus Premium");
-    expect(await welcomeToPremiumPage.
-      isUpgradeNowButtonDisplayed()).to.be.true;
-    expect(await welcomeToPremiumPage.
-      isEnableAllPremiumFeaturesButtonDisplayed()).to.be.false;
+    expect(await welcomeToPremiumPage.isUpgradeNowButtonDisplayed()).to.be.true;
+    expect(
+      await welcomeToPremiumPage.isEnableAllPremiumFeaturesButtonDisplayed()
+    ).to.be.false;
     await welcomeToPremiumPage.clickUpgradeNowButton();
     expect(await welcomeToPremiumPage.getCurrentUrl()).to.include(
-      "https://accounts.adblockplus.org/en/premium");
+      "https://accounts.adblockplus.org/en/premium"
+    );
   });
 });

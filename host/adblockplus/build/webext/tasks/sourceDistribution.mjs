@@ -19,24 +19,22 @@ import fs from "fs";
 import gulp from "gulp";
 import tar from "gulp-tar";
 import gzip from "gulp-gzip";
-import {lsFiles} from "../utils/git.mjs";
+import { lsFiles } from "../utils/git.mjs";
 
 // Manually add any files to the be included
 // in the source tar file
 // i.e. files that are not in the repository
-function addEnvFileToList(sourceFiles)
-{
+function addEnvFileToList(sourceFiles) {
   const filename = ".env";
-  if (fs.existsSync(filename))
-    sourceFiles.push(filename);
+  if (fs.existsSync(filename)) sourceFiles.push(filename);
 }
 
-export default async function sourceDistribution(filename)
-{
+export default async function sourceDistribution(filename) {
   const repoRootPath = "../..";
   const sourceFiles = await lsFiles(repoRootPath);
   addEnvFileToList(sourceFiles);
-  return gulp.src(sourceFiles, {base: repoRootPath})
+  return gulp
+    .src(sourceFiles, { base: repoRootPath })
     .pipe(tar(`${filename}.tar`))
     .pipe(gzip())
     .pipe(gulp.dest(process.cwd()));

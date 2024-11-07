@@ -17,16 +17,13 @@
 
 "use strict";
 
-const {beforeSequence} = require("../helpers.js");
+const { beforeSequence } = require("../helpers.js");
 const optionsPageOpen = require("./popup-main/test-popup-open-options-page.js");
-const popupAllowlisting =
-  require("./popup-main/test-popup-allowlisting-domains.js");
+const popupAllowlisting = require("./popup-main/test-popup-allowlisting-domains.js");
 
-describe("Popup Tests - Main", function()
-{
-  before(async function()
-  {
-    const {origin, popupUrl} = await beforeSequence();
+describe("Popup Tests - Main", function () {
+  before(async function () {
+    const { origin, popupUrl } = await beforeSequence();
     this.test.parent.globalOrigin = origin;
     this.test.parent.popupUrl = popupUrl;
   });

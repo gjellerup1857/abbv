@@ -17,73 +17,69 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
-const OneClickAllowAdsTestPage =
-  require("../page-objects/oneClickAllowAdsTest.page");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
+const OneClickAllowAdsTestPage = require("../page-objects/oneClickAllowAdsTest.page");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
 let lastTest = false;
 
-describe.skip("test one click allow", function()
-{
+describe.skip("test one click allow", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should dismiss 1-click allow popup", async function()
-  {
+  it("should dismiss 1-click allow popup", async function () {
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.init();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed()).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed()).to.be
+      .true;
     await oneClickAllowAdsTestPage.clickDismissPaywallX();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     const allowlistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowlistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowlistedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.
-      forEach(async(element) =>
-      {
-        expect(element).to.equal("empty-placeholder");
-      });
+    const attributesOfAllowlistingTableItems =
+      await allowlistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
+      expect(element).to.equal("empty-placeholder");
+    });
   });
 
-  it("should one click allowlist on a domain", async function()
-  {
+  it("should one click allowlist on a domain", async function () {
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.init();
     await browser.refresh();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed()).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed()).to.be
+      .true;
     await oneClickAllowAdsTestPage.clickOneClickButton();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     const allowListedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowListedWebsitesPage.init();
-    const allowListedTableItemWithFCOneClick = await
-    allowListedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-    allowListedTableItemWithFCOneClick.forEach(async(element) =>
-    {
+    const allowListedTableItemWithFCOneClick =
+      await allowListedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    allowListedTableItemWithFCOneClick.forEach(async (element) => {
       expect(element).to.contain("fconeclick.blogspot.com");
     });
     // clean up AllowListed Table
@@ -91,27 +87,26 @@ describe.skip("test one click allow", function()
     await allowListedWebsitesPage.removeAllowlistedDomain(domainName);
   });
 
-  it("should one click allowlist on a page", async function()
-  {
+  it("should one click allowlist on a page", async function () {
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.visitOneClickSubPage();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed()).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed()).to.be
+      .true;
     await oneClickAllowAdsTestPage.clickOneClickButton();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
     await oneClickAllowAdsTestPage.init();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     const allowListedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowListedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await
-    allowListedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowListedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.contain("fconeclick.blogspot.com");
     });
     // clean up AllowListed Table
@@ -119,33 +114,32 @@ describe.skip("test one click allow", function()
     await allowListedWebsitesPage.removeAllowlistedDomain(domainName);
   });
 
-  it("shouldn't display 1-click allow popup with AA on", async function()
-  {
+  it("shouldn't display 1-click allow popup with AA on", async function () {
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.visitOneClickAAPage();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
   });
 
-  it("should add 1-click allow site to allowlisted websites", async function()
-  {
-    await switchToABPOptionsTab({switchToFrame: false});
+  it("should add 1-click allow site to allowlisted websites", async function () {
+    await switchToABPOptionsTab({ switchToFrame: false });
     const allowListedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowListedWebsitesPage.init();
-    await allowListedWebsitesPage.
-      setAllowlistingTextboxValue("fconeclick.blogspot.com");
+    await allowListedWebsitesPage.setAllowlistingTextboxValue(
+      "fconeclick.blogspot.com"
+    );
     await allowListedWebsitesPage.clickAddWebsiteButton();
-    const attributesOfAllowlistingTableItems = await
-    allowListedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowListedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.contain("fconeclick.blogspot.com");
     });
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.init();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
     lastTest = true;
   });
 });

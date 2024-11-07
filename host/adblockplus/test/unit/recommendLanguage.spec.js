@@ -1,8 +1,8 @@
 "use strict";
 
-const {deepEqual, equal, ok} = require("assert").strict;
+const { deepEqual, equal, ok } = require("assert").strict;
 
-const {TestEnvironment} = require("../env");
+const { TestEnvironment } = require("../env");
 
 const nok = (actual, message) => equal(actual, false, message);
 
@@ -26,37 +26,33 @@ const defaultGlobals = {
       getUILanguage: () => uiLocale
     },
     runtime: {
-      getPlatformInfo: async() => ({os: "unix"})
+      getPlatformInfo: async () => ({ os: "unix" })
     },
     scripting: {
-      executeScript: async() => [{result: defaultLocale}]
+      executeScript: async () => [{ result: defaultLocale }]
     },
     tabs: {
-      detectLanguage: async() => defaultLocale,
-      get: async() => ({url: ""})
+      detectLanguage: async () => defaultLocale,
+      get: async () => ({ url: "" })
     },
     webNavigation: {
       onCompleted: {
-        addListener(listener)
-        {
-          listener({frameId: 0, tabId: 1, url: defaultUrl});
-          listener({frameId: 0, tabId: 2, url: defaultUrl});
-          listener({frameId: 0, tabId: 3, url: defaultUrl});
+        addListener(listener) {
+          listener({ frameId: 0, tabId: 1, url: defaultUrl });
+          listener({ frameId: 0, tabId: 2, url: defaultUrl });
+          listener({ frameId: 0, tabId: 3, url: defaultUrl });
         }
       }
     }
   },
-  async fetch()
-  {
+  async fetch() {
     return {
-      json: async() => languageFile,
-      text: async() => ""
+      json: async () => languageFile,
+      text: async () => ""
     };
   },
-  URL: class
-  {
-    get hostname()
-    {
+  URL: class {
+    get hostname() {
       return `${visitCounter++ % 5}.example.pl`;
     }
   }
@@ -69,8 +65,7 @@ const defaultModules = {
       async showNext() {}
     },
     subscriptions: {
-      getRecommendations()
-      {
+      getRecommendations() {
         return [
           {
             languages: [defaultLocale],
@@ -79,15 +74,13 @@ const defaultModules = {
           }
         ];
       },
-      getSubscriptions: async() => [],
+      getSubscriptions: async () => [],
       has: () => false
     }
   },
   "storage/session": {
-    SessionStorage: class
-    {
-      constructor()
-      {
+    SessionStorage: class {
+      constructor() {
         return new Map();
       }
     }
@@ -97,45 +90,38 @@ const defaultModules = {
       application: "firefox"
     }
   },
-  "prefs": {
+  prefs: {
     Prefs: {
       recommend_language_subscriptions: true
     }
   }
 };
 
-async function wait(ms)
-{
-  return new Promise((resolve) =>
-  {
+async function wait(ms) {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
 
-describe("Test language filter list recommendation", () =>
-{
-  beforeEach(() =>
-  {
+describe("Test language filter list recommendation", () => {
+  beforeEach(() => {
     env = new TestEnvironment({
       globals: defaultGlobals,
       modules: defaultModules
     });
   });
 
-  afterEach(() =>
-  {
+  afterEach(() => {
     env.restore();
     env = null;
   });
 
-  it("Should load successfully", async() =>
-  {
+  it("Should load successfully", async () => {
     const loadedFiles = new Set();
     let addsListener = false;
 
     env.setGlobals({
-      fetch(path)
-      {
+      fetch(path) {
         loadedFiles.add(path);
         return defaultGlobals.fetch();
       }
@@ -144,8 +130,7 @@ describe("Test language filter list recommendation", () =>
     env.override(
       env.globals.browser.webNavigation.onCompleted,
       "addListener",
-      () =>
-      {
+      () => {
         addsListener = true;
       }
     );
@@ -155,36 +140,26 @@ describe("Test language filter list recommendation", () =>
     await recommendLanguage.start();
 
     ok(addsListener, "Navigation events listener installed");
-    ok(
-      loadedFiles.has("data/locales.json"),
-      "Language data fetched"
-    );
+    ok(loadedFiles.has("data/locales.json"), "Language data fetched");
   });
 
-  it("Should not load for certain languages", async() =>
-  {
+  it("Should not load for certain languages", async () => {
     const loadedFiles = new Set();
     let addsListener = false;
 
     env.setGlobals({
-      fetch(path)
-      {
+      fetch(path) {
         loadedFiles.add(path);
         return defaultGlobals.fetch();
       }
     });
 
-    env.override(
-      env.globals.browser.i18n,
-      "getUILanguage",
-      () => "de"
-    );
+    env.override(env.globals.browser.i18n, "getUILanguage", () => "de");
 
     env.override(
       env.globals.browser.webNavigation.onCompleted,
       "addListener",
-      () =>
-      {
+      () => {
         addsListener = true;
       }
     );
@@ -194,20 +169,15 @@ describe("Test language filter list recommendation", () =>
     await recommendLanguage.start();
 
     nok(addsListener, "Navigation events listener installed");
-    nok(
-      loadedFiles.has("data/locales.json"),
-      "Language data fetched"
-    );
+    nok(loadedFiles.has("data/locales.json"), "Language data fetched");
   });
 
-  it("Should not load on Opera", async() =>
-  {
+  it("Should not load on Opera", async () => {
     const loadedFiles = new Set();
     let addsListener = false;
 
     env.setGlobals({
-      fetch(path)
-      {
+      fetch(path) {
         loadedFiles.add(path);
         return defaultGlobals.fetch();
       }
@@ -222,8 +192,7 @@ describe("Test language filter list recommendation", () =>
     env.override(
       env.globals.browser.webNavigation.onCompleted,
       "addListener",
-      () =>
-      {
+      () => {
         addsListener = true;
       }
     );
@@ -233,36 +202,28 @@ describe("Test language filter list recommendation", () =>
     await recommendLanguage.start();
 
     nok(addsListener, "Navigation events listener installed");
-    nok(
-      loadedFiles.has("data/locales.json"),
-      "Language data fetched"
-    );
+    nok(loadedFiles.has("data/locales.json"), "Language data fetched");
   });
 
-  it("Should not load on Firefox Mobile", async() =>
-  {
+  it("Should not load on Firefox Mobile", async () => {
     const loadedFiles = new Set();
     let addsListener = false;
 
     env.setGlobals({
-      fetch(path)
-      {
+      fetch(path) {
         loadedFiles.add(path);
         return defaultGlobals.fetch();
       }
     });
 
-    env.override(
-      env.globals.browser.runtime,
-      "getPlatformInfo",
-      async() => ({os: "android"})
-    );
+    env.override(env.globals.browser.runtime, "getPlatformInfo", async () => ({
+      os: "android"
+    }));
 
     env.override(
       env.globals.browser.webNavigation.onCompleted,
       "addListener",
-      () =>
-      {
+      () => {
         addsListener = true;
       }
     );
@@ -272,16 +233,11 @@ describe("Test language filter list recommendation", () =>
     await recommendLanguage.start();
 
     nok(addsListener, "Navigation events listener installed");
-    nok(
-      loadedFiles.has("data/locales.json"),
-      "Language data fetched"
-    );
+    nok(loadedFiles.has("data/locales.json"), "Language data fetched");
   });
 
-  it("Should be disabled if user opted out", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should be disabled if user opted out", () => {
+    return new Promise((resolve, reject) => {
       let shown = false;
 
       env.setModules({
@@ -295,8 +251,7 @@ describe("Test language filter list recommendation", () =>
       env.override(
         env.modules[moduleEWE].notifications,
         "addNotification",
-        () =>
-        {
+        () => {
           shown = true;
         }
       );
@@ -304,64 +259,51 @@ describe("Test language filter list recommendation", () =>
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             nok(shown, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should show notification", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should show notification", () => {
+    return new Promise((resolve, reject) => {
       let addedNotification = null;
       let notified = false;
 
       env.override(
         env.modules[moduleEWE].notifications,
         "addNotification",
-        (notification) =>
-        {
+        (notification) => {
           addedNotification = notification;
         }
       );
-      env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
-        }
-      );
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
 
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             ok(!!addedNotification, "Notification added");
             equal(
               addedNotification.id,
@@ -389,40 +331,31 @@ describe("Test language filter list recommendation", () =>
             ok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should not show notification for other type of recommendation", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification for other type of recommendation", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
-      env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
-        }
-      );
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
 
       env.override(
         env.modules[moduleEWE].subscriptions,
         "getRecommendations",
-        () =>
-        {
+        () => {
           return [
             {
               languages: [defaultLocale],
@@ -436,209 +369,161 @@ describe("Test language filter list recommendation", () =>
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             nok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should not show notification on first visit", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification on first visit", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
+
       env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
+        env.globals.browser.webNavigation.onCompleted,
+        "addListener",
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            nok(notified, "Notification shown");
+
+            resolve();
+          } catch (ex) {
+            reject(ex);
+          }
         }
+      );
+
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
+      recommendLanguage.start();
+    });
+  });
+
+  it("Should not show notification if third visit has different language", () => {
+    return new Promise((resolve, reject) => {
+      let notified = false;
+
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
+
+      env.override(env.globals.browser.tabs, "detectLanguage", async (tabId) =>
+        tabId === 3 ? "es" : defaultLocale
       );
 
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            nok(notified, "Notification shown");
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
+            nok(notified, "Notification shown for different language");
+
+            await listener({ frameId: 0, tabId: 4, url: defaultUrl });
+            ok(notified, "Notification shown for same language");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should not show notification if third visit has different language", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification if explicit language differs from implicit", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
-      env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
-        }
-      );
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
 
       env.override(
         env.globals.browser.tabs,
         "detectLanguage",
-        async(tabId) => (tabId === 3) ? "es" : defaultLocale
+        async () => "es"
       );
 
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
-            nok(notified, "Notification shown for different language");
-
-            await listener({frameId: 0, tabId: 4, url: defaultUrl});
-            ok(notified, "Notification shown for same language");
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
+            nok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it(
-    "Should not show notification if explicit language differs from implicit",
-    () =>
-    {
-      return new Promise((resolve, reject) =>
-      {
-        let notified = false;
-
-        env.override(
-          env.modules[moduleEWE].notifications,
-          "showNext",
-          () =>
-          {
-            notified = true;
-          }
-        );
-
-        env.override(
-          env.globals.browser.tabs,
-          "detectLanguage",
-          async() => "es"
-        );
-
-        env.override(
-          env.globals.browser.webNavigation.onCompleted,
-          "addListener",
-          async(listener) =>
-          {
-            try
-            {
-              await listener({frameId: 0, tabId: 1, url: defaultUrl});
-              await listener({frameId: 0, tabId: 2, url: defaultUrl});
-              await listener({frameId: 0, tabId: 3, url: defaultUrl});
-              nok(notified, "Notification shown");
-
-              resolve();
-            }
-            catch (ex)
-            {
-              reject(ex);
-            }
-          }
-        );
-
-        const recommendLanguage =
-          env.requireModule("../../lib/recommendLanguage");
-        recommendLanguage.start();
-      });
-    }
-  );
-
-  it("Should not show notification for English", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification for English", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
       env.setGlobals({
-        async fetch()
-        {
+        async fetch() {
           return {
-            async json()
-            {
+            async json() {
               return {
                 nativeNames: {
                   en: "[en]"
                 }
               };
             },
-            text: async() => ""
+            text: async () => ""
           };
         }
       });
 
-      env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
-        }
-      );
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
 
       env.override(
         env.modules[moduleEWE].subscriptions,
         "getRecommendations",
-        () =>
-        {
+        () => {
           return [
             {
               languages: ["en"],
@@ -652,56 +537,44 @@ describe("Test language filter list recommendation", () =>
       env.override(
         env.globals.browser.tabs,
         "detectLanguage",
-        async() => "en"
+        async () => "en"
       );
 
-      env.override(
-        env.globals.browser.scripting,
-        "executeScript",
-        async() => [{result: "en"}]
-      );
+      env.override(env.globals.browser.scripting, "executeScript", async () => [
+        { result: "en" }
+      ]);
 
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             nok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should not show notification for language without recommendation", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification for language without recommendation", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
-      env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
-        }
-      );
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
 
       env.override(
         env.modules[moduleEWE].subscriptions,
@@ -712,153 +585,122 @@ describe("Test language filter list recommendation", () =>
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             nok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
 
-  it("Should not show notification if filter list is already installed", () =>
-  {
-    return new Promise((resolve, reject) =>
-    {
+  it("Should not show notification if filter list is already installed", () => {
+    return new Promise((resolve, reject) => {
       let notified = false;
 
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
+
+      env.override(env.modules[moduleEWE].subscriptions, "has", () => true);
+
       env.override(
-        env.modules[moduleEWE].notifications,
-        "showNext",
-        () =>
-        {
-          notified = true;
+        env.globals.browser.webNavigation.onCompleted,
+        "addListener",
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
+            nok(notified, "Notification shown");
+
+            resolve();
+          } catch (ex) {
+            reject(ex);
+          }
         }
+      );
+
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
+      recommendLanguage.start();
+    });
+  });
+
+  it("Should not show notification if enough recommendations are installed", () => {
+    return new Promise((resolve, reject) => {
+      const recommendations = function* () {
+        yield {
+          languages: ["en"],
+          type: "ads",
+          url: "http://example.com/en.txt"
+        };
+
+        yield {
+          languages: ["pl"],
+          type: "ads",
+          url: "http://example.com/pl.txt"
+        };
+
+        yield {
+          languages: ["ru"],
+          type: "ads",
+          url: "http://example.com/ru.txt"
+        };
+      };
+
+      let notified = false;
+
+      env.override(env.modules[moduleEWE].notifications, "showNext", () => {
+        notified = true;
+      });
+
+      env.override(
+        env.modules[moduleEWE].subscriptions,
+        "getRecommendations",
+        recommendations
       );
 
       env.override(
         env.modules[moduleEWE].subscriptions,
-        "has",
-        () => true
+        "getSubscriptions",
+        recommendations
       );
 
       env.override(
         env.globals.browser.webNavigation.onCompleted,
         "addListener",
-        async(listener) =>
-        {
-          try
-          {
-            await listener({frameId: 0, tabId: 1, url: defaultUrl});
-            await listener({frameId: 0, tabId: 2, url: defaultUrl});
-            await listener({frameId: 0, tabId: 3, url: defaultUrl});
+        async (listener) => {
+          try {
+            await listener({ frameId: 0, tabId: 1, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 2, url: defaultUrl });
+            await listener({ frameId: 0, tabId: 3, url: defaultUrl });
             nok(notified, "Notification shown");
 
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
       );
 
-      const recommendLanguage =
-        env.requireModule("../../lib/recommendLanguage");
+      const recommendLanguage = env.requireModule(
+        "../../lib/recommendLanguage"
+      );
       recommendLanguage.start();
     });
   });
-
-  it(
-    "Should not show notification if enough recommendations are installed",
-    () =>
-    {
-      return new Promise((resolve, reject) =>
-      {
-        const recommendations = function*()
-        {
-          yield {
-            languages: ["en"],
-            type: "ads",
-            url: "http://example.com/en.txt"
-          };
-
-          yield {
-            languages: ["pl"],
-            type: "ads",
-            url: "http://example.com/pl.txt"
-          };
-
-          yield {
-            languages: ["ru"],
-            type: "ads",
-            url: "http://example.com/ru.txt"
-          };
-        };
-
-        let notified = false;
-
-        env.override(
-          env.modules[moduleEWE].notifications,
-          "showNext",
-          () =>
-          {
-            notified = true;
-          }
-        );
-
-        env.override(
-          env.modules[moduleEWE].subscriptions,
-          "getRecommendations",
-          recommendations
-        );
-
-        env.override(
-          env.modules[moduleEWE].subscriptions,
-          "getSubscriptions",
-          recommendations
-        );
-
-        env.override(
-          env.globals.browser.webNavigation.onCompleted,
-          "addListener",
-          async(listener) =>
-          {
-            try
-            {
-              await listener({frameId: 0, tabId: 1, url: defaultUrl});
-              await listener({frameId: 0, tabId: 2, url: defaultUrl});
-              await listener({frameId: 0, tabId: 3, url: defaultUrl});
-              nok(notified, "Notification shown");
-
-              resolve();
-            }
-            catch (ex)
-            {
-              reject(ex);
-            }
-          }
-        );
-
-        const recommendLanguage =
-          env.requireModule("../../lib/recommendLanguage");
-        recommendLanguage.start();
-      });
-    }
-  );
 });

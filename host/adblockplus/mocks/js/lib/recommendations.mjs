@@ -15,29 +15,23 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function requireData(filepath)
-{
+function requireData(filepath) {
   const xhr = new XMLHttpRequest();
   xhr.open("GET", filepath, false);
 
-  try
-  {
+  try {
     xhr.send();
-    if (xhr.status !== 200)
-      throw new Error("Unable to fetch file");
+    if (xhr.status !== 200) throw new Error("Unable to fetch file");
 
     return JSON.parse(xhr.responseText);
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     return [];
   }
 }
 
 const sources = requireData("data/subscriptions.json");
 
-function *recommendations()
-{
+function* recommendations() {
   yield* sources;
 }
 

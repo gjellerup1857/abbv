@@ -1,145 +1,105 @@
 [
   {
     "type": "ads",
-    "languages": [
-      "id",
-      "ms"
-    ],
+    "languages": ["id", "ms"],
     "title": "ABPindo+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/abpindo+easylist.txt",
     "homepage": "http://abpindo.blogspot.com/"
   },
   {
     "type": "ads",
-    "languages": [
-      "vi"
-    ],
+    "languages": ["vi"],
     "title": "ABPVN List+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/abpvn+easylist.txt",
     "homepage": "http://abpvn.com/"
   },
   {
     "type": "ads",
-    "languages": [
-      "bg"
-    ],
+    "languages": ["bg"],
     "title": "Bulgarian list+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/bulgarian_list+easylist.txt",
     "homepage": "https://stanev.org/abp/"
   },
   {
     "type": "ads",
-    "languages": [
-      "no",
-      "nb",
-      "nn",
-      "da",
-      "is",
-      "fo",
-      "kl",
-      "sv",
-      "fi"
-    ],
+    "languages": ["no", "nb", "nn", "da", "is", "fo", "kl", "sv", "fi"],
     "title": "Dandelion Sprout's Nordic Filters+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/dandelion_sprouts_nordic_filters+easylist.txt",
     "homepage": "https://github.com/DandelionSprout/adfilt"
   },
   {
     "type": "ads",
-    "languages": [
-      "en"
-    ],
+    "languages": ["en"],
     "title": "EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "zh"
-    ],
+    "languages": ["zh"],
     "title": "EasyList China+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt",
     "homepage": "https://github.com/easylist/easylistchina"
   },
   {
     "type": "ads",
-    "languages": [
-      "cs",
-      "sk"
-    ],
+    "languages": ["cs", "sk"],
     "title": "EasyList Czech and Slovak+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistczechslovak+easylist.txt",
     "homepage": "https://adblock.sk/"
   },
   {
     "type": "ads",
-    "languages": [
-      "nl"
-    ],
+    "languages": ["nl"],
     "title": "EasyList Dutch+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistdutch+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "de"
-    ],
+    "languages": ["de"],
     "title": "EasyList Germany+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistgermany+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "he"
-    ],
+    "languages": ["he"],
     "title": "EasyList Hebrew+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/israellist+easylist.txt",
     "homepage": "https://github.com/easylist/EasyListHebrew"
   },
   {
     "type": "ads",
-    "languages": [
-      "it"
-    ],
+    "languages": ["it"],
     "title": "EasyList Italy+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistitaly+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "lt"
-    ],
+    "languages": ["lt"],
     "title": "EasyList Lithuania+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistlithuania+easylist.txt",
     "homepage": "https://github.com/EasyList-Lithuania/easylist_lithuania"
   },
   {
     "type": "ads",
-    "languages": [
-      "pl"
-    ],
+    "languages": ["pl"],
     "title": "EasyList Polish+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistpolish+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "pt"
-    ],
+    "languages": ["pt"],
     "title": "EasyList Portuguese+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistportuguese+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "es"
-    ],
+    "languages": ["es"],
     "title": "EasyList Spanish+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/easylistspanish+easylist.txt",
     "homepage": "https://easylist.to/"
@@ -166,55 +126,42 @@
   },
   {
     "type": "ads",
-    "languages": [
-      "ko"
-    ],
+    "languages": ["ko"],
     "title": "KoreanList+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/koreanlist+easylist.txt",
     "homepage": "https://easylist.to/"
   },
   {
     "type": "ads",
-    "languages": [
-      "lv"
-    ],
+    "languages": ["lv"],
     "title": "Latvian List+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/latvianlist+easylist.txt",
     "homepage": "https://notabug.org/latvian-list/adblock-latvian"
   },
   {
     "type": "ads",
-    "languages": [
-      "ar"
-    ],
+    "languages": ["ar"],
     "title": "Liste AR+Liste FR+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/liste_ar+liste_fr+easylist.txt",
     "homepage": "https://forums.lanik.us/viewforum.php?f=98"
   },
   {
     "type": "ads",
-    "languages": [
-      "fr"
-    ],
+    "languages": ["fr"],
     "title": "Liste FR+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/liste_fr+easylist.txt",
     "homepage": "https://forums.lanik.us/viewforum.php?f=91"
   },
   {
     "type": "ads",
-    "languages": [
-      "ro"
-    ],
+    "languages": ["ro"],
     "title": "ROList+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/rolist+easylist.txt",
     "homepage": "https://zoso.ro/rolist/"
   },
   {
     "type": "ads",
-    "languages": [
-      "ru",
-      "uk"
-    ],
+    "languages": ["ru", "uk"],
     "title": "RuAdList+EasyList",
     "url": "https://easylist-downloads.adblockplus.org/ruadlist+easylist.txt",
     "homepage": "https://forums.lanik.us/viewforum.php?f=102"

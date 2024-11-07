@@ -17,83 +17,86 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, enablePremiumByUI, globalRetriesNumber,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
+const {
+  afterSequence,
+  beforeSequence,
+  enablePremiumByUI,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
-const OneClickAllowAdsTestPage =
-  require("../page-objects/oneClickAllowAdsTest.page");
+const OneClickAllowAdsTestPage = require("../page-objects/oneClickAllowAdsTest.page");
 let lastTest = false;
 
-describe.skip("test one click allow for premium users", function()
-{
+describe.skip("test one click allow for premium users", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should remove web-allowlisted filters for premium users", async function()
-  {
+  it("should remove web-allowlisted filters for premium users", async function () {
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.init();
     await oneClickAllowAdsTestPage.clickOneClickButton();
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     const allowListedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowListedWebsitesPage.init();
-    await allowListedWebsitesPage.
-      setAllowlistingTextboxValue("code.getadblock.com/");
+    await allowListedWebsitesPage.setAllowlistingTextboxValue(
+      "code.getadblock.com/"
+    );
     await allowListedWebsitesPage.clickAddWebsiteButton();
-    let attributesOfAllowlistingTableItems = await
-    allowListedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-    expect(attributesOfAllowlistingTableItems).
-      to.contain("code.getadblock.com");
-    expect(attributesOfAllowlistingTableItems).
-      to.contain("fconeclick.blogspot.com");
+    let attributesOfAllowlistingTableItems =
+      await allowListedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    expect(attributesOfAllowlistingTableItems).to.contain(
+      "code.getadblock.com"
+    );
+    expect(attributesOfAllowlistingTableItems).to.contain(
+      "fconeclick.blogspot.com"
+    );
     await enablePremiumByUI();
-    attributesOfAllowlistingTableItems = await
-    allowListedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-    expect(attributesOfAllowlistingTableItems).
-      to.contain("code.getadblock.com");
-    expect(attributesOfAllowlistingTableItems).
-      to.not.contain("fconeclick.blogspot.com");
+    attributesOfAllowlistingTableItems =
+      await allowListedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    expect(attributesOfAllowlistingTableItems).to.contain(
+      "code.getadblock.com"
+    );
+    expect(attributesOfAllowlistingTableItems).to.not.contain(
+      "fconeclick.blogspot.com"
+    );
     await oneClickAllowAdsTestPage.init();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
   });
 
-  it("should bypass Anti-adblock wall for premium users", async function()
-  {
-    await switchToABPOptionsTab({switchToFrame: false});
+  it("should bypass Anti-adblock wall for premium users", async function () {
+    await switchToABPOptionsTab({ switchToFrame: false });
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
-    if (!await premiumHeaderChunk.isPremiumButtonDisplayed())
-    {
+    if (!(await premiumHeaderChunk.isPremiumButtonDisplayed())) {
       await enablePremiumByUI();
     }
     const oneClickAllowAdsTestPage = new OneClickAllowAdsTestPage(browser);
     await oneClickAllowAdsTestPage.visitNoSubdomainUrl();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
     await oneClickAllowAdsTestPage.visitWWWSubdomainUrl();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
     await oneClickAllowAdsTestPage.visitNonWWWSubdomainUrl();
-    expect(await oneClickAllowAdsTestPage.
-      isOneClickGFCPaywallDisplayed(true)).to.be.true;
+    expect(await oneClickAllowAdsTestPage.isOneClickGFCPaywallDisplayed(true))
+      .to.be.true;
     lastTest = true;
   });
 });

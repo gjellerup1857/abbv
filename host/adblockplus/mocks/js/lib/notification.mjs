@@ -15,29 +15,23 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Prefs} from "./prefs.mjs";
+import { Prefs } from "./prefs.mjs";
 
-export function getLocalizedTexts(notif)
-{
+export function getLocalizedTexts(notif) {
   const texts = {};
-  if ("message" in notif)
-  {
+  if ("message" in notif) {
     texts.message = notif.message;
   }
-  if ("title" in notif)
-  {
+  if ("title" in notif) {
     texts.title = notif.title;
   }
   return texts;
 }
 
-export function toggleIgnoreCategory(category)
-{
+export function toggleIgnoreCategory(category) {
   const categories = Prefs.notifications_ignoredcategories;
   const index = categories.indexOf(category);
-  if (index == -1)
-    categories.push(category);
-  else
-    categories.splice(index, 1);
+  if (index == -1) categories.push(category);
+  else categories.splice(index, 1);
   Prefs.notifications_ignoredcategories = categories;
 }

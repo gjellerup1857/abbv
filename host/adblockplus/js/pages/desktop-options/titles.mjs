@@ -15,31 +15,24 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const {getMessage} = browser.i18n;
+const { getMessage } = browser.i18n;
 
 let languageNames = new Map();
 
-export function getRawItemTitle(item)
-{
+export function getRawItemTitle(item) {
   return item.title || item.originalTitle || item.url || item.text;
 }
 
-function getLanguageItemTitle(item)
-{
+function getLanguageItemTitle(item) {
   const description = item.languages
     .map((langCode) => languageNames.get(langCode))
     // Remove duplicate language names
     .filter((langName, idx, arr) => arr.indexOf(langName) === idx)
-    .reduce(
-      (acc, langName, idx) =>
-      {
-        if (idx === 0)
-          return langName;
+    .reduce((acc, langName, idx) => {
+      if (idx === 0) return langName;
 
-        return getMessage("options_language_join", [acc, langName]);
-      },
-      ""
-    );
+      return getMessage("options_language_join", [acc, langName]);
+    }, "");
 
   if (/\+EasyList$/.test(getRawItemTitle(item)))
     return `${description} + ${getMessage("options_english")}`;
@@ -47,33 +40,26 @@ function getLanguageItemTitle(item)
   return description;
 }
 
-export function getPrettyItemTitle(item, includeRaw)
-{
-  const {recommended} = item;
+export function getPrettyItemTitle(item, includeRaw) {
+  const { recommended } = item;
 
   let description = null;
-  if (recommended === "ads")
-  {
+  if (recommended === "ads") {
     description = getLanguageItemTitle(item);
-  }
-  else
-  {
+  } else {
     description = getMessage(
       `common_feature_${recommended.replace(/-/g, "_")}_title`
     );
   }
 
-  if (!description)
-    return getRawItemTitle(item);
+  if (!description) return getRawItemTitle(item);
 
-  if (includeRaw)
-    return `${getRawItemTitle(item)} (${description})`;
+  if (includeRaw) return `${getRawItemTitle(item)} (${description})`;
 
   return description;
 }
 
-export async function loadLanguageNames()
-{
+export async function loadLanguageNames() {
   const resp = await fetch("./data/locales.json");
   const localeData = await resp.json();
   languageNames = new Map(Object.entries(localeData.nativeNames));

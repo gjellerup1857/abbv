@@ -20,14 +20,12 @@
 
 *,
 *::before,
-*::after
-{
+*::after {
   box-sizing: border-box;
 }
 
 html,
-body
-{
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -37,61 +35,51 @@ body
 body,
 main,
 #actions,
-footer
-{
+footer {
   display: flex;
 }
 
 body,
-main
-{
+main {
   flex-direction: column;
 }
 
 main,
 #filters,
-.spacer
-{
+.spacer {
   flex-grow: 1;
 }
 
 main,
-footer
-{
+footer {
   padding: var(--padding-primary);
 }
 
 #actions,
-footer
-{
+footer {
   flex-direction: row;
 }
 
-#actions
-{
+#actions {
   margin-top: var(--margin-primary);
 }
 
-button
-{
+button {
   font-weight: 700;
   line-height: 34px;
   cursor: pointer;
 }
 
-#details
-{
+#details {
   margin: auto;
 }
 
-button:not(#unselect)
-{
+button:not(#unselect) {
   padding: 4px 20px;
   border-radius: var(--border-radius);
 }
 
-#filters
-{
+#filters {
   padding: 4px var(--padding-secondary);
   border: 1px solid var(--border-color-secondary);
   border-radius: var(--border-radius);
@@ -102,16 +90,14 @@ button:not(#unselect)
   resize: none;
 }
 
-#preview
-{
+#preview {
   margin: auto var(--margin-secondary);
   border: 1px solid var(--border-color-ternary);
   color: var(--color-link);
   background-color: var(--background-color-ternary);
 }
 
-#unselect
-{
+#unselect {
   border: 0;
   background: transparent;
   color: var(--color-link);
@@ -119,13 +105,11 @@ button:not(#unselect)
 
 #selected,
 #cancel,
-#filters
-{
+#filters {
   color: var(--color-dimmed);
 }
 
-#selected::before
-{
+#selected::before {
   display: inline-block;
   min-width: 24px;
   height: 24px;
@@ -140,20 +124,17 @@ button:not(#unselect)
 }
 
 html:not([dir="rtl"]) #selected,
-html:not([dir="rtl"]) #selected::before
-{
+html:not([dir="rtl"]) #selected::before {
   margin-right: var(--margin-secondary);
 }
 
 html[dir="rtl"] #selected,
-html[dir="rtl"] #selected::before
-{
+html[dir="rtl"] #selected::before {
   margin-left: var(--margin-secondary);
 }
 
 #block,
-#block-reload
-{
+#block-reload {
   margin: auto;
   border: 1px solid var(--color-brand-primary);
   color: var(--color-brand-primary);
@@ -163,37 +144,31 @@ html[dir="rtl"] #selected::before
 #block:disabled,
 #block-reload:disabled,
 #filters:disabled,
-#preview:disabled
-{
+#preview:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-footer
-{
+footer {
   background-color: var(--background-color-secondary);
 }
 
-#cancel
-{
+#cancel {
   justify-content: space-between;
   align-items: center;
   border: 1px solid var(--border-color-secondary);
   background-color: transparent;
 }
 
-#logo
-{
+#logo {
   margin: auto;
   height: 22px;
 }
 
-html:not([dir="rtl"]) #logo
-{
+html:not([dir="rtl"]) #logo {
   margin-right: 0;
 }
 
-html[dir="rtl"] #logo
-{
+html[dir="rtl"] #logo {
   margin-left: 0;
 }

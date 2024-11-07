@@ -17,21 +17,19 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 
-describe("test abp premium license checks for free user", function()
-{
+describe("test abp premium license checks for free user", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display expired license status for free user", async function()
-  {
-    const nextLicenseCheck = await browser.executeScript(`
+  it("should display expired license status for free user", async function () {
+    const nextLicenseCheck = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ type: "prefs.get",
           key: "premium_license_nextcheck" }, response => {
@@ -42,11 +40,15 @@ describe("test abp premium license checks for free user", function()
           }
         });
       });
-    `, []);
+    `,
+      []
+    );
     const nextLicenseCheckFullDate = new Date(nextLicenseCheck);
-    expect(nextLicenseCheckFullDate.toISOString()).
-      to.equal("1970-01-01T00:00:00.000Z");
-    const licenseStatusText = await browser.executeScript(`
+    expect(nextLicenseCheckFullDate.toISOString()).to.equal(
+      "1970-01-01T00:00:00.000Z"
+    );
+    const licenseStatusText = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.get",
           key: "premium_license"}, response => {
@@ -57,8 +59,9 @@ describe("test abp premium license checks for free user", function()
           }
         });
       });
-    `, []);
-    expect(JSON.stringify(licenseStatusText)).
-      to.match(/status.*:.*expired/);
+    `,
+      []
+    );
+    expect(JSON.stringify(licenseStatusText)).to.match(/status.*:.*expired/);
   });
 });

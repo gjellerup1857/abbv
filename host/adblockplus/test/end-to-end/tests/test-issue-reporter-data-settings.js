@@ -17,24 +17,24 @@
 
 "use strict";
 
-const {beforeSequence, getABPOptionsTabId,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  getABPOptionsTabId,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const IssueReporterPage = require("../page-objects/issueReporter.page");
 const dataIssueReporter = require("../test-data/data-issue-reporter");
 let globalOrigin;
 
-describe("test issue reporter", function()
-{
+describe("test issue reporter", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should contain issue reporter data settings", async function()
-  {
+  it("should contain issue reporter data settings", async function () {
     const issueReporterPage = new IssueReporterPage(browser);
     const tabId = await getABPOptionsTabId();
     await browser.url(dataIssueReporter.testPageUrl);
@@ -42,14 +42,14 @@ describe("test issue reporter", function()
     await issueReporterPage.clickPageIsBrokenButton();
     await issueReporterPage.clickContinueButton();
     await issueReporterPage.clickContinueButton();
-    await issueReporterPage.typeTextToEmailTextbox(
-      "test@adblock.org");
-    await issueReporterPage.typeTextToCommentTextbox(
-      "testing");
+    await issueReporterPage.typeTextToEmailTextbox("test@adblock.org");
+    await issueReporterPage.typeTextToCommentTextbox("testing");
     await issueReporterPage.clickShowReportDataButton();
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<email>\n    test@adblock.org\n  </email>");
+      "<email>\n    test@adblock.org\n  </email>"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<comment>\n    testing\n  </comment>");
+      "<comment>\n    testing\n  </comment>"
+    );
   });
 });

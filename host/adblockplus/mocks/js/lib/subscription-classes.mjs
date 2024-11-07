@@ -15,14 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Filter} from "./filter-classes.mjs";
+import { Filter } from "./filter-classes.mjs";
 import filterNotifier from "./filter-notifier.mjs";
-import {knownFilterText} from "../config/filters.mjs";
-import {params} from "../config/env.mjs";
-import {subscriptionDetails} from "../config/subscriptions.mjs";
+import { knownFilterText } from "../config/filters.mjs";
+import { params } from "../config/env.mjs";
+import { subscriptionDetails } from "../config/subscriptions.mjs";
 
-export function Subscription(url)
-{
+export function Subscription(url) {
   this.updatable = true;
   this.url = url;
   this._disabled = false;
@@ -33,14 +32,12 @@ export function Subscription(url)
   this.downloadStatus = params.downloadStatus;
 
   const details = subscriptionDetails[this.url];
-  if (details)
-  {
+  if (details) {
     this._disabled = !!details.disabled;
     this.updatable = !!details.updatable;
     this.title = details.title || "";
     this.updatable = details.updatable;
-    if (details.filterText)
-    {
+    if (details.filterText) {
       this._filterText = details.filterText.slice();
     }
   }
@@ -49,48 +46,37 @@ export function Subscription(url)
   if (params.filtersDisabled && this._filterText.length)
     this.hasDisabledFilters = true;
 }
-Subscription.prototype =
-{
-  get disabled()
-  {
+Subscription.prototype = {
+  get disabled() {
     return this._disabled;
   },
-  set disabled(value)
-  {
+  set disabled(value) {
     this._disabled = value;
     filterNotifier.emit("subscription.disabled", this);
   },
-  get lastDownload()
-  {
+  get lastDownload() {
     return this._lastDownload;
   },
-  set lastDownload(value)
-  {
+  set lastDownload(value) {
     this._lastDownload = value;
     filterNotifier.emit("subscription.lastDownload", this);
   },
-  get filterCount()
-  {
+  get filterCount() {
     return this._filterText.length;
   },
-  *filterText()
-  {
+  *filterText() {
     yield* this._filterText;
   }
 };
 Subscription.knownSubscriptions = new Map();
-Subscription.fromURL = function(url)
-{
+Subscription.fromURL = function (url) {
   const subscription = Subscription.knownSubscriptions.get(url);
-  if (subscription)
-    return subscription;
-  if (/^https?:\/\//.test(url))
-    return new Subscription(url);
+  if (subscription) return subscription;
+  if (/^https?:\/\//.test(url)) return new Subscription(url);
   return new SpecialSubscription(url);
 };
 
-export function SpecialSubscription(url)
-{
+export function SpecialSubscription(url) {
   this.url = url;
   this.disabled = false;
   this._filterText = knownFilterText.slice();
@@ -98,33 +84,23 @@ export function SpecialSubscription(url)
 }
 
 SpecialSubscription.prototype = {
-  get filterCount()
-  {
+  get filterCount() {
     return this._filterText.length;
   },
-  *filterText()
-  {
+  *filterText() {
     yield* this._filterText;
   },
-  addFilterText(filterText)
-  {
+  addFilterText(filterText) {
     this._filterText.push(filterText);
   },
-  filterTextAt(idx)
-  {
+  filterTextAt(idx) {
     return this._filterText[idx];
   },
-  removeFilter(filterText)
-  {
-    for (let i = 0; i < this._filterText.length; i++)
-    {
-      if (this._filterText[i] == filterText)
-      {
+  removeFilter(filterText) {
+    for (let i = 0; i < this._filterText.length; i++) {
+      if (this._filterText[i] == filterText) {
         this._filterText.splice(i, 1);
-        filterNotifier.emit(
-          "filter.removed",
-          Filter.fromText(filterText)
-        );
+        filterNotifier.emit("filter.removed", Filter.fromText(filterText));
         return;
       }
     }

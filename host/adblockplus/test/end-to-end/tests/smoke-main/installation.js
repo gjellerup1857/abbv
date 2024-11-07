@@ -17,27 +17,25 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 
-const checkInstallUninstallUrl =
-  require("./shared/check-install-uninstall-url");
+const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url");
 
-module.exports = function()
-{
-  it("opens the install url", async function()
-  {
+module.exports = function () {
+  it("opens the install url", async function () {
     // installedUrl is assigned to test context in the before hook
-    const {installedUrl} = this.test.parent.parent;
-    if (installedUrl.includes("first-run"))
-    {
+    const { installedUrl } = this.test.parent.parent;
+    if (installedUrl.includes("first-run")) {
       console.warn(`ABP installation opened first run page: ${installedUrl}`);
       this.skip();
     }
 
     expect(installedUrl).to.have.string("adblockplus.org/en/installed");
 
-    const appVersion = await browser.
-      executeScript("return browser.runtime.getManifest().version;", []);
+    const appVersion = await browser.executeScript(
+      "return browser.runtime.getManifest().version;",
+      []
+    );
     await checkInstallUninstallUrl(installedUrl, appVersion);
   });
 };

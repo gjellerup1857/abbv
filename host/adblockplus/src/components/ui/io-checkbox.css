@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-checkbox
-{
+io-checkbox {
   display: inline-block;
   width: 1.2rem;
   height: 1.2rem;
@@ -26,13 +25,11 @@ io-checkbox
   cursor: pointer;
 }
 
-io-checkbox[disabled]
-{
+io-checkbox[disabled] {
   cursor: default;
 }
 
-io-checkbox > button
-{
+io-checkbox > button {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -46,18 +43,15 @@ io-checkbox > button
   cursor: inherit;
 }
 
-io-checkbox[disabled] > button
-{
+io-checkbox[disabled] > button {
   outline: none;
   background-image: url(/skin/icons/checkbox.svg?off-disabled#off-disabled);
 }
 
-io-checkbox[checked] > button
-{
+io-checkbox[checked] > button {
   background-image: url(/skin/icons/checkbox.svg?on#on);
 }
 
-io-checkbox[disabled][checked] > button
-{
+io-checkbox[disabled][checked] > button {
   background-image: url(/skin/icons/checkbox.svg?on-disabled#on-disabled);
 }

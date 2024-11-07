@@ -23,23 +23,21 @@
  * codebase, so we add them during the jest setup.
  */
 
-
-Object.assign(browser.tabs, {onRemoved: {
-  addListener() {},
-  removeListener() {},
-  hasListener() {}
-}});
+Object.assign(browser.tabs, {
+  onRemoved: {
+    addListener() {},
+    removeListener() {},
+    hasListener() {}
+  }
+});
 
 Object.assign(browser.runtime, {
-  getPlatformInfo()
-  {
-    return new Promise((resolve) =>
-    {
-      resolve({os: "jest"});
+  getPlatformInfo() {
+    return new Promise((resolve) => {
+      resolve({ os: "jest" });
     });
   },
-  getManifest()
-  {
+  getManifest() {
     return {
       manifest_version: 3,
       options_ui: {
@@ -51,10 +49,8 @@ Object.assign(browser.runtime, {
 
 Object.assign(browser, {
   management: {
-    getSelf()
-    {
-      return new Promise((resolve) =>
-      {
+    getSelf() {
+      return new Promise((resolve) => {
         resolve({
           installType: "normal"
         });

@@ -17,24 +17,24 @@
 
 "use strict";
 
-const {beforeSequence, getABPOptionsTabId,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  getABPOptionsTabId,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const IssueReporterPage = require("../page-objects/issueReporter.page");
 const dataIssueReporter = require("../test-data/data-issue-reporter");
 let globalOrigin;
 
-describe("test issue reporter", function()
-{
+describe("test issue reporter", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should contain issue report data", async function()
-  {
+  it("should contain issue report data", async function () {
     const issueReporterPage = new IssueReporterPage(browser);
     const tabId = await getABPOptionsTabId();
     await browser.url(dataIssueReporter.testPageUrl);
@@ -45,40 +45,49 @@ describe("test issue reporter", function()
     await issueReporterPage.clickAnonymousSubmissionCheckbox();
     await issueReporterPage.clickShowReportDataButton();
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      '<report type="false negative">');
+      '<report type="false negative">'
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<requests>");
-    dataIssueReporter.requestData.forEach(async(tag) =>
-    {
+      "<requests>"
+    );
+    dataIssueReporter.requestData.forEach(async (tag) => {
       expect(await issueReporterPage.getShowDataValueText()).to.include(tag);
     });
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<filters>");
-    dataIssueReporter.filterData.forEach(async(tag) =>
-    {
+      "<filters>"
+    );
+    dataIssueReporter.filterData.forEach(async (tag) => {
       expect(await issueReporterPage.getShowDataValueText()).to.include(tag);
     });
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<platform");
+      "<platform"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<subscriptions>");
-    dataIssueReporter.subscriptionsRegex.forEach(async(regex) =>
-    {
+      "<subscriptions>"
+    );
+    dataIssueReporter.subscriptionsRegex.forEach(async (regex) => {
       expect(await issueReporterPage.getShowDataValueText()).to.match(regex);
     });
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<adblock-plus");
+      "<adblock-plus"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      "<application");
+      "<application"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.include(
-      '<screenshot edited="false">');
+      '<screenshot edited="false">'
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.not.include(
-      "<extensions>");
+      "<extensions>"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.not.include(
-      "<options>");
+      "<options>"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.not.include(
-      "<comment>");
+      "<comment>"
+    );
     expect(await issueReporterPage.getShowDataValueText()).to.not.include(
-      "<email>");
+      "<email>"
+    );
   });
 });

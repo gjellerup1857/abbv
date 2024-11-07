@@ -19,56 +19,45 @@
 
 const BasePage = require("./base.page");
 
-class ProblemPage extends BasePage
-{
-  constructor(browser)
-  {
+class ProblemPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin)
-  {
+  async init(origin) {
     await browser.url(`${origin}/problem.html`);
   }
 
-  get abpLogo()
-  {
+  get abpLogo() {
     return $("//a[@data-doclink='adblock_plus']");
   }
 
-  get clickHereToReinstallButton()
-  {
+  get clickHereToReinstallButton() {
     return $("//a[@data-i18n='problem_solution_action']");
   }
 
-  get contactUsButton()
-  {
+  get contactUsButton() {
     return $("//a[@data-i18n-title='problem_social_email']");
   }
 
-  get eyeoGmbHLink()
-  {
+  get eyeoGmbHLink() {
     return $("//a[text()='eyeo GmbH']");
   }
 
-  get facebookButton()
-  {
+  get facebookButton() {
     return $("//a[@data-i18n-title='problem_social_facebook']");
   }
 
-  get pageTitle()
-  {
+  get pageTitle() {
     return $("//h1[@data-i18n='problem_title']");
   }
 
-  get XButton()
-  {
+  get XButton() {
     return $("//a[@data-i18n-title='problem_social_twitter']");
   }
 
-  async getPageTitleText()
-  {
+  async getPageTitleText() {
     return await (await this.pageTitle).getText();
   }
 }

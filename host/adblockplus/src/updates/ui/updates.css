@@ -22,18 +22,15 @@
  * Header
  ******************************************************************************/
 
-header
-{
+header {
   margin-bottom: 20px;
 }
 
-#title
-{
+#title {
   flex: 1;
 }
 
-#version
-{
+#version {
   padding: 0.3em 0.5em;
   border-radius: var(--border-radius);
   font-weight: 600;
@@ -41,13 +38,11 @@ header
   background-color: rgba(89, 164, 6, 0.25);
 }
 
-h1
-{
+h1 {
   margin: 10px 0 14px;
 }
 
-#title p
-{
+#title p {
   margin: 0;
 }
 
@@ -55,52 +50,44 @@ h1
  * Updates
  ******************************************************************************/
 
-#improvements h2::before
-{
+#improvements h2::before {
   background-image: url(/skin/icons/improvements.svg);
 }
 
-#fixes h2::before
-{
+#fixes h2::before {
   background-image: url(/skin/icons/fixes.svg);
 }
 
-.updates
-{
+.updates {
   padding: 0;
   line-height: 22px;
 }
 
-.updates > li
-{
+.updates > li {
   padding: 20px 50px;
   margin-bottom: 20px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   border-radius: var(--border-radius);
-  background-color: #FFF;
+  background-color: #fff;
   list-style: none;
 }
 
-html[dir="ltr"] .updates > li
-{
+html[dir="ltr"] .updates > li {
   padding-right: 100px;
 }
 
-html[dir="rtl"] .updates > li
-{
+html[dir="rtl"] .updates > li {
   padding-left: 100px;
 }
 
-.updates h3
-{
+.updates h3 {
   position: relative;
   margin-top: 0;
   font-size: 1rem;
-  color: #5A5A5A;
+  color: #5a5a5a;
 }
 
-.updates h3::before
-{
+.updates h3::before {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -109,58 +96,49 @@ html[dir="rtl"] .updates > li
   content: "";
 }
 
-html[dir="ltr"] .updates h3::before
-{
+html[dir="ltr"] .updates h3::before {
   left: -35px;
 }
 
-html[dir="rtl"] .updates h3::before
-{
+html[dir="rtl"] .updates h3::before {
   right: -35px;
 }
 
-.updates p
-{
+.updates p {
   font-size: 0.9em;
   color: #757575;
 }
 
-.updates p:last-child
-{
+.updates p:last-child {
   margin-bottom: 0;
 }
 
-.updates a
-{
+.updates a {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-link);
   text-decoration: none;
 }
 
-.updates a:hover
-{
+.updates a:hover {
   text-decoration: underline;
 }
 
 .updates img,
-.updates video
-{
-  border: 1px solid #DCDCDC;
+.updates video {
+  border: 1px solid #dcdcdc;
 }
 
 .updates video,
 .updates img,
-.updates .fallback
-{
+.updates .fallback {
   position: relative;
   max-width: 500px;
   width: 100%;
-  background-color: #F8F8F8;
+  background-color: #f8f8f8;
 }
 
-.updates .fallback
-{
+.updates .fallback {
   text-align: center;
 }
 
@@ -168,30 +146,25 @@ html[dir="rtl"] .updates h3::before
  * Contribute
  ******************************************************************************/
 
-#contribute p
-{
-  color: #5A5A5A;
+#contribute p {
+  color: #5a5a5a;
 }
 
-#contribute h3
-{
+#contribute h3 {
   margin: 0;
   line-height: 45px;
   font-size: 1.5em;
 }
 
-#contribute > header
-{
+#contribute > header {
   text-align: center;
 }
 
-#contribute > .columns
-{
+#contribute > .columns {
   display: flex;
 }
 
-#contribute > .columns > section
-{
+#contribute > .columns > section {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -199,23 +172,20 @@ html[dir="rtl"] .updates h3::before
   max-width: 460px;
   margin: auto;
   padding: 20px 60px 20px 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   border-radius: var(--border-radius);
-  background-color: #FFF;
+  background-color: #fff;
 }
 
-html[dir="ltr"] #contribute > .columns > section:not(:last-child)
-{
+html[dir="ltr"] #contribute > .columns > section:not(:last-child) {
   margin-right: 20px;
 }
 
-html[dir="rtl"] #contribute > .columns > section:not(:last-child)
-{
+html[dir="rtl"] #contribute > .columns > section:not(:last-child) {
   margin-right: 20px;
 }
 
-#contribute .block-icon
-{
+#contribute .block-icon {
   --icon-width: 38px;
   display: flex;
   flex-direction: column;
@@ -223,29 +193,24 @@ html[dir="rtl"] #contribute > .columns > section:not(:last-child)
   height: 100%;
 }
 
-#contribute .block-icon::before
-{
+#contribute .block-icon::before {
   top: 0.25em;
 }
 
-#contribute .block-icon p
-{
+#contribute .block-icon p {
   flex: 1;
   margin-top: 0.75em;
   margin-bottom: 1.5em;
 }
 
-body[data-store="edge"] #contribute-rate
-{
+body[data-store="edge"] #contribute-rate {
   display: none;
 }
 
-#contribute-rate > .block-icon::before
-{
+#contribute-rate > .block-icon::before {
   background-image: url(/skin/icons/waving.svg);
 }
 
-#contribute-donate > .block-icon::before
-{
+#contribute-donate > .block-icon::before {
   background-image: url(/skin/icons/donate.svg);
 }

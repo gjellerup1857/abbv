@@ -22,8 +22,8 @@
 const helpers = require("./helpers.js");
 helpers.lambdatestRunChecks();
 
-const {config: baseConfig} = require("./base.conf.js");
-const {config: localisationConfig} = require("./localisation.conf.js");
+const { config: baseConfig } = require("./base.conf.js");
+const { config: localisationConfig } = require("./localisation.conf.js");
 const mv3BuildCloudUrl = process.env.MV3_BUILD_CLOUD_URL;
 
 const parallelConfig = {
@@ -42,25 +42,20 @@ const parallelConfig = {
       browserVersion: "latest",
       platformName: "macOS Monterey",
       "goog:chromeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox"],
         prefs: {
           "intl.accept_languages": "en,en_US",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
       },
       acceptInsecureCerts: true,
-      exclude: [
-        "./tests/legacy-unit.js",
-        "./tests/localisation-*.js"
-      ]
+      exclude: ["./tests/legacy-unit.js", "./tests/localisation-*.js"]
     },
     {
       "LT:Options": {
@@ -70,16 +65,14 @@ const parallelConfig = {
       browserVersion: "latest",
       platformName: "macOS Monterey",
       "ms:edgeOptions": {
-        extensions: [
-          helpers.getHelperExtension("MV3")
-        ],
+        extensions: [helpers.getHelperExtension("MV3")],
         args: ["--no-sandbox", "--start-maximized"],
         prefs: {
           "intl.accept_languages": "en,en_US",
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -129,7 +122,7 @@ const parallelConfig = {
           "profile.managed_default_content_settings.popups": 2,
           "profile.managed_default_content_settings.notifications": 2,
           "profile.content_settings.exceptions.clipboard": {
-            "*": {"setting": 1}
+            "*": { setting: 1 }
           }
         },
         excludeSwitches: ["disable-extensions"]
@@ -149,12 +142,17 @@ const parallelConfig = {
   screenshotPath: "./errorShots/"
 };
 
-exports.config = {...baseConfig, ...parallelConfig,
-                  capabilities: [...parallelConfig.capabilities, ...localisationConfig.capabilities]};
+exports.config = {
+  ...baseConfig,
+  ...parallelConfig,
+  capabilities: [
+    ...parallelConfig.capabilities,
+    ...localisationConfig.capabilities
+  ]
+};
 
 // Code to support common capabilities
-exports.config.capabilities.forEach((caps) =>
-{
+exports.config.capabilities.forEach((caps) => {
   for (const i in exports.config.commonCapabilities)
-    caps[i] = {...caps[i], ...exports.config.commonCapabilities[i]};
+    caps[i] = { ...caps[i], ...exports.config.commonCapabilities[i] };
 });

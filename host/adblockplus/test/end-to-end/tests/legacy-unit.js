@@ -19,21 +19,18 @@
 
 const assert = require("assert");
 
-const {waitForExtension} = require("../helpers");
+const { waitForExtension } = require("../helpers");
 const TestPage = require("../page-objects/test.page");
 
 let origin = null;
 
-describe("Testing units", () =>
-{
-  before(async() =>
-  {
-    ({origin} = await waitForExtension());
+describe("Testing units", () => {
+  before(async () => {
+    ({ origin } = await waitForExtension());
     await browser.url(`${origin}/tests/index.html`);
   });
 
-  it("Running unit tests", async() =>
-  {
+  it("Running unit tests", async () => {
     const testPage = new TestPage(browser);
     await testPage.init();
 

@@ -19,46 +19,37 @@
 
 const BasePage = require("./base.page");
 
-class DevToolsPanelPage extends BasePage
-{
-  constructor(browser)
-  {
+class DevToolsPanelPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
+  async init() {
     await browser.newWindow("https://adblockplus.org/openDevToolsPanelPage");
   }
 
-  get filteringStateOptions()
-  {
+  get filteringStateOptions() {
     return $$("//*[@id='filter-state']/option");
   }
 
-  get filteringTypeOptions()
-  {
+  get filteringTypeOptions() {
     return $$("//*[@id='filter-type']/option");
   }
 
-  async getFilteringStateOptionsTexts()
-  {
+  async getFilteringStateOptionsTexts() {
     // eslint-disable-next-line prefer-const
     let optionTexts = [];
-    for await (const option of (await this.filteringStateOptions))
-    {
+    for await (const option of await this.filteringStateOptions) {
       optionTexts.push(await option.getText());
     }
     return optionTexts;
   }
 
-  async getFilteringTypeOptionsTexts()
-  {
+  async getFilteringTypeOptionsTexts() {
     // eslint-disable-next-line prefer-const
     let optionTexts = [];
-    for await (const option of (await this.filteringTypeOptions))
-    {
+    for await (const option of await this.filteringTypeOptions) {
       optionTexts.push(await option.getText());
     }
     return optionTexts;

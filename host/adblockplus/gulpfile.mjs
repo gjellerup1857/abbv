@@ -19,7 +19,7 @@ import gulp from "gulp";
 import argparse from "argparse";
 import merge from "merge-stream";
 import zip from "gulp-vinyl-zip";
-import {deleteAsync} from "del";
+import { deleteAsync } from "del";
 import * as tasks from "./build/webext/tasks/index.mjs";
 import * as config from "./build/webext/config/index.mjs";
 import * as configParser from "./build/webext/configParser.mjs";
@@ -30,27 +30,20 @@ const argumentParser = new argparse.ArgumentParser({
   description: "Build the extension"
 });
 
-argumentParser.addArgument(
-  ["-t", "--target"],
-  {choices: ["chrome", "firefox", "local"]}
-);
-argumentParser.addArgument(
-  ["-c", "--channel"],
-  {
-    choices: ["development", "release"],
-    defaultValue: "release"
-  }
-);
+argumentParser.addArgument(["-t", "--target"], {
+  choices: ["chrome", "firefox", "local"]
+});
+argumentParser.addArgument(["-c", "--channel"], {
+  choices: ["development", "release"],
+  defaultValue: "release"
+});
 argumentParser.addArgument(["-b", "--build-num"]);
 argumentParser.addArgument("--config");
-argumentParser.addArgument(
-  ["-m", "--manifest-version"],
-  {
-    choices: [2, 3],
-    defaultValue: 2,
-    type: "int"
-  }
-);
+argumentParser.addArgument(["-m", "--manifest-version"], {
+  choices: [2, 3],
+  defaultValue: 2,
+  type: "int"
+});
 argumentParser.addArgument("--manifest-path");
 
 argumentParser.addArgument("--partial", {
@@ -63,20 +56,11 @@ const args = argumentParser.parseKnownArgs()[0];
 
 const targetDir = `./dist/devenv/${args.target}-mv${args.manifest_version}`;
 
-const buildTasks = [
-  cleanBuild,
-  tasks.buildUI,
-  buildPacked
-];
+const buildTasks = [cleanBuild, tasks.buildUI, buildPacked];
 
-const devenvTasks = [
-  cleanDir,
-  tasks.buildUI,
-  buildDevenv
-];
+const devenvTasks = [cleanDir, tasks.buildUI, buildDevenv];
 
-if (args.partial === "true")
-{
+if (args.partial === "true") {
   // !! IMPORTANT !!
   //
   // If the contents of this block, or the `tasks.buildUI` task itself
@@ -88,29 +72,21 @@ if (args.partial === "true")
     taskList.splice(taskList.indexOf(tasks.buildUI), 1);
 }
 
-async function getBuildSteps(options)
-{
-  const translations = options.target == "chrome" ?
-    tasks.chromeTranslations :
-    tasks.translations;
+async function getBuildSteps(options) {
+  const translations =
+    options.target == "chrome" ? tasks.chromeTranslations : tasks.translations;
   const buildSteps = [];
   const addonName = `${options.basename}${options.target}`;
 
-  if (options.isDevenv)
-  {
-    buildSteps.push(
-      tasks.addDevEnvVersion());
+  if (options.isDevenv) {
+    buildSteps.push(tasks.addDevEnvVersion());
   }
 
-  if (options.manifestVersion === 3)
-  {
-    buildSteps.push(
-      tasks.mapping(config.rulesV3.mapping)
-    );
+  if (options.manifestVersion === 3) {
+    buildSteps.push(tasks.mapping(config.rulesV3.mapping));
   }
 
-  if (options.target !== "local")
-  {
+  if (options.target !== "local") {
     buildSteps.push(
       tasks.createManifest(options.manifest),
       translations(options.translations, options.manifest)
@@ -130,10 +106,9 @@ async function getBuildSteps(options)
   return buildSteps;
 }
 
-async function getBuildOptions(isDevenv, isSource)
-{
+async function getBuildOptions(isDevenv, isSource) {
   if (!isSource && !args.target)
-    argumentParser.error("Argument \"-t/--target\" is required");
+    argumentParser.error('Argument "-t/--target" is required');
 
   const opts = {
     isDevenv,
@@ -146,25 +121,19 @@ async function getBuildOptions(isDevenv, isSource)
   // Chromium versions older than 99 don't support source map files for
   // extensions yet, so we shouldn't include them for Manifest v2 builds
   // https://issues.chromium.org/issues/40632287
-  if (opts.target === "chrome" && opts.manifestVersion === 2)
-  {
-    opts.sourceMapType = (isDevenv) ? "inline-source-map" : false;
-  }
-  else
-  {
+  if (opts.target === "chrome" && opts.manifestVersion === 2) {
+    opts.sourceMapType = isDevenv ? "inline-source-map" : false;
+  } else {
     opts.sourceMapType = "source-map";
   }
 
   if (args.config)
     configParser.setConfig(await import(url.pathToFileURL(args.config)));
-  else
-    configParser.setConfig(config);
+  else configParser.setConfig(config);
 
   let configName;
-  if (isSource)
-    configName = "base";
-  else
-    configName = opts.target;
+  if (isSource) configName = "base";
+  else configName = opts.target;
 
   opts.webpackInfo = configParser.getSection(configName, "webpack");
   opts.mapping = configParser.getSection(configName, "mapping");
@@ -172,43 +141,35 @@ async function getBuildOptions(isDevenv, isSource)
   opts.version = configParser.getSection(configName, "version");
   opts.translations = configParser.getSection(configName, "translations");
 
-  if (isDevenv)
-  {
+  if (isDevenv) {
     opts.output = gulp.dest(targetDir);
-  }
-  else
-  {
+  } else {
     opts.baseversion = opts.version;
-    if (opts.channel == "development")
-    {
+    if (opts.channel == "development") {
       const versionParts = opts.version.split(".", 4);
-      if (versionParts.length > 3)
-      {
+      if (versionParts.length > 3) {
         console.warn("Version string has more than three pre-defined segments");
       }
 
-      for (let i = 0; i < 3; i++)
-      {
-        if (versionParts[i])
-        {
+      for (let i = 0; i < 3; i++) {
+        if (versionParts[i]) {
           continue;
         }
 
         versionParts[i] = "0";
       }
 
-      try
-      {
-        versionParts[3] = args["build_num"] || await gitUtils.getBuildnum();
-      }
-      catch (ex)
-      {
+      try {
+        versionParts[3] = args["build_num"] || (await gitUtils.getBuildnum());
+      } catch (ex) {
         // We may not be running in the context of a git repository, such as
         // when generating builds from the source archive
-        throw new Error([
-          "Unable to determine build number.",
-          "You can specify a build number using the build-num argument."
-        ].join(" "));
+        throw new Error(
+          [
+            "Unable to determine build number.",
+            "You can specify a build number using the build-num argument."
+          ].join(" ")
+        );
       }
 
       opts.version = versionParts.join(".");
@@ -226,16 +187,13 @@ async function getBuildOptions(isDevenv, isSource)
   return opts;
 }
 
-async function getBuildOutput(opts)
-{
-  if (opts.isDevenv)
-  {
+async function getBuildOutput(opts) {
+  if (opts.isDevenv) {
     return gulp.dest(targetDir);
   }
 
-  const filenameTarget = (opts.channel === "release") ?
-    opts.target :
-    `${opts.target}${opts.channel}`;
+  const filenameTarget =
+    opts.channel === "release" ? opts.target : `${opts.target}${opts.channel}`;
   const filenameVersion = await getFilenameVersion(opts);
 
   const filenameParts = [
@@ -249,20 +207,15 @@ async function getBuildOutput(opts)
   return zip.dest(`./dist/release/${filename}`);
 }
 
-async function getFilenameVersion(opts)
-{
-  try
-  {
+async function getFilenameVersion(opts) {
+  try {
     const hasReleaseTag = await gitUtils.hasTag(
       `${opts.basename}-${opts.baseversion}`
     );
-    if (hasReleaseTag)
-    {
+    if (hasReleaseTag) {
       return opts.version;
     }
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     // We may not be running in the context of a git repository, such as
     // when generating builds from the source archive
     return opts.version;
@@ -271,8 +224,7 @@ async function getFilenameVersion(opts)
   return gitUtils.getCommitHash();
 }
 
-async function buildDevenv()
-{
+async function buildDevenv() {
   const options = await getBuildOptions(true);
   const output = await getBuildOutput(options);
   const steps = await getBuildSteps(options);
@@ -282,8 +234,7 @@ async function buildDevenv()
   );
 }
 
-async function buildPacked()
-{
+async function buildPacked() {
   const options = await getBuildOptions(false);
   const output = await getBuildOutput(options);
   const steps = await getBuildSteps(options);
@@ -293,12 +244,10 @@ async function buildPacked()
   );
 }
 
-async function cleanBuild()
-{
+async function cleanBuild() {
   const opts = await getBuildOptions(false);
-  const filenameTarget = (opts.channel === "release") ?
-    opts.target :
-    `${opts.target}${opts.channel}`;
+  const filenameTarget =
+    opts.channel === "release" ? opts.target : `${opts.target}${opts.channel}`;
 
   const filenameParts = [
     opts.basename,
@@ -311,13 +260,11 @@ async function cleanBuild()
   return deleteAsync(`./dist/release/${filename}`);
 }
 
-function cleanSource(basename)
-{
+function cleanSource(basename) {
   return deleteAsync(`./dist/release/${basename}-*.tar.gz`);
 }
 
-function cleanDir()
-{
+function cleanDir() {
   return deleteAsync(targetDir);
 }
 
@@ -325,8 +272,7 @@ export const devenv = gulp.series(...devenvTasks);
 
 export const build = gulp.series(...buildTasks);
 
-export async function source()
-{
+export async function source() {
   const options = await getBuildOptions(false, true);
   const filenameVersion = await getFilenameVersion(options);
   await cleanSource(options.basename);

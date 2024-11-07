@@ -15,15 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Port} from "../shared/index.mjs";
+import { Port } from "../shared/index.mjs";
 
 export const onConnect = {
-  addListener(listener)
-  {
-    window.addEventListener("message", (event) =>
-    {
-      if (event.data.type != "connect")
-        return;
+  addListener(listener) {
+    window.addEventListener("message", (event) => {
+      if (event.data.type != "connect") return;
 
       listener(new Port(event.data.id, event.data.name));
     });

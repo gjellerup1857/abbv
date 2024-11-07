@@ -19,9 +19,9 @@
 
 const fs = require("fs");
 const path = require("path");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
-const {readJson} = require("./utils");
+const { readJson } = require("./utils");
 
 const writeFile = promisify(fs.writeFile);
 
@@ -35,51 +35,41 @@ let newFileTreeOb = null;
  * @param {String} localesDirPath Path of the locales directory
  * @param {String} deafultLocaleName Default locale ex.: en_US
  */
-function importFilesObjects(filesDataObject, localesDirPath, deafultLocaleName)
-{
+function importFilesObjects(
+  filesDataObject,
+  localesDirPath,
+  deafultLocaleName
+) {
   newFileTreeOb = filesDataObject;
   localesDir = localesDirPath;
   defaultLocale = deafultLocaleName;
-  for (const fileName of Object.keys(newFileTreeOb))
-  {
-    for (const locale of Object.keys(newFileTreeOb[fileName]))
-    {
-      if (locale === defaultLocale)
-        continue;
+  for (const fileName of Object.keys(newFileTreeOb)) {
+    for (const locale of Object.keys(newFileTreeOb[fileName])) {
+      if (locale === defaultLocale) continue;
 
       const translationFilePath = `${localesDir}/${locale}/${fileName}`;
-      if (fs.existsSync(translationFilePath))
-      {
+      if (fs.existsSync(translationFilePath)) {
         readJson(translationFilePath).then(writeToExistingFile);
-      }
-      else
-      {
+      } else {
         const strings = newFileTreeOb[fileName][locale];
-        writeJson(fileObjToDataTreeObj({fileName, locale, strings}));
+        writeJson(fileObjToDataTreeObj({ fileName, locale, strings }));
       }
     }
   }
 }
 
-function writeToExistingFile(fileObject)
-{
-  const {fileName, locale} = fileObject;
+function writeToExistingFile(fileObject) {
+  const { fileName, locale } = fileObject;
   const existingFileTreeObj = fileObjToDataTreeObj(fileObject);
-  for (const stringId of Object.keys(newFileTreeOb[fileName][locale]))
-  {
+  for (const stringId of Object.keys(newFileTreeOb[fileName][locale])) {
     const existingString = existingFileTreeObj[fileName][locale][stringId];
     const newString = newFileTreeOb[fileName][locale][stringId];
-    if (!existingString)
-    {
+    if (!existingString) {
       existingFileTreeObj[fileName][locale][stringId] = newString;
-    }
-    else if (existingString.message !== newString.message)
-    {
+    } else if (existingString.message !== newString.message) {
       existingString.message = newString.message;
-      if (!newString.placeholders)
-        delete existingString.placeholders;
-      else
-        existingString.placeholders = newString.placeholders;
+      if (!newString.placeholders) delete existingString.placeholders;
+      else existingString.placeholders = newString.placeholders;
     }
   }
   writeJson(existingFileTreeObj);
@@ -91,8 +81,7 @@ function writeToExistingFile(fileObject)
  * @param {Object} fileObject
  * @returns {Object} dataTreeObj
  */
-function fileObjToDataTreeObj(fileObject)
-{
+function fileObjToDataTreeObj(fileObject) {
   const dataTreeObj = {};
   dataTreeObj[fileObject.fileName] = {};
   dataTreeObj[fileObject.fileName][fileObject.locale] = fileObject.strings;
@@ -104,27 +93,23 @@ function fileObjToDataTreeObj(fileObject)
  * @param  {Object} dataTreeObj - ex.:
  * {dektop-options.json: {en_US: {...}, {de: {...}, {ru: {...}}}
  */
-function writeJson(dataTreeObj)
-{
-  for (const fileName in dataTreeObj)
-  {
-    for (const locale in dataTreeObj[fileName])
-    {
+function writeJson(dataTreeObj) {
+  for (const fileName in dataTreeObj) {
+    for (const locale in dataTreeObj[fileName]) {
       const filePath = path.join(localesDir, locale, fileName);
       let fileString = JSON.stringify(dataTreeObj[fileName][locale], null, 2);
 
       // Newline at end of file to match Coding Style
-      if (locale == defaultLocale)
-        fileString += "\n";
-      writeFile(filePath, fileString, "utf8").then(() =>
-      {
-        console.log(`Updated: ${filePath}`); // eslint-disable-line no-console
-      }).catch((err) =>
-      {
-        console.error(err);
-      });
+      if (locale == defaultLocale) fileString += "\n";
+      writeFile(filePath, fileString, "utf8")
+        .then(() => {
+          console.log(`Updated: ${filePath}`); // eslint-disable-line no-console
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
   }
 }
 
-module.exports = {importFilesObjects};
+module.exports = { importFilesObjects };

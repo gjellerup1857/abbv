@@ -19,28 +19,22 @@ import IOElement from "./io-element.mjs";
 
 // a three steps example:
 // <io-steps i18n-labels="first second third" />
-class IOSteps extends IOElement
-{
-  static get observedAttributes()
-  {
+class IOSteps extends IOElement {
+  static get observedAttributes() {
     return ["i18n-labels"];
   }
 
-  created()
-  {
+  created() {
     reset.call(this);
   }
 
-  attributeChangedCallback()
-  {
+  attributeChangedCallback() {
     // reset setup
     reset.call(this);
     // attributes can have spaces or new lines too
-    for (const label of this.i18nLabels.split(/[\n ]+/))
-    {
+    for (const label of this.i18nLabels.split(/[\n ]+/)) {
       const trimmed = label.trim();
-      if (trimmed.length)
-      {
+      if (trimmed.length) {
         this.labels.push(browser.i18n.getMessage(trimmed));
       }
     }
@@ -48,31 +42,22 @@ class IOSteps extends IOElement
   }
 
   // return the amount of enabled steps
-  get enabled()
-  {
+  get enabled() {
     return this._enabled;
   }
 
   // return true or false accordingly if an index/step
   // has been already completed.
-  getCompleted(index)
-  {
+  getCompleted(index) {
     return index < this._enabled;
   }
 
   // set an index completed state
   // by default, completed is true
-  setCompleted(index, completed = true)
-  {
-    if (index < 0)
-      index = this.children.length + index;
+  setCompleted(index, completed = true) {
+    if (index < 0) index = this.children.length + index;
     this.children[index].classList.toggle("completed", completed);
-    if (
-      completed &&
-      index < this.labels.length &&
-      this._enabled <= index
-    )
-    {
+    if (completed && index < this.labels.length && this._enabled <= index) {
       this._enabled = index + 1;
       this.render();
     }
@@ -80,26 +65,25 @@ class IOSteps extends IOElement
 
   // dispatch a "step:click" event providing
   // the clicked index as event.detail property
-  onclick(event)
-  {
+  onclick(event) {
     event.preventDefault();
     event.stopPropagation();
     const indexOf = Array.prototype.indexOf;
-    this.dispatchEvent(new CustomEvent("step:click", {
-      bubbles: true,
-      detail: indexOf.call(this.children, event.currentTarget)
-    }));
+    this.dispatchEvent(
+      new CustomEvent("step:click", {
+        bubbles: true,
+        detail: indexOf.call(this.children, event.currentTarget)
+      })
+    );
   }
 
-  render()
-  {
+  render() {
     this.html`${this.labels.map(getButton, this)}`;
   }
 }
 
-const {wire} = IOElement;
-function getButton(label, index)
-{
+const { wire } = IOElement;
+function getButton(label, index) {
   // each click dispatches change event
   // data-value is used to show the number
   return wire(this, `:${index}`)`
@@ -110,8 +94,7 @@ function getButton(label, index)
     >${label}</button>`;
 }
 
-function reset()
-{
+function reset() {
   // amount of enabled lables, starts from at least one
   this._enabled = 0;
   // all the labels, passed as list

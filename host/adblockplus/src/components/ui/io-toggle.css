@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-toggle
-{
+io-toggle {
   --width: 30px;
   --height: 8px;
   --translateY: -4px;
@@ -32,24 +31,20 @@ io-toggle
   will-change: background;
 }
 
-html[dir="rtl"] io-toggle
-{
+html[dir="rtl"] io-toggle {
   --translateX: -14px;
 }
 
-io-toggle[checked]
-{
+io-toggle[checked] {
   background-color: #92d3ea;
 }
 
-io-toggle[disabled]
-{
+io-toggle[disabled] {
   opacity: 0.5;
   cursor: default;
 }
 
-io-toggle button
-{
+io-toggle button {
   width: calc(var(--height) * 2);
   height: calc(var(--height) * 2);
   padding: 0;
@@ -57,7 +52,8 @@ io-toggle button
   border-radius: var(--height);
   outline: none;
   cursor: pointer;
-  transition: border 0.2s ease-out,
+  transition:
+    border 0.2s ease-out,
     box-shadow 0.2s ease-out,
     transform 0.2s ease-out,
     width 0.2s ease-out;
@@ -65,32 +61,27 @@ io-toggle button
   will-change: border, box-shadow, transform, width;
 }
 
-io-toggle button[aria-checked="false"]
-{
+io-toggle button[aria-checked="false"] {
   background-color: #f1f1f1;
   box-shadow: 0 1px 2px 0 #e5d1d1;
 }
 
-io-toggle button[aria-checked="false"]:hover
-{
+io-toggle button[aria-checked="false"]:hover {
   box-shadow: 0 2px 4px 0 #d3b0b0;
 }
 
-io-toggle button[aria-checked="true"]
-{
-  border: 2px solid #0797E1;
-  background-color: #0797E1;
+io-toggle button[aria-checked="true"] {
+  border: 2px solid #0797e1;
+  background-color: #0797e1;
   box-shadow: 0 1px 2px 0 #a6cede;
   transform: translateY(var(--translateY)) translateX(var(--translateX));
 }
 
-io-toggle button[aria-checked="true"]:hover
-{
+io-toggle button[aria-checked="true"]:hover {
   box-shadow: 0 2px 4px 0 #a6cede;
 }
 
 io-toggle button:focus,
-io-toggle button[aria-checked="true"]:focus
-{
+io-toggle button[aria-checked="true"]:focus {
   border: 2px solid #87bffe;
 }

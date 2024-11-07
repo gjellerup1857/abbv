@@ -12,23 +12,20 @@
   },
   "overrides": [
     {
-      "files": [
-        "*.mjs"
-      ],
+      "files": ["*.mjs"],
       "rules": {
         "quote-props": ["error", "as-needed"],
         "object-curly-spacing": ["error", "always"],
-        "brace-style": [
-          "error",
-          "1tbs",
-          { "allowSingleLine": true }
-        ],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
         "object-shorthand": ["error", "always"],
-        "space-before-function-paren": ["error", {
-          "anonymous": "always",
-          "named": "never",
-          "asyncArrow": "always"
-        }]
+        "space-before-function-paren": [
+          "error",
+          {
+            "anonymous": "always",
+            "named": "never",
+            "asyncArrow": "always"
+          }
+        ]
       }
     }
   ]

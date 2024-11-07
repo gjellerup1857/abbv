@@ -17,39 +17,40 @@
 
 "use strict";
 
-const {beforeSequence, afterSequence, getTabId, switchToABPOptionsTab,
-       waitForCondition, doesTabExist, isFirefox} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  afterSequence,
+  getTabId,
+  switchToABPOptionsTab,
+  waitForCondition,
+  doesTabExist,
+  isFirefox
+} = require("../helpers");
+const { expect } = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const TestPage = require("../page-objects/testPages.page");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
 const testData = require("../test-data/data-smoke-tests");
 let popupUrl;
 let lastTest = false;
 
-describe("test popup allowlisting and disallowlisting pages", function()
-{
-  before(async function()
-  {
-    ({popupUrl} = await beforeSequence());
+describe("test popup allowlisting and disallowlisting pages", function () {
+  before(async function () {
+    ({ popupUrl } = await beforeSequence());
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should disallowlist pages from popup", async function()
-  {
+  it("should disallowlist pages from popup", async function () {
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
     await testPage.switchToTab("Blocking and hiding");
     const blockingAndHidingUrl = await testPage.getCurrentUrl();
-    const tabId = await getTabId({title: "Blocking and hiding"});
+    const tabId = await getTabId({ title: "Blocking and hiding" });
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
@@ -72,21 +73,21 @@ describe("test popup allowlisting and disallowlisting pages", function()
     await switchToABPOptionsTab();
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowistedWebsitesPage
-        .getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.not.equal(blockingAndHidingUrl);
     });
   });
 
-  it("should allowlist pages from popup", async function()
-  {
+  it("should allowlist pages from popup", async function () {
     lastTest = true;
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
     await testPage.switchToTab("Blocking and hiding");
-    let tabId = await getTabId({title: "Blocking and hiding"});
+    let tabId = await getTabId({ title: "Blocking and hiding" });
     let popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
@@ -94,16 +95,22 @@ describe("test popup allowlisting and disallowlisting pages", function()
     expect(await popupPage.isRefreshMessageDisplayed()).to.be.true;
     await popupPage.clickRefreshButton();
 
-    await switchToABPOptionsTab({switchToFrame: false});
+    await switchToABPOptionsTab({ switchToFrame: false });
     await testPage.switchToTab("Blocking and hiding");
     await browser.refresh();
-    await waitForCondition("getPopadsFilterText", 3000, testPage, true, 200,
-                           "pop_ads.js blocking filter should block this");
+    await waitForCondition(
+      "getPopadsFilterText",
+      3000,
+      testPage,
+      true,
+      200,
+      "pop_ads.js blocking filter should block this"
+    );
     expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this");
+      "pop_ads.js blocking filter should block this"
+    );
     // skip for FF, popup.html does not close
-    if (!isFirefox())
-    {
+    if (!isFirefox()) {
       expect(await doesTabExist(popupUrl)).to.be.false;
     }
     await popupPage.init(popupUrl, tabId);
@@ -111,11 +118,12 @@ describe("test popup allowlisting and disallowlisting pages", function()
     expect(await popupPage.isPageToggleChecked()).to.be.false;
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
-    const adblockedCountUrl = "adblockinc.gitlab.io/QA-team/adblocking/" +
-        "adblocked-count/adblocked-count-testpage.html";
+    const adblockedCountUrl =
+      "adblockinc.gitlab.io/QA-team/adblocking/" +
+      "adblocked-count/adblocked-count-testpage.html";
     await browser.newWindow(`https://${adblockedCountUrl}`);
     await popupPage.switchToTab("Ad blocked count testpage");
-    tabId = await getTabId({title: "Ad blocked count testpage"});
+    tabId = await getTabId({ title: "Ad blocked count testpage" });
     popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
@@ -124,10 +132,11 @@ describe("test popup allowlisting and disallowlisting pages", function()
     await switchToABPOptionsTab();
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await allowistedWebsitesPage
-        .getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal(adblockedCountUrl);
     });
   });

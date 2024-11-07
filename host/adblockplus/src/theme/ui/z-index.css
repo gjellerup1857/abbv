@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-:root
-{
+:root {
   --z-popout: 10;
   --z-popout-active: 11;
   --z-dialog: 20;

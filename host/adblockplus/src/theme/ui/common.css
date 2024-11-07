@@ -19,8 +19,7 @@
   Used for translatable screen reader only content.
   e.g.: Use instead of aria-label to avoid complex attribute value translation
 */
-.sr-only
-{
+.sr-only {
   clip: rect(0, 0, 0, 0);
   overflow: hidden;
   position: absolute;

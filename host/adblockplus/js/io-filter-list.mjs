@@ -16,9 +16,9 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {getErrorMessage} from "./common.mjs";
-import {$} from "./dom.mjs";
-import {stripTagsUnsafe} from "../src/i18n/index.ts";
+import { getErrorMessage } from "./common.mjs";
+import { $ } from "./dom.mjs";
+import { stripTagsUnsafe } from "../src/i18n/index.ts";
 import IOElement from "./io-element.mjs";
 import IOFilterBase from "./io-filter-base.mjs";
 
@@ -28,10 +28,8 @@ import "./io-toggle.mjs";
 const prevFilterText = new WeakMap();
 
 // <io-filter-list disabled />.{filters = [...]}
-class IOFilterList extends IOFilterBase
-{
-  get defaultState()
-  {
+class IOFilterList extends IOFilterBase {
+  get defaultState() {
     return Object.assign(super.defaultState, {
       sort: {
         current: "",
@@ -45,30 +43,24 @@ class IOFilterList extends IOFilterBase
     });
   }
 
-  created()
-  {
+  created() {
     setupPort.call(this);
     super.created();
   }
 
-  onheaderclick(event)
-  {
+  onheaderclick(event) {
     const th = event.target.closest("th");
-    if (!IOElement.utils.event.isLeftClick(event) || !th)
-      return;
-    const {column} = th.dataset;
-    if (column === "selected")
-    {
+    if (!IOElement.utils.event.isLeftClick(event) || !th) return;
+    const { column } = th.dataset;
+    if (column === "selected") {
       const ioCheckbox = event.target.closest("io-checkbox");
       // ignore clicks outside the io-checkbox
-      if (ioCheckbox)
-        this.selected = ioCheckbox.checked ? this.filters : [];
+      if (ioCheckbox) this.selected = ioCheckbox.checked ? this.filters : [];
       return;
     }
     event.preventDefault();
-    const {sort, sortMap} = this.state;
-    if (column !== sort.current)
-    {
+    const { sort, sortMap } = this.state;
+    if (column !== sort.current) {
       sort.current = column;
       sort.asc = false;
     }
@@ -76,10 +68,8 @@ class IOFilterList extends IOFilterBase
     const sorter = sort.asc ? 1 : -1;
     const property = sortMap[column];
     const direction = property === "slow" ? -1 : 1;
-    this.filters.sort((fa, fb) =>
-    {
-      if (fa[property] === fb[property])
-        return 0;
+    this.filters.sort((fa, fb) => {
+      if (fa[property] === fb[property]) return 0;
       return (fa[property] < fb[property] ? -sorter : sorter) * direction;
     });
     this.render();
@@ -88,8 +78,7 @@ class IOFilterList extends IOFilterBase
     dataset.dir = sort.asc ? "asc" : "desc";
   }
 
-  onpaste(event)
-  {
+  onpaste(event) {
     event.preventDefault();
 
     const data = event.clipboardData.getData("text/plain");
@@ -99,15 +88,12 @@ class IOFilterList extends IOFilterBase
     document.execCommand("insertText", false, text);
   }
 
-  onkeydown(event)
-  {
-    const {key} = event;
-    if (key === "Enter" || key === "Escape")
-    {
+  onkeydown(event) {
+    const { key } = event;
+    if (key === "Enter" || key === "Escape") {
       event.preventDefault();
-      if (key === "Escape" && this._filter)
-      {
-        const {currentTarget} = event;
+      if (key === "Escape" && this._filter) {
+        const { currentTarget } = event;
         const text = prevFilterText.get(this._filter) || this._filter.text;
         currentTarget.textContent = text;
         currentTarget.blur();
@@ -116,76 +102,67 @@ class IOFilterList extends IOFilterBase
     }
   }
 
-  onkeyup(event)
-  {
+  onkeyup(event) {
     const isEnter = event.key === "Enter";
     const update = isEnter || event.type === "blur";
-    const {currentTarget} = event;
-    const {title} = currentTarget;
+    const { currentTarget } = event;
+    const { title } = currentTarget;
     const text = currentTarget.textContent.trim();
     const filter = this._filter;
 
     // if triggered but there was focus lost already: return
-    if (!filter)
-      return;
+    if (!filter) return;
 
     // in case of empty filter, remove it
-    if (!text)
-    {
-      if (!update)
-        return;
-      browser.runtime.sendMessage({
-        type: "filters.remove",
-        text: filter.text
-      }).then(errors =>
-      {
-        if (!errors.length)
-        {
-          this.selected.delete(filter);
-          this.render();
-          this.dispatchEvent(new CustomEvent("filter:removed", {
-            cancelable: false,
-            bubbles: true
-          }));
-        }
-      });
+    if (!text) {
+      if (!update) return;
+      browser.runtime
+        .sendMessage({
+          type: "filters.remove",
+          text: filter.text
+        })
+        .then((errors) => {
+          if (!errors.length) {
+            this.selected.delete(filter);
+            this.render();
+            this.dispatchEvent(
+              new CustomEvent("filter:removed", {
+                cancelable: false,
+                bubbles: true
+              })
+            );
+          }
+        });
       this._filter = null;
       return;
     }
 
     // store the initial filter value once
     // needed to remove the filter once finished the editing
-    if (!prevFilterText.has(filter))
-      prevFilterText.set(filter, title);
+    if (!prevFilterText.has(filter)) prevFilterText.set(filter, title);
 
     // avoid updating filters that didn't change
-    if (prevFilterText.get(filter) === text)
-    {
+    if (prevFilterText.get(filter) === text) {
       if (isEnter)
         focusTheNextFilterIfAny.call(this, currentTarget.closest("tr"));
       return;
     }
 
     // add + remove the filter on Enter / update
-    if (update)
-    {
+    if (update) {
       filter.text = text;
       currentTarget.title = text;
       // drop any validation action at distance
       this._validating = 0;
-      if (this.filters.some(f => f.text === filter.text && f !== filter))
-      {
-        const {reason} = filter;
-        filter.reason = {type: "filter_duplicated"};
+      if (this.filters.some((f) => f.text === filter.text && f !== filter)) {
+        const { reason } = filter;
+        filter.reason = { type: "filter_duplicated" };
 
         // render only if there's something different to show
-        if (!isSameError(filter.reason, reason))
-        {
+        if (!isSameError(filter.reason, reason)) {
           this.render();
         }
-      }
-      else
-      {
+      } else {
         replaceFilter.call(this, filter, currentTarget);
         if (isEnter)
           focusTheNextFilterIfAny.call(this, currentTarget.closest("tr"));
@@ -194,57 +171,49 @@ class IOFilterList extends IOFilterBase
     }
 
     // don't overload validation
-    if (this._validating > 0)
-    {
+    if (this._validating > 0) {
       // but signal there is more validation to do
       this._validating++;
       return;
     }
     this._validating = 1;
-    browser.runtime.sendMessage({
-      type: "filters.validate",
-      text
-    }).then(errors =>
-    {
-      // in case a save operation has been asked in the meanwhile
-      if (this._validating < 1)
-        return;
-      // if there were more validation requests
-      if (this._validating > 1)
-      {
-        // reset the counter
-        this._validating = 0;
-        // re-trigger the event with same target
-        this.onkeyup({currentTarget});
-        return;
-      }
-      const {reason} = filter;
-      if (errors.length)
-        filter.reason = errors[0];
-      else
-        delete filter.reason;
-      // render only if there's something different to show
-      if (!isSameError(filter.reason, reason))
-        this.render();
-    });
+    browser.runtime
+      .sendMessage({
+        type: "filters.validate",
+        text
+      })
+      .then((errors) => {
+        // in case a save operation has been asked in the meanwhile
+        if (this._validating < 1) return;
+        // if there were more validation requests
+        if (this._validating > 1) {
+          // reset the counter
+          this._validating = 0;
+          // re-trigger the event with same target
+          this.onkeyup({ currentTarget });
+          return;
+        }
+        const { reason } = filter;
+        if (errors.length) filter.reason = errors[0];
+        else delete filter.reason;
+        // render only if there's something different to show
+        if (!isSameError(filter.reason, reason)) this.render();
+      });
   }
 
-  onfocus(event)
-  {
-    const {currentTarget} = event;
+  onfocus(event) {
+    const { currentTarget } = event;
     this._filter = currentTarget.data;
     currentTarget.closest("tr").classList.add("editing");
   }
 
-  onblur(event)
-  {
-    const {currentTarget} = event;
+  onblur(event) {
+    const { currentTarget } = event;
     currentTarget.closest("tr").classList.remove("editing");
     // needed to avoid ellipsis on overflow hidden
     // make the filter look like disappeared from the list
     currentTarget.scrollLeft = 0;
-    if (this._changingFocus)
-    {
+    if (this._changingFocus) {
       this._filter = null;
       return;
     }
@@ -253,35 +222,22 @@ class IOFilterList extends IOFilterBase
   }
 
   // used in the checkbox of the selected column only
-  onclick(event)
-  {
+  onclick(event) {
     const filter = getFilter(event);
-    const {filters} = this;
-    if (event.shiftKey && this.selected.size)
-    {
+    const { filters } = this;
+    if (event.shiftKey && this.selected.size) {
       let start = filters.indexOf(this._lastFilter);
       const end = filters.indexOf(filter);
-      const method = this.selected.has(this._lastFilter) ?
-                          "add" :
-                          "delete";
-      if (start < end)
-      {
-        while (start++ < end)
-          this.selected[method](filters[start]);
+      const method = this.selected.has(this._lastFilter) ? "add" : "delete";
+      if (start < end) {
+        while (start++ < end) this.selected[method](filters[start]);
+      } else {
+        while (start-- > end) this.selected[method](filters[start]);
       }
-      else
-      {
-        while (start-- > end)
-          this.selected[method](filters[start]);
-      }
-    }
-    else
-    {
+    } else {
       this._lastFilter = filter;
-      if (this.selected.has(filter))
-        this.selected.delete(filter);
-      else
-        this.selected.add(filter);
+      if (this.selected.has(filter)) this.selected.delete(filter);
+      else this.selected.add(filter);
     }
     // render updated right after the checkbox changes
   }
@@ -290,12 +246,10 @@ class IOFilterList extends IOFilterBase
   // the selected needs it to render at the right time
   // which is when the checkbox status changed
   // not when it's clicked
-  onchange(event)
-  {
-    const {currentTarget} = event;
+  onchange(event) {
+    const { currentTarget } = event;
     const td = currentTarget.closest("td");
-    if (td.dataset.column === "status")
-    {
+    if (td.dataset.column === "status") {
       const checkbox = currentTarget.closest("io-toggle");
       const filter = getFilter(event);
       filter.disabled = !checkbox.checked;
@@ -304,23 +258,20 @@ class IOFilterList extends IOFilterBase
         text: filter.text,
         disabled: filter.disabled
       });
-    }
-    else
-    {
+    } else {
       this.render();
     }
   }
 
-  renderTable(visibleFilters)
-  {
-    const {length} = this.filters;
+  renderTable(visibleFilters) {
+    const { length } = this.filters;
     this.html`<table cellpadding="0" cellspacing="0">
       <thead onclick="${this}" data-call="onheaderclick">
         <th data-column="selected">
           <io-checkbox ?checked=${!!length && this.selected.size === length} />
         </th>
         <th data-column="status"></th>
-        <th data-column="rule">${{i18n: "options_filter_list_rule"}}</th>
+        <th data-column="rule">${{ i18n: "options_filter_list_rule" }}</th>
         <th data-column="warning">${
           // for the header, just return always the same warning icon
           warnings.get(this) ||
@@ -332,15 +283,13 @@ class IOFilterList extends IOFilterBase
     </table>`;
   }
 
-  sortBy(type, isAscending)
-  {
+  sortBy(type, isAscending) {
     const th = $(`th[data-column="${type}"]`, this);
-    if (!th)
-    {
+    if (!th) {
       console.error(`unable to sort by ${type}`);
       return;
     }
-    const {sort} = this.state;
+    const { sort } = this.state;
     sort.current = type;
     // sort.asc is flipped with current state
     // so set the one that is not desired
@@ -355,10 +304,8 @@ IOFilterList.define("io-filter-list");
 // Please note: the contenteditable=${...} attribute
 // cannot be set directly to the TD because of an ugly
 // MS Edge bug that does not allow TDs to be editable.
-function getRow(filter, i)
-{
-  if (filter)
-  {
+function getRow(filter, i) {
+  if (filter) {
     const selected = this.selected.has(filter);
     return IOElement.wire(filter)`
     <tr class="${selected ? "selected" : ""}">
@@ -412,34 +359,29 @@ const issues = new WeakMap();
 const warnings = new WeakMap();
 
 // relate either issues or warnings to a filter
-const createImageForFilter = (isIssue, filter) =>
-{
-  const error = (isIssue) ? filter.reason : {type: "filter_slow"};
+const createImageForFilter = (isIssue, filter) => {
+  const error = isIssue ? filter.reason : { type: "filter_slow" };
   const image = createImageForType(isIssue);
   image.title = stripTagsUnsafe(getErrorMessage(error));
   return image;
 };
 
-const createImageForType = (isIssue) =>
-{
+const createImageForType = (isIssue) => {
   const image = new Image();
   image.src = `skin/icons/${isIssue ? "error" : "alert"}.svg`;
   return image;
 };
 
-function focusTheNextFilterIfAny(tr)
-{
+function focusTheNextFilterIfAny(tr) {
   const i = this.filters.indexOf(this._filter) + 1;
-  if (i < this.filters.length)
-  {
+  if (i < this.filters.length) {
     const next = tr.nextElementSibling;
-    const {rowHeight, scrollTop, viewHeight} = this.state;
+    const { rowHeight, scrollTop, viewHeight } = this.state;
     // used to avoid race conditions with blur event
     this._changingFocus = true;
     // force eventually the scrollTop to make
     // the next row visible
-    if (next.offsetTop > viewHeight)
-    {
+    if (next.offsetTop > viewHeight) {
       this.setState({
         scrollTop: getScrollTop(scrollTop + rowHeight)
       });
@@ -451,21 +393,18 @@ function focusTheNextFilterIfAny(tr)
   }
 }
 
-function animateAndDrop(target)
-{
+function animateAndDrop(target) {
   target.addEventListener("animationend", dropSavedClass);
   target.classList.add("saved");
 }
 
-function dropSavedClass(event)
-{
-  const {currentTarget} = event;
+function dropSavedClass(event) {
+  const { currentTarget } = event;
   currentTarget.classList.remove("saved");
   currentTarget.removeEventListener(event.type, dropSavedClass);
 }
 
-function getFilter(event)
-{
+function getFilter(event) {
   const el = event.currentTarget;
   const div = $('td[data-column="rule"] > .content', el.closest("tr"));
   return div.data;
@@ -474,109 +413,86 @@ function getFilter(event)
 // ensure the number is always between 0 and a positive number
 // specially handy when filters are erased and the viewHeight
 // is higher than scrollHeight and other cases too
-function getScrollTop(value, scrollHeight)
-{
-  const scrollTop = Math.max(
-    0,
-    Math.min(scrollHeight || Infinity, value)
-  );
+function getScrollTop(value, scrollHeight) {
+  const scrollTop = Math.max(0, Math.min(scrollHeight || Infinity, value));
   // avoid division by zero gotchas
   return isNaN(scrollTop) ? 0 : scrollTop;
 }
 
-function getWarning(filter)
-{
+function getWarning(filter) {
   let map;
-  if (filter.reason)
-  {
+  if (filter.reason) {
     map = issues;
-  }
-  else if (filter.slow)
-  {
+  } else if (filter.slow) {
     map = warnings;
-  }
-  else
-    return "";
+  } else return "";
 
   let warning = map.get(filter);
-  if (warning)
-    return warning;
+  if (warning) return warning;
 
   warning = createImageForFilter(map === issues, filter);
   map.set(filter, warning);
   return warning;
 }
 
-function isSameError(errorA = {}, errorB = {})
-{
+function isSameError(errorA = {}, errorB = {}) {
   return errorA.type === errorB.type && errorA.reason === errorB.reason;
 }
 
-function replaceFilter(filter, currentTarget)
-{
-  const {text} = filter;
+function replaceFilter(filter, currentTarget) {
+  const { text } = filter;
   const old = prevFilterText.get(filter);
   // if same text, no need to bother the extension at all
-  if (old === text)
-  {
+  if (old === text) {
     animateAndDrop(currentTarget);
     return;
   }
-  browser.runtime.sendMessage({
-    type: "filters.replace",
-    new: text,
-    old
-  }).then(errors =>
-  {
-    if (errors.length)
-    {
-      filter.reason = errors[0];
-    }
-    else
-    {
-      // see https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/338
-      // until that lands, we remove the filter and add it at the end
-      // of the table so, before rendering, drop the new filter and update
-      // the current known one
-      const {filters} = this;
-      let i = filters.length;
-      let newFilter;
-      while (i--)
-      {
-        newFilter = filters[i];
-        if (newFilter.text === text)
-          break;
+  browser.runtime
+    .sendMessage({
+      type: "filters.replace",
+      new: text,
+      old
+    })
+    .then((errors) => {
+      if (errors.length) {
+        filter.reason = errors[0];
+      } else {
+        // see https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/issues/338
+        // until that lands, we remove the filter and add it at the end
+        // of the table so, before rendering, drop the new filter and update
+        // the current known one
+        const { filters } = this;
+        let i = filters.length;
+        let newFilter;
+        while (i--) {
+          newFilter = filters[i];
+          if (newFilter.text === text) break;
+        }
+        filters.splice(i, 1);
+        delete filter.disabled;
+        delete filter.reason;
+        Object.assign(filter, newFilter);
+        prevFilterText.set(filter, text);
+        animateAndDrop(currentTarget);
       }
-      filters.splice(i, 1);
-      delete filter.disabled;
-      delete filter.reason;
-      Object.assign(filter, newFilter);
-      prevFilterText.set(filter, text);
-      animateAndDrop(currentTarget);
-    }
-    this.render();
-  });
+      this.render();
+    });
 }
 
 // listen to filters messages and eventually
 // delegate the error handling
-function setupPort()
-{
-  messaging.addMessageListener((message) =>
-  {
-    if (message.type === "filters.respond" && message.action === "changed")
-    {
-      const {text, disabled} = message.args[0];
-      const filter = this.filters.find(f => f.text === text);
+function setupPort() {
+  messaging.addMessageListener((message) => {
+    if (message.type === "filters.respond" && message.action === "changed") {
+      const { text, disabled } = message.args[0];
+      const filter = this.filters.find((f) => f.text === text);
 
-      if (!filter)
-        return;
+      if (!filter) return;
 
       const shownDisabled = filter.disabled;
 
-      if (disabled !== shownDisabled)
-      {
-        filter.reason = {type: "filter_disabled"};
+      if (disabled !== shownDisabled) {
+        filter.reason = { type: "filter_disabled" };
         filter.disabled = disabled;
       }
       this.render();

@@ -16,20 +16,17 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {$, $$} from "./dom.mjs";
+import { $, $$ } from "./dom.mjs";
 import IOElement from "./io-element.mjs";
 
-const {getMessage} = browser.i18n;
+const { getMessage } = browser.i18n;
 
-class IOPopupFooter extends IOElement
-{
-  get defaultState()
-  {
-    return {messages: [], current: 0, animationIsOn: false};
+class IOPopupFooter extends IOElement {
+  get defaultState() {
+    return { messages: [], current: 0, animationIsOn: false };
   }
 
-  created()
-  {
+  created() {
     this._animationDuration = 3000;
     this.style.setProperty(
       "--animation-duration",
@@ -42,41 +39,35 @@ class IOPopupFooter extends IOElement
     this.addEventListener("focusout", this.startAnimation);
   }
 
-  attributeChangedCallback()
-  {
+  attributeChangedCallback() {
     this.render();
   }
 
-  onclick(event)
-  {
-    const {currentTarget} = event;
+  onclick(event) {
+    const { currentTarget } = event;
 
     // manually switch tabs
-    if (currentTarget.getAttribute("role") === "tab")
-    {
+    if (currentTarget.getAttribute("role") === "tab") {
       this.stopAnimation();
       this._canAnimate = false;
 
       const idx = parseInt(currentTarget.id.split("-")[2], 10);
 
-      this.setState({current: idx});
+      this.setState({ current: idx });
     }
   }
 
   // only used for tabs navigation with arrow keys
-  onkeyup(event)
-  {
-    const {currentTarget} = event;
+  onkeyup(event) {
+    const { currentTarget } = event;
 
-    if (currentTarget.getAttribute("role") !== "tab")
-      return;
+    if (currentTarget.getAttribute("role") !== "tab") return;
 
     let direction = 0;
     const isRTL = document.documentElement.getAttribute("dir") === "rtl";
     const idx = parseInt(currentTarget.id.split("-")[2], 10);
 
-    switch (event.key)
-    {
+    switch (event.key) {
       case "ArrowLeft":
         direction = -1;
         break;
@@ -85,74 +76,59 @@ class IOPopupFooter extends IOElement
         break;
     }
 
-    if (!direction)
-      return;
+    if (!direction) return;
 
-    if (isRTL)
-      direction *= -1;
+    if (isRTL) direction *= -1;
 
     this._canAnimate = false;
     let newIdx = idx + direction;
 
-    if (newIdx >= this.state.messages.length)
-      newIdx = 0;
-    else if (newIdx < 0)
-      newIdx = this.state.messages.length - 1;
+    if (newIdx >= this.state.messages.length) newIdx = 0;
+    else if (newIdx < 0) newIdx = this.state.messages.length - 1;
 
-    this.setState({current: newIdx});
+    this.setState({ current: newIdx });
     $(`#footer-tab-${newIdx}`).focus();
   }
 
-  startAnimation()
-  {
-    if (!this._canAnimate)
-      return;
+  startAnimation() {
+    if (!this._canAnimate) return;
 
     clearInterval(this._timer);
-    this._timer = setInterval(() =>
-    {
+    this._timer = setInterval(() => {
       const nextIdx = (this.state.current + 1) % this.state.messages.length;
-      this.setState({current: nextIdx});
+      this.setState({ current: nextIdx });
     }, this._animationDuration);
 
-    this.setState({animationIsOn: true});
+    this.setState({ animationIsOn: true });
   }
 
-  stopAnimation()
-  {
+  stopAnimation() {
     clearInterval(this._timer);
-    this.setState({animationIsOn: false});
+    this.setState({ animationIsOn: false });
   }
 
-  setupDoclinks()
-  {
-    if (this._setupDoclinksInitialized)
-      return;
+  setupDoclinks() {
+    if (this._setupDoclinksInitialized) return;
 
-    const {store} = document.documentElement.dataset;
+    const { store } = document.documentElement.dataset;
     const anchors = $$("a[data-doclink]", this);
 
-    if (!store)
-      return;
+    if (!store) return;
 
     this._setupDoclinksInitialized = true;
-    for (const anchor of anchors)
-    {
+    for (const anchor of anchors) {
       const doclink = anchor.dataset.doclink.replace("%store%", store);
-      messaging.doclinks.get(doclink).then((url) =>
-      {
+      messaging.doclinks.get(doclink).then((url) => {
         anchor.target = anchor.target || "_blank";
         anchor.href = url;
       });
     }
   }
 
-  render()
-  {
-    const {messages, animationIsOn} = this.state;
+  render() {
+    const { messages, animationIsOn } = this.state;
 
-    if (!messages)
-      return;
+    if (!messages) return;
 
     this.html`
     <ul class="tabs ${animationIsOn ? "animated" : ""}" role="tablist">
@@ -168,9 +144,8 @@ class IOPopupFooter extends IOElement
 
 IOPopupFooter.define("io-popup-footer");
 
-function getPanel(message, idx)
-{
-  const {current} = this.state;
+function getPanel(message, idx) {
+  const { current } = this.state;
 
   return IOElement.wire(message, ":panel")`
   <li
@@ -179,7 +154,7 @@ function getPanel(message, idx)
     aria-hidden=${current === idx ? "false" : "true"}
   >
     <span id="footer-panel-description-${idx}" class="message">
-      ${{i18n: message.i18n}}
+      ${{ i18n: message.i18n }}
     </span>
     <span class="buttons" ?hidden=${current !== idx}>
       ${message.buttons.map(getPanelButton, this)}
@@ -187,9 +162,8 @@ function getPanel(message, idx)
   </li>`;
 }
 
-function getTab(message, idx)
-{
-  const {current} = this.state;
+function getTab(message, idx) {
+  const { current } = this.state;
 
   return IOElement.wire(message, ":tab")`
   <li><button
@@ -204,12 +178,10 @@ function getTab(message, idx)
   /></li>`;
 }
 
-function getPanelButton(button)
-{
-  switch (button.action)
-  {
+function getPanelButton(button) {
+  switch (button.action) {
     case "open-doclink":
-      const {image} = button;
+      const { image } = button;
 
       return IOElement.wire(button)`
       <a
@@ -217,10 +189,10 @@ function getPanelButton(button)
         data-doclink=${button.doclink}
         onclick=${this}
       >${
-        image ?
-        IOElement.wire()`
-          <img src="${image.url}" alt="${getMessage(image.i18nAlt)}"/>` :
-        IOElement.wire()`${{i18n: button.i18n}}`
+        image
+          ? IOElement.wire()`
+          <img src="${image.url}" alt="${getMessage(image.i18nAlt)}"/>`
+          : IOElement.wire()`${{ i18n: button.i18n }}`
       }</a>`;
   }
 }

@@ -34,9 +34,9 @@ async function runWdioTests(config) {
     );
 
     wdioProcess.on("close", (code) => {
-      code === 0 ?
-        resolve() :
-        reject(new Error(`wdio exited with code ${code}`));
+      code === 0
+        ? resolve()
+        : reject(new Error(`wdio exited with code ${code}`));
     });
   });
 }
@@ -62,7 +62,7 @@ async function main() {
   }
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error("Error running tests:", error);
   process.exit(1);
 });

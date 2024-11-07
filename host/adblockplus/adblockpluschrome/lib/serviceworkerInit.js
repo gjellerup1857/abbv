@@ -17,5 +17,4 @@
 
 /* eslint-env serviceworker */
 
-if (typeof importScripts !== "undefined")
-  importScripts("polyfill.js");
+if (typeof importScripts !== "undefined") importScripts("polyfill.js");

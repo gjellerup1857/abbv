@@ -17,41 +17,41 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       globalRetriesNumber, switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  enablePremiumByMockServer,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 
-describe("test abp premium license checks for downgraded user", function()
-{
+describe("test abp premium license checks for downgraded user", function () {
   let optionsUrl;
 
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({optionsUrl} = await beforeSequence());
+  before(async function () {
+    ({ optionsUrl } = await beforeSequence());
   });
 
-  it("should display expired license for downgraded user", async function()
-  {
+  it("should display expired license for downgraded user", async function () {
     await enablePremiumByMockServer();
-    await browser.executeAsync(async(done) =>
-    {
-      try
-      {
+    await browser.executeAsync(async (done) => {
+      try {
         const response = await browser.runtime.sendMessage({
-          type: "premium.activate", userId: "expired_user_id"});
+          type: "premium.activate",
+          userId: "expired_user_id"
+        });
         done(response);
-      }
-      catch (error)
-      {
+      } catch (error) {
         done(error);
       }
     });
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isUpgradeButtonDisplayed(10000)).to.be.true;
-    const nextLicenseCheck = await browser.executeScript(`
+    const nextLicenseCheck = await browser.executeScript(
+      `
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({ type: "prefs.get",
         key: "premium_license_nextcheck" }, response => {
@@ -62,11 +62,15 @@ describe("test abp premium license checks for downgraded user", function()
         }
       });
     });
-    `, []);
+    `,
+      []
+    );
     const nextLicenseCheckFullDate = new Date(nextLicenseCheck);
-    expect(nextLicenseCheckFullDate.toISOString()).
-      to.equal("1970-01-01T00:00:00.000Z");
-    const licenseStatusText = await browser.executeScript(`
+    expect(nextLicenseCheckFullDate.toISOString()).to.equal(
+      "1970-01-01T00:00:00.000Z"
+    );
+    const licenseStatusText = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.get",
           key: "premium_license"}, response => {
@@ -77,12 +81,14 @@ describe("test abp premium license checks for downgraded user", function()
           }
         });
       });
-    `, []);
-    expect(JSON.stringify(licenseStatusText)).
-      to.match(/status.*:.*expired/);
+    `,
+      []
+    );
+    expect(JSON.stringify(licenseStatusText)).to.match(/status.*:.*expired/);
 
-    await switchToABPOptionsTab({optionsUrl});
-    const secondNextLicenseCheck = await browser.executeScript(`
+    await switchToABPOptionsTab({ optionsUrl });
+    const secondNextLicenseCheck = await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ type: "prefs.get",
           key: "premium_license_nextcheck" }, response => {
@@ -93,7 +99,9 @@ describe("test abp premium license checks for downgraded user", function()
           }
         });
       });
-    `, []);
+    `,
+      []
+    );
     expect(secondNextLicenseCheck).to.equal(nextLicenseCheck);
   });
 });

@@ -31,8 +31,7 @@ const dayOnePageData = [
   {
     testName: "Day 1 - Contact us",
     elementToClick: "contactUsButton",
-    newTabUrl: "mailto:support@adblockplus.org?subject=" +
-    "Looking%20for%20support!"
+    newTabUrl: "mailto:support@adblockplus.org?subject=Looking%20for%20support!"
   },
   {
     testName: "Day 1 - Learn how",
@@ -55,7 +54,8 @@ const firstRunPageData = [
   {
     testName: "First run - Donate",
     elementToClick: "donateButton",
-    newTabUrl: "https://adblockplus.org/update?utm_source=abp&utm_medium=frp_page&utm_campaign=donate"
+    newTabUrl:
+      "https://adblockplus.org/update?utm_source=abp&utm_medium=frp_page&utm_campaign=donate"
   },
   {
     testName: "First run - strict criteria",
@@ -75,14 +75,16 @@ const firstRunPageData = [
   {
     testName: "First run - App Store",
     elementToClick: "appStoreButton",
-    newTabUrl: "https://apps.apple.com/us/app/adblock-browser-" +
-    "best-ad-blocker/id1015653330"
+    newTabUrl:
+      "https://apps.apple.com/us/app/adblock-browser-" +
+      "best-ad-blocker/id1015653330"
   },
   {
     testName: "First run - Google Play",
     elementToClick: "googlePlayButton",
-    newTabUrl: "https://play.google.com/store/apps/details" +
-    "?id=org.adblockplus.browser"
+    newTabUrl:
+      "https://play.google.com/store/apps/details" +
+      "?id=org.adblockplus.browser"
   },
   {
     testName: "First run - Terms of Use",
@@ -111,8 +113,9 @@ const problemPageData = [
     testName: "Problem - Facebook icon",
     elementToClick: "facebookButton",
     newTabUrl: "https://www.facebook.com/adblockplus",
-    fallbackNewTabUrl: "https://www.facebook.com/login/?next=https%3A%2F%2F" +
-    "www.facebook.com%2Fadblockplus"
+    fallbackNewTabUrl:
+      "https://www.facebook.com/login/?next=https%3A%2F%2F" +
+      "www.facebook.com%2Fadblockplus"
   },
   {
     testName: "Problem - Envelope icon",
@@ -127,9 +130,11 @@ const problemPageData = [
   {
     testName: "Problem - Uninstall and reinstall",
     elementToClick: "clickHereToReinstallButton",
-    newTabUrlChrome: "https://chromewebstore.google.com/detai" +
-    "l/adblock-plus-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb",
-    newTabUrlFirefox: /https:\/\/addons.mozilla.org\/.*firefox\/addon\/adblock-plus/,
+    newTabUrlChrome:
+      "https://chromewebstore.google.com/detai" +
+      "l/adblock-plus-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb",
+    newTabUrlFirefox:
+      /https:\/\/addons.mozilla.org\/.*firefox\/addon\/adblock-plus/,
     webstoreCookiesConsentPageTitle: "Before you continue",
     chromeWebstorePageTitle: /webstore/
   }
@@ -144,17 +149,19 @@ const updatesPageData = [
   {
     testName: "Updates - Contribute",
     elementToClick: "contributeButton",
-    newTabUrl: "https://adblockplus.org/update?utm_source=abp&utm_medium=update_page&utm_campaign=donate"
+    newTabUrl:
+      "https://adblockplus.org/update?utm_source=abp&utm_medium=update_page&utm_campaign=donate"
   },
   {
     testName: "Updates - Rate it",
     elementToClick: "rateItButton",
-    newTabUrlChrome: "https://chrome.google.com/webstore/detail/adblock-plus" +
-    "-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb/reviews?ref=store-rating",
-    newTabUrlFirefox: /https:\/\/addons.mozilla.org\/.*firefox\/addon\/adblock-plus/,
+    newTabUrlChrome:
+      "https://chrome.google.com/webstore/detail/adblock-plus" +
+      "-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb/reviews?ref=store-rating",
+    newTabUrlFirefox:
+      /https:\/\/addons.mozilla.org\/.*firefox\/addon\/adblock-plus/,
     webstoreCookiesConsentPageTitle: "Before you continue",
-    chromeWebstorePageTitle: "Adblock Plus - free ad blocker - " +
-    "Chrome Web Store"
+    chromeWebstorePageTitle: "Adblock Plus - free ad blocker - Chrome Web Store"
   },
   {
     testName: "Updates - X icon",
@@ -165,8 +172,9 @@ const updatesPageData = [
     testName: "Updates - Facebook icon",
     elementToClick: "facebookButton",
     newTabUrl: "https://www.facebook.com/adblockplus",
-    fallbackNewTabUrl: "https://www.facebook.com/login/?next=https%3A%2F%2F" +
-    "www.facebook.com%2Fadblockplus"
+    fallbackNewTabUrl:
+      "https://www.facebook.com/login/?next=https%3A%2F%2F" +
+      "www.facebook.com%2Fadblockplus"
   },
   {
     testName: "Updates - Envelope icon",

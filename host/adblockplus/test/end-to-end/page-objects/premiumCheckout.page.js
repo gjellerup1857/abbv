@@ -19,128 +19,100 @@
 
 const BasePage = require("./base.page");
 
-class PremiumCheckoutPage extends BasePage
-{
-  constructor(browser)
-  {
+class PremiumCheckoutPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
-    await this.paddleFrame.waitForExist({timeout: 10000});
+  async init() {
+    await this.paddleFrame.waitForExist({ timeout: 10000 });
     await browser.switchToFrame(await this.paddleFrame);
     await this.waitForDisplayedNoError(this.emailTextField);
   }
 
-  get cardCvcTextField()
-  {
+  get cardCvcTextField() {
     return $("#cvv");
   }
 
-  get cardExpiryTextField()
-  {
+  get cardExpiryTextField() {
     return $("#expiry");
   }
 
-  get cardNumberTextField()
-  {
+  get cardNumberTextField() {
     return $("#cardNumber");
   }
 
-  get continueButton()
-  {
+  get continueButton() {
     return $("//button[@type='submit']");
   }
 
-  get emailTextField()
-  {
+  get emailTextField() {
     return $("#email");
   }
 
-  get getStartedWithABPPremiumButton()
-  {
-    return $("//a[@class='premium-checkout__button premium" +
-      "-checkout-success__button']");
+  get getStartedWithABPPremiumButton() {
+    return $(
+      "//a[@class='premium-checkout__button premium" +
+        "-checkout-success__button']"
+    );
   }
 
-  get nameOnCardTextField()
-  {
+  get nameOnCardTextField() {
     return $("#cardHolder");
   }
 
-  get paddleFrame()
-  {
+  get paddleFrame() {
     return $("//iframe[@name='paddle_frame']");
   }
 
-  get subscribeButton()
-  {
+  get subscribeButton() {
     return $("//button[@type='submit']");
   }
 
-  get zipTextField()
-  {
+  get zipTextField() {
     return $("#postcode");
   }
 
-  async clickContinueButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      continueButton);
+  async clickContinueButton() {
+    await this.waitForEnabledThenClick(this.continueButton);
   }
 
-  async clickSubscribeButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      subscribeButton);
+  async clickSubscribeButton() {
+    await this.waitForEnabledThenClick(this.subscribeButton);
   }
 
-  async isGetStartedWithABPPremiumButtonDisplayed()
-  {
+  async isGetStartedWithABPPremiumButtonDisplayed() {
     return await (await this.getStartedWithABPPremiumButton).isDisplayed();
   }
 
-  async typeTextToCardCvcField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      cardCvcTextField, 10000);
+  async typeTextToCardCvcField(text) {
+    await this.waitForEnabledThenClick(this.cardCvcTextField, 10000);
     await browser.keys(text);
   }
 
-  async typeTextToCardExpiryField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      cardExpiryTextField, 10000);
+  async typeTextToCardExpiryField(text) {
+    await this.waitForEnabledThenClick(this.cardExpiryTextField, 10000);
     await browser.keys(text);
   }
 
-  async typeTextToCardNumberField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      cardNumberTextField, 20000);
+  async typeTextToCardNumberField(text) {
+    await this.waitForEnabledThenClick(this.cardNumberTextField, 20000);
     await browser.keys(text);
   }
 
-  async typeTextToEmailField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      emailTextField, 10000);
+  async typeTextToEmailField(text) {
+    await this.waitForEnabledThenClick(this.emailTextField, 10000);
     await browser.keys(text);
   }
 
-  async typeTextToNameOnCardField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      nameOnCardTextField, 10000);
+  async typeTextToNameOnCardField(text) {
+    await this.waitForEnabledThenClick(this.nameOnCardTextField, 10000);
     await browser.keys(text);
   }
 
-  async typeTextToZIPField(text)
-  {
-    await this.waitForEnabledThenClick(this.
-      zipTextField, 10000);
+  async typeTextToZIPField(text) {
+    await this.waitForEnabledThenClick(this.zipTextField, 10000);
     await browser.keys(text);
   }
 }

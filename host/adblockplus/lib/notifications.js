@@ -17,43 +17,36 @@
 
 "use strict";
 
-const {Prefs} = require("prefs");
-const {Stats} = require("stats");
+const { Prefs } = require("prefs");
+const { Stats } = require("stats");
 
 const ewe = require("@eyeo/webext-ad-filtering-solution");
 
-const {coreLocales} = require("../data/locales.json");
-const scheduledEventEmitter = require(
-  "../src/core/scheduled-event-emitter/background/scheduled-event-emitter"
-);
+const { coreLocales } = require("../data/locales.json");
+const scheduledEventEmitter = require("../src/core/scheduled-event-emitter/background/scheduled-event-emitter");
 
 const DELAY_IN_MS = 30 * 60 * 1000;
 const MIN_BLOCKED = 55;
 
 const day1Topic = "notifications.day1";
 
-async function isAndroid()
-{
+async function isAndroid() {
   const platformInfo = await browser.runtime.getPlatformInfo();
   return platformInfo.os == "android";
 }
 
-exports.initDay1Notification = async function initDay1Notification()
-{
-  if ((await isAndroid()) || Prefs.suppress_first_run_page)
-    return;
+exports.initDay1Notification = async function initDay1Notification() {
+  if ((await isAndroid()) || Prefs.suppress_first_run_page) return;
 
   scheduledEventEmitter.setSchedule(day1Topic, DELAY_IN_MS);
 };
 
-scheduledEventEmitter.setListener(day1Topic, () =>
-{
+scheduledEventEmitter.setListener(day1Topic, () => {
   // We don't know what exactly the blocked count will be when
   // the notification will be shown but we expect it to be shown
   // immediately after it surpasses the threshold
   let blockedCount = Stats.blocked_total;
-  if (blockedCount < MIN_BLOCKED)
-  {
+  if (blockedCount < MIN_BLOCKED) {
     blockedCount = MIN_BLOCKED;
   }
 
@@ -63,19 +56,15 @@ scheduledEventEmitter.setListener(day1Topic, () =>
     title: browser.i18n.getMessage("notification_day1_title", [blockedCount]),
     message: browser.i18n.getMessage("notification_day1_message"),
     links: ["abp:day1"],
-    targets: [
-      {blockedTotalMin: MIN_BLOCKED}
-    ]
+    targets: [{ blockedTotalMin: MIN_BLOCKED }]
   };
 
   ewe.notifications.addNotification(notification);
   void ewe.notifications.showNext();
 });
 
-exports.showProblemNotification = async() =>
-{
-  if (await isAndroid())
-    return;
+exports.showProblemNotification = async () => {
+  if (await isAndroid()) return;
 
   const locale = browser.i18n.getUILanguage();
 
@@ -90,30 +79,29 @@ exports.showProblemNotification = async() =>
   });
 };
 
-exports.showUpdatesNotification = async() =>
-{
-  if (await isAndroid())
-    return;
+exports.showUpdatesNotification = async () => {
+  if (await isAndroid()) return;
 
   const locale = browser.i18n.getUILanguage();
   // Due to a race condition, we cannot reliably target the notification to
   // only certain locales. Therefore we have to implement this check ourselves.
   // https://gitlab.com/eyeo/adblockplus/adblockpluschrome/issues/135
-  if (!coreLocales.includes(locale))
-  {
+  if (!coreLocales.includes(locale)) {
     // That specific locale may not be part of our core languages. However,
     // the language it belongs to may be. Therefore we are able to show the
     // updates page with those translations instead.
     const [language] = locale.split("-");
-    if (!coreLocales.includes(language))
-      return;
+    if (!coreLocales.includes(language)) return;
   }
 
-  void ewe.notifications.showNotification({
-    id: "updates",
-    type: "information",
-    title: browser.i18n.getMessage("notification_updates_title"),
-    message: browser.i18n.getMessage("notification_updates_message"),
-    links: ["abp:updates"]
-  }, {ignorable: true});
+  void ewe.notifications.showNotification(
+    {
+      id: "updates",
+      type: "information",
+      title: browser.i18n.getMessage("notification_updates_title"),
+      message: browser.i18n.getMessage("notification_updates_message"),
+      links: ["abp:updates"]
+    },
+    { ignorable: true }
+  );
 };

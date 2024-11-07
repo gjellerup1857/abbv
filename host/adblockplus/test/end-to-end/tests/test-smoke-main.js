@@ -17,29 +17,26 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence} = require("../helpers.js");
+const { afterSequence, beforeSequence } = require("../helpers.js");
 const adFiltering = require("./smoke-main/ad-filtering.js");
 const extension = require("./smoke-main/extension.js");
 const installation = require("./smoke-main/installation.js");
 const uninstallDefault = require("./smoke-main/uninstall-default.js");
 const testServer = require("./smoke-main/test-server.js");
 
-describe("Smoke Tests - Main", function()
-{
-  before(async function()
-  {
-    const {origin, optionsUrl, installedUrl, popupUrl} =
-      await beforeSequence({expectInstalledTab: true, isSmokeTest: true});
+describe("Smoke Tests - Main", function () {
+  before(async function () {
+    const { origin, optionsUrl, installedUrl, popupUrl } = await beforeSequence(
+      { expectInstalledTab: true, isSmokeTest: true }
+    );
     this.test.parent.globalOrigin = origin;
     this.test.parent.optionsUrl = optionsUrl;
     this.test.parent.installedUrl = installedUrl;
     this.test.parent.popupUrl = popupUrl;
   });
 
-  afterEach(async function()
-  {
-    if (!this.test.parent.lastTest)
-      await afterSequence();
+  afterEach(async function () {
+    if (!this.test.parent.lastTest) await afterSequence();
   });
 
   describe("Test Server", testServer);

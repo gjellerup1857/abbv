@@ -19,57 +19,45 @@
 
 const BasePage = require("./base.page");
 
-class AcceptableAdsDialogChunk extends BasePage
-{
-  constructor(browser)
-  {
+class AcceptableAdsDialogChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get aaDialog()
-  {
+  get aaDialog() {
     return $("//*[@id='acceptable-ads-why-not']");
   }
 
-  get goToSurveyButton()
-  {
+  get goToSurveyButton() {
     return $("//a[@data-i18n='options_aa_opt_out_survey_ok']");
   }
 
-  get noThanksButton()
-  {
+  get noThanksButton() {
     return $("//button[@data-i18n='options_aa_opt_out_survey_no']");
   }
 
-  async clickGoToSurveyButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      goToSurveyButton);
+  async clickGoToSurveyButton() {
+    await this.waitForEnabledThenClick(this.goToSurveyButton);
   }
 
-  async clickNoThanksButton()
-  {
+  async clickNoThanksButton() {
     await (await this.noThanksButton).click();
   }
 
-  async isAADialogDisplayed()
-  {
+  async isAADialogDisplayed() {
     return await (await this.aaDialog).isDisplayed();
   }
 
-  async isGoToSurveyButtonDisplayed()
-  {
+  async isGoToSurveyButtonDisplayed() {
     return await (await this.goToSurveyButton).isDisplayed();
   }
 
-  async isNoThanksButtonDisplayed()
-  {
+  async isNoThanksButtonDisplayed() {
     return await (await this.noThanksButton).isDisplayed();
   }
 
-  async switchToAASurveyTab()
-  {
+  async switchToAASurveyTab() {
     await this.switchToTab("Acceptable Ads have been turned off");
   }
 }

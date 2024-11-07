@@ -18,10 +18,7 @@
 import { isHeadlessArg } from "./helpers.mjs";
 
 const options = {
-  args: [
-    "-width=1400",
-    "-height=1000"
-  ]
+  args: ["-width=1400", "-height=1000"]
 };
 
 // If the browser should run in headless mode, add the headless flag
@@ -37,8 +34,5 @@ export const capabilities = {
   browserName: "firefox",
   "moz:firefoxOptions": options,
   acceptInsecureCerts: true,
-  exclude: [
-    "./tests/test-issue-reporter.js",
-    "./tests/legacy-unit.js"
-  ]
+  exclude: ["./tests/test-issue-reporter.js", "./tests/legacy-unit.js"]
 };

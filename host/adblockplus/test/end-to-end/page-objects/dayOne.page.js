@@ -19,51 +19,41 @@
 
 const BasePage = require("./base.page");
 
-class DayOnePage extends BasePage
-{
-  constructor(browser)
-  {
+class DayOnePage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin)
-  {
+  async init(origin) {
     await browser.url(`${origin}/day1.html`);
   }
 
-  get abpLogo()
-  {
+  get abpLogo() {
     return $("//a[@data-doclink='adblock_plus']");
   }
 
-  get contactUsButton()
-  {
+  get contactUsButton() {
     return $("#contact");
   }
 
-  get contentMessage()
-  {
+  get contentMessage() {
     return $("//h1[@id='content-message']/strong");
   }
 
-  get eyeoGmbHLink()
-  {
+  get eyeoGmbHLink() {
     return $("//a[text()='eyeo GmbH']");
   }
 
-  get learnHowButton()
-  {
+  get learnHowButton() {
     return $("//a[@data-doclink='block_element']");
   }
 
-  get learnMoreAboutMaliciousAdvertisingButton()
-  {
+  get learnMoreAboutMaliciousAdvertisingButton() {
     return $("//a[@data-i18n='day1_header_more']");
   }
 
-  async getContentMessageText()
-  {
+  async getContentMessageText() {
     return await (await this.contentMessage).getText();
   }
 }

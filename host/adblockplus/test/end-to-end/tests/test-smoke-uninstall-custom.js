@@ -18,48 +18,41 @@
 
 "use strict";
 
-const {beforeSequence, uninstallExtension, isEdge} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, uninstallExtension, isEdge } = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
 const moment = require("moment");
 
-describe("Smoke Tests - Uninstall with custom settings", function()
-{
-  before(async function()
-  {
+describe("Smoke Tests - Uninstall with custom settings", function () {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("uninstalls the extension with custom settings", async function()
-  {
+  it("uninstalls the extension with custom settings", async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
     await generalPage.clickAllowAcceptableAdsCheckbox();
-    expect(await generalPage.
-        isAllowAcceptableAdsCheckboxSelected(false, 5000));
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected(false, 5000));
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickEasyListFLStatusToggle();
-    expect(await advancedPage.
-      isEasyListFLStatusToggleSelected()).to.be.false;
+    expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.false;
     // Wait for FL to be properly removed
     await browser.pause(1000);
 
     const url = await uninstallExtension();
 
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (url === null)
-      this.skip();
+    if (url === null) this.skip();
 
     expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
 
     const todaysDate = moment().utc().format("YYYYMMDD");
-    const {searchParams} = new URL(url);
+    const { searchParams } = new URL(url);
     expect(searchParams.get("s")).to.equal("0");
     expect(searchParams.get("c")).to.equal("0");
     expect(searchParams.get("fv")).to.equal(todaysDate);

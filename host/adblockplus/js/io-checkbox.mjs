@@ -17,45 +17,39 @@
 
 import IOElement from "./io-element.mjs";
 
-class IOCheckbox extends IOElement
-{
-  static get booleanAttributes()
-  {
+class IOCheckbox extends IOElement {
+  static get booleanAttributes() {
     return ["checked", "disabled"];
   }
 
-  attributeChangedCallback(name)
-  {
-    if (!this.disabled && name === "checked")
-    {
-      this.dispatchEvent(new CustomEvent("change", {
-        bubbles: true,
-        cancelable: true,
-        detail: this.checked
-      }));
+  attributeChangedCallback(name) {
+    if (!this.disabled && name === "checked") {
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          bubbles: true,
+          cancelable: true,
+          detail: this.checked
+        })
+      );
     }
 
     this.render();
   }
 
-  created()
-  {
+  created() {
     this.addEventListener("click", this);
     this.render();
   }
 
-  onclick(event)
-  {
-    if (this.disabled)
-    {
+  onclick(event) {
+    if (this.disabled) {
       return;
     }
 
     this.checked = !this.checked;
   }
 
-  render()
-  {
+  render() {
     this.html`
     <button
       role="checkbox"

@@ -17,33 +17,23 @@
 
 "use strict";
 
-const {deepEqual} = require("assert").strict;
-const {TestEnvironment} = require("../env");
+const { deepEqual } = require("assert").strict;
+const { TestEnvironment } = require("../env");
 
 let env;
 
-function assertContent(input, expected)
-{
-  return new Promise((resolve, reject) =>
-  {
+function assertContent(input, expected) {
+  return new Promise((resolve, reject) => {
     env.setModules({
       fs: {
-        readFile(filepath, callback)
-        {
+        readFile(filepath, callback) {
           callback(null, JSON.stringify(input));
         },
-        writeFile(filepath, content)
-        {
-          try
-          {
-            deepEqual(
-              JSON.parse(content),
-              expected
-            );
+        writeFile(filepath, content) {
+          try {
+            deepEqual(JSON.parse(content), expected);
             resolve();
-          }
-          catch (ex)
-          {
+          } catch (ex) {
             reject(ex);
           }
         }
@@ -53,33 +43,28 @@ function assertContent(input, expected)
   });
 }
 
-describe("Testing locale-sync/normalize", () =>
-{
-  beforeEach(() =>
-  {
+describe("Testing locale-sync/normalize", () => {
+  beforeEach(() => {
     env = new TestEnvironment({
       globals: {},
       modules: {
-        "glob": {
-          glob(glob, callback)
-          {
+        glob: {
+          glob(glob, callback) {
             callback(null, ["foo"]);
           }
         },
-        "util": require("util"),
+        util: require("util"),
         "./common/config": {}
       }
     });
   });
 
-  afterEach(() =>
-  {
+  afterEach(() => {
     env.restore();
     env = null;
   });
 
-  it("Should remove descriptions from strings", async() =>
-  {
+  it("Should remove descriptions from strings", async () => {
     await assertContent(
       {
         a: {
@@ -90,18 +75,17 @@ describe("Testing locale-sync/normalize", () =>
           description: "b.description",
           message: "b.message"
         },
-        c: {message: "c.message"}
+        c: { message: "c.message" }
       },
       {
-        a: {message: "a.message"},
-        b: {message: "b.message"},
-        c: {message: "c.message"}
+        a: { message: "a.message" },
+        b: { message: "b.message" },
+        c: { message: "c.message" }
       }
     );
   });
 
-  it("Should sort strings", async() =>
-  {
+  it("Should sort strings", async () => {
     await assertContent(
       {
         b: {},
@@ -114,8 +98,7 @@ describe("Testing locale-sync/normalize", () =>
     );
   });
 
-  it("Should sort string placeholders", async() =>
-  {
+  it("Should sort string placeholders", async () => {
     await assertContent(
       {
         a: {

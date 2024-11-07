@@ -21,19 +21,22 @@
 const ipmCampaignsFreeUsersData = [
   {
     testName: "navigation campaign with no license state",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationfreeuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationfreeuserABP"});',
     triggerStep: "https://example.com",
     ipmId: "deviceID: opdnavigationfreeuserABP"
   },
   {
     testName: "navigation campaign with license state premium",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationpremiumfreeuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationpremiumfreeuserABP"});',
     triggerStep: "https://example.com",
     ipmId: "not present"
   },
   {
     testName: "navigation campaign with excluded domains",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationexclusionfreeuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationexclusionfreeuserABP"});',
     triggerStep: "https://getadblock.com/en",
     ipmId: "deviceID: opdnavigationexclusionABP"
   },
@@ -46,7 +49,8 @@ const ipmCampaignsFreeUsersData = [
   // },
   {
     testName: "new tab campaign with license state: premium",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "newtabpremiumfreeuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "newtabpremiumfreeuserABP"});',
     triggerStep: "about:blank",
     ipmId: "not present"
   }
@@ -62,13 +66,15 @@ const ipmCampaignsFreeUsersData = [
 const ipmCampaignsPremiumUsersData = [
   {
     testName: "navigation campaign with license state: free",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationfreepremiumuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationfreepremiumuserABP"});',
     triggerStep: "https://example.com",
     ipmId: "not present"
   },
   {
     testName: "new tab campaign with no license state",
-    command: 'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "newtabpremiumuserABP"});',
+    command:
+      'chrome.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "newtabpremiumuserABP"});',
     triggerStep: "about:blank",
     ipmId: "not present"
   }
@@ -84,7 +90,8 @@ const ipmCampaignsPremiumUsersData = [
 const ipmCampaignTriggersData = [
   {
     testName: "navigation campaign: CTA ignored",
-    command: 'browser.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationignoredtriggerABP"}); browser.runtime.sendMessage({type: "testing.ping_ipm_server"});',
+    command:
+      'browser.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationignoredtriggerABP"}); browser.runtime.sendMessage({type: "testing.ping_ipm_server"});',
     noTriggerStep: "https://getadblock.com",
     triggerStep1: "https://example.com",
     triggerStep2: "https://wikipedia.org",
@@ -92,7 +99,8 @@ const ipmCampaignTriggersData = [
   },
   {
     testName: "navigation campaign: CTA clicked",
-    command: 'browser.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationclickedtriggerABP"}); browser.runtime.sendMessage({type: "testing.ping_ipm_server"});',
+    command:
+      'browser.runtime.sendMessage({type: "prefs.set", key: "installation_id", value: "opdnavigationclickedtriggerABP"}); browser.runtime.sendMessage({type: "testing.ping_ipm_server"});',
     noTriggerStep: "https://getadblock.com",
     triggerStep1: "https://example.com",
     triggerStep2: "https://wikipedia.org",

@@ -19,72 +19,58 @@
 
 const BasePage = require("./base.page");
 
-class FirstRunPage extends BasePage
-{
-  constructor(browser)
-  {
+class FirstRunPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin)
-  {
+  async init(origin) {
     await browser.newWindow("about:blank");
     await browser.url(`${origin}/first-run.html`);
   }
 
-  get abpLogo()
-  {
+  get abpLogo() {
     return $("#navbar-logo");
   }
 
-  get appStoreButton()
-  {
+  get appStoreButton() {
     return $("//a[@data-doclink='adblock_browser_ios_store']");
   }
 
-  get donateButton()
-  {
+  get donateButton() {
     return $("#navbar-donate");
   }
 
-  get eyeoGmbHLink()
-  {
+  get eyeoGmbHLink() {
     return $("//a[text()='eyeo GmbH']");
   }
 
-  get googlePlayButton()
-  {
+  get googlePlayButton() {
     return $("//a[@data-doclink='adblock_browser_android_store']");
   }
 
-  get settingsLink()
-  {
+  get settingsLink() {
     return $("//a[text()='Settings']");
   }
 
-  get strictCriteriaLink()
-  {
+  get strictCriteriaLink() {
     return $("//a[text()='strict criteria']");
   }
 
-  get subtitleText()
-  {
+  get subtitleText() {
     return $("//p[@data-i18n='firstRun_subtitle']");
   }
 
-  get termsOfUseLink()
-  {
+  get termsOfUseLink() {
     return $("//a[text()='Terms of Use']");
   }
 
-  get turnOffAALink()
-  {
+  get turnOffAALink() {
     return $("//a[text()='Turn off Acceptable Ads']");
   }
 
-  async getSubtitleText()
-  {
+  async getSubtitleText() {
     return await (await this.subtitleText).getText();
   }
 }

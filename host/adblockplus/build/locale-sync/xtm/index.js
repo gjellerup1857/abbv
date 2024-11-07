@@ -19,13 +19,13 @@
 
 /* eslint-disable no-console */
 
-const {execSync} = require("child_process");
-const {writeFileSync, existsSync, mkdirSync} = require("fs");
+const { execSync } = require("child_process");
+const { writeFileSync, existsSync, mkdirSync } = require("fs");
 const minimist = require("minimist");
 const path = require("path");
 
-const {getSourceStringFileDiffs} = require("../common/diff");
-const {importFilesObjects} = require("../common/import");
+const { getSourceStringFileDiffs } = require("../common/diff");
+const { importFilesObjects } = require("../common/import");
 const {
   analysisTemplateId,
   customerId,
@@ -39,46 +39,35 @@ const xtm = require("./xtm");
 
 const argv = minimist(process.argv.slice(2));
 
-function exec(command)
-{
-  return execSync(command, {encoding: "utf8"}).trim();
+function exec(command) {
+  return execSync(command, { encoding: "utf8" }).trim();
 }
 
-function errorHandler(errorMsg)
-{
+function errorHandler(errorMsg) {
   console.error(errorMsg);
   process.exit(1);
 }
 
-function getProjectName()
-{
-  if (argv.project)
-    return argv.project;
+function getProjectName() {
+  if (argv.project) return argv.project;
   return exec("git rev-parse --abbrev-ref HEAD");
 }
 
-function getParentVersionHash()
-{
-  if (argv.rev)
-    return argv.rev;
+function getParentVersionHash() {
+  if (argv.rev) return argv.rev;
   return exec("git rev-parse main");
 }
 
-function createSourceFiles(hash)
-{
+function createSourceFiles(hash) {
   const files = [];
   const tempFolder = process.pid.toString();
-  return getSourceStringFileDiffs(hash).then((changes) =>
-  {
-    for (const {added, modified, fileName, locale} of changes)
-    {
+  return getSourceStringFileDiffs(hash).then((changes) => {
+    for (const { added, modified, fileName, locale } of changes) {
       const dir = path.join(tempFolder, locale);
       const file = path.join(dir, fileName);
       const data = JSON.stringify(Object.assign(added, modified), null, 2);
-      if (!existsSync(tempFolder))
-        mkdirSync(tempFolder);
-      if (!existsSync(dir))
-        mkdirSync(dir);
+      if (!existsSync(tempFolder)) mkdirSync(tempFolder);
+      if (!existsSync(dir)) mkdirSync(dir);
       writeFileSync(file, data);
       files.push(file);
     }
@@ -90,37 +79,32 @@ function createSourceFiles(hash)
  * Creates a new XTM project with the name of current branchname
  * @returns {Promise}
  */
-function create()
-{
+function create() {
   const hash = getParentVersionHash();
   const branchName = getProjectName();
-  return xtm.getProjectIdByName(branchName).then((projectId) =>
-  {
-    if (projectId)
-      throw `Project ${branchName} already exists`;
-    return createSourceFiles(hash);
-  }).then((files) =>
-  {
-    const parameters = {customerId, workflowId, analysisTemplateId};
-    return xtm.createProject(branchName, parameters, files);
-  });
+  return xtm
+    .getProjectIdByName(branchName)
+    .then((projectId) => {
+      if (projectId) throw `Project ${branchName} already exists`;
+      return createSourceFiles(hash);
+    })
+    .then((files) => {
+      const parameters = { customerId, workflowId, analysisTemplateId };
+      return xtm.createProject(branchName, parameters, files);
+    });
 }
 
 /**
  * Updates existing XTM project using branchname
  * @returns {Promise}
  */
-function update()
-{
+function update() {
   const branchName = getProjectName();
-  return xtm.getProjectIdByName(branchName).then((projectId) =>
-  {
-    if (!projectId)
-      throw `No project ${branchName} found`;
+  return xtm.getProjectIdByName(branchName).then((projectId) => {
+    if (!projectId) throw `No project ${branchName} found`;
 
     const hash = getParentVersionHash();
-    return createSourceFiles(hash).then((files) =>
-    {
+    return createSourceFiles(hash).then((files) => {
       return xtm.updateProject(projectId, files);
     });
   });
@@ -130,15 +114,13 @@ function update()
  * Updated details of the project which are not possible to set during create()
  * @returns {Promise}
  */
-function updateDetails()
-{
+function updateDetails() {
   const branchName = getProjectName();
-  return xtm.getProjectIdByName(branchName).then((projectId) =>
-  {
-    if (!projectId)
-      throw `No project ${branchName} found`;
+  return xtm.getProjectIdByName(branchName).then((projectId) => {
+    if (!projectId) throw `No project ${branchName} found`;
     const data = {
-      projectManagerId, subjectMatterId
+      projectManagerId,
+      subjectMatterId
     };
     return xtm.updateDetails(projectId, data);
   });
@@ -148,64 +130,53 @@ function updateDetails()
  * Downloads project that matches current branchname
  * @returns {Promise}
  */
-function downloadProject()
-{
+function downloadProject() {
   const destination = process.pid.toString();
   const branchName = getProjectName();
-  return xtm.getProjectIdByName(branchName).then((projectId) =>
-  {
-    return xtm.downloadProject(projectId, destination);
-  }).then((filesObject) =>
-  {
-    return importFilesObjects(filesObject, localesDir, sourceLanguage);
-  });
+  return xtm
+    .getProjectIdByName(branchName)
+    .then((projectId) => {
+      return xtm.downloadProject(projectId, destination);
+    })
+    .then((filesObject) => {
+      return importFilesObjects(filesObject, localesDir, sourceLanguage);
+    });
 }
 
 /**
  * Generate translation files - prepare them for being downloaded
  * @returns {Promise}
  */
-function buildProject()
-{
+function buildProject() {
   const destination = process.pid.toString();
   const branchName = getProjectName();
-  return xtm.getProjectIdByName(branchName).then((projectId) =>
-  {
-    return xtm.buildProject(projectId, destination);
-  }).then(console.log);
+  return xtm
+    .getProjectIdByName(branchName)
+    .then((projectId) => {
+      return xtm.buildProject(projectId, destination);
+    })
+    .then(console.log);
 }
 
-process.on("exit", () =>
-{
+process.on("exit", () => {
   const tempFolder = process.pid.toString();
   exec(`rm -rf ${tempFolder}`);
 });
 
-if (argv.create)
-{
+if (argv.create) {
   create()
     .then(console.log)
     .then(updateDetails)
     .then(console.log)
     .catch(errorHandler);
-}
-else if (argv.update)
-{
+} else if (argv.update) {
   update().then(console.log).catch(errorHandler);
-}
-else if (argv.details)
-{
+} else if (argv.details) {
   updateDetails().then(console.log).catch(errorHandler);
-}
-else if (argv.download)
-{
+} else if (argv.download) {
   downloadProject();
-}
-else if (argv.build)
-{
+} else if (argv.build) {
   buildProject().catch(errorHandler);
-}
-else
-{
+} else {
   errorHandler("Missing argument");
 }

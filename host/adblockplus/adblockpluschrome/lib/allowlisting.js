@@ -19,11 +19,11 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {port} from "~/core/messaging/background";
-import {getPage, pageEmitter} from "../../src/core/pages/background";
-import {EventEmitter} from "./events.js";
-import {addFilter} from "./filterConfiguration.js";
-import {Prefs} from "./prefs.js";
+import { port } from "~/core/messaging/background";
+import { getPage, pageEmitter } from "../../src/core/pages/background";
+import { EventEmitter } from "./events.js";
+import { addFilter } from "./filterConfiguration.js";
+import { Prefs } from "./prefs.js";
 
 let allowlistedDomainRegexp = /^@@\|\|([^/:]+)\^\$document$/;
 let eventEmitter = new EventEmitter();
@@ -43,23 +43,18 @@ let eventEmitter = new EventEmitter();
  * @event "filters.isAllowlisted"
  * @returns {filtersIsAllowlistedResult}
  */
-port.on("filters.isAllowlisted", async message =>
-{
+port.on("filters.isAllowlisted", async (message) => {
   let pageAllowlisted = false;
   let hostnameAllowlisted = false;
 
-  for (let filterText of await ewe.filters.getAllowingFilters(message.tab.id))
-  {
-    if (allowlistedDomainRegexp.test(filterText))
-      hostnameAllowlisted = true;
-    else
-      pageAllowlisted = true;
+  for (let filterText of await ewe.filters.getAllowingFilters(message.tab.id)) {
+    if (allowlistedDomainRegexp.test(filterText)) hostnameAllowlisted = true;
+    else pageAllowlisted = true;
 
-    if (pageAllowlisted && hostnameAllowlisted)
-      break;
+    if (pageAllowlisted && hostnameAllowlisted) break;
   }
 
-  return {hostname: hostnameAllowlisted, page: pageAllowlisted};
+  return { hostname: hostnameAllowlisted, page: pageAllowlisted };
 });
 
 /**
@@ -92,20 +87,16 @@ export async function allowlist({
   singlePage = false,
   url,
   expiresAt,
-  autoExtendMs})
-{
+  autoExtendMs
+}) {
   let filterText;
 
-  if (!hostname && !url)
-    throw new Error("Hostname or URL required");
+  if (!hostname && !url) throw new Error("Hostname or URL required");
 
-  if (url)
-  {
-    if (!(url instanceof URL))
-      throw new Error("Invalid URL");
+  if (url) {
+    if (!(url instanceof URL)) throw new Error("Invalid URL");
 
-    if (singlePage)
-    {
+    if (singlePage) {
       // We generate a filter which only applies to the same protocol and
       // subdomain, but one which doesn't consider the exact query string or
       // fragment.
@@ -113,21 +104,17 @@ export async function allowlist({
       // See https://hg.adblockplus.org/adblockplus/file/tip/lib/ui.js#l1517
       let ending = "|";
       url.hash = "";
-      if (url.search && url.search.includes("&"))
-      {
+      if (url.search && url.search.includes("&")) {
         url.search = "";
         ending = "?";
       }
       filterText = `@@|${url.href}${ending}$document`;
-    }
-    else
-    {
+    } else {
       hostname = url.hostname;
     }
   }
 
-  if (!filterText)
-  {
+  if (!filterText) {
     let host = hostname.replace(/^www\./, "");
     filterText = `@@||${host}^$document`;
   }
@@ -146,8 +133,7 @@ export async function allowlist({
  *
  * @returns {Promise<boolean>} whether the given tab is allowlisted
  */
-async function isTabAllowlisted(tabId)
-{
+async function isTabAllowlisted(tabId) {
   const allowingFilters = await ewe.filters.getAllowingFilters(tabId);
   return allowingFilters.length > 0;
 }
@@ -165,8 +151,7 @@ async function isTabAllowlisted(tabId)
  * @property {object} tab
  *   Tab that contains the page to allowlist.
  */
-port.on("filters.allowlist", async message =>
-{
+port.on("filters.allowlist", async (message) => {
   let page = await getPage(message.tab);
   const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
   await allowlist({
@@ -186,17 +171,15 @@ port.on("filters.allowlist", async message =>
  *   If true we only remove allowing filters which are not for an entire
  *   domain.
  */
-port.on("filters.unallowlist", async message =>
-{
-  for (let filterText of await ewe.filters.getAllowingFilters(message.tab.id))
-  {
+port.on("filters.unallowlist", async (message) => {
+  for (let filterText of await ewe.filters.getAllowingFilters(message.tab.id)) {
     if (message.singlePage && allowlistedDomainRegexp.test(filterText))
       continue;
 
     await ewe.filters.remove([filterText]);
 
-    const filterSubscriptions = await ewe.subscriptions
-      .getForFilter(filterText);
+    const filterSubscriptions =
+      await ewe.subscriptions.getForFilter(filterText);
     if (filterSubscriptions.length != 0)
       await ewe.filters.disable([filterText]);
   }
@@ -224,34 +207,27 @@ export let allowlistingState = {
   removeListener: eventEmitter.off.bind(eventEmitter)
 };
 
-async function revalidateAllowlistingState(page)
-{
+async function revalidateAllowlistingState(page) {
   const isAllowlisted = await isTabAllowlisted(page.id);
   eventEmitter.emit("changed", page, isAllowlisted);
 }
 
-export async function revalidateAllowlistingStates()
-{
+export async function revalidateAllowlistingStates() {
   let tabs = await browser.tabs.query({});
-  for (let tab of tabs)
-    revalidateAllowlistingState(await getPage(tab));
+  for (let tab of tabs) revalidateAllowlistingState(await getPage(tab));
 }
 
 pageEmitter.on("loaded", revalidateAllowlistingState);
 ewe.filters.onAdded.addListener(revalidateAllowlistingStates);
-ewe.filters.onChanged.addListener(async(filter, property) =>
-{
-  if (property !== "enabled")
-    return;
+ewe.filters.onChanged.addListener(async (filter, property) => {
+  if (property !== "enabled") return;
 
   await revalidateAllowlistingStates();
 });
 ewe.filters.onRemoved.addListener(revalidateAllowlistingStates);
 ewe.subscriptions.onAdded.addListener(revalidateAllowlistingStates);
-ewe.subscriptions.onChanged.addListener(async(subscription, property) =>
-{
-  if (property !== null && property !== "enabled")
-    return;
+ewe.subscriptions.onChanged.addListener(async (subscription, property) => {
+  if (property !== null && property !== "enabled") return;
 
   await revalidateAllowlistingStates();
 });

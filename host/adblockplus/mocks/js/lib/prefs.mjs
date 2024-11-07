@@ -15,20 +15,17 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {EventEmitter} from "../event-emitter.mjs";
+import { EventEmitter } from "../event-emitter.mjs";
 import prefsData from "../config/prefs-data.mjs";
 
 export const Prefs = new EventEmitter();
 
-for (const key of Object.keys(prefsData))
-{
+for (const key of Object.keys(prefsData)) {
   Object.defineProperty(Prefs, key, {
-    get()
-    {
+    get() {
       return prefsData[key];
     },
-    set(value)
-    {
+    set(value) {
       prefsData[key] = value;
       Prefs.emit(key);
     }

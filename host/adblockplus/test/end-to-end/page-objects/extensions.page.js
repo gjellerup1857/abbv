@@ -18,78 +18,57 @@
 "use strict";
 
 const BasePage = require("./base.page");
-const {isChrome, isFirefox, isEdge} = require("../helpers");
+const { isChrome, isFirefox, isEdge } = require("../helpers");
 
-class ExtensionsPage extends BasePage
-{
-  constructor(browser)
-  {
+class ExtensionsPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
-    if (isChrome())
-    {
+  async init() {
+    if (isChrome()) {
       await browser.url("chrome://extensions");
-    }
-    else if (isEdge())
-    {
+    } else if (isEdge()) {
       await browser.url("edge://extensions");
-    }
-    else if (isFirefox())
-    {
+    } else if (isFirefox()) {
       await browser.url("about:debugging#/runtime/this-firefox");
       await this.waitForDisplayedNoError(this.abpExtensionLabelFF);
     }
   }
 
-  get abpExtensionLabelFF()
-  {
+  get abpExtensionLabelFF() {
     return $("//span[text()='Adblock Plus - free ad blocker']");
   }
 
-  get reloadExtensionButtonChrome()
-  {
+  get reloadExtensionButtonChrome() {
     return $(">>>#dev-reload-button");
   }
 
-  get reloadExtensionButtonEdge()
-  {
+  get reloadExtensionButtonEdge() {
     return $("//span[text()='Reload']");
   }
 
-  get reloadExtensionButtonFF()
-  {
+  get reloadExtensionButtonFF() {
     return $("//button[text()='Reload']");
   }
 
-  get removeExtensionButton()
-  {
+  get removeExtensionButton() {
     return $(">>>#removeButton");
   }
 
-  async clickReloadExtensionButton()
-  {
-    if (isChrome())
-    {
+  async clickReloadExtensionButton() {
+    if (isChrome()) {
       await this.waitForEnabledThenClick(this.reloadExtensionButtonChrome);
-    }
-    else if (isFirefox())
-    {
+    } else if (isFirefox()) {
       await this.waitForEnabledThenClick(this.reloadExtensionButtonFF);
-    }
-    else if (isEdge())
-    {
+    } else if (isEdge()) {
       await this.waitForEnabledThenClick(this.reloadExtensionButtonEdge);
     }
   }
 
-  async clickRemoveExtensionButton()
-  {
-    await this.waitForEnabledThenClick(this.
-      removeExtensionButton);
+  async clickRemoveExtensionButton() {
+    await this.waitForEnabledThenClick(this.removeExtensionButton);
   }
 }
 

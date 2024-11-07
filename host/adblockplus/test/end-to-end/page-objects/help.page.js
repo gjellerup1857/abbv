@@ -19,107 +19,85 @@
 
 const BasePage = require("./base.page");
 
-class HelpPage extends BasePage
-{
-  constructor(browser)
-  {
+class HelpPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get _helpTabButton()
-  {
-    return $("//a[contains(@data-i18n, 'options_tab_help')" +
-        "and text()='Help']");
+  get _helpTabButton() {
+    return $("//a[contains(@data-i18n, 'options_tab_help') and text()='Help']");
   }
 
-  async init()
-  {
+  async init() {
     await (await this._helpTabButton).click();
   }
 
-  get facebookLink()
-  {
+  get facebookLink() {
     return $(".facebook");
   }
 
-  get forumLink()
-  {
+  get forumLink() {
     return $("//a[text()='Go to the Forum']");
   }
 
-  get sendUsABugReportLink()
-  {
+  get sendUsABugReportLink() {
     return $("//a[text()='Send us a bug report']");
   }
 
-  get XLink()
-  {
+  get XLink() {
     return $(".twitter");
   }
 
-  get visitOurHelpCenterLink()
-  {
+  get visitOurHelpCenterLink() {
     return $("//a[text()='Visit our Help Center (English only)']");
   }
 
-  async clickFacebookLink()
-  {
+  async clickFacebookLink() {
     await (await this.facebookLink).click();
   }
 
-  async clickForumLink()
-  {
+  async clickForumLink() {
     await (await this.forumLink).click();
   }
 
-  async clickSendUsABugReportLink()
-  {
+  async clickSendUsABugReportLink() {
     await (await this.sendUsABugReportLink).click();
   }
 
-  async clickXLink()
-  {
+  async clickXLink() {
     await (await this.XLink).click();
   }
 
-  async clickVisitOurHelpCenterLink()
-  {
+  async clickVisitOurHelpCenterLink() {
     await (await this.visitOurHelpCenterLink).click();
   }
 
-  async switchToBugReportTab()
-  {
+  async switchToBugReportTab() {
     await this.switchToTab("Report an issue");
   }
 
-  async switchToFacebookTab()
-  {
+  async switchToFacebookTab() {
     await this.switchToTab(/Facebook/);
   }
 
-  async switchToForumTabChrome()
-  {
+  async switchToForumTabChrome() {
     await this.switchToTab("Adblock Plus for Chrome support - Adblock Plus");
   }
 
-  async switchToForumTabEdge()
-  {
+  async switchToForumTabEdge() {
     await this.switchToTab("Adblock Plus for Edge support - Adblock Plus");
   }
 
-  async switchToForumTabFirefox()
-  {
+  async switchToForumTabFirefox() {
     await this.switchToTab("Adblock Plus for Firefox support - Adblock Plus");
   }
 
-  async switchToHelpCenterTab()
-  {
+  async switchToHelpCenterTab() {
     await this.switchToTab("https://help.adblockplus.org/hc/en-us");
   }
 
-  async switchToXTab()
-  {
+  async switchToXTab() {
     await this.switchToTab(/https:\/\/x\.com\/.*adblockplus/);
   }
 }

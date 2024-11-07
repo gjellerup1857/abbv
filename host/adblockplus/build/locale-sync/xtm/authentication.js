@@ -19,13 +19,12 @@
 
 const fetch = require("node-fetch");
 
-const {restApiUrl} = require("./config");
+const { restApiUrl } = require("./config");
 
 // Authentication
-const {CLIENT, PASSWORD, USER_ID} = process.env;
+const { CLIENT, PASSWORD, USER_ID } = process.env;
 
-const getToken = () =>
-{
+const getToken = () => {
   const uri = `${restApiUrl}/auth/token`;
   const authenticationData = {
     client: CLIENT,
@@ -41,12 +40,12 @@ const getToken = () =>
     }
   };
 
-  return fetch(uri, getTokenOptions).then((res) =>
-  {
-    if (!res.ok)
-      return Promise.reject(res.json());
-    return res.json();
-  }).catch(console.error);
+  return fetch(uri, getTokenOptions)
+    .then((res) => {
+      if (!res.ok) return Promise.reject(res.json());
+      return res.json();
+    })
+    .catch(console.error);
 };
 
-module.exports = {getToken, restApiUrl};
+module.exports = { getToken, restApiUrl };

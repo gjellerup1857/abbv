@@ -32,9 +32,7 @@ export default {
     copy: [
       {
         dest: "skin",
-        src: [
-          "skin/icons/mobile/**"
-        ]
+        src: ["skin/icons/mobile/**"]
       },
       {
         dest: "",

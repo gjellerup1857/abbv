@@ -19,72 +19,66 @@
 
 const BasePage = require("./base.page");
 
-class WelcomeToPremium extends BasePage
-{
-  constructor(browser)
-  {
+class WelcomeToPremium extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get blockCookieConsentPopupsCheckbox()
-  {
+  get blockCookieConsentPopupsCheckbox() {
     return $("//io-checkbox[@data-feature='cookies-premium']/button");
   }
 
-  get doneButton()
-  {
+  get doneButton() {
     return $("#cta-finish");
   }
 
-  get enableAllPremiumFeaturesButton()
-  {
+  get enableAllPremiumFeaturesButton() {
     return $("#cta-enable-all");
   }
 
-  get upgradeNowButton()
-  {
+  get upgradeNowButton() {
     return $("#cta-upgrade");
   }
 
-  async clickDoneButton()
-  {
+  async clickDoneButton() {
     await this.waitForEnabledThenClick(this.doneButton);
   }
 
-  async clickEnableAllPremiumFeaturesButton()
-  {
+  async clickEnableAllPremiumFeaturesButton() {
     await this.waitForEnabledThenClick(this.enableAllPremiumFeaturesButton);
   }
 
-  async clickUpgradeNowButton()
-  {
+  async clickUpgradeNowButton() {
     await this.waitForEnabledThenClick(this.upgradeNowButton);
   }
 
-  async isBlockCookieConsentPopupsCheckboxEnabled(reverse = false)
-  {
-    await this.waitForDisplayedNoError(this.
-      blockCookieConsentPopupsCheckbox, reverse);
+  async isBlockCookieConsentPopupsCheckboxEnabled(reverse = false) {
+    await this.waitForDisplayedNoError(
+      this.blockCookieConsentPopupsCheckbox,
+      reverse
+    );
     return await (await this.blockCookieConsentPopupsCheckbox).isEnabled();
   }
 
-  async isBlockCookieConsentPopupsCheckboxSelected(reverse = false)
-  {
-    await (await this.blockCookieConsentPopupsCheckbox).
-      waitForEnabled({timeout: 3000});
+  async isBlockCookieConsentPopupsCheckboxSelected(reverse = false) {
+    await (
+      await this.blockCookieConsentPopupsCheckbox
+    ).waitForEnabled({ timeout: 3000 });
     return await this.waitUntilAttributeValueIs(
-      this.blockCookieConsentPopupsCheckbox, "aria-checked", "true",
-      3000, reverse);
+      this.blockCookieConsentPopupsCheckbox,
+      "aria-checked",
+      "true",
+      3000,
+      reverse
+    );
   }
 
-  async isEnableAllPremiumFeaturesButtonDisplayed()
-  {
+  async isEnableAllPremiumFeaturesButtonDisplayed() {
     return await (await this.enableAllPremiumFeaturesButton).isDisplayed();
   }
 
-  async isUpgradeNowButtonDisplayed()
-  {
+  async isUpgradeNowButtonDisplayed() {
     return await (await this.upgradeNowButton).isDisplayed();
   }
 }

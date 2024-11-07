@@ -17,40 +17,35 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 let currentLocale;
 
-describe("test extension initialization for language subscriptions", function()
-{
+describe("test extension initialization for language subscriptions", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     currentLocale = await browser.executeScript(
-      "return navigator.language || navigator.userLanguage", []);
+      "return navigator.language || navigator.userLanguage",
+      []
+    );
     let expectInstalledTabValue = true;
-    if (currentLocale.includes("ca"))
-      expectInstalledTabValue = false;
-    await beforeSequence({expectInstalledTab: expectInstalledTabValue});
+    if (currentLocale.includes("ca")) expectInstalledTabValue = false;
+    await beforeSequence({ expectInstalledTab: expectInstalledTabValue });
   });
 
   // eslint-disable-next-line max-len
-  it("should correctly initialize extension for different languages", async function()
-  {
+  it("should correctly initialize extension for different languages", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isAllowAcceptableAdsCheckboxSelected()).to.be.true;
-    if (currentLocale.includes("de"))
-    {
-      expect(await generalPage.
-        isDeutschPlusEnglischLanguageTableItemDisplayed()).to.be.true;
-    }
-    else if (currentLocale.includes("ca"))
-    {
-      expect(await generalPage.
-        isEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
+    if (currentLocale.includes("de")) {
+      expect(
+        await generalPage.isDeutschPlusEnglischLanguageTableItemDisplayed()
+      ).to.be.true;
+    } else if (currentLocale.includes("ca")) {
+      expect(await generalPage.isEnglishLanguageTableItemDisplayed()).to.be
+        .true;
     }
   });
 });

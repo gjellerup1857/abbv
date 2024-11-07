@@ -17,8 +17,7 @@
 
 "use strict";
 
-module.exports =
-{
+module.exports = {
   notifyLanguageFilterListsTooltipText:
     "Adblock Plus relies on filter lists to block ads in different languages.",
   showBlockElementTooltipText:

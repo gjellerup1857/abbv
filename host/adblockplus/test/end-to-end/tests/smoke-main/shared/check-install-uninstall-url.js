@@ -17,38 +17,36 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 const testData = require("../../../test-data/data-smoke-tests");
-const {isFirefox} = require("../../../helpers");
+const { isFirefox } = require("../../../helpers");
 
-module.exports = async function(url, appVersion)
-{
-  let majorBrowserVersion = (JSON.stringify(browser.capabilities)).
-    match(testData.regexMajorBrowserVersion)[0];
+module.exports = async function (url, appVersion) {
+  let majorBrowserVersion = JSON.stringify(browser.capabilities).match(
+    testData.regexMajorBrowserVersion
+  )[0];
   expect(majorBrowserVersion).to.equal(url.match(testData.regex_apv)[0]);
-  if (isFirefox())
-  {
-    const navigatorText = await browser.
-      executeScript("return navigator.userAgent;", []);
-    majorBrowserVersion = navigatorText.
-      match(testData.regexMajorBrowserVersionFF)[0];
+  if (isFirefox()) {
+    const navigatorText = await browser.executeScript(
+      "return navigator.userAgent;",
+      []
+    );
+    majorBrowserVersion = navigatorText.match(
+      testData.regexMajorBrowserVersionFF
+    )[0];
     expect(majorBrowserVersion).to.equal(url.match(testData.regex_pv)[0]);
-  }
-  else
-  {
+  } else {
     expect(majorBrowserVersion).to.equal(url.match(testData.regex_pv)[0]);
   }
   expect(appVersion).to.equal(url.match(testData.regex_av)[0]);
 
   const browserName = browser.capabilities.browserName.toLowerCase();
-  const expectedData =
-  {
-    chrome: {an: "adblockpluschrome", ap: "chrome", p: "chromium"},
-    microsoftedge: {an: "adblockpluschrome", ap: "edge", p: "chromium"},
-    firefox: {an: "adblockplusfirefox", ap: "firefox", p: "gecko"}
+  const expectedData = {
+    chrome: { an: "adblockpluschrome", ap: "chrome", p: "chromium" },
+    microsoftedge: { an: "adblockpluschrome", ap: "edge", p: "chromium" },
+    firefox: { an: "adblockplusfirefox", ap: "firefox", p: "gecko" }
   }[browserName];
-  if (!expectedData)
-  {
+  if (!expectedData) {
     throw new Error(`Browser name not recognized: ${browserName}`);
   }
 

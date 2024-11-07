@@ -19,47 +19,40 @@
 
 const BasePage = require("./base.page");
 
-class FooterChunk extends BasePage
-{
-  constructor(browser)
-  {
+class FooterChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get aboutABPLink()
-  {
-    return $("//button[contains(@data-i18n, 'options_footer_about')" +
-        "and text()='About Adblock Plus']");
+  get aboutABPLink() {
+    return $(
+      "//button[contains(@data-i18n, 'options_footer_about')" +
+        "and text()='About Adblock Plus']"
+    );
   }
 
-  get contributeButton()
-  {
+  get contributeButton() {
     return $(".button=Contribute");
   }
 
-  get heartButton()
-  {
+  get heartButton() {
     return $("//*[@id='support-us']/div");
   }
 
-  async clickAboutABPLink()
-  {
+  async clickAboutABPLink() {
     await (await this.aboutABPLink).click();
   }
 
-  async clickContributeButton()
-  {
+  async clickContributeButton() {
     await (await this.contributeButton).click();
   }
 
-  async clickHeartButton()
-  {
+  async clickHeartButton() {
     await this.waitForEnabledThenClick(this.heartButton);
   }
 
-  async switchToContributeTab()
-  {
+  async switchToContributeTab() {
     await this.switchToTab("Contribute to Adblock Plus");
   }
 }

@@ -22,8 +22,14 @@ const defaultLocale = "en_US";
 const outputFileName = "translations.csv";
 const addedLabel = "Added";
 const modifiedLabel = "Modified";
-const headers = ["Type", "Filename", "StringID", "Description", "Placeholders",
-                 defaultLocale];
+const headers = [
+  "Type",
+  "Filename",
+  "StringID",
+  "Description",
+  "Placeholders",
+  defaultLocale
+];
 
 module.exports = {
   addedLabel,

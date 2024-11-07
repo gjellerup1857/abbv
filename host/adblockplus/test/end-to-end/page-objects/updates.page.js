@@ -19,61 +19,49 @@
 
 const BasePage = require("./base.page");
 
-class UpdatesPage extends BasePage
-{
-  constructor(browser)
-  {
+class UpdatesPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin)
-  {
+  async init(origin) {
     await browser.url(`${origin}/updates.html`);
   }
 
-  get abpLogo()
-  {
+  get abpLogo() {
     return $("//a[@data-doclink='adblock_plus']");
   }
 
-  get contactUsButton()
-  {
+  get contactUsButton() {
     return $("//a[@data-i18n-title='updates_social_email']");
   }
 
-  get contributeButton()
-  {
+  get contributeButton() {
     return $("//a[@data-i18n='updates_contribute_donate_action']");
   }
 
-  get eyeoGmbHLink()
-  {
+  get eyeoGmbHLink() {
     return $("//a[text()='eyeo GmbH']");
   }
 
-  get facebookButton()
-  {
+  get facebookButton() {
     return $("//a[@data-i18n-title='updates_social_facebook']");
   }
 
-  get pageTitle()
-  {
+  get pageTitle() {
     return $("//h1[@data-i18n='updates_title']");
   }
 
-  get rateItButton()
-  {
+  get rateItButton() {
     return $("//a[@data-i18n='updates_contribute_rate_action']");
   }
 
-  get XButton()
-  {
+  get XButton() {
     return $("//a[@data-i18n-title='updates_social_twitter']");
   }
 
-  async getPageTitleText()
-  {
+  async getPageTitleText() {
     return await (await this.pageTitle).getText();
   }
 }

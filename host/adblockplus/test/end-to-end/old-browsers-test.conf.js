@@ -22,7 +22,7 @@
 const helpers = require("./helpers.js");
 helpers.lambdatestRunChecks();
 
-const {config: baseConfig} = require("./base.conf.js");
+const { config: baseConfig } = require("./base.conf.js");
 
 const parallelConfig = {
   maxInstances: 6,
@@ -50,9 +50,7 @@ const parallelConfig = {
         excludeSwitches: ["disable-extensions"]
       },
       acceptInsecureCerts: true,
-      exclude: [
-        "./tests/legacy-unit.js"
-      ]
+      exclude: ["./tests/legacy-unit.js"]
     },
     {
       browserName: "Firefox",
@@ -65,9 +63,7 @@ const parallelConfig = {
         }
       },
       acceptInsecureCerts: true,
-      exclude: [
-        "./tests/legacy-unit.js"
-      ]
+      exclude: ["./tests/legacy-unit.js"]
     }
   ],
   logLevel: "error",
@@ -75,11 +71,10 @@ const parallelConfig = {
   screenshotPath: "./errorShots/"
 };
 
-exports.config = {...baseConfig, ...parallelConfig};
+exports.config = { ...baseConfig, ...parallelConfig };
 
 // Code to support common capabilities
-exports.config.capabilities.forEach((caps) =>
-{
+exports.config.capabilities.forEach((caps) => {
   for (const i in exports.config.commonCapabilities)
-    caps[i] = {...caps[i], ...exports.config.commonCapabilities[i]};
+    caps[i] = { ...caps[i], ...exports.config.commonCapabilities[i] };
 });

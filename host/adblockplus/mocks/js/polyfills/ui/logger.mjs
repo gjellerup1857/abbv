@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function log(...args)
-{
+export function log(...args) {
   // eslint-disable-next-line no-console
   console.log("MOCK", ...args);
 }

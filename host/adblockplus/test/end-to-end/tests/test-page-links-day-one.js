@@ -17,60 +17,49 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const DayOnePage = require("../page-objects/dayOne.page");
-const dayOnePageData =
-  require("../test-data/data-page-links").dayOnePageData;
+const dayOnePageData = require("../test-data/data-page-links").dayOnePageData;
 let globalOrigin;
 
-describe("test page links - day one", function()
-{
+describe("test page links - day one", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  dayOnePageData.forEach(async(dataSet) =>
-  {
-    it("should have a link for: " + dataSet.testName, async function()
-    {
+  dayOnePageData.forEach(async (dataSet) => {
+    it("should have a link for: " + dataSet.testName, async function () {
       const dayOnePage = new DayOnePage(browser);
       await dayOnePage.init(globalOrigin);
-      if (dataSet.testName == "Day 1 - Contact us")
-      {
-        expect(await dayOnePage[dataSet.elementToClick].
-          getAttribute("href")).to.equal(dataSet.newTabUrl);
-      }
-      else if (dataSet.testName == "Day 1 - Learn more about " +
-        "malicious advertising" || dataSet.testName == "Day 1 - Learn how")
-      {
+      if (dataSet.testName == "Day 1 - Contact us") {
+        expect(
+          await dayOnePage[dataSet.elementToClick].getAttribute("href")
+        ).to.equal(dataSet.newTabUrl);
+      } else if (
+        dataSet.testName == "Day 1 - Learn more about malicious advertising" ||
+        dataSet.testName == "Day 1 - Learn how"
+      ) {
         await dayOnePage.waitForEnabledThenClick(
-          dayOnePage[dataSet.elementToClick]);
+          dayOnePage[dataSet.elementToClick]
+        );
         await dayOnePage.switchToTab(dataSet.newTabUrl);
-        expect(await dayOnePage.getCurrentUrl()).to.match(
-          dataSet.newTabUrl);
-      }
-      else
-      {
+        expect(await dayOnePage.getCurrentUrl()).to.match(dataSet.newTabUrl);
+      } else {
         await dayOnePage.waitForEnabledThenClick(
-          dayOnePage[dataSet.elementToClick]);
+          dayOnePage[dataSet.elementToClick]
+        );
         await dayOnePage.switchToTab(dataSet.newTabUrl);
-        try
-        {
-          expect(await dayOnePage.getCurrentUrl()).to.equal(
-            dataSet.newTabUrl);
-        }
-        catch (Exception)
-        {
-          await dayOnePage.switchToTab("Adblock Plus | The world's" +
-            " #1 free ad blocker");
+        try {
+          expect(await dayOnePage.getCurrentUrl()).to.equal(dataSet.newTabUrl);
+        } catch (Exception) {
+          await dayOnePage.switchToTab(
+            "Adblock Plus | The world's #1 free ad blocker"
+          );
           await browser.pause(500);
-          expect(await dayOnePage.getCurrentUrl()).to.equal(
-            dataSet.newTabUrl);
+          expect(await dayOnePage.getCurrentUrl()).to.equal(dataSet.newTabUrl);
         }
       }
     });

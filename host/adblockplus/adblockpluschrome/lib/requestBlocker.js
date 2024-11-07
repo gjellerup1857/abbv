@@ -19,11 +19,12 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-export let filterTypes = new Set(function*()
-{
-  for (let type of ewe.reporting.contentTypesMap.values())
-    yield type.toUpperCase();
+export let filterTypes = new Set(
+  (function* () {
+    for (let type of ewe.reporting.contentTypesMap.values())
+      yield type.toUpperCase();
 
-  yield "REMOVE";
-  yield "SNIPPET";
-}());
+    yield "REMOVE";
+    yield "SNIPPET";
+  })()
+);

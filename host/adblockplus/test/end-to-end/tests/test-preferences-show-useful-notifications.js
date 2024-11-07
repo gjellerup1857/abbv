@@ -17,37 +17,42 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, executeAsyncScript,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  executeAsyncScript,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const IPMChunk = require("../page-objects/ipm.chunk");
-const {port: ipmPort} =
-  require("../../../../../test-utils/ipm-server/test-ipm-server.js");
+const {
+  port: ipmPort
+} = require("../../../../../test-utils/ipm-server/test-ipm-server.js");
 
-describe("test preferences - show useful notifications", function()
-{
+describe("test preferences - show useful notifications", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display useful notification", async function()
-  {
-    try
-    {
+  it("should display useful notification", async function () {
+    try {
       await switchToABPOptionsTab();
-    }
-    catch (Exception) {}
-    await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
-      ", key: 'ipm_server_url', value: " +
-      `'http://localhost:${ipmPort}'});`);
-    await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
-      ", key: 'installation_id', value: 'opdnavigationctaABP'});");
-    await executeAsyncScript("browser.runtime.sendMessage({type: " +
-      "'testing.ping_ipm_server'});");
+    } catch (Exception) {}
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'prefs.set'" +
+        ", key: 'ipm_server_url', value: " +
+        `'http://localhost:${ipmPort}'});`
+    );
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'prefs.set'" +
+        ", key: 'installation_id', value: 'opdnavigationctaABP'});"
+    );
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'testing.ping_ipm_server'});"
+    );
     const ipmChunk = new IPMChunk(browser);
     await browser.newWindow("https://example.com");
     await ipmChunk.switchToTab(/example/);
@@ -56,15 +61,18 @@ describe("test preferences - show useful notifications", function()
     await switchToABPOptionsTab();
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isShowUsefulNotificationsCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowUsefulNotificationsCheckboxSelected()).to.be
+      .true;
     await advancedPage.clickShowUsefulNotificationsCheckbox();
-    expect(await advancedPage.
-      isShowUsefulNotificationsCheckboxSelected()).to.be.false;
-    await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
-      ", key: 'installation_id', value: 'opdnavigationsubdomainABP'});");
-    await executeAsyncScript("browser.runtime.sendMessage({type: " +
-      "'testing.ping_ipm_server'});");
+    expect(await advancedPage.isShowUsefulNotificationsCheckboxSelected()).to.be
+      .false;
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'prefs.set'" +
+        ", key: 'installation_id', value: 'opdnavigationsubdomainABP'});"
+    );
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'testing.ping_ipm_server'});"
+    );
     await browser.newWindow("https://example.com");
     await ipmChunk.switchToTab(/example/);
     expect(await ipmChunk.isIPMDialogDisplayed()).to.be.false;

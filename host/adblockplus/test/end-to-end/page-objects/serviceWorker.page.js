@@ -19,27 +19,24 @@
 
 const BasePage = require("./base.page");
 
-class ServiceWorkerPage extends BasePage
-{
-  constructor(browser)
-  {
+class ServiceWorkerPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
+  async init() {
     await browser.newWindow("https://adblockplus.org/openServiceWorkerPage");
   }
 
-  get logTextArea()
-  {
-    return $("//textarea[@class='serviceworker-log' " +
-      "and text()[contains(.,'extension')]] ");
+  get logTextArea() {
+    return $(
+      "//textarea[@class='serviceworker-log' " +
+        "and text()[contains(.,'extension')]] "
+    );
   }
 
-  async getLogTextAreaText()
-  {
+  async getLogTextAreaText() {
     await (await this.logTextArea).scrollIntoView();
     return await (await this.logTextArea).getText();
   }

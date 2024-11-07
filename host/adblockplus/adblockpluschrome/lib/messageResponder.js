@@ -19,25 +19,22 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {port} from "~/core/messaging/background";
-import {Prefs} from "./prefs.js";
-import {info} from "../../src/info/background";
+import { port } from "~/core/messaging/background";
+import { Prefs } from "./prefs.js";
+import { info } from "../../src/info/background";
 
 /**
  * Opens given UI page or switches to it, if it's already open
  *
  * @param {string} pathname - UI page path name
  */
-async function openUiPage(pathname)
-{
+async function openUiPage(pathname) {
   const tabs = await browser.tabs.query({});
-  for (const tab of tabs)
-  {
+  for (const tab of tabs) {
     const url = new URL(tab.url);
-    if (pathname !== url.pathname)
-      continue;
+    if (pathname !== url.pathname) continue;
 
-    void browser.tabs.update(tab.id, {active: true});
+    void browser.tabs.update(tab.id, { active: true });
     return;
   }
 
@@ -46,25 +43,23 @@ async function openUiPage(pathname)
   });
 }
 
-export function start()
-{
+export function start() {
   /**
    * @deprecated Please send the "filters.getTypes" message instead.
    *
    * @event "types.get"
    */
   port.on("types.get", (message, sender) =>
-    port.forward("filters.getTypes", message, sender));
+    port.forward("filters.getTypes", message, sender)
+  );
 
   /**
    * @deprecated Please send the "options.open" message instead.
    *
    * @event "app.open"
    */
-  port.on("app.open", async(message, sender) =>
-  {
-    switch (message.what)
-    {
+  port.on("app.open", async (message, sender) => {
+    switch (message.what) {
       case "options":
         await port.forward("options.open", message, sender);
         break;
@@ -73,8 +68,7 @@ export function start()
         break;
     }
 
-    if (message.replaceTab)
-      void browser.tabs.remove(sender.tab.id);
+    if (message.replaceTab) void browser.tabs.remove(sender.tab.id);
   });
 
   /**
@@ -86,10 +80,8 @@ export function start()
    *
    * @event "app.get"
    */
-  port.on("app.get", async(message, sender) =>
-  {
-    if (message.what == "localeInfo")
-    {
+  port.on("app.get", async (message, sender) => {
+    if (message.what == "localeInfo") {
       return {
         locale: browser.i18n.getUILanguage(),
         bidiDir: browser.i18n.getMessage("@@bidi_dir")
@@ -102,17 +94,15 @@ export function start()
     if (message.what == "acceptableAdsPrivacyUrl")
       return ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL;
 
-    if (message.what == "senderId")
-      return sender.tab.id;
+    if (message.what == "senderId") return sender.tab.id;
 
-    if (message.what == "ctalink")
-    {
+    if (message.what == "ctalink") {
       const ctaLinkNameToPrefsMap = new Map([
         ["premium-manage", "premium_manage_page_url"],
         ["premium-upgrade", "premium_upgrade_page_url"]
       ]);
 
-      const {link: ctaLinkName, queryParams} = message;
+      const { link: ctaLinkName, queryParams } = message;
       const prefsUrlKey = ctaLinkNameToPrefsMap.get(ctaLinkName);
       let url = Prefs[prefsUrlKey];
 
@@ -140,18 +130,16 @@ export function start()
     if (message.what == "recommendations")
       return port.forward("subscriptions.getRecommendations", message, sender);
 
-    if (message.what == "features")
-    {
+    if (message.what == "features") {
       let devToolsPanel = await port.forward(
         "devtools.supported",
         message,
         sender
       );
-      return {devToolsPanel};
+      return { devToolsPanel };
     }
 
-    if (message.what == "os")
-    {
+    if (message.what == "os") {
       let platformInfo = await browser.runtime.getPlatformInfo();
       return platformInfo.os;
     }

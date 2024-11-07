@@ -15,95 +15,75 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {getDoclink} from "./common.mjs";
-import {setElementLinks} from "../src/i18n/index.ts";
+import { getDoclink } from "./common.mjs";
+import { setElementLinks } from "../src/i18n/index.ts";
 import IOElement from "./io-element.mjs";
 
-class IOPopout extends IOElement
-{
-  static get observedAttributes()
-  {
+class IOPopout extends IOElement {
+  static get observedAttributes() {
     return ["anchor-icon", "expanded", "i18n-body", "i18n-doclinks", "type"];
   }
 
-  created()
-  {
+  created() {
     this._children = Array.from(this.children);
     this.addEventListener("blur", this);
     this.addEventListener("click", this);
     this.setAttribute("tabindex", 0);
   }
 
-  attributeChangedCallback()
-  {
+  attributeChangedCallback() {
     this.render();
   }
 
-  onblur(ev)
-  {
-    if (ev.relatedTarget && this.contains(ev.relatedTarget))
-      return;
+  onblur(ev) {
+    if (ev.relatedTarget && this.contains(ev.relatedTarget)) return;
 
     this.expanded = null;
   }
 
-  onclick(ev)
-  {
-    const {target} = ev;
+  onclick(ev) {
+    const { target } = ev;
 
-    if (target.classList.contains("wrapper"))
-    {
+    if (target.classList.contains("wrapper")) {
       ev.preventDefault();
 
-      if (this.expanded)
-      {
+      if (this.expanded) {
         this.expanded = null;
-      }
-      else if (this.type == "dialog" || this.type == "tooltip")
-      {
-        const {bottom, top} = ev.target.getBoundingClientRect();
-        const {clientHeight} = document.documentElement;
-        this.expanded = (clientHeight - bottom > top) ? "below" : "above";
-      }
-      else
-      {
+      } else if (this.type == "dialog" || this.type == "tooltip") {
+        const { bottom, top } = ev.target.getBoundingClientRect();
+        const { clientHeight } = document.documentElement;
+        this.expanded = clientHeight - bottom > top ? "below" : "above";
+      } else {
         this.expanded = "start";
       }
-    }
-    else if (target.nodeName == "A" || target.nodeName == "BUTTON")
-    {
+    } else if (target.nodeName == "A" || target.nodeName == "BUTTON") {
       this.expanded = null;
     }
   }
 
-  render()
-  {
-    const {wire} = IOPopout;
+  render() {
+    const { wire } = IOPopout;
 
     const role = this.type || "tooltip";
     const content = [];
 
-    if (role == "dialog" || role == "tooltip")
-    {
+    if (role == "dialog" || role == "tooltip") {
       content.push(wire(this, ":close")`
         <button class="icon close secondary"></button>
       `);
     }
 
-    if (this.i18nBody)
-    {
+    if (this.i18nBody) {
       const body = wire(this, ":body")`
-        <p>${{i18n: this.i18nBody}}</p>
+        <p>${{ i18n: this.i18nBody }}</p>
       `;
 
       // Support for link elements in the body is given through the mapping
       // of comma-separated values of `i18n-doclinks` popout dataset property
       // and the corresponding indexed anchor descendants.
-      const {i18nDoclinks} = this.dataset;
-      if (i18nDoclinks)
-      {
-        Promise.all(i18nDoclinks.split(",").map(getDoclink)).then(links =>
-        {
+      const { i18nDoclinks } = this.dataset;
+      if (i18nDoclinks) {
+        Promise.all(i18nDoclinks.split(",").map(getDoclink)).then((links) => {
           setElementLinks(body, ...links);
         });
       }

@@ -15,30 +15,26 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {$} from "../../dom.mjs";
+import { $ } from "../../dom.mjs";
 
-function setupBlock(tab)
-{
-  $("#block-element").addEventListener("click", () =>
-  {
+function setupBlock(tab) {
+  $("#block-element").addEventListener("click", () => {
     $("#page-info").classList.add("blocking");
     activateClickHide(tab);
   });
 
-  $("#block-element-cancel").addEventListener("click", () =>
-  {
+  $("#block-element-cancel").addEventListener("click", () => {
     $("#page-info").classList.remove("blocking");
     cancelClickHide(tab);
   });
 
-  browser.tabs.sendMessage(tab.id, {type: "composer.content.getState"})
-    .then(response =>
-    {
+  browser.tabs
+    .sendMessage(tab.id, { type: "composer.content.getState" })
+    .then((response) => {
       if (response && response.active)
         $("#page-info").classList.add("blocking");
     })
-    .catch((err) =>
-    {
+    .catch((err) => {
       // We expect the sending of this message to fail whenever
       // our content script isn't running on the page.
     });
@@ -46,8 +42,7 @@ function setupBlock(tab)
 
 let timeout = 0;
 
-function activateClickHide(tab)
-{
+function activateClickHide(tab) {
   browser.tabs.sendMessage(tab.id, {
     type: "composer.content.startPickingElement"
   });
@@ -56,14 +51,12 @@ function activateClickHide(tab)
   timeout = window.setTimeout(window.close, 5000);
 }
 
-function cancelClickHide(tab)
-{
-  if (timeout != 0)
-  {
+function cancelClickHide(tab) {
+  if (timeout != 0) {
     window.clearTimeout(timeout);
     timeout = 0;
   }
-  browser.tabs.sendMessage(tab.id, {type: "composer.content.finished"});
+  browser.tabs.sendMessage(tab.id, { type: "composer.content.finished" });
 }
 
 export default setupBlock;

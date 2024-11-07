@@ -15,19 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Port} from "../shared/index.mjs";
+import { Port } from "../shared/index.mjs";
 
 let backgroundFrame;
 let messageQueue = [];
 
-function loadHandler(event)
-{
-  if (event.data.type == "backgroundPageLoaded")
-  {
+function loadHandler(event) {
+  if (event.data.type == "backgroundPageLoaded") {
     const queue = messageQueue;
     messageQueue = null;
-    if (queue)
-    {
+    if (queue) {
       for (const message of queue)
         backgroundFrame.contentWindow.postMessage(message, "*");
     }
@@ -35,8 +32,7 @@ function loadHandler(event)
   }
 }
 
-function postMessage(msg)
-{
+function postMessage(msg) {
   sendMessageToBackground({
     type: "port",
     id: this._id,
@@ -44,16 +40,12 @@ function postMessage(msg)
   });
 }
 
-export function sendMessageToBackground(message)
-{
-  if (messageQueue)
-    messageQueue.push(message);
-  else
-    backgroundFrame.contentWindow.postMessage(message, "*");
+export function sendMessageToBackground(message) {
+  if (messageQueue) messageQueue.push(message);
+  else backgroundFrame.contentWindow.postMessage(message, "*");
 }
 
-export function start()
-{
+export function start() {
   backgroundFrame = document.createElement("iframe");
   backgroundFrame.setAttribute(
     "src",
@@ -61,8 +53,7 @@ export function start()
   );
   backgroundFrame.style.display = "none";
 
-  window.addEventListener("DOMContentLoaded", () =>
-  {
+  window.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(backgroundFrame);
   });
   window.addEventListener("message", loadHandler);

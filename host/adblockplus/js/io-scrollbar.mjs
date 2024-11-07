@@ -16,64 +16,51 @@
  */
 
 import IOElement from "./io-element.mjs";
-import {relativeCoordinates} from "./dom.mjs";
+import { relativeCoordinates } from "./dom.mjs";
 
-const {isLeftClick} = IOElement.utils.event;
+const { isLeftClick } = IOElement.utils.event;
 
-class IOScrollbar extends IOElement
-{
-  static get observedAttributes()
-  {
+class IOScrollbar extends IOElement {
+  static get observedAttributes() {
     return ["direction", "position", "size"];
   }
 
-  created()
-  {
-    this.addEventListener(
-      "click",
-      (event) =>
-      {
-        // ignore clicks on the slider or right clicks
-        if (event.target !== this || !isLeftClick(event))
-          return;
-        // prevents clicks action on the component
-        // after dragging the slider so that it won't
-        // be re-positioned again on click coordinates
-        if (this._dragging)
-        {
-          this._dragging = false;
-          return;
-        }
-        const {x, y} = relativeCoordinates(event);
-        if (this.direction === "horizontal")
-          setPosition.call(this, x - (this._sliderSize / 2));
-        else if (this.direction === "vertical")
-          setPosition.call(this, y - (this._sliderSize / 2));
-        this.dispatchEvent(new CustomEvent("scroll"));
+  created() {
+    this.addEventListener("click", (event) => {
+      // ignore clicks on the slider or right clicks
+      if (event.target !== this || !isLeftClick(event)) return;
+      // prevents clicks action on the component
+      // after dragging the slider so that it won't
+      // be re-positioned again on click coordinates
+      if (this._dragging) {
+        this._dragging = false;
+        return;
       }
-    );
+      const { x, y } = relativeCoordinates(event);
+      if (this.direction === "horizontal")
+        setPosition.call(this, x - this._sliderSize / 2);
+      else if (this.direction === "vertical")
+        setPosition.call(this, y - this._sliderSize / 2);
+      this.dispatchEvent(new CustomEvent("scroll"));
+    });
     this.addEventListener(
       "wheel",
-      (event) =>
-      {
+      (event) => {
         stopEvent(event);
         let delta = 0;
-        if (this.direction === "vertical")
-          delta = event.deltaY;
-        else if (this.direction === "horizontal")
-          delta = event.deltaX;
+        if (this.direction === "vertical") delta = event.deltaY;
+        else if (this.direction === "horizontal") delta = event.deltaX;
         // this extra delta transformation is mostly needed for MS Edge
         // but it works OK in every other browser too
-        delta = delta * this._sliderSize / this.size;
+        delta = (delta * this._sliderSize) / this.size;
         setPosition.call(this, this.position + delta);
         this.dispatchEvent(new CustomEvent("scroll"));
       },
-      {passive: false}
+      { passive: false }
     );
   }
 
-  get defaultState()
-  {
+  get defaultState() {
     return {
       direction: "",
       position: 0,
@@ -81,54 +68,44 @@ class IOScrollbar extends IOElement
     };
   }
 
-  get direction()
-  {
+  get direction() {
     return this.state.direction;
   }
 
   // can be (ignore case) horizontal or vertical
-  set direction(value)
-  {
+  set direction(value) {
     value = value.toLowerCase();
-    this.setState({direction: value});
+    this.setState({ direction: value });
     this.setAttribute("direction", value);
     // trigger eventual size recalculation
     sizeChange.call(this);
   }
 
-  get position()
-  {
+  get position() {
     return this.state.position || 0;
   }
 
-  set position(value)
-  {
-    if (!this._elSize)
-      return;
+  set position(value) {
+    if (!this._elSize) return;
     setPosition.call(this, value);
   }
 
   // read-only: the amount of positions covered by the slider
-  get range()
-  {
+  get range() {
     return this._elSize - this._sliderSize;
   }
 
-  get size()
-  {
+  get size() {
     return this.state.size;
   }
 
-  set size(value)
-  {
-    this.setState({size: parseInt(value, 10)});
+  set size(value) {
+    this.setState({ size: parseInt(value, 10) });
     sizeChange.call(this);
   }
 
-  onmousedown(event)
-  {
-    if (!isLeftClick(event))
-      return;
+  onmousedown(event) {
+    if (!isLeftClick(event)) return;
     this._dragging = true;
     this._coords = {
       x: event.clientX,
@@ -145,29 +122,23 @@ class IOScrollbar extends IOElement
     doc.addEventListener("selectstart", stopEvent, true);
   }
 
-  onmousemove(event)
-  {
-    const {x, y} = this._coords;
-    if (this.direction === "horizontal")
-    {
-      const {clientX} = event;
+  onmousemove(event) {
+    const { x, y } = this._coords;
+    if (this.direction === "horizontal") {
+      const { clientX } = event;
       setPosition.call(this, this.position + clientX - x);
       this._coords.x = clientX;
-    }
-    else if (this.direction === "vertical")
-    {
-      const {clientY} = event;
+    } else if (this.direction === "vertical") {
+      const { clientY } = event;
       setPosition.call(this, this.position + clientY - y);
       this._coords.y = clientY;
     }
     this.dispatchEvent(new CustomEvent("scroll"));
   }
 
-  onmouseup(event)
-  {
-    if (!isLeftClick(event))
-      return;
-    const {currentTarget: doc, target} = event;
+  onmouseup(event) {
+    if (!isLeftClick(event)) return;
+    const { currentTarget: doc, target } = event;
     doc.removeEventListener("mousemove", this, true);
     doc.removeEventListener("mouseup", this, true);
     doc.removeEventListener("selectstart", stopEvent, true);
@@ -175,12 +146,10 @@ class IOScrollbar extends IOElement
     // or within this component slider (the only child)
     // otherwise let the click handler ignore the action
     // which happens through the component itself
-    if (target !== this || target === this.child)
-      this._dragging = false;
+    if (target !== this || target === this.child) this._dragging = false;
   }
 
-  render()
-  {
+  render() {
     // the component and its slider are styled 100% through CSS, i.e.
     // io-scrollbar[direction="vertical"] > .slider {}
     this.html`<div
@@ -192,29 +161,16 @@ class IOScrollbar extends IOElement
 
 IOScrollbar.define("io-scrollbar");
 
-function setPosition(value)
-{
+function setPosition(value) {
   this.setState({
-    position: Math.max(
-      0,
-      Math.min(
-        parseFloat(value),
-        this.range
-      )
-    )
+    position: Math.max(0, Math.min(parseFloat(value), this.range))
   });
-  this.style.setProperty(
-    "--position",
-    this.state.position + "px"
-  );
+  this.style.setProperty("--position", this.state.position + "px");
 }
 
-function sizeChange()
-{
-  if (this.direction === "horizontal")
-    this._elSize = this.clientWidth;
-  else if (this.direction === "vertical")
-    this._elSize = this.clientHeight;
+function sizeChange() {
+  if (this.direction === "horizontal") this._elSize = this.clientWidth;
+  else if (this.direction === "vertical") this._elSize = this.clientHeight;
   this._sliderSize = Math.floor(
     Math.min(1, this._elSize / this.state.size) * this._elSize
   );
@@ -231,8 +187,7 @@ function sizeChange()
 
 // if inside a container with its own wheel or mouse events,
 // avoid possible backfiring through already handled events.
-function stopEvent(event)
-{
+function stopEvent(event) {
   event.preventDefault();
   event.stopPropagation();
 }

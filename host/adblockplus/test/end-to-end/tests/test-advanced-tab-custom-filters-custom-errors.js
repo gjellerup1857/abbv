@@ -17,44 +17,42 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const customErrors = require("../test-data/data-custom-filters").customErrors;
 
-describe("test advanced tab custom filters - custom errors", function()
-{
+describe("test advanced tab custom filters - custom errors", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    try
-    {
+  afterEach(async function () {
+    try {
       const advancedPage = new AdvancedPage(browser);
       await advancedPage.init();
       await browser.refresh();
-    }
-    catch (Exception) {}
+    } catch (Exception) {}
     await afterSequence();
   });
 
-  customErrors.forEach(async(dataSet) =>
-  {
-    it("should display filters errors: " + dataSet.testName, async function()
-    {
+  customErrors.forEach(async (dataSet) => {
+    it("should display filters errors: " + dataSet.testName, async function () {
       const advancedPage = new AdvancedPage(browser);
       await advancedPage.init();
       await advancedPage.typeTextToAddCustomFilterListInput(
-        dataSet.customFilter);
+        dataSet.customFilter
+      );
       await advancedPage.clickAddCustomFilterListButton();
       expect(await advancedPage.getCustomFilterListsErrorText()).to.equal(
-        dataSet.errorText);
+        dataSet.errorText
+      );
     });
   });
 });

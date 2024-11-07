@@ -18,13 +18,11 @@
 @import "../../theme/ui/font.css";
 @import "../../theme/ui/light.css";
 
-:root
-{
+:root {
   --content-width: 775px;
 }
 
-body
-{
+body {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,8 +31,7 @@ body
   background-color: var(--background-color-secondary);
 }
 
-main
-{
+main {
   box-sizing: border-box;
   width: var(--content-width);
   border: 1px solid var(--border-color-primary);
@@ -45,26 +42,22 @@ main
 
 h1,
 h2,
-h3
-{
+h3 {
   margin: 0;
 }
 
-h1
-{
+h1 {
   font-size: 40px;
   font-weight: 400;
   color: var(--color-dimmed);
 }
 
-h2
-{
+h2 {
   font-size: 16px;
   color: #333;
 }
 
-h3
-{
+h3 {
   font-size: 16px;
 }
 
@@ -72,41 +65,34 @@ h3
  * Header
  ******************************************************************************/
 
-body > header
-{
+body > header {
   width: var(--content-width);
   padding-bottom: 35px;
 }
 
-body > header > img
-{
+body > header > img {
   height: 32px;
 }
 
-main > header
-{
+main > header {
   border-bottom: 1px solid var(--border-color-primary);
 }
 
-main > header > h1
-{
+main > header > h1 {
   display: flex;
   align-items: center;
 }
 
 html:not([dir="rtl"]) main > header > h1 > *:not(:last-child),
-html[dir="rtl"] main > header > h1 > *:not(:first-child)
-{
+html[dir="rtl"] main > header > h1 > *:not(:first-child) {
   margin-right: 20px;
 }
 
-main > header > h1 > img
-{
+main > header > h1 > img {
   height: 1em;
 }
 
-main > header > p
-{
+main > header > p {
   margin: 20px 0;
   font-size: 16px;
   line-height: 20px;
@@ -116,8 +102,7 @@ main > header > p
  * Features
  ******************************************************************************/
 
-.feature
-{
+.feature {
   margin: 40px 0;
   border: 1px solid var(--border-color-primary);
   border-radius: 6px;
@@ -125,8 +110,7 @@ main > header > p
   background-color: var(--background-color-primary);
 }
 
-.feature > header
-{
+.feature > header {
   display: flex;
   margin-bottom: 20px;
   padding-bottom: 10px;
@@ -135,68 +119,57 @@ main > header > p
   justify-content: space-between;
 }
 
-.feature > header > label
-{
+.feature > header > label {
   display: flex;
   align-items: center;
 }
 
 html:not([dir="rtl"]) .feature > header > label > *:not(:last-child),
-html[dir="rtl"] .feature > header > label > *:not(:first-child)
-{
+html[dir="rtl"] .feature > header > label > *:not(:first-child) {
   margin-right: 0.5em;
 }
 
-.feature > header > .label
-{
+.feature > header > .label {
   font-weight: 600;
   color: var(--color-info);
 }
 
-.feature > header > .label::before
-{
+.feature > header > .label::before {
   content: "(";
 }
 
-.feature > header > .label::after
-{
+.feature > header > .label::after {
   content: ")";
 }
 
-.feature.alwayson > header > .label
-{
-  color: #A9B2BD;
+.feature.alwayson > header > .label {
+  color: #a9b2bd;
 }
 
-.feature > section
-{
+.feature > section {
   display: flex;
 }
 
 html:not([dir="rtl"]) .feature > section > *:not(:last-child),
-html[dir="rtl"] .feature > section > *:not(:first-child)
-{
+html[dir="rtl"] .feature > section > *:not(:first-child) {
   margin-right: 2em;
 }
 
-.feature > section > img
-{
+.feature > section > img {
   object-fit: contain;
 }
 
-.feature p
-{
+.feature p {
   margin-top: 1em;
   margin-bottom: 0;
 }
 
-.feature .label.new
-{
+.feature .label.new {
   padding: 0 4px;
   border-radius: 4px;
   text-transform: uppercase;
   font-size: 12px;
-  color: #FFF;
+  color: #fff;
   background-color: var(--background-color-info);
 }
 
@@ -204,8 +177,7 @@ html[dir="rtl"] .feature > section > *:not(:first-child)
  * Footer
  ******************************************************************************/
 
-footer
-{
+footer {
   margin-top: 40px;
   padding-top: 40px;
   border-top: 1px solid var(--border-color-primary);
@@ -214,36 +186,30 @@ footer
 body.premium footer #choice-none,
 body:not(.premium) footer article:not(#choice-none),
 body:not(.chosen) #choice-finish,
-body.chosen #choice-continue
-{
+body.chosen #choice-continue {
   display: none;
 }
 
-footer .ctas
-{
+footer .ctas {
   display: flex;
   justify-content: flex-end;
 }
 
 html:not([dir="rtl"]) footer .ctas > *:not(:last-child),
-html[dir="rtl"] footer .ctas > *:not(:first-child)
-{
+html[dir="rtl"] footer .ctas > *:not(:first-child) {
   margin-right: 1em;
 }
 
-footer h2
-{
+footer h2 {
   text-transform: uppercase;
 }
 
-footer p a
-{
+footer p a {
   color: var(--color-link);
   text-decoration: none;
 }
 
-footer .cta
-{
+footer .cta {
   min-width: 225px;
   padding: 1em 0.8em;
   border: 1px solid var(--border-color-cta-secondary);
@@ -256,26 +222,22 @@ footer .cta
   cursor: pointer;
 }
 
-footer a.cta
-{
+footer a.cta {
   text-align: center;
   text-decoration: none;
 }
 
-footer .cta:hover
-{
+footer .cta:hover {
   background-color: var(--background-color-cta-secondary-hover);
 }
 
-footer .cta.primary
-{
+footer .cta.primary {
   border-color: var(--border-color-cta-primary);
   color: var(--color-cta-primary);
   background-color: var(--background-color-cta-primary);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
-footer .cta.primary:hover
-{
+footer .cta.primary:hover {
   background-color: var(--background-color-cta-primary-hover);
 }

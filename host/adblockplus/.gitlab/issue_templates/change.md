@@ -11,9 +11,11 @@
 - **Development:** (Mention any implementation details here)
 
 ## Hints for testers
+
 (Mention any areas/scenarios that should be tested in addition to what's described in the spec)
 
 ## Hints for translators
+
 (Mention any changes that were made to any files in the `locale` directory)
 
 /label ~"Product:: ABP"

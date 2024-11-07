@@ -15,4 +15,4 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {info as default} from "../config/env.mjs";
+export { info as default } from "../config/env.mjs";

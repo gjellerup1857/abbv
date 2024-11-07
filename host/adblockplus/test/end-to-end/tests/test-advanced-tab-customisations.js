@@ -17,92 +17,87 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 
-describe("test advanced tab customizations", function()
-{
+describe("test advanced tab customizations", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display show number of ads blocked as checked", async function()
-  {
+  it("should display show number of ads blocked as checked", async function () {
     const advancedPage = new AdvancedPage(browser);
     await switchToABPOptionsTab();
     await advancedPage.init();
-    expect(await advancedPage.
-      isShowNumberOfAdsBlockedCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowNumberOfAdsBlockedCheckboxSelected()).to.be
+      .true;
     await advancedPage.clickShowNumberOfAdsBlockedCheckbox();
-    expect(await advancedPage.
-      isShowNumberOfAdsBlockedCheckboxSelected("false")).to.be.true;
+    expect(await advancedPage.isShowNumberOfAdsBlockedCheckboxSelected("false"))
+      .to.be.true;
     await advancedPage.clickShowNumberOfAdsBlockedCheckbox();
-    expect(await advancedPage.
-      isShowNumberOfAdsBlockedCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowNumberOfAdsBlockedCheckboxSelected()).to.be
+      .true;
   });
 
-  it("should display show block element menu as checked", async function()
-  {
+  it("should display show block element menu as checked", async function () {
     const advancedPage = new AdvancedPage(browser);
     await switchToABPOptionsTab();
     await advancedPage.init();
-    expect(await advancedPage.
-      isShowBlockElementCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowBlockElementCheckboxSelected()).to.be.true;
     await advancedPage.clickShowBlockElementCheckbox();
-    expect(await advancedPage.
-      isShowBlockElementCheckboxSelected("false")).to.be.true;
+    expect(await advancedPage.isShowBlockElementCheckboxSelected("false")).to.be
+      .true;
     await advancedPage.clickShowBlockElementCheckbox();
-    expect(await advancedPage.
-      isShowBlockElementCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowBlockElementCheckboxSelected()).to.be.true;
   });
 
-  it("should display show adblock plus panel as checked", async function()
-  {
+  it("should display show adblock plus panel as checked", async function () {
     const advancedPage = new AdvancedPage(browser);
     await switchToABPOptionsTab();
     await advancedPage.init();
-    expect(await advancedPage.
-      isShowAdblockPlusPanelCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowAdblockPlusPanelCheckboxSelected()).to.be
+      .true;
     await advancedPage.clickShowAdblockPlusPanelCheckbox();
-    expect(await advancedPage.
-      isShowAdblockPlusPanelCheckboxSelected("false")).to.be.true;
+    expect(await advancedPage.isShowAdblockPlusPanelCheckboxSelected("false"))
+      .to.be.true;
     await advancedPage.clickShowAdblockPlusPanelCheckbox();
-    expect(await advancedPage.
-      isShowAdblockPlusPanelCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowAdblockPlusPanelCheckboxSelected()).to.be
+      .true;
   });
 
-  it("should display turn on debug element as unchecked", async function()
-  {
+  it("should display turn on debug element as unchecked", async function () {
     const advancedPage = new AdvancedPage(browser);
     await switchToABPOptionsTab();
     await advancedPage.init();
-    expect(await advancedPage.
-      isTurnOnDebugElementCheckboxSelected("false")).to.be.true;
+    expect(await advancedPage.isTurnOnDebugElementCheckboxSelected("false")).to
+      .be.true;
     await advancedPage.clickTurnOnDebugElementCheckbox();
-    expect(await advancedPage.
-      isTurnOnDebugElementCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isTurnOnDebugElementCheckboxSelected()).to.be
+      .true;
     await advancedPage.clickTurnOnDebugElementCheckbox();
-    expect(await advancedPage.
-      isTurnOnDebugElementCheckboxSelected("false")).to.be.true;
+    expect(await advancedPage.isTurnOnDebugElementCheckboxSelected("false")).to
+      .be.true;
   });
 
-  it("should display show useful notifications as checked", async function()
-  {
+  it("should display show useful notifications as checked", async function () {
     const advancedPage = new AdvancedPage(browser);
     await switchToABPOptionsTab();
     await advancedPage.init();
-    expect(await advancedPage.
-      isShowUsefulNotificationsCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowUsefulNotificationsCheckboxSelected()).to.be
+      .true;
     await advancedPage.clickShowUsefulNotificationsCheckbox();
-    expect(await advancedPage.
-      isShowUsefulNotificationsCheckboxSelected("false")).to.be.true;
+    expect(
+      await advancedPage.isShowUsefulNotificationsCheckboxSelected("false")
+    ).to.be.true;
     await advancedPage.clickShowUsefulNotificationsCheckbox();
-    expect(await advancedPage.
-      isShowUsefulNotificationsCheckboxSelected()).to.be.true;
+    expect(await advancedPage.isShowUsefulNotificationsCheckboxSelected()).to.be
+      .true;
   });
 });

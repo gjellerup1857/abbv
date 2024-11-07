@@ -18,31 +18,28 @@
 "use strict";
 
 const fs = require("fs");
-const {unlinkSync, readFileSync} = fs;
-const {basename} = require("path");
-const {promisify} = require("util");
+const { unlinkSync, readFileSync } = fs;
+const { basename } = require("path");
+const { promisify } = require("util");
 const yaml = require("js-yaml");
 const glob = promisify(require("glob").glob);
-const {rmdir} = fs.promises;
-const {defaultLocale} = require("../common/config");
+const { rmdir } = fs.promises;
+const { defaultLocale } = require("../common/config");
 
-async function removeTranslations(ignoreLocale, ignoreFiles)
-{
+async function removeTranslations(ignoreLocale, ignoreFiles) {
   const files = await glob(`./locale/!(${ignoreLocale})/!(${ignoreFiles})`);
   files.forEach(unlinkSync);
 
   // Remove empty locale directories
   const localeFolders = await glob("./locale/*");
-  for (const localeFolder of localeFolders)
-  {
+  for (const localeFolder of localeFolders) {
     rmdir(localeFolder).catch(() => "");
   }
 }
 
 const result = yaml.safeLoad(readFileSync("./crowdin.yml", "utf8"));
-const {ignore} = result.files[0];
-if (ignore)
-{
+const { ignore } = result.files[0];
+if (ignore) {
   const ignoreFiles = ignore.map((file) => basename(file)).join("|");
   removeTranslations(defaultLocale, ignoreFiles);
 }

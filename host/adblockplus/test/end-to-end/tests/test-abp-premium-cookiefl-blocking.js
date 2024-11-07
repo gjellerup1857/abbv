@@ -17,26 +17,29 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       globalRetriesNumber, switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  enablePremiumByMockServer,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const TestPages = require("../page-objects/testPages.page");
 
-describe("test cookie consent filterlist blocking for premium users", function()
-{
+describe("test cookie consent filterlist blocking for premium users", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should block cookie banner", async function()
-  {
+  it("should block cookie banner", async function () {
     await enablePremiumByMockServer();
     const generalPage = new GeneralPage(browser);
-    await browser.newWindow("https://shaack.com/projekte/cookie-consent-js/examples/cookie-consent-example.html");
+    await browser.newWindow(
+      "https://shaack.com/projekte/cookie-consent-js/examples/cookie-consent-example.html"
+    );
     await generalPage.switchToTab("cookie-consent-js testpage");
     const testPages = new TestPages(browser);
     expect(await testPages.isCookieBannerDisplayed()).to.be.true;

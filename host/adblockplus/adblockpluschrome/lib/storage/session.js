@@ -33,14 +33,12 @@ const useMemoryStorage = !("session" in browser.storage);
  * Session storage for storing in-memory data in a way that's safe to use in
  * a service worker context.
  */
-export class SessionStorage
-{
+export class SessionStorage {
   /**
    * Initializes session storage.
    * @param {string} namespace
    */
-  constructor(namespace)
-  {
+  constructor(namespace) {
     this._namespace = namespace;
     this._queue = Promise.resolve();
   }
@@ -50,8 +48,7 @@ export class SessionStorage
    * @param {string} key
    * @return {string}
    */
-  _getGlobalKey(key)
-  {
+  _getGlobalKey(key) {
     return `session:${this._namespace}:${key}`;
   }
 
@@ -60,11 +57,9 @@ export class SessionStorage
    * @param {string} key
    * @return {Promise}
    */
-  async delete(key)
-  {
+  async delete(key) {
     const globalKey = this._getGlobalKey(key);
-    if (useMemoryStorage)
-      return memoryStorage.delete(globalKey);
+    if (useMemoryStorage) return memoryStorage.delete(globalKey);
 
     return browser.storage.session.remove(globalKey);
   }
@@ -74,11 +69,9 @@ export class SessionStorage
    * @param {string} key
    * @return {Promise<any>}
    */
-  async get(key)
-  {
+  async get(key) {
     const globalKey = this._getGlobalKey(key);
-    if (useMemoryStorage)
-      return memoryStorage.get(globalKey);
+    if (useMemoryStorage) return memoryStorage.get(globalKey);
 
     const storage = await browser.storage.session.get(globalKey);
     return storage[globalKey];
@@ -90,16 +83,14 @@ export class SessionStorage
    * @param {any} value
    * @return {Promise}
    */
-  async set(key, value)
-  {
+  async set(key, value) {
     const globalKey = this._getGlobalKey(key);
-    if (useMemoryStorage)
-    {
+    if (useMemoryStorage) {
       memoryStorage.set(globalKey, value);
       return;
     }
 
-    await browser.storage.session.set({[globalKey]: value});
+    await browser.storage.session.set({ [globalKey]: value });
   }
 
   /**
@@ -107,8 +98,7 @@ export class SessionStorage
    * @param {Function} fn
    * @return {Promise}
    */
-  async transaction(fn)
-  {
+  async transaction(fn) {
     this._queue = this._queue
       // Necessary to avoid breakage of promise chain
       .catch(console.error)

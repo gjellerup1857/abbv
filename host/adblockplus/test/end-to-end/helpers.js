@@ -17,7 +17,9 @@
 
 "use strict";
 
-require("dotenv").config({path: ["../../.env.e2e", "../../.env.e2e.defaults"]});
+require("dotenv").config({
+  path: ["../../.env.e2e", "../../.env.e2e.defaults"]
+});
 const fs = require("fs");
 const path = require("path");
 
@@ -29,18 +31,24 @@ const PremiumHeaderChunk = require("./page-objects/premiumHeader.chunk");
 const globalRetriesNumber = 0;
 const isGitlab = process.env.CI === "true";
 
-const chromeBuildMV2 =
-  findFirstMatchingFile(`../../${process.env.CHROME_BUILD_MV2}`);
+const chromeBuildMV2 = findFirstMatchingFile(
+  `../../${process.env.CHROME_BUILD_MV2}`
+);
 
 const distPath = path.join(process.cwd(), "..", "..", "dist");
-const helperExtensionMV2Path =
-  path.join(distPath, "devenv", "helper-extension-mv2.zip");
-const helperExtensionMV3Path =
-  path.join(distPath, "devenv", "helper-extension-mv3.zip");
+const helperExtensionMV2Path = path.join(
+  distPath,
+  "devenv",
+  "helper-extension-mv2.zip"
+);
+const helperExtensionMV3Path = path.join(
+  distPath,
+  "devenv",
+  "helper-extension-mv3.zip"
+);
 
-async function afterSequence(optionsUrl = null)
-{
-  await switchToABPOptionsTab({optionsUrl, refresh: true});
+async function afterSequence(optionsUrl = null) {
+  await switchToABPOptionsTab({ optionsUrl, refresh: true });
 
   const generalPage = new GeneralPage(browser);
   await generalPage.init();
@@ -48,49 +56,44 @@ async function afterSequence(optionsUrl = null)
   await waitForAbleToExecuteScripts();
 }
 
-async function beforeSequence({
-  expectInstalledTab = true,
-  isSmokeTest = false
-} = {expectInstalledTab: true})
-{
-  const {origin, optionsUrl, popupUrl, extVersion} = await waitForExtension();
+async function beforeSequence(
+  { expectInstalledTab = true, isSmokeTest = false } = {
+    expectInstalledTab: true
+  }
+) {
+  const { origin, optionsUrl, popupUrl, extVersion } = await waitForExtension();
   let installedUrl;
-  if (expectInstalledTab)
-  {
+  if (expectInstalledTab) {
     const timeout = process.env.MANIFEST_VERSION == "3" ? 50000 : 25000;
-    try
-    {
-      await browser.waitUntil(async() =>
-      {
-        for (const handle of await browser.getWindowHandles())
-        {
-          await browser.switchToWindow(handle);
-          installedUrl = await browser.getUrl();
-          if (/installed|first-run/.test(installedUrl))
-          {
-            await browser.url("about:blank"); // Ensures at least one open tab
-            return true;
+    try {
+      await browser.waitUntil(
+        async () => {
+          for (const handle of await browser.getWindowHandles()) {
+            await browser.switchToWindow(handle);
+            installedUrl = await browser.getUrl();
+            if (/installed|first-run/.test(installedUrl)) {
+              await browser.url("about:blank"); // Ensures at least one open tab
+              return true;
+            }
           }
+        },
+        {
+          timeout,
+          interval: 2000,
+          timeoutMsg: `Installed page didn't open after ${timeout}ms`
         }
-      }, {
-        timeout,
-        interval: 2000,
-        timeoutMsg: `Installed page didn't open after ${timeout}ms`
-      });
-    }
-    catch (e)
-    {
-      if (isSmokeTest)
-      {
-        throw new Error(`Installed page didn't open after ${timeout}ms` +
-          " while executing a smoke test"
+      );
+    } catch (e) {
+      if (isSmokeTest) {
+        throw new Error(
+          `Installed page didn't open after ${timeout}ms` +
+            " while executing a smoke test"
         );
       }
     }
   }
 
-  if (process.env.LOCAL_RUN !== "true")
-    await browser.setWindowSize(1400, 1000);
+  if (process.env.LOCAL_RUN !== "true") await browser.setWindowSize(1400, 1000);
 
   // beforeSequence() is usually called once at the beggining of test suites
   // right after extension installation. That may stress the browser for a while
@@ -99,53 +102,42 @@ async function beforeSequence({
   // mechanism in switchToABPOptionsTab()
   await afterSequence(optionsUrl);
 
-  if (isFirefox())
-  {
+  if (isFirefox()) {
     process.env.MANIFEST_VERSION = "2";
-  }
-  else
-  {
-    const manifestVersion = await browser.
-      executeScript(
-        "return browser.runtime.getManifest().manifest_version;", []);
+  } else {
+    const manifestVersion = await browser.executeScript(
+      "return browser.runtime.getManifest().manifest_version;",
+      []
+    );
     process.env.MANIFEST_VERSION = manifestVersion.toString();
   }
 
-  return {origin, optionsUrl, popupUrl, installedUrl, extVersion};
+  return { origin, optionsUrl, popupUrl, installedUrl, extVersion };
 }
 
-async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
-{
+async function doesTabExist(tabName, timeout = 3000, countThreshold = 1) {
   const startTime = new Date().getTime();
   let count = 0;
-  const checkTab = async(tabIdentifier) =>
-  {
-    if (typeof tabIdentifier === "string")
-    {
+  const checkTab = async (tabIdentifier) => {
+    if (typeof tabIdentifier === "string") {
       const title = await browser.getTitle();
       const url = await browser.getUrl();
       return title === tabIdentifier || url === tabIdentifier;
-    }
-    else if (tabIdentifier instanceof RegExp)
-    {
+    } else if (tabIdentifier instanceof RegExp) {
       const url = await browser.getUrl();
       return tabIdentifier.test(url);
     }
     return false;
   };
-  while (new Date().getTime() - startTime < timeout)
-  {
+  while (new Date().getTime() - startTime < timeout) {
     const tabs = await browser.getWindowHandles();
-    for (const tab of tabs)
-    {
+    for (const tab of tabs) {
       await browser.switchToWindow(tab);
-      if (await checkTab(tabName))
-      {
+      if (await checkTab(tabName)) {
         count++;
       }
     }
-    if (count >= countThreshold)
-    {
+    if (count >= countThreshold) {
       return true;
     }
     await browser.pause(200);
@@ -153,10 +145,10 @@ async function doesTabExist(tabName, timeout = 3000, countThreshold = 1)
   return false;
 }
 
-async function enablePremiumByMockServer()
-{
+async function enablePremiumByMockServer() {
   await switchToABPOptionsTab();
-  await browser.executeScript(`
+  await browser.executeScript(
+    `
     Promise.all([
       new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({type: "prefs.set",
@@ -181,35 +173,34 @@ async function enablePremiumByMockServer()
         });
       })
     ]).then(results => console.log(results));
-  `, []);
+  `,
+    []
+  );
 
   const premiumHeaderChunk = new PremiumHeaderChunk(browser);
   const timeout = 15000;
-  await browser.waitUntil(async() =>
-  {
-    try
-    {
-      await premiumHeaderChunk.premiumButton.waitForDisplayed();
-      return true;
-    }
-    catch (e)
-    {
-      await browser.refresh();
-    }
-  }, {timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms`});
+  await browser.waitUntil(
+    async () => {
+      try {
+        await premiumHeaderChunk.premiumButton.waitForDisplayed();
+        return true;
+      } catch (e) {
+        await browser.refresh();
+      }
+    },
+    { timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms` }
+  );
 }
 
-async function enablePremiumByUI()
-{
+async function enablePremiumByUI() {
   const premiumHeaderChunk = new PremiumHeaderChunk(browser);
   await premiumHeaderChunk.clickUpgradeButton();
-  await premiumHeaderChunk.
-    switchToTab(/accounts.adblockplus.org\/en\/premium/);
+  await premiumHeaderChunk.switchToTab(/accounts.adblockplus.org\/en\/premium/);
   let currentUrl = await premiumHeaderChunk.getCurrentUrl();
-  if (!currentUrl.includes("accounts"))
-  {
-    await premiumHeaderChunk.
-      switchToTab(/accounts.adblockplus.org\/en\/premium/);
+  if (!currentUrl.includes("accounts")) {
+    await premiumHeaderChunk.switchToTab(
+      /accounts.adblockplus.org\/en\/premium/
+    );
     await browser.pause(1000);
     currentUrl = await premiumHeaderChunk.getCurrentUrl();
   }
@@ -219,13 +210,14 @@ async function enablePremiumByUI()
   await premiumPage.clickPremiumCheckoutButton();
   const premiumCheckoutPage = new PremiumCheckoutPage(browser);
   await premiumCheckoutPage.init();
-  await premiumCheckoutPage.typeTextToEmailField("test_automation" +
-    randomIntFromInterval(1000000, 9999999).toString() + "@adblock.org");
-  try
-  {
+  await premiumCheckoutPage.typeTextToEmailField(
+    "test_automation" +
+      randomIntFromInterval(1000000, 9999999).toString() +
+      "@adblock.org"
+  );
+  try {
     await premiumCheckoutPage.typeTextToZIPField("10001");
-  }
-  catch (e) {} // Depending on the location, the ZIP may be required or not
+  } catch (e) {} // Depending on the location, the ZIP may be required or not
   await premiumCheckoutPage.clickContinueButton();
   await premiumCheckoutPage.typeTextToCardNumberField("4242424242424242");
   await premiumCheckoutPage.typeTextToCardExpiryField("0528");
@@ -235,39 +227,39 @@ async function enablePremiumByUI()
 
   // Real premium takes a while to be enabled
   const timeout = 80000;
-  await browser.waitUntil(async() =>
-  {
-    try
-    {
-      await premiumHeaderChunk.premiumButton.waitForDisplayed();
-      return true;
-    }
-    catch (e)
-    {
-      await switchToABPOptionsTab({refresh: true});
-    }
-  }, {timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms`});
+  await browser.waitUntil(
+    async () => {
+      try {
+        await premiumHeaderChunk.premiumButton.waitForDisplayed();
+        return true;
+      } catch (e) {
+        await switchToABPOptionsTab({ refresh: true });
+      }
+    },
+    { timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms` }
+  );
 }
 
-async function executeAsyncScript(script, ...args)
-{
-  const [isError, value] = await browser.executeAsyncScript(`
+async function executeAsyncScript(script, ...args) {
+  const [isError, value] = await browser.executeAsyncScript(
+    `
     let promise = (async function() { ${script} }).apply(null, arguments[0]);
     let callback = arguments[arguments.length - 1];
     promise.then(
       res => callback([false, res]),
       err => callback([true, err instanceof Error ? err.message : err])
-    );`, args);
+    );`,
+    args
+  );
 
-  if (isError)
-    throw new Error(value);
+  if (isError) throw new Error(value);
   return value;
 }
 
-async function getABPOptionsTabId()
-{
-  await switchToABPOptionsTab({switchToFrame: false});
-  const currentTab = await browser.executeAsyncScript(`
+async function getABPOptionsTabId() {
+  await switchToABPOptionsTab({ switchToFrame: false });
+  const currentTab = await browser.executeAsyncScript(
+    `
     function getTabID()
     {
       return new Promise((resolve, reject) =>
@@ -286,88 +278,77 @@ async function getABPOptionsTabId()
         return responseTabID;}
         var callback = arguments[arguments.length - 1];
         returnID().then((data)=> {callback(data)
-      });`, []);
+      });`,
+    []
+  );
   return currentTab;
 }
 
-function findFirstMatchingFile(pathWithPattern)
-{
+function findFirstMatchingFile(pathWithPattern) {
   const dir = path.dirname(pathWithPattern);
   const pattern = path.basename(pathWithPattern);
   const regexPattern = new RegExp(pattern.replace("*", ".*"));
 
   let files;
-  try
-  {
+  try {
     files = fs.readdirSync(dir);
-  }
-  catch (err)
-  {
-    if (!err.message.includes("ENOENT: no such file or directory"))
-      throw err;
+  } catch (err) {
+    if (!err.message.includes("ENOENT: no such file or directory")) throw err;
 
     throw new Error("The 'dist/release/' folder does not exist");
   }
 
-  const firstFile = files.find(file => regexPattern.test(file));
-  if (firstFile)
-    return path.join(dir, firstFile);
+  const firstFile = files.find((file) => regexPattern.test(file));
+  if (firstFile) return path.join(dir, firstFile);
 
   console.warn(`No file with pattern ${pattern} found in dir ${dir}`);
 }
 
-function getExtension(extensionPath)
-{
+function getExtension(extensionPath) {
   return fs.readFileSync(extensionPath).toString("base64");
 }
 
-function getChromiumMV2Extension()
-{
+function getChromiumMV2Extension() {
   return getExtension(chromeBuildMV2);
 }
 
-function getHelperExtension(manifestVersion)
-{
+function getHelperExtension(manifestVersion) {
   let helperExtensionPath;
-  if (manifestVersion == "MV2")
-  {
+  if (manifestVersion == "MV2") {
     helperExtensionPath = helperExtensionMV2Path;
-  }
-  else if (manifestVersion == "MV3")
-  {
+  } else if (manifestVersion == "MV3") {
     helperExtensionPath = helperExtensionMV3Path;
   }
   return getExtension(helperExtensionPath);
 }
 
-function getCurrentDate(locale)
-{
+function getCurrentDate(locale) {
   return new Date().toLocaleDateString(locale);
 }
 
-function randomIntFromInterval(min, max)
-{
+function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-async function switchToABPOptionsTab(options = {})
-{
-  const defaultOptions =
-    {switchToFrame: true, optionsUrl: null, refresh: false};
-  const {switchToFrame, optionsUrl, refresh} = {...defaultOptions, ...options};
+async function switchToABPOptionsTab(options = {}) {
+  const defaultOptions = {
+    switchToFrame: true,
+    optionsUrl: null,
+    refresh: false
+  };
+  const { switchToFrame, optionsUrl, refresh } = {
+    ...defaultOptions,
+    ...options
+  };
   const timeout = 5000;
   const quickTimeout = 1000;
 
   const generalPage = new GeneralPage(browser);
-  try
-  {
+  try {
     await generalPage.switchToTab("Adblock Plus Options", quickTimeout);
-  }
-  catch (err)
-  {
+  } catch (err) {
     // optionsUrl is passed when the options tab is expected to be closed
-    if (!optionsUrl)
-      throw err;
+    if (!optionsUrl) throw err;
 
     // When the extension reloads WDIO seems to get confused about the current
     // tab, producing a "no such window" error on any browsing command.
@@ -377,151 +358,137 @@ async function switchToABPOptionsTab(options = {})
     await generalPage.switchToTab("Adblock Plus Options", timeout);
   }
 
-  if (refresh)
-    await browser.refresh();
+  if (refresh) await browser.refresh();
 
-  if (!switchToFrame)
-    return;
+  if (!switchToFrame) return;
 
-  await browser.waitUntil(async() =>
-  {
-    if (await generalPage._generalTabButton.isClickable())
-      return true; // already in the content frame
+  await browser.waitUntil(
+    async () => {
+      if (await generalPage._generalTabButton.isClickable()) return true; // already in the content frame
 
-    try
+      try {
+        await browser.switchToFrame(await $("#content"));
+        return true;
+      } catch (e) {}
+    },
     {
-      await browser.switchToFrame(await $("#content"));
-      return true;
+      timeout,
+      timeoutMsg: `Could not switch to options content frame after ${timeout}ms`
     }
-    catch (e) {}
-  }, {
-    timeout,
-    timeoutMsg: `Could not switch to options content frame after ${timeout}ms`
-  });
+  );
 }
 
-function waitForSwitchToABPOptionsTab(optionsUrl, timeout = 5000)
-{
-  return browser.waitUntil(async() =>
-  {
-    try
+function waitForSwitchToABPOptionsTab(optionsUrl, timeout = 5000) {
+  return browser.waitUntil(
+    async () => {
+      try {
+        await switchToABPOptionsTab({ optionsUrl });
+        return true;
+      } catch (e) {}
+    },
     {
-      await switchToABPOptionsTab({optionsUrl});
-      return true;
+      timeout,
+      interval: 1000,
+      timeoutMsg: `Could not switch to ABP Options Tab after ${timeout}ms`
     }
-    catch (e) {}
-  }, {
-    timeout,
-    interval: 1000,
-    timeoutMsg: `Could not switch to ABP Options Tab after ${timeout}ms`
-  });
+  );
 }
 
 // Wait until the extension doesn't make webdriver throw when running scripts
 // Only needed by firefox
-async function waitForAbleToExecuteScripts(timeout = 15000)
-{
-  if (!isFirefox())
-    return;
+async function waitForAbleToExecuteScripts(timeout = 15000) {
+  if (!isFirefox()) return;
 
-  return browser.waitUntil(async() =>
-  {
-    try
+  return browser.waitUntil(
+    async () => {
+      try {
+        return await browser.executeScript("return true;", []);
+      } catch (e) {}
+    },
     {
-      return await browser.executeScript("return true;", []);
+      timeout,
+      interval: 2000,
+      timeoutMsg: `Webdriver can't execute scripts after ${timeout}ms`
     }
-    catch (e) {}
-  }, {
-    timeout,
-    interval: 2000,
-    timeoutMsg: `Webdriver can't execute scripts after ${timeout}ms`
-  });
+  );
 }
 
 // Under stress conditions, for some reason browser.newWindow() may silently
 // fail. This is a workaround to ensure it either worked or timed out
-async function waitForNewWindow(url, timeout = 5000)
-{
+async function waitForNewWindow(url, timeout = 5000) {
   await browser.newWindow(url);
-  return browser.waitUntil(async() =>
-  {
-    try
+  return browser.waitUntil(
+    async () => {
+      try {
+        await browser.switchWindow(url);
+        return true;
+      } catch (e) {
+        await browser.url(url);
+      }
+    },
     {
-      await browser.switchWindow(url);
-      return true;
+      timeout,
+      timeoutMsg: `Could not open new window "${url}" after ${timeout}ms`
     }
-    catch (e)
-    {
-      await browser.url(url);
-    }
-  }, {
-    timeout,
-    timeoutMsg: `Could not open new window "${url}" after ${timeout}ms`
-  });
+  );
 }
 
 // Polling expect function calls until they pass
-async function waitForAssertion(expectFn, timeout = 5000, message = "Timed out",
-                                interval = 500)
-{
-  return browser.waitUntil(async() =>
-  {
-    try
-    {
-      await expectFn();
-      return true;
-    }
-    catch (e)
-    {
-      await browser.refresh();
-    }
-  }, {timeout, interval, timeoutMsg: `${message} after ${timeout}ms`});
+async function waitForAssertion(
+  expectFn,
+  timeout = 5000,
+  message = "Timed out",
+  interval = 500
+) {
+  return browser.waitUntil(
+    async () => {
+      try {
+        await expectFn();
+        return true;
+      } catch (e) {
+        await browser.refresh();
+      }
+    },
+    { timeout, interval, timeoutMsg: `${message} after ${timeout}ms` }
+  );
 }
 
-async function waitForCondition(condition, object = null, waitTime = 150000,
-                                refresh = true, pauseTime = 200, text = null)
-{
+async function waitForCondition(
+  condition,
+  object = null,
+  waitTime = 150000,
+  refresh = true,
+  pauseTime = 200,
+  text = null
+) {
   let waitTimeMS = 0;
   let conditionResult = false;
-  while (waitTimeMS <= waitTime)
-  {
-    if (refresh)
-    {
+  while (waitTimeMS <= waitTime) {
+    if (refresh) {
       await browser.refresh();
     }
-    if (object !== null)
-    {
-      if (text !== null)
-      {
+    if (object !== null) {
+      if (text !== null) {
         conditionResult = (await object[condition]()).includes(text);
-      }
-      else
-      {
+      } else {
         conditionResult = await object[condition]();
       }
-    }
-    else
-    {
+    } else {
       conditionResult = await condition;
     }
-    if (conditionResult == true)
-    {
+    if (conditionResult == true) {
       break;
-    }
-    else
-    {
+    } else {
       await browser.pause(pauseTime);
       waitTimeMS += pauseTime;
     }
   }
-  if (waitTimeMS >= waitTime)
-  {
+  if (waitTimeMS >= waitTime) {
     throw new Error("Condition was not met within the waitTime!");
   }
 }
 
-async function waitForExtension()
-{
+async function waitForExtension() {
   const timeout = 20000;
   let origin;
   let optionsUrl;
@@ -530,46 +497,48 @@ async function waitForExtension()
 
   await waitForAbleToExecuteScripts();
 
-  await browser.waitUntil(async() =>
-  {
-    for (const handle of await browser.getWindowHandles())
-    {
-      await browser.switchToWindow(handle);
+  await browser.waitUntil(
+    async () => {
+      for (const handle of await browser.getWindowHandles()) {
+        await browser.switchToWindow(handle);
 
-      ({origin, optionsUrl, popupUrl, extVersion} =
-        await browser.executeAsync(async callback =>
-        {
-          if (typeof browser !== "undefined" &&
-              browser.management !== "undefined")
-          {
-            const info = await browser.management.getSelf();
-            const manifest = await browser.runtime.getManifest();
-            const popupPath = manifest.applications?.gecko ?
-              await browser.action.getPopup({}) :
-              manifest.manifest_version == "3" ?
-              `${location.origin}/${manifest.action.default_popup}` :
-              `${location.origin}/${manifest.browser_action.default_popup}`;
+        ({ origin, optionsUrl, popupUrl, extVersion } =
+          await browser.executeAsync(async (callback) => {
+            if (
+              typeof browser !== "undefined" &&
+              browser.management !== "undefined"
+            ) {
+              const info = await browser.management.getSelf();
+              const manifest = await browser.runtime.getManifest();
+              const popupPath = manifest.applications?.gecko
+                ? await browser.action.getPopup({})
+                : manifest.manifest_version == "3"
+                  ? `${location.origin}/${manifest.action.default_popup}`
+                  : `${location.origin}/${manifest.browser_action.default_popup}`;
 
-            callback(info.optionsUrl ? {
-                origin: location.origin,
-                optionsUrl: info.optionsUrl,
-                popupUrl: popupPath,
-                extVersion: info.version
-            } : {});
-          }
-          else
-          {
-            callback({});
-          }
-        }));
-      if (origin)
-      {
-        return true;
+              callback(
+                info.optionsUrl
+                  ? {
+                      origin: location.origin,
+                      optionsUrl: info.optionsUrl,
+                      popupUrl: popupPath,
+                      extVersion: info.version
+                    }
+                  : {}
+              );
+            } else {
+              callback({});
+            }
+          }));
+        if (origin) {
+          return true;
+        }
       }
-    }
-  }, {timeout, timeoutMsg: `Options page not found after ${timeout}ms`});
+    },
+    { timeout, timeoutMsg: `Options page not found after ${timeout}ms` }
+  );
 
-  return {origin, optionsUrl, popupUrl, extVersion};
+  return { origin, optionsUrl, popupUrl, extVersion };
 }
 
 /**
@@ -583,88 +552,78 @@ async function waitForExtension()
  * @returns {Number} `browser.tabs.TAB_ID_NONE` when tab was not found,
  * or the tab ID from the browser.tabs Web extension API.
  */
-async function getTabId({title, urlPattern})
-{
+async function getTabId({ title, urlPattern }) {
   const currentWindowHandle = await browser.getWindowHandle();
-  await switchToABPOptionsTab({switchToFrame: false});
+  await switchToABPOptionsTab({ switchToFrame: false });
 
   const queryOptions = {};
-  if (title)
-  {
+  if (title) {
     queryOptions.title = title;
   }
-  if (urlPattern)
-  {
+  if (urlPattern) {
     queryOptions.url = urlPattern;
   }
 
-  const tabId = await browser.executeAsync(async(params, done) =>
-  {
-    try
-    {
-      const tabs = await browser.tabs.query(params.queryOptions);
-      if (tabs.length)
-      {
-        done(tabs[0].id);
-        return;
+  const tabId = await browser.executeAsync(
+    async (params, done) => {
+      try {
+        const tabs = await browser.tabs.query(params.queryOptions);
+        if (tabs.length) {
+          done(tabs[0].id);
+          return;
+        }
+      } catch (error) {
+        console.error(error);
       }
-    }
-    catch (error)
-    {
-      console.error(error);
-    }
 
-    done(browser.tabs.TAB_ID_NONE);
-  }, {queryOptions});
+      done(browser.tabs.TAB_ID_NONE);
+    },
+    { queryOptions }
+  );
 
   await browser.switchToWindow(currentWindowHandle);
 
   return tabId;
 }
 
-function lambdatestRunChecks()
-{
-  if (isGitlab)
-  {
+function lambdatestRunChecks() {
+  if (isGitlab) {
     return;
   }
 
-  if (!process.env.LT_USERNAME || !process.env.LT_ACCESS_KEY)
-  {
-    console.error("\x1b[33m%s\x1b[0m", `
+  if (!process.env.LT_USERNAME || !process.env.LT_ACCESS_KEY) {
+    console.error(
+      "\x1b[33m%s\x1b[0m",
+      `
 -----------------------------------------------------------------
 Please set the following environment variables in the .env.e2e file:
 LT_USERNAME
 LT_ACCESS_KEY
 https://www.lambdatest.com/support/docs/using-environment-variables-for-authentication-credentials/
 -----------------------------------------------------------------
-    `);
+    `
+    );
     process.exit(1);
   }
 }
 
-function isBrowser(browserName)
-{
+function isBrowser(browserName) {
   return browser.capabilities.browserName.toLowerCase().includes(browserName);
 }
 
-function isChrome()
-{
+function isChrome() {
   return isBrowser("chrome");
 }
 
-function isFirefox()
-{
+function isFirefox() {
   return isBrowser("firefox");
 }
 
-function isEdge()
-{
+function isEdge() {
   return isBrowser("edge");
 }
 
-async function uninstallExtension()
-{
+async function uninstallExtension() {
   await browser.executeScript("browser.management.uninstallSelf();", []);
 
   const generalPage = new GeneralPage(browser);
@@ -673,27 +632,23 @@ async function uninstallExtension()
   return await browser.getUrl();
 }
 
-
 /**
  * Adds filters to the extension using the filters.importRaw message
  * @param {string} filters - Filters text to add
  * @returns {Promise<void>}
  */
-async function addFiltersToABP(filters)
-{
-  const error = await browser.executeAsync(async(filtersToAdd, callback) =>
-  {
-    const [errors] = await browser.runtime.sendMessage(
-      {type: "filters.importRaw", text: filtersToAdd}
-    );
-    if (typeof errors != "undefined" && errors[0])
-      callback(errors[0]);
+async function addFiltersToABP(filters) {
+  const error = await browser.executeAsync(async (filtersToAdd, callback) => {
+    const [errors] = await browser.runtime.sendMessage({
+      type: "filters.importRaw",
+      text: filtersToAdd
+    });
+    if (typeof errors != "undefined" && errors[0]) callback(errors[0]);
 
     callback();
   }, filters);
 
-  if (error)
-    throw new Error(error);
+  if (error) throw new Error(error);
 }
 
 /**
@@ -701,21 +656,16 @@ async function addFiltersToABP(filters)
  *
  * @param {object} message The message to be sent to the extension
  */
-async function sendExtMessage(message)
-{
+async function sendExtMessage(message) {
   const currentHandle = await browser.getWindowHandle();
 
   // open the options page and cleanup the allowlisting
   await switchToABPOptionsTab();
 
-  const extResponse = await browser.executeAsync(
-    async(params, callback) =>
-    {
-      const result = await browser.runtime.sendMessage(params);
-      callback(result);
-    },
-    message
-  );
+  const extResponse = await browser.executeAsync(async (params, callback) => {
+    const result = await browser.runtime.sendMessage(params);
+    callback(result);
+  }, message);
 
   // go back to prev page
   await browser.switchToWindow(currentHandle);
@@ -726,8 +676,7 @@ async function sendExtMessage(message)
  * Removes a filter.
  * @param {string} filterText The filter text.
  */
-async function removeFilter(filterText)
-{
+async function removeFilter(filterText) {
   return sendExtMessage({
     type: "filters.remove",
     text: filterText
@@ -738,8 +687,7 @@ async function removeFilter(filterText)
  * Adds a filter.
  * @param {string} filterText The filter text.
  */
-async function addFilter(filterText)
-{
+async function addFilter(filterText) {
   return sendExtMessage({
     type: "filters.add",
     text: filterText
@@ -753,8 +701,7 @@ async function addFilter(filterText)
  * @param {any} value the pref value
  * @returns {Promise<void>}
  */
-async function updatePrefs(key, value)
-{
+async function updatePrefs(key, value) {
   return sendExtMessage({
     type: "prefs.set",
     key,
@@ -769,8 +716,7 @@ async function updatePrefs(key, value)
  *    the update page or not before reloading
  * @returns {Promise<void>}
  */
-async function reloadExtension(suppressUpdatePage = true)
-{
+async function reloadExtension(suppressUpdatePage = true) {
   // Extension pages will be closed during reload,
   // create a new tab to avoid the "target window already closed" error
   await waitForNewWindow("https://example.com");
@@ -793,16 +739,31 @@ async function reloadExtension(suppressUpdatePage = true)
 }
 
 module.exports = {
-  afterSequence, beforeSequence, doesTabExist,
+  afterSequence,
+  beforeSequence,
+  doesTabExist,
   executeAsyncScript,
-  enablePremiumByMockServer, lambdatestRunChecks,
-  getChromiumMV2Extension, getHelperExtension,
-  getCurrentDate, getTabId, enablePremiumByUI,
-  globalRetriesNumber, switchToABPOptionsTab,
-  waitForExtension, getABPOptionsTabId, waitForCondition,
-  waitForNewWindow, waitForAssertion, isChrome,
-  isFirefox, isEdge, uninstallExtension,
-  addFiltersToABP, addFilter, removeFilter,
+  enablePremiumByMockServer,
+  lambdatestRunChecks,
+  getChromiumMV2Extension,
+  getHelperExtension,
+  getCurrentDate,
+  getTabId,
+  enablePremiumByUI,
+  globalRetriesNumber,
+  switchToABPOptionsTab,
+  waitForExtension,
+  getABPOptionsTabId,
+  waitForCondition,
+  waitForNewWindow,
+  waitForAssertion,
+  isChrome,
+  isFirefox,
+  isEdge,
+  uninstallExtension,
+  addFiltersToABP,
+  addFilter,
+  removeFilter,
   reloadExtension,
   updatePrefs
 };

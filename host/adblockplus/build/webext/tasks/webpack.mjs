@@ -28,21 +28,19 @@ export default function webpack({
   addonName,
   addonVersion,
   sourceMapType
-})
-{
+}) {
   // merge2 will merge these streams keeping their existing order. This is
   // important, because if the order changes webpack can give results that are
   // functionally the same between runs, but not byte-for-byte identical.
   return merge2(
-    ...webpackInfo.bundles.map(
-      (bundle) => gulp.src(bundle.src).pipe(named(() => bundle.dest))
+    ...webpackInfo.bundles.map((bundle) =>
+      gulp.src(bundle.src).pipe(named(() => bundle.dest))
     )
-  ).pipe(webpackStream(
-    {
-      quiet: true,
-      config: webpackMerge.merge(
-        webpackInfo.baseConfig,
-        {
+  ).pipe(
+    webpackStream(
+      {
+        quiet: true,
+        config: webpackMerge.merge(webpackInfo.baseConfig, {
           devtool: sourceMapType,
           output: {
             filename: "[name]"
@@ -58,7 +56,7 @@ export default function webpack({
                 test: /info.?/,
                 loader: "wp-template-loader",
                 options: {
-                  data: {addonName, addonVersion}
+                  data: { addonName, addonVersion }
                 }
               },
               {
@@ -84,7 +82,7 @@ export default function webpack({
                   options: {
                     presets: [
                       "@babel/preset-env",
-                      ["@babel/preset-react", {runtime: "automatic"}]
+                      ["@babel/preset-react", { runtime: "automatic" }]
                     ]
                   }
                 }
@@ -103,5 +101,8 @@ export default function webpack({
             perf_hooks: "self"
           }
         })
-    }, webpackMain));
+      },
+      webpackMain
+    )
+  );
 }

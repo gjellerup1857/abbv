@@ -20,15 +20,13 @@ import * as i18n from "./i18n.mjs";
 export const mockBrowser = {
   contentSettings: {
     cookies: {
-      get(details)
-      {
-        return Promise.resolve({setting: "allow"});
+      get(details) {
+        return Promise.resolve({ setting: "allow" });
       }
     },
     javascript: {
-      get(details)
-      {
-        return Promise.resolve({setting: "allow"});
+      get(details) {
+        return Promise.resolve({ setting: "allow" });
       }
     }
   },
@@ -46,8 +44,7 @@ export const mockBrowser = {
   i18n,
 
   management: {
-    getAll()
-    {
+    getAll() {
       return Promise.resolve([
         {
           enabled: true,
@@ -61,14 +58,13 @@ export const mockBrowser = {
   },
 
   runtime: {
-    getManifest()
-    {
+    getManifest() {
       const manifestversionMatch = /[?&]manifestVersion=(\d)/.exec(
         window.top.location.search
       );
-      const manifestVersion = (manifestversionMatch) ?
-        parseInt(manifestversionMatch[1], 10) :
-        2;
+      const manifestVersion = manifestversionMatch
+        ? parseInt(manifestversionMatch[1], 10)
+        : 2;
 
       return {
         manifest_version: manifestVersion

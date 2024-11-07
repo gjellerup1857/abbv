@@ -22,7 +22,7 @@ spec:
 ---
 default:
   image: node:18.17.1
-  cache:  # Cache modules using lock file
+  cache: # Cache modules using lock file
     key:
       files:
         - package-lock.json
@@ -83,7 +83,7 @@ build:
     # Create source archive
     - npm run build:source -- --scope=adblockplus
     # Create extension builds
-    - npm run build:release -- --scope=adblockplus  
+    - npm run build:release -- --scope=adblockplus
   artifacts:
     name: "adblockplus-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     paths:
@@ -125,16 +125,16 @@ buildfromsource:
   image: alpine:latest
   stage: checkfilesizes
   script:
-   - unzip -d unpacked-extension/ host/adblockplus/dist/release/$EXTENSION
-   - cd unpacked-extension/
-   - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
-       echo 'Some extension files are bigger than 4 MB:' &&
-       find . -type f -name '*.js' -size +4000k -exec ls -lh {} \; &&
-       exit 1;
-     else
-       echo 'All extension files are smaller than 4 MB' &&
-       exit 0;
-     fi
+    - unzip -d unpacked-extension/ host/adblockplus/dist/release/$EXTENSION
+    - cd unpacked-extension/
+    - if [ $(find . -type f -name '*.js' -size +4000k | wc -l) -gt 0 ]; then
+      echo 'Some extension files are bigger than 4 MB:' &&
+      find . -type f -name '*.js' -size +4000k -exec ls -lh {} \; &&
+      exit 1;
+      else
+      echo 'All extension files are smaller than 4 MB' &&
+      exit 0;
+      fi
 
 checkfilesizes:MV3:chrome:
   extends: .checkfilesizes
@@ -160,18 +160,18 @@ checkfilesizes:MV2:firefox:
   needs: ["build", "buildfromsource"]
   before_script:
     - if [ ! -f $SOURCE_BUILD ] || [ ! -f $REPOSITORY_BUILD ]; then
-        echo "File not found" &&
-        exit 1;
+      echo "File not found" &&
+      exit 1;
       fi
   script:
     - if((`stat -c%s $REPOSITORY_BUILD`!=`stat -c%s $SOURCE_BUILD`)); then
-        echo "Build from source archive and build from the repository are not the same size" &&
-        ls -l $REPOSITORY_BUILD &&
-        ls -l $SOURCE_BUILD &&
-        exit 1;
+      echo "Build from source archive and build from the repository are not the same size" &&
+      ls -l $REPOSITORY_BUILD &&
+      ls -l $SOURCE_BUILD &&
+      exit 1;
       else
-        echo "Build from source archive and build from the repository are the same size" &&
-        exit 0;
+      echo "Build from source archive and build from the repository are the same size" &&
+      exit 0;
       fi
   rules:
     - !reference [.release-or-main, rules]
@@ -385,6 +385,6 @@ create_release:
   script:
     - apk add nodejs
     - version=${CI_COMMIT_TAG/adblockplus-/""}
-    - release_notes=$(node scripts/release-utils/get-release-notes.js adblockplus $version)  
+    - release_notes=$(node scripts/release-utils/get-release-notes.js adblockplus $version)
     - glab auth login --token $GITLAB_TOKEN_RELEASE
     - glab release create $CI_COMMIT_TAG -n "Adblock Plus $version" host/adblockplus/dist/release/* -N "$release_notes"

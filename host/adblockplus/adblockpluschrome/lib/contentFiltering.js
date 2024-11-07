@@ -19,15 +19,13 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import * as snippets from "@eyeo/snippets";
-import {service as mlService} from "@eyeo/snippets/mlaf";
+import { service as mlService } from "@eyeo/snippets/mlaf";
 
-import {Prefs} from "./prefs.js";
+import { Prefs } from "./prefs.js";
 
-function updateMlTelemetryOptout()
-{
+function updateMlTelemetryOptout() {
   mlService.setOptions({
-    async exceptionRules(tabId)
-    {
+    async exceptionRules(tabId) {
       return ewe.filters.getAllowingFilters(tabId);
     },
     privateBrowsingTelemetry: false,
@@ -35,8 +33,7 @@ function updateMlTelemetryOptout()
   });
 }
 
-export async function start()
-{
+export async function start() {
   await Prefs.untilLoaded;
 
   ewe.snippets.setLibrary({

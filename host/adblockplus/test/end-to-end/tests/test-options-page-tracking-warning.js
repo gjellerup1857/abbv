@@ -17,27 +17,22 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 
-describe("test options page general tab tracking warning", function()
-{
+describe("test options page general tab tracking warning", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display tracking warning", async function()
-  {
+  it("should display tracking warning", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickBlockAdditionalTrackingCheckbox();
-    expect(await generalPage.
-      isTrackingWarningDisplayed()).to.be.true;
+    expect(await generalPage.isTrackingWarningDisplayed()).to.be.true;
     await generalPage.clickOkGotItTrackingWarningButton();
-    expect(await generalPage.
-      isTrackingWarningNotDisplayed()).to.be.true;
+    expect(await generalPage.isTrackingWarningNotDisplayed()).to.be.true;
   });
 });

@@ -16,29 +16,24 @@
  */
 
 import HyperHTMLElement from "hyperhtml-element";
-import {setElementText} from "../src/i18n/index.ts";
+import { setElementText } from "../src/i18n/index.ts";
 
 // common DOM utilities exposed as IOElement.utils
 const DOMUtils = {
-
   // boolean related operations/helpers
   boolean: {
     // utils.boolean.attribute(node, name, setAsTrue):void
     // set a generic node attribute name as "true"
     // if value is a boolean one or it removes the attribute
-    attribute(node, name, setAsTrue)
-    {
+    attribute(node, name, setAsTrue) {
       // don't use `this.value(value)` with `this` as context
       // to make destructuring of helpers always work.
       // @example
       // const {attribute: setBoolAttr} = IOElement.utils.boolean;
       // setBoolAttr(node, 'test', true);
-      if (DOMUtils.boolean.value(setAsTrue))
-      {
+      if (DOMUtils.boolean.value(setAsTrue)) {
         node.setAttribute(name, "true");
-      }
-      else
-      {
+      } else {
         node.removeAttribute(name);
       }
     },
@@ -47,16 +42,11 @@ const DOMUtils = {
     // it returns either true or false
     // via truthy or falsy values, but also via strings
     // representing "true", "false" as well as "0" or "1"
-    value(value)
-    {
-      if (typeof value === "string" && value.length)
-      {
-        try
-        {
+    value(value) {
+      if (typeof value === "string" && value.length) {
+        try {
           value = JSON.parse(value);
-        }
-        catch (error)
-        {
+        } catch (error) {
           // Ignore invalid JSON to continue using value as string
         }
       }
@@ -69,8 +59,7 @@ const DOMUtils = {
     // The left mouse button value is 0 and this
     // is compatible with pointers/touch events
     // where `button` might not be there.
-    isLeftClick(event)
-    {
+    isLeftClick(event) {
       const re = /^(?:click|mouse|touch|pointer)/;
       return re.test(event.type) && !event.button;
     }
@@ -81,49 +70,44 @@ const DOMUtils = {
 let counter = 0;
 
 // common Custom Element class to extend
-class IOElement extends HyperHTMLElement
-{
+class IOElement extends HyperHTMLElement {
   // exposes DOM helpers as read only utils
-  static get utils()
-  {
+  static get utils() {
     return DOMUtils;
   }
 
   // get a unique ID or, if null, set one and returns it
-  static getID(element)
-  {
+  static getID(element) {
     return element.getAttribute("id") || IOElement.setID(element);
   }
 
   // set a unique ID to a generic element and returns the ID
-  static setID(element)
-  {
+  static setID(element) {
     const id = `${element.nodeName.toLowerCase()}-${counter++}`;
     element.setAttribute("id", id);
     return id;
   }
 
   // lazily retrieve or define a custom element ID
-  get id()
-  {
+  get id() {
     return IOElement.getID(this);
   }
 
   // returns true only when the component is live and styled
-  get ready()
-  {
+  get ready() {
     return !!this.offsetParent && this.isStyled();
   }
 
   // whenever an element is created, render its content once
-  created() { this.render(); }
+  created() {
+    this.render();
+  }
 
   // based on a `--component-name: ready;` convention
   // under the `component-name {}` related stylesheet,
   // this method returns true only if such stylesheet
   // has been already loaded.
-  isStyled()
-  {
+  isStyled() {
     const computed = window.getComputedStyle(this, null);
     const property = "--" + this.nodeName.toLowerCase();
     // in some case Edge returns '#fff' instead of ready
@@ -138,12 +122,10 @@ class IOElement extends HyperHTMLElement
   // having a simple way to retrieve such element can be
   // both semantic and handy, as opposite of using
   // this.children[0] each time
-  get child()
-  {
+  get child() {
     let element = this.firstElementChild;
     // if accessed too early, will render automatically
-    if (!element)
-    {
+    if (!element) {
       this.render();
       element = this.firstElementChild;
     }
@@ -157,13 +139,10 @@ class IOElement extends HyperHTMLElement
 //  render() {
 //    return this.html`<div>${{i18n:'about-abp'}}</div>`;
 //  }
-IOElement.intent("i18n", idOrArgs =>
-{
+IOElement.intent("i18n", (idOrArgs) => {
   const fragment = document.createDocumentFragment();
-  if (typeof idOrArgs === "string")
-    setElementText(fragment, idOrArgs);
-  else if (idOrArgs instanceof Array)
-    setElementText(fragment, ...idOrArgs);
+  if (typeof idOrArgs === "string") setElementText(fragment, idOrArgs);
+  else if (idOrArgs instanceof Array) setElementText(fragment, ...idOrArgs);
   return fragment;
 });
 

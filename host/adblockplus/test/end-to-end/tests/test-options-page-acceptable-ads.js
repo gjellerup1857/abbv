@@ -17,89 +17,89 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
-const AcceptableAdsDialogChunk =
-  require("../page-objects/acceptableAdsDialog.chunk");
+const AcceptableAdsDialogChunk = require("../page-objects/acceptableAdsDialog.chunk");
 let lastTest = false;
 
-describe("test options page general tab acceptable ads", function()
-{
+describe("test options page general tab acceptable ads", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should display AA default state", async function()
-  {
+  it("should display AA default state", async function () {
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isAllowAcceptableAdsCheckboxSelected()).to.be.true;
-    expect(await generalPage.
-      isOnlyAllowAdsWithoutTrackingCheckboxSelected(true)).to.be.true;
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
+    expect(
+      await generalPage.isOnlyAllowAdsWithoutTrackingCheckboxSelected(true)
+    ).to.be.true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingFLDisplayed()).to.be.true;
+    expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
+      .true;
   });
 
-  it("should only allow ads without third-party tracking", async function()
-  {
+  it("should only allow ads without third-party tracking", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickOnlyAllowAdsWithoutTrackingCheckbox();
-    if (await generalPage.
-      isOnlyAllowAdsWithoutTrackingCheckboxSelected(true, 1000) == true)
-    {
+    if (
+      (await generalPage.isOnlyAllowAdsWithoutTrackingCheckboxSelected(
+        true,
+        1000
+      )) == true
+    ) {
       await generalPage.clickOnlyAllowAdsWithoutTrackingCheckbox();
     }
-    expect(await generalPage.
-      isOnlyAllowAdsWithoutTrackingCheckboxSelected()).to.be.true;
-    expect(await generalPage.
-      isDoNotTrackNoteParagraphDisplayed()).to.be.true;
+    expect(await generalPage.isOnlyAllowAdsWithoutTrackingCheckboxSelected()).to
+      .be.true;
+    expect(await generalPage.isDoNotTrackNoteParagraphDisplayed()).to.be.true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingFLDisplayed()).to.be.false;
+    expect(
+      await advancedPage.isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()
+    ).to.be.true;
+    expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
+      .false;
   });
 
-  it("should disable allow acceptable ads", async function()
-  {
+  it("should disable allow acceptable ads", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickAllowAcceptableAdsCheckbox();
-    if (await generalPage.
-      isAllowAcceptableAdsCheckboxSelected(false, 1000) == true)
-    {
+    if (
+      (await generalPage.isAllowAcceptableAdsCheckboxSelected(false, 1000)) ==
+      true
+    ) {
       await generalPage.clickAllowAcceptableAdsCheckbox();
     }
-    expect(await generalPage.
-      isAllowAcceptableAdsCheckboxSelected(true)).to.be.true;
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected(true)).to.be
+      .true;
     const acceptableAdsDialogChunk = new AcceptableAdsDialogChunk(browser);
     expect(await acceptableAdsDialogChunk.isAADialogDisplayed()).to.be.true;
     await acceptableAdsDialogChunk.clickNoThanksButton();
     expect(await acceptableAdsDialogChunk.isAADialogDisplayed()).to.be.false;
-    expect(await generalPage.
-      isOnlyAllowAdsWithoutTrackingCheckboxEnabled()).to.be.false;
+    expect(await generalPage.isOnlyAllowAdsWithoutTrackingCheckboxEnabled()).to
+      .be.false;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     lastTest = true;
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()).to.be.false;
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingFLDisplayed()).to.be.false;
+    expect(
+      await advancedPage.isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()
+    ).to.be.false;
+    expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
+      .false;
   });
 });

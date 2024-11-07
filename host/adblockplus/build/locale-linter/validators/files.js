@@ -17,11 +17,11 @@
 
 "use strict";
 
-const {promises: fs} = require("fs");
+const { promises: fs } = require("fs");
 const path = require("path");
 
-const {ResultGroup} = require("../common");
-const {validate: validateStrings} = require("./strings");
+const { ResultGroup } = require("../common");
+const { validate: validateStrings } = require("./strings");
 
 const reLocale = /^[a-z]{1,3}(?:_(?:[A-Z]{2}|\d+))?$/;
 
@@ -34,28 +34,24 @@ const reLocale = /^[a-z]{1,3}(?:_(?:[A-Z]{2}|\d+))?$/;
  *   exceptions
  * @returns {Promise<ResultGroup>} The validation result
  */
-async function validate(filepath, importantWords, importantWordsExceptions)
-{
+async function validate(filepath, importantWords, importantWordsExceptions) {
   const results = new ResultGroup(`Validate '${filepath}'`);
 
   const fileInfo = path.parse(filepath);
 
-  if (fileInfo.ext !== ".json")
-  {
+  if (fileInfo.ext !== ".json") {
     results.push("Expected file with .json extension");
     return results;
   }
 
   const pathParts = fileInfo.dir.split(path.sep);
   const locale = pathParts[pathParts.length - 1];
-  if (!reLocale.test(locale))
-  {
+  if (!reLocale.test(locale)) {
     results.push("Invalid locale");
     return results;
   }
 
-  try
-  {
+  try {
     const content = await fs.readFile(filepath, "utf8");
     const stringInfos = JSON.parse(content);
     const stringResults = validateStrings(
@@ -65,9 +61,7 @@ async function validate(filepath, importantWords, importantWordsExceptions)
       importantWordsExceptions
     );
     results.push(stringResults);
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     results.push(ex);
   }
 

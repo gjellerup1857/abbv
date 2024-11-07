@@ -19,37 +19,31 @@
 
 const BasePage = require("./base.page");
 
-class AaTestPage extends BasePage
-{
-  constructor(browser, domain)
-  {
+class AaTestPage extends BasePage {
+  constructor(browser, domain) {
     super();
     this.browser = browser;
     this.domain = domain;
   }
 
-  async init()
-  {
+  async init() {
     // assuming "testpages.adblockplus.org" is bound to "localhost"
     // in the test with DNS mapping during the test
     await browser.newWindow("http://testpages.adblockplus.org:3005/aa.html");
     await this.switch();
   }
 
-  get selector()
-  {
+  get selector() {
     return "#abptest";
   }
 
-  get visibleSelector()
-  {
+  get visibleSelector() {
     return "#abptest2";
   }
 
-  async switch()
-  {
+  async switch() {
     await this.switchToTab(/AcceptableAds/);
   }
 }
 
-module.exports = {AaTestPage};
+module.exports = { AaTestPage };

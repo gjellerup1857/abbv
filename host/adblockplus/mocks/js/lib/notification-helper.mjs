@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {params} from "../config/env.mjs";
+import { params } from "../config/env.mjs";
 
 const notifications = {
   critical: {
@@ -37,20 +37,15 @@ const notifications = {
   }
 };
 
-export function getActiveNotification()
-{
+export function getActiveNotification() {
   const name = params.notification;
-  if (!name || !(name in notifications))
-    return null;
+  if (!name || !(name in notifications)) return null;
 
   return notifications[name];
 }
 
-export function notificationClicked()
-{
-}
+export function notificationClicked() {}
 
-export function shouldDisplay()
-{
+export function shouldDisplay() {
   return true;
 }

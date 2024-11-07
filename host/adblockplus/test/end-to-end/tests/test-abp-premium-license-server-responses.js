@@ -17,25 +17,24 @@
 
 "use strict";
 
-const {beforeSequence, switchToABPOptionsTab,
-       enablePremiumByMockServer} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  switchToABPOptionsTab,
+  enablePremiumByMockServer
+} = require("../helpers");
+const { expect } = require("chai");
 const ServiceWorkerPage = require("../page-objects/serviceWorker.page");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 const serverResponsesData =
   require("../test-data/data-license-server-responses").serverResponsesData;
 
-describe("test abp premium license server responses", function()
-{
-  before(async function()
-  {
+describe("test abp premium license server responses", function () {
+  before(async function () {
     await beforeSequence();
   });
 
-  serverResponsesData.forEach(async(dataSet) =>
-  {
-    it("should display response for: " + dataSet.testName, async function()
-    {
+  serverResponsesData.forEach(async (dataSet) => {
+    it("should display response for: " + dataSet.testName, async function () {
       await switchToABPOptionsTab();
       await enablePremiumByMockServer();
       const serviceWorkerPage = new ServiceWorkerPage(browser);
@@ -43,14 +42,11 @@ describe("test abp premium license server responses", function()
       await switchToABPOptionsTab();
       await browser.executeScript(dataSet.request, []);
       const premiumHeaderChunk = new PremiumHeaderChunk(browser);
-      if (dataSet.premiumStatus == "enabled")
-      {
+      if (dataSet.premiumStatus == "enabled") {
         expect(await premiumHeaderChunk.isPremiumButtonDisplayed()).to.be.true;
-      }
-      else
-      {
-        expect(await premiumHeaderChunk.isUpgradeButtonDisplayed(10000)).
-          to.be.true;
+      } else {
+        expect(await premiumHeaderChunk.isUpgradeButtonDisplayed(10000)).to.be
+          .true;
       }
       await serviceWorkerPage.switchToTab(/serviceworker-internals/);
       const logText = await serviceWorkerPage.getLogTextAreaText();

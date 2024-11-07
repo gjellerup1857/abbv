@@ -19,9 +19,9 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {Prefs} from "./prefs.js";
-import {isDataCorrupted} from "./subscriptionInit.js";
-import {info} from "../../src/info/background";
+import { Prefs } from "./prefs.js";
+import { isDataCorrupted } from "./subscriptionInit.js";
+import { info } from "../../src/info/background";
 
 const abbreviations = [
   ["an", "addonName"],
@@ -44,20 +44,19 @@ const abbreviations = [
  *
  * @returns {number} The filter count
  */
-async function getWebAllowlistingFilterCount()
-{
+async function getWebAllowlistingFilterCount() {
   // get all allowlisting filters that are enabled
   const filters = (await ewe.filters.getUserFilters()).filter(
-    filter => filter.type === "allowing" && filter.enabled
+    (filter) => filter.type === "allowing" && filter.enabled
   );
 
   // collect their metadata
   const filtersMetadata = await Promise.all(
-    filters.map(async filter => await ewe.filters.getMetadata(filter.text))
+    filters.map(async (filter) => await ewe.filters.getMetadata(filter.text))
   );
 
   // count the ones that originated in the web
-  return filtersMetadata.filter(data => data && data.origin === "web").length;
+  return filtersMetadata.filter((data) => data && data.origin === "web").length;
 }
 
 /**
@@ -65,14 +64,10 @@ async function getWebAllowlistingFilterCount()
  *
  * @return {Set}
  */
-function getAdsSubscriptions()
-{
+function getAdsSubscriptions() {
   let subscriptions = new Set();
   for (let subscription of ewe.subscriptions.getRecommendations())
-  {
-    if (subscription.type == "ads")
-      subscriptions.add(subscription.url);
-  }
+    if (subscription.type == "ads") subscriptions.add(subscription.url);
   return subscriptions;
 }
 
@@ -83,13 +78,9 @@ function getAdsSubscriptions()
  *
  * @return {boolean}
  */
-async function isAnySubscriptionActive(urls)
-{
+async function isAnySubscriptionActive(urls) {
   for (let subscription of await ewe.subscriptions.getSubscriptions())
-  {
-    if (subscription.enabled && urls.has(subscription.url))
-      return true;
-  }
+    if (subscription.enabled && urls.has(subscription.url)) return true;
 
   return false;
 }
@@ -100,8 +91,7 @@ async function isAnySubscriptionActive(urls)
  * Must be called after prefs got initialized and a data corruption
  * if any was detected, as well when notification data change.
  */
-export async function setUninstallURL()
-{
+export async function setUninstallURL() {
   let search = [];
   let params = Object.create(info);
 
@@ -119,8 +109,7 @@ export async function setUninstallURL()
     params.notificationDownloadCount = "30-89";
   else if (notificationDownloadCount < 180)
     params.notificationDownloadCount = "90-179";
-  else
-    params.notificationDownloadCount = "180+";
+  else params.notificationDownloadCount = "180+";
 
   let aaSubscriptions = new Set([ewe.subscriptions.ACCEPTABLE_ADS_URL]);
   let adsSubscriptions = getAdsSubscriptions();
@@ -133,12 +122,12 @@ export async function setUninstallURL()
   for (let [abbreviation, key] of abbreviations)
     search.push(abbreviation + "=" + encodeURIComponent(params[key]));
 
-  browser.runtime.setUninstallURL(Prefs.getDocLink("uninstalled") + "&" +
-                                  search.join("&"));
+  browser.runtime.setUninstallURL(
+    Prefs.getDocLink("uninstalled") + "&" + search.join("&")
+  );
 }
 
-export function start()
-{
+export function start() {
   ewe.notifications.on("downloaded", setUninstallURL);
 
   ewe.filters.onAdded.addListener(setUninstallURL);
@@ -146,10 +135,8 @@ export function start()
   ewe.filters.onRemoved.addListener(setUninstallURL);
 
   ewe.subscriptions.onAdded.addListener(setUninstallURL);
-  ewe.subscriptions.onChanged.addListener(async(subscription, property) =>
-  {
-    if (property !== "enabled")
-      return;
+  ewe.subscriptions.onChanged.addListener(async (subscription, property) => {
+    if (property !== "enabled") return;
 
     await setUninstallURL();
   });

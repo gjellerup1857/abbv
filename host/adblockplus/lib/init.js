@@ -17,15 +17,15 @@
 
 "use strict";
 
-const {info} = require("../src/info/background");
-const {Prefs} = require("prefs");
-const {setNotifyUserCallback} = require("subscriptionInit");
+const { info } = require("../src/info/background");
+const { Prefs } = require("prefs");
+const { setNotifyUserCallback } = require("subscriptionInit");
 
 const {
   showProblemNotification,
   showUpdatesNotification
 } = require("./notifications");
-const {updatesVersion} = require("./prefs");
+const { updatesVersion } = require("./prefs");
 
 const localFirstRunPageUrl = browser.runtime.getURL("first-run.html");
 const urlPlaceholders = new Set([
@@ -38,16 +38,13 @@ const urlPlaceholders = new Set([
   ["PLATFORM_VERSION", () => info.platformVersion]
 ]);
 
-function listenForRemotePage(checkIsFirstRunTab)
-{
+function listenForRemotePage(checkIsFirstRunTab) {
   let stop = () => {};
 
-  const promise = new Promise((resolve, reject) =>
-  {
+  const promise = new Promise((resolve, reject) => {
     let timeout = null;
 
-    function removeListeners()
-    {
+    function removeListeners() {
       clearTimeout(timeout);
       browser.webNavigation.onDOMContentLoaded.removeListener(
         onNavigationCompleted
@@ -57,10 +54,8 @@ function listenForRemotePage(checkIsFirstRunTab)
     }
     stop = removeListeners;
 
-    function onErrorOccurred(details)
-    {
-      if (!checkIsFirstRunTab(details.tabId))
-        return;
+    function onErrorOccurred(details) {
+      if (!checkIsFirstRunTab(details.tabId)) return;
 
       console.warn(`Failed to open first-run page: ${details.error}`);
       removeListeners();
@@ -68,39 +63,30 @@ function listenForRemotePage(checkIsFirstRunTab)
     }
     browser.webNavigation.onErrorOccurred.addListener(onErrorOccurred);
 
-    function onNavigationCompleted(details)
-    {
-      if (!checkIsFirstRunTab(details.tabId))
-        return;
+    function onNavigationCompleted(details) {
+      if (!checkIsFirstRunTab(details.tabId)) return;
 
       removeListeners();
       resolve();
     }
     browser.webNavigation.onDOMContentLoaded.addListener(onNavigationCompleted);
 
-    function onRequestCompleted(details)
-    {
-      if (!checkIsFirstRunTab(details.tabId))
-        return;
+    function onRequestCompleted(details) {
+      if (!checkIsFirstRunTab(details.tabId)) return;
 
-      const {statusCode} = details;
-      if (statusCode < 200 || statusCode > 399)
-      {
+      const { statusCode } = details;
+      if (statusCode < 200 || statusCode > 399) {
         console.warn(`Failed to open first-run page: HTTP ${statusCode}`);
         removeListeners();
         reject();
       }
     }
-    browser.webRequest.onCompleted.addListener(
-      onRequestCompleted,
-      {
-        types: ["main_frame"],
-        urls: ["https://*/*"]
-      }
-    );
+    browser.webRequest.onCompleted.addListener(onRequestCompleted, {
+      types: ["main_frame"],
+      urls: ["https://*/*"]
+    });
 
-    function onTimeout()
-    {
+    function onTimeout() {
       console.warn("Failed to open first-run page: Timed out");
       removeListeners();
       reject();
@@ -108,55 +94,46 @@ function listenForRemotePage(checkIsFirstRunTab)
     timeout = setTimeout(onTimeout, 30000);
   });
 
-  return {promise, stop};
+  return { promise, stop };
 }
 
-async function wait(time)
-{
-  return new Promise((resolve) =>
-  {
+async function wait(time) {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
 
-async function updateTab(tabId, url)
-{
+async function updateTab(tabId, url) {
   // Chrome doesn't reliably update the tab and fails silently so we need to
   // retry repeatedly and check whether it worked.
-  for (let i = 0; i < 10; i++)
-  {
-    await browser.tabs.update(tabId, {url});
+  for (let i = 0; i < 10; i++) {
+    await browser.tabs.update(tabId, { url });
     await wait(250);
 
     const tab = await browser.tabs.get(tabId);
-    if (tab.url === url)
-      return;
+    if (tab.url === url) return;
   }
 
   throw new Error("Failed to update tab");
 }
 
-async function openFirstRunPage(shouldShowWarning = false, forceLocal = false)
-{
+async function openFirstRunPage(shouldShowWarning = false, forceLocal = false) {
   const showLocal = shouldShowWarning || forceLocal;
 
   let firstRunTabId = null;
   let waitForRemotePage = Promise.resolve();
   let url = localFirstRunPageUrl;
 
-  if (!showLocal)
-  {
+  if (!showLocal) {
     url = Prefs.remote_first_run_page_url;
-    for (const [key, getValue] of urlPlaceholders)
-    {
-      const value = (typeof getValue === "function") ? getValue() : null;
+    for (const [key, getValue] of urlPlaceholders) {
+      const value = typeof getValue === "function" ? getValue() : null;
       url = url.replace(`%${key}%`, encodeURIComponent(value));
     }
     waitForRemotePage = listenForRemotePage((tabId) => tabId === firstRunTabId);
   }
 
-  try
-  {
+  try {
     // Users with corrupted browser data may see this page each time their
     // browser starts. We avoid focusing the page for those users, in the
     // hope to make the situation less intrusive.
@@ -166,46 +143,39 @@ async function openFirstRunPage(shouldShowWarning = false, forceLocal = false)
     });
     firstRunTabId = tab.id;
 
-    try
-    {
+    try {
       await waitForRemotePage.promise;
-    }
-    catch (ex)
-    {
+    } catch (ex) {
       waitForRemotePage.stop();
 
       // If remote page fails to load, replace it with local page
       await updateTab(firstRunTabId, localFirstRunPageUrl);
     }
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     waitForRemotePage.stop();
 
     // Open local page if we failed to open remote page or replace tab,
     // unless we've already tried
-    if (!showLocal)
-      openFirstRunPage(shouldShowWarning, true);
+    if (!showLocal) openFirstRunPage(shouldShowWarning, true);
   }
 }
 
-async function onNotifyUser(state)
-{
-  const {firstRun, reinitialized} = state;
-  let {dataCorrupted} = state;
+async function onNotifyUser(state) {
+  const { firstRun, reinitialized } = state;
+  let { dataCorrupted } = state;
 
   // Show first run page, update notification or problem notification.
   // The update notification is only shown if the user hasn't been notified
   // of the latest major update yet.
-  if (firstRun || updatesVersion > Prefs.last_updates_page_displayed ||
-    dataCorrupted || reinitialized)
-  {
-    try
-    {
+  if (
+    firstRun ||
+    updatesVersion > Prefs.last_updates_page_displayed ||
+    dataCorrupted ||
+    reinitialized
+  ) {
+    try {
       await Prefs.set("last_updates_page_displayed", updatesVersion);
-    }
-    catch (ex)
-    {
+    } catch (ex) {
       dataCorrupted = true;
     }
 
@@ -215,19 +185,16 @@ async function onNotifyUser(state)
 
     // Show a notification if a data corruption was detected (either through
     // failure of reading from or writing to storage.local).
-    if (shouldShowWarning && canShowNotification)
-    {
+    if (shouldShowWarning && canShowNotification) {
       showProblemNotification();
       return;
     }
 
-    if (!Prefs.suppress_first_run_page)
-    {
+    if (!Prefs.suppress_first_run_page) {
       // Always show the first run page if a data corruption was detected
       // but we cannot show a notification. The first run page notifies the
       // user about the data corruption.
-      if (firstRun || shouldShowWarning)
-      {
+      if (firstRun || shouldShowWarning) {
         const locale = browser.i18n.getUILanguage();
         openFirstRunPage(
           shouldShowWarning,
@@ -243,8 +210,6 @@ async function onNotifyUser(state)
   }
 }
 
-exports.start = () =>
-{
+exports.start = () => {
   setNotifyUserCallback(onNotifyUser);
 };
-

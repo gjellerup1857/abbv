@@ -143,9 +143,7 @@ export default {
       },
       {
         dest: "icons/logo",
-        src: [
-          "skin/icons/logo/manifest/**"
-        ]
+        src: ["skin/icons/logo/manifest/**"]
       },
       {
         dest: "data",
@@ -244,9 +242,6 @@ export default {
   },
   translations: {
     dest: "_locales",
-    src: [
-      "locale/**/*.json",
-      "!locale/*/mobile-options.json"
-    ]
+    src: ["locale/**/*.json", "!locale/*/mobile-options.json"]
   }
 };

@@ -17,214 +17,220 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber, isFirefox,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber,
+  isFirefox,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const GeneralPage = require("../page-objects/general.page");
 const TestPages = require("../page-objects/testPages.page");
 let lastTest = false;
 
-describe("test subscriptions as part of the integration tests", function()
-{
+describe("test subscriptions as part of the integration tests", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should add new subscription via link", async function()
-  {
-    if (process.env.MANIFEST_VERSION === "3")
-      this.skip();
+  it("should add new subscription via link", async function () {
+    if (process.env.MANIFEST_VERSION === "3") this.skip();
 
-    await browser.url("https://adblockinc.gitlab.io/QA-team/adblocking" +
-      "/subscriptions/subscriptions-testpage.html");
+    await browser.url(
+      "https://adblockinc.gitlab.io/QA-team/adblocking" +
+        "/subscriptions/subscriptions-testpage.html"
+    );
     const testPages = new TestPages(browser);
     expect(await testPages.getSubscriptionBlockingText()).to.include(
-      "/subscription-blocking.js should be blocked");
+      "/subscription-blocking.js should be blocked"
+    );
     expect(await testPages.getSubscriptionBlockingRegexText()).to.include(
-      "/subscription-blocking-regex.js should be blocked");
+      "/subscription-blocking-regex.js should be blocked"
+    );
     expect(await testPages.getSubscriptionHidingIdText()).to.include(
-      "id element should be hidden");
+      "id element should be hidden"
+    );
     expect(await testPages.getSubscriptionHidingClassText()).to.include(
-      "class element should be hidden");
+      "class element should be hidden"
+    );
     await testPages.clickSubscribeLink();
     const generalPage = new GeneralPage(browser);
 
     await switchToABPOptionsTab();
-    console.error(String(await generalPage.
-      getPredefinedDialogTitleText()));
-    expect(String(await generalPage.
-      getPredefinedDialogTitleText()).includes("ARE YOU SURE YOU" +
-      " WANT TO ADD THIS FILTER LIST?")).to.be.true;
+    console.error(String(await generalPage.getPredefinedDialogTitleText()));
+    expect(
+      String(await generalPage.getPredefinedDialogTitleText()).includes(
+        "ARE YOU SURE YOU WANT TO ADD THIS FILTER LIST?"
+      )
+    ).to.be.true;
     await generalPage.clickYesUseThisFLButton();
-    expect(String(await generalPage.
-      getMoreFilterListsTableItemByLabelText("ABP test subscription")).
-      includes("ABP test subscription")).to.be.true;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking" +
-      "/subscriptions/subscriptions-testpage.html");
+    expect(
+      String(
+        await generalPage.getMoreFilterListsTableItemByLabelText(
+          "ABP test subscription"
+        )
+      ).includes("ABP test subscription")
+    ).to.be.true;
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking" +
+        "/subscriptions/subscriptions-testpage.html"
+    );
     await browser.refresh();
     expect(await testPages.getSubscriptionBlockingText()).to.include(
-      "/subscription-blocking.js was blocked");
+      "/subscription-blocking.js was blocked"
+    );
     expect(await testPages.getSubscriptionBlockingRegexText()).to.include(
-      "/subscription-blocking-regex.* was blocked");
+      "/subscription-blocking-regex.* was blocked"
+    );
     expect(await testPages.isSubscriptionHidingIdDisplayed()).to.be.false;
     expect(await testPages.isSubscriptionHidingClassDisplayed()).to.be.false;
   });
 
-  it("should disable/enable subscriptions", async function()
-  {
+  it("should disable/enable subscriptions", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickEasyListFLStatusToggle();
-    expect(await advancedPage.
-      isEasyListFLStatusToggleSelected()).to.be.false;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking/block" +
-      "ing-hiding/blocking-hiding-testpage.html");
-    if (isFirefox())
-    {
+    expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.false;
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+        "ing-hiding/blocking-hiding-testpage.html"
+    );
+    if (isFirefox()) {
       await browser.pause(500);
     }
     await browser.refresh();
     const testPages = new TestPages(browser);
-    if (isFirefox())
-    {
-      if (await testPages.getCurrentTitle() != "Blocking and hiding")
-      {
+    if (isFirefox()) {
+      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
         await testPages.switchToTab("Blocking and hiding");
         await browser.refresh();
       }
     }
     expect(await testPages.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this");
+      "pop_ads.js blocking filter should block this"
+    );
     expect(await testPages.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this");
+      "first bannerads/* blocking filter should block this"
+    );
     expect(await testPages.getSearchAdDivText()).to.include(
-      "search-ad id hiding filter should hide this");
+      "search-ad id hiding filter should hide this"
+    );
     expect(await testPages.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this");
+      "AdContainer class hiding filter should hide this"
+    );
     await switchToABPOptionsTab();
     await advancedPage.init();
     await advancedPage.clickEasyListFLStatusToggle();
-    expect(await advancedPage.
-      isEasyListFLStatusToggleSelected()).to.be.true;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking/block" +
-      "ing-hiding/blocking-hiding-testpage.html");
+    expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+        "ing-hiding/blocking-hiding-testpage.html"
+    );
     await browser.refresh();
-    if (isFirefox())
-    {
-      if (await testPages.getCurrentTitle() != "Blocking and hiding")
-      {
+    if (isFirefox()) {
+      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
         await testPages.switchToTab("Blocking and hiding");
         await browser.refresh();
       }
     }
-    try
-    {
+    try {
       expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked");
-    }
-    catch (Exception)
-    {
+        "pop_ads.js was blocked"
+      );
+    } catch (Exception) {
       await browser.pause(1000);
       expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked");
+        "pop_ads.js was blocked"
+      );
     }
     expect(await testPages.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked");
-    expect(await testPages.
-      isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPages.
-      isAdContainerDivDisplayed()).to.be.false;
+      "bannerads/* was blocked"
+    );
+    expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
+    expect(await testPages.isAdContainerDivDisplayed()).to.be.false;
   });
 
-  it("should add/remove subscriptions", async function()
-  {
+  it("should add/remove subscriptions", async function () {
     const advancedPage = new AdvancedPage(browser);
-    if (isFirefox())
-    {
+    if (isFirefox()) {
       await browser.refresh();
       await switchToABPOptionsTab();
       await advancedPage.init();
       await advancedPage.clickAddBuiltinFilterListButton();
       await advancedPage.clickEasyListEnglishFL();
       await advancedPage.init();
-    }
-    else
-    {
+    } else {
       await advancedPage.init();
     }
     await advancedPage.clickEasyListFLTrashButton();
-    expect(await advancedPage.
-      isEasyListFLDisplayed()).to.be.false;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking/block" +
-      "ing-hiding/blocking-hiding-testpage.html");
+    expect(await advancedPage.isEasyListFLDisplayed()).to.be.false;
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+        "ing-hiding/blocking-hiding-testpage.html"
+    );
     await browser.refresh();
     const testPages = new TestPages(browser);
-    if (isFirefox())
-    {
-      if (await testPages.getCurrentTitle() != "Blocking and hiding")
-      {
+    if (isFirefox()) {
+      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
         await testPages.switchToTab("Blocking and hiding");
         await browser.refresh();
       }
     }
     expect(await testPages.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this");
+      "pop_ads.js blocking filter should block this"
+    );
     expect(await testPages.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this");
+      "first bannerads/* blocking filter should block this"
+    );
     expect(await testPages.getSearchAdDivText()).to.include(
-      "search-ad id hiding filter should hide this");
+      "search-ad id hiding filter should hide this"
+    );
     expect(await testPages.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this");
+      "AdContainer class hiding filter should hide this"
+    );
     await switchToABPOptionsTab();
     await advancedPage.init();
     await advancedPage.clickAddBuiltinFilterListButton();
     await advancedPage.clickEasyListEnglishFL();
-    expect(await advancedPage.
-      isEasyListFLDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isEasyListFLStatusToggleSelected()).to.be.true;
-    expect(await advancedPage.
-      isEasyListFLUpdatingDone()).to.be.true;
-    await browser.newWindow("https://adblockinc.gitlab.io/QA-team/adblocking/block" +
-      "ing-hiding/blocking-hiding-testpage.html");
+    expect(await advancedPage.isEasyListFLDisplayed()).to.be.true;
+    expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
+    expect(await advancedPage.isEasyListFLUpdatingDone()).to.be.true;
+    await browser.newWindow(
+      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+        "ing-hiding/blocking-hiding-testpage.html"
+    );
     await browser.refresh();
-    if (isFirefox())
-    {
-      if (await testPages.getCurrentTitle() != "Blocking and hiding")
-      {
+    if (isFirefox()) {
+      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
         await testPages.switchToTab("Blocking and hiding");
         await browser.refresh();
       }
     }
     lastTest = true;
-    try
-    {
+    try {
       expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked");
-    }
-    catch (Exception)
-    {
+        "pop_ads.js was blocked"
+      );
+    } catch (Exception) {
       await browser.pause(1000);
       expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked");
+        "pop_ads.js was blocked"
+      );
     }
     expect(await testPages.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked");
-    expect(await testPages.
-      isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPages.
-      isAdContainerDivDisplayed()).to.be.false;
+      "bannerads/* was blocked"
+    );
+    expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
+    expect(await testPages.isAdContainerDivDisplayed()).to.be.false;
   });
 });

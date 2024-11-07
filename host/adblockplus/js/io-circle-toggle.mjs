@@ -16,46 +16,37 @@
  */
 
 import IOElement from "./io-element.mjs";
-import {$} from "./dom.mjs";
+import { $ } from "./dom.mjs";
 
-class IOCircleToggle extends IOElement
-{
-  static get observedAttributes()
-  {
+class IOCircleToggle extends IOElement {
+  static get observedAttributes() {
     return ["action", "checked", "disabled"];
   }
 
-  static get booleanAttributes()
-  {
+  static get booleanAttributes() {
     return ["checked", "disabled"];
   }
 
-  attributeChangedCallback()
-  {
+  attributeChangedCallback() {
     this.render();
   }
 
-  created()
-  {
-    this.setState({checked: this.checked});
+  created() {
+    this.setState({ checked: this.checked });
     this.setAttribute("tabindex", 0);
     this.addEventListener("click", this);
     this.addEventListener("keydown", this);
     $(".outer-circle", this).addEventListener("transitionend", this);
   }
 
-  onclick()
-  {
-    if (!this.disabled)
-    {
+  onclick() {
+    if (!this.disabled) {
       this.checked = !this.checked;
     }
   }
 
-  onkeydown(event)
-  {
-    switch (event.key)
-    {
+  onkeydown(event) {
+    switch (event.key) {
       case " ":
       case "Enter":
         this.onclick(event);
@@ -63,25 +54,23 @@ class IOCircleToggle extends IOElement
     }
   }
 
-  ontransitionend(event)
-  {
-    if (event.propertyName === "transform" && !this.disabled)
-    {
-      const {checked} = this.state;
-      if (checked !== this.checked)
-      {
-        this.setState({checked: this.checked}, false);
-        $("svg", this).dispatchEvent(new CustomEvent("change", {
-          bubbles: true,
-          cancelable: true,
-          detail: this.checked
-        }));
+  ontransitionend(event) {
+    if (event.propertyName === "transform" && !this.disabled) {
+      const { checked } = this.state;
+      if (checked !== this.checked) {
+        this.setState({ checked: this.checked }, false);
+        $("svg", this).dispatchEvent(
+          new CustomEvent("change", {
+            bubbles: true,
+            cancelable: true,
+            detail: this.checked
+          })
+        );
       }
     }
   }
 
-  render()
-  {
+  render() {
     this.html`
     <svg
       width="100%"

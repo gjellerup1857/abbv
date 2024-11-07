@@ -19,20 +19,20 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import {getPremiumState} from "../../src/premium/background/index.ts";
-import {info} from "../../src/info/background";
+import { getPremiumState } from "../../src/premium/background/index.ts";
+import { info } from "../../src/info/background";
 import {
   applyLinkTemplating,
   isTabAlreadyOpen
 } from "../../src/notifications/background";
-import {initDay1Notification} from "../../lib/notifications.js";
-import {showOptions} from "../../lib/pages/options.js";
-import {port} from "~/core/messaging/background";
-import {SessionStorage} from "./storage/session.js";
-import {askConfirmSubscription} from "./filterConfiguration.js";
-import {startIconAnimation, stopIconAnimation} from "./icon.js";
-import {Prefs} from "./prefs.js";
-import {Stats} from "./stats.js";
+import { initDay1Notification } from "../../lib/notifications.js";
+import { showOptions } from "../../lib/pages/options.js";
+import { port } from "~/core/messaging/background";
+import { SessionStorage } from "./storage/session.js";
+import { askConfirmSubscription } from "./filterConfiguration.js";
+import { startIconAnimation, stopIconAnimation } from "./icon.js";
+import { Prefs } from "./prefs.js";
+import { Stats } from "./stats.js";
 
 /**
  * The active notification is (if any) the most recent currently displayed
@@ -62,7 +62,7 @@ const activeNotificationKey = "activeNotification";
  * @param {string} notificationId - Notification ID
  * @returns {string} Key for storing/retrieving notification buttons
  */
-const getButtonsKey = notificationId => `buttons:${notificationId}`;
+const getButtonsKey = (notificationId) => `buttons:${notificationId}`;
 
 const session = new SessionStorage("notificationHelper");
 
@@ -95,39 +95,33 @@ let notificationIconAnimationPlaying = false;
 // the button click handlers have broken with >= 60 (tested up to 62). Until
 // Opera fixes that bug (reference DNAWIZ-70332) we unfortunately can't use
 // feature detection when deciding if notification buttons should be displayed.
-const browserNotificationButtonsSupported = info.platform == "chromium" &&
-                                            info.application != "opera";
+const browserNotificationButtonsSupported =
+  info.platform == "chromium" && info.application != "opera";
 
 // As of August 2019, only Chrome supports this flag and, since Firefox
 // throws on unsupported options (tested with version 69), we need to
 // explicitly set it only for supported browsers.
-const browserNotificationRequireInteractionSupported = (
-  info.platform == "chromium" && parseInt(info.platformVersion, 10) >= 50
-);
+const browserNotificationRequireInteractionSupported =
+  info.platform == "chromium" && parseInt(info.platformVersion, 10) >= 50;
 
-function matchesDisplayMethod(method, {type})
-{
+function matchesDisplayMethod(method, { type }) {
   let methods = displayMethods.get(type) || defaultDisplayMethods;
   return methods.includes(method);
 }
 
-function playNotificationIconAnimation(notification)
-{
-  if (matchesDisplayMethod("icon", notification))
-  {
+function playNotificationIconAnimation(notification) {
+  if (matchesDisplayMethod("icon", notification)) {
     startIconAnimation(notification.type);
     notificationIconAnimationPlaying = true;
   }
 }
 
-function getNotificationButtons({type: notificationType, links}, message)
-{
+function getNotificationButtons({ type: notificationType, links }, message) {
   let buttons = [];
   let linkCount = 0;
   let regex = /<a>(.*?)<\/a>/g;
   let match;
-  while (match = regex.exec(message))
-  {
+  while ((match = regex.exec(message))) {
     buttons.push({
       type: "link",
       title: match[1],
@@ -142,8 +136,7 @@ function getNotificationButtons({type: notificationType, links}, message)
   // Chrome only allows two notification buttons so we need to fall back
   // to a single button to open all links if there are more than two.
   let maxButtons = addConfigureButton ? 1 : 2;
-  if (buttons.length > maxButtons)
-  {
+  if (buttons.length > maxButtons) {
     buttons = [
       {
         type: "open-all",
@@ -152,8 +145,7 @@ function getNotificationButtons({type: notificationType, links}, message)
       }
     ];
   }
-  if (addConfigureButton)
-  {
+  if (addConfigureButton) {
     buttons.push({
       type: "configure",
       title: browser.i18n.getMessage("notification_configure")
@@ -163,15 +155,14 @@ function getNotificationButtons({type: notificationType, links}, message)
   return buttons;
 }
 
-function openNotificationLink(link)
-{
-  if (link.startsWith("abp:subscribe:"))
-  {
-    let [,, type, locale] = link.split(":", 4);
-    for (let recommendation of ewe.subscriptions.getRecommendations())
-    {
-      if (recommendation.type != type ||
-          !recommendation.languages.includes(locale))
+function openNotificationLink(link) {
+  if (link.startsWith("abp:subscribe:")) {
+    let [, , type, locale] = link.split(":", 4);
+    for (let recommendation of ewe.subscriptions.getRecommendations()) {
+      if (
+        recommendation.type != type ||
+        !recommendation.languages.includes(locale)
+      )
         continue;
 
       askConfirmSubscription({
@@ -187,46 +178,36 @@ function openNotificationLink(link)
   }
 
   let url;
-  if (link.startsWith("abp:"))
-    url = localNotificationPages.get(link);
-  else
-    url = Prefs.getDocLink(link);
+  if (link.startsWith("abp:")) url = localNotificationPages.get(link);
+  else url = Prefs.getDocLink(link);
 
-  browser.tabs.create({url});
+  browser.tabs.create({ url });
 }
 
-function getButtonLinks(buttons)
-{
+function getButtonLinks(buttons) {
   let links = [];
 
-  for (let button of buttons)
-  {
-    if (button.type == "link" && button.link)
-      links.push(button.link);
+  for (let button of buttons) {
+    if (button.type == "link" && button.link) links.push(button.link);
     else if (button.type == "open-all" && button.links)
       links = links.concat(button.links);
   }
   return links;
 }
 
-async function openNotificationLinks(notificationId)
-{
-  let buttons = await session.get(getButtonsKey(notificationId)) || [];
-  for (let link of getButtonLinks(buttons))
-    openNotificationLink(link);
+async function openNotificationLinks(notificationId) {
+  let buttons = (await session.get(getButtonsKey(notificationId))) || [];
+  for (let link of getButtonLinks(buttons)) openNotificationLink(link);
 }
 
-async function notificationButtonClick(notificationId, buttonIndex)
-{
+async function notificationButtonClick(notificationId, buttonIndex) {
   let buttons = await session.get(getButtonsKey(notificationId));
 
-  if (!(buttons && buttonIndex in buttons))
-    return;
+  if (!(buttons && buttonIndex in buttons)) return;
 
   let button = buttons[buttonIndex];
 
-  switch (button.type)
-  {
+  switch (button.type) {
     case "link":
       openNotificationLink(button.link);
       break;
@@ -252,51 +233,42 @@ async function notificationButtonClick(notificationId, buttonIndex)
  *   center, we must take care to remember what its buttons do. Leave as true
  *   unless you're sure!
  */
-async function notificationDismissed(notificationId, isStashed)
-{
+async function notificationDismissed(notificationId, isStashed) {
   const activeNotification = await session.get(activeNotificationKey);
-  if (activeNotification && activeNotification.id == notificationId)
-  {
+  if (activeNotification && activeNotification.id == notificationId) {
     await session.delete(activeNotificationKey);
 
-    if (notificationIconAnimationPlaying)
-    {
+    if (notificationIconAnimationPlaying) {
       stopIconAnimation();
       notificationIconAnimationPlaying = false;
     }
   }
 
-  if (!isStashed)
-    await session.delete(getButtonsKey(notificationId));
+  if (!isStashed) await session.delete(getButtonsKey(notificationId));
 }
 
-async function openNotificationInNewTab(notification)
-{
+async function openNotificationInNewTab(notification) {
   let [url] = notification.links;
   const tabExists = await isTabAlreadyOpen(url, notification);
-  if (tabExists)
-    return;
+  if (tabExists) return;
 
   let tabIds = new Set();
   url = applyLinkTemplating(url, info);
 
-  function openNotificationTab()
-  {
+  function openNotificationTab() {
     browser.tabs.onCreated.removeListener(onCreated);
     browser.tabs.onRemoved.removeListener(onRemoved);
     browser.tabs.onUpdated.removeListener(onUpdated);
 
-    browser.tabs.create({url});
+    browser.tabs.create({ url });
     void ewe.notifications.markAsShown(notification.id);
     void notificationDismissed(notification.id);
   }
 
-  let onCreated = tab =>
-  {
+  let onCreated = (tab) => {
     // Firefox loads its New Tab Page immediately and doesn't notify us
     // when it's complete so we need to open our new tab already here.
-    if (tab.url == "about:newtab")
-    {
+    if (tab.url == "about:newtab") {
       openNotificationTab();
       return;
     }
@@ -304,25 +276,25 @@ async function openNotificationInNewTab(notification)
     tabIds.add(tab.id);
   };
 
-  let onRemoved = tabId =>
-  {
+  let onRemoved = (tabId) => {
     tabIds.delete(tabId);
   };
 
-  let onUpdated = (tabId, changeInfo, tab) =>
-  {
+  let onUpdated = (tabId, changeInfo, tab) => {
     // Only look at tabs that have been opened since we started listening
     // and that have completed loading.
-    if (!tabIds.has(tabId) || !("status" in changeInfo) ||
-        changeInfo.status != "complete")
+    if (
+      !tabIds.has(tabId) ||
+      !("status" in changeInfo) ||
+      changeInfo.status != "complete"
+    )
       return;
 
     tabIds.delete(tabId);
 
     // Open our own new tab only when a new tab gets opened
     // that isn't part of the user browsing the web.
-    if (/^https?:/.test(tab.url))
-      return;
+    if (/^https?:/.test(tab.url)) return;
 
     openNotificationTab();
   };
@@ -338,22 +310,21 @@ async function openNotificationInNewTab(notification)
  *
  * @param {object} notification - The notification to show
  */
-async function showNotification(notification)
-{
+async function showNotification(notification) {
   const activeNotification = await session.get(activeNotificationKey);
-  if (activeNotification && activeNotification.id == notification.id)
-    return;
+  if (activeNotification && activeNotification.id == notification.id) return;
 
   let texts = ewe.notifications.getLocalizedTexts(notification);
   let buttons = getNotificationButtons(notification, texts.message);
 
   // Don't display notifications at all if they contain a link to a local
   // notification page which we don't have.
-  for (let link of getButtonLinks(buttons))
-  {
-    if (link.startsWith("abp:") &&
-        !link.startsWith("abp:subscribe:") &&
-        !localNotificationPages.has(link))
+  for (let link of getButtonLinks(buttons)) {
+    if (
+      link.startsWith("abp:") &&
+      !link.startsWith("abp:subscribe:") &&
+      !localNotificationPages.has(link)
+    )
       return;
   }
 
@@ -363,8 +334,7 @@ async function showNotification(notification)
   await session.set(getButtonsKey(notification.id), buttons);
 
   await session.set(activeNotificationKey, notification);
-  if (matchesDisplayMethod("notification", notification))
-  {
+  if (matchesDisplayMethod("notification", notification)) {
     let notificationTitle = texts.title || "";
     let message = (texts.message || "").replace(/<\/?(a|strong)>/g, "");
     let iconUrl = browser.runtime.getURL("icons/logo/abp-128.png");
@@ -381,7 +351,7 @@ async function showNotification(notification)
     };
 
     if (browserNotificationButtonsSupported)
-      notificationOptions.buttons = buttons.map(({title}) => ({title}));
+      notificationOptions.buttons = buttons.map(({ title }) => ({ title }));
 
     if (browserNotificationRequireInteractionSupported)
       notificationOptions.requireInteraction = true;
@@ -393,10 +363,9 @@ async function showNotification(notification)
 
   // Unlike other notifications, we cannot mark newtab-type notifications
   // as shown right away because they're not shown immediately.
-  if (matchesDisplayMethod("newtab", notification))
-  {
-    const {installType} = await browser.management.getSelf();
-    const {isActive: isPremiumUser} = getPremiumState();
+  if (matchesDisplayMethod("newtab", notification)) {
+    const { installType } = await browser.management.getSelf();
+    const { isActive: isPremiumUser } = getPremiumState();
 
     // Newtab notifications can be quite obtrusive and managed users may
     // see them more frequently than others so we shouldn't show such
@@ -405,17 +374,14 @@ async function showNotification(notification)
     // Because "newtab" notifications could potentially also contain upgrade
     // campaigns, we don't want to show them to premium users.
 
-    if (installType === "admin" || isPremiumUser || navigator.webdriver)
-    {
+    if (installType === "admin" || isPremiumUser || navigator.webdriver) {
       void ewe.notifications.markAsShown(notification.id);
       void notificationDismissed(notification.id);
       return;
     }
 
     await openNotificationInNewTab(notification);
-  }
-  else
-  {
+  } else {
     void ewe.notifications.markAsShown(notification.id);
   }
 }
@@ -425,10 +391,8 @@ async function showNotification(notification)
  *
  * @param {bool} firstRun
  */
-export async function initNotifications(firstRun)
-{
-  let onClick = async(notificationId, buttonIndex) =>
-  {
+export async function initNotifications(firstRun) {
+  let onClick = async (notificationId, buttonIndex) => {
     if (typeof buttonIndex == "number")
       await notificationButtonClick(notificationId, buttonIndex);
     else if (!browserNotificationButtonsSupported)
@@ -445,8 +409,7 @@ export async function initNotifications(firstRun)
   browser.notifications.onButtonClicked.addListener(onClick);
   browser.notifications.onClicked.addListener(onClick);
 
-  let onClosed = async(notificationId, byUser) =>
-  {
+  let onClosed = async (notificationId, byUser) => {
     // Despite using the highest priority for our notifications, Windows 10
     // will still hide them after a few seconds and stash them in the
     // notification center. We still consider the notification active when
@@ -454,8 +417,7 @@ export async function initNotifications(firstRun)
     // displaying the notification details in our popup window.
     // Note: Even if the notification was closed by the user, it still might
     //       be stashed in the notification center.
-    if (byUser)
-      await notificationDismissed(notificationId, true);
+    if (byUser) await notificationDismissed(notificationId, true);
   };
   browser.notifications.onClosed.addListener(onClosed);
 
@@ -470,16 +432,13 @@ export async function initNotifications(firstRun)
   // If there is an active notification of the "newtab" type on startup, call
   // openNotificationInNewTab() to activate it again. If we don't do this,
   // the notification tab will not be opened when the user opens a new tab.
-  session.get(activeNotificationKey).then(notification =>
-  {
-    if (!notification || !matchesDisplayMethod("newtab", notification))
-      return;
+  session.get(activeNotificationKey).then((notification) => {
+    if (!notification || !matchesDisplayMethod("newtab", notification)) return;
 
     openNotificationInNewTab(notification);
   });
 
-  if (firstRun)
-    initDay1Notification();
+  if (firstRun) initDay1Notification();
 }
 
 /**
@@ -489,8 +448,7 @@ export async function initNotifications(firstRun)
  * @param {string} notificationType
  * @return {boolean}
  */
-export function isOptional(notificationType)
-{
+export function isOptional(notificationType) {
   return !["critical", "relentless"].includes(notificationType);
 }
 
@@ -502,15 +460,12 @@ export function isOptional(notificationType)
  * @property {number} id - ID of the clicked notification
  * @property {string} [link] - Notification link to open
  */
-port.on("notifications.clicked", async(message, sender) =>
-{
-  if (message.link)
-    openNotificationLink(message.link);
+port.on("notifications.clicked", async (message, sender) => {
+  if (message.link) openNotificationLink(message.link);
 
   // While clicking on a desktop notification's button dismisses the
   // notification, clicking on a popup window notification's link does not.
-  if (!message.link || message.link.startsWith("abp:subscribe:"))
-  {
+  if (!message.link || message.link.startsWith("abp:subscribe:")) {
     browser.notifications.clear(message.id);
     await notificationDismissed(message.id, true);
   }
@@ -526,18 +481,18 @@ port.on("notifications.clicked", async(message, sender) =>
  *   For example "popup" or "icon".
  * @returns {?object}
  */
-port.on("notifications.get", async(message, sender) =>
-{
+port.on("notifications.get", async (message, sender) => {
   const activeNotification = await session.get(activeNotificationKey);
-  if (!activeNotification)
-    return;
+  if (!activeNotification) return;
 
-  if ("displayMethod" in message &&
-      !matchesDisplayMethod(message.displayMethod, activeNotification))
+  if (
+    "displayMethod" in message &&
+    !matchesDisplayMethod(message.displayMethod, activeNotification)
+  )
     return;
 
   let texts = ewe.notifications.getLocalizedTexts(activeNotification);
-  return Object.assign({texts}, activeNotification);
+  return Object.assign({ texts }, activeNotification);
 });
 
 /**
@@ -545,19 +500,18 @@ port.on("notifications.get", async(message, sender) =>
  *
  * @event "notifications.seen"
  */
-port.on("notifications.seen", async(message, sender) =>
-{
+port.on("notifications.seen", async (message, sender) => {
   const activeNotification = await session.get(activeNotificationKey);
-  if (!activeNotification)
-    return;
+  if (!activeNotification) return;
 
-  if (matchesDisplayMethod("popup", activeNotification) &&
-      matchesDisplayMethod("icon", activeNotification))
+  if (
+    matchesDisplayMethod("popup", activeNotification) &&
+    matchesDisplayMethod("icon", activeNotification)
+  )
     stopIconAnimation();
 });
 
-Stats.on("blocked_total", () =>
-{
+Stats.on("blocked_total", () => {
   ewe.notifications.numBlocked = Stats.blocked_total;
   void ewe.notifications.showNext();
 });

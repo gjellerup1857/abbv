@@ -15,9 +15,6 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function executeScript()
-{
-  return [
-    {result: "https://example.com/referrer"}
-  ];
+export function executeScript() {
+  return [{ result: "https://example.com/referrer" }];
 }

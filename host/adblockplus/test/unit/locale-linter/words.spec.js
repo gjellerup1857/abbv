@@ -17,14 +17,10 @@
 
 "use strict";
 
-const {expect} = require("chai");
-const {validate} = require("../../../build/locale-linter/validators/words");
+const { expect } = require("chai");
+const { validate } = require("../../../build/locale-linter/validators/words");
 
-const strictList = [
-  "ExactSpellingRequired",
-  "Important Word",
-  "Foo"
-];
+const strictList = ["ExactSpellingRequired", "Important Word", "Foo"];
 
 const locale = "__locale__";
 
@@ -34,75 +30,64 @@ const exceptions = {
   }
 };
 
-
-describe("Locale Linter: Word Validator", () =>
-{
-  it("should approve exact spelling", () =>
-  {
+describe("Locale Linter: Word Validator", () => {
+  it("should approve exact spelling", () => {
     const input = "ExactSpellingRequired";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should reject wrong character in word", () =>
-  {
+  it("should reject wrong character in word", () => {
     const input = "ExactSpollingRequired";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject wrong lowercase character in word", () =>
-  {
+  it("should reject wrong lowercase character in word", () => {
     const input = "ExactspellingRequired";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject wrong uppercase character in word", () =>
-  {
+  it("should reject wrong uppercase character in word", () => {
     const input = "ExactSpellingRequiRed";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject multiple problems in word", () =>
-  {
+  it("should reject multiple problems in word", () => {
     const input = "ExactspellingRequiRed";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should approve word with locale-specific exception", () =>
-  {
+  it("should approve word with locale-specific exception", () => {
     const input = "exactspellingrequired";
     const result = validate(locale, input, strictList, exceptions);
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should approve valid word with punctuation", () =>
-  {
+  it("should approve valid word with punctuation", () => {
     const input = "ExactSpellingRequired,";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should reject invalid word with punctuation", () =>
-  {
+  it("should reject invalid word with punctuation", () => {
     const input = "ExactSpollingRequired,";
     const result = validate(null, input, strictList, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject punctuation within important words", () =>
-  {
+  it("should reject punctuation within important words", () => {
     const input = "Important, Word";
     const result = validate(null, input, strictList, {});
 

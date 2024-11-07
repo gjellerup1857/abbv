@@ -19,93 +19,86 @@
 
 const BasePage = require("./base.page");
 
-class OneClickAllowAdsTestPage extends BasePage
-{
-  constructor(browser)
-  {
+class OneClickAllowAdsTestPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init()
-  {
+  async init() {
     await browser.newWindow("https://fconeclick.blogspot.com/");
     await this.switchToTab("FC oneclick");
   }
 
-  async visitOneClickSubPage()
-  {
-    await browser.newWindow("https://fconeclick.blogspot.com/2021/09/1-click.html");
+  async visitOneClickSubPage() {
+    await browser.newWindow(
+      "https://fconeclick.blogspot.com/2021/09/1-click.html"
+    );
     await this.switchToTab("1-click");
   }
 
-  async visitOneClickAAPage()
-  {
+  async visitOneClickAAPage() {
     await browser.newWindow("https://fconeclickaa.blogspot.com/");
     await this.switchToTab("FC oneclick AA");
   }
 
-  async visitNoSubdomainUrl()
-  {
+  async visitNoSubdomainUrl() {
     await browser.newWindow("https://technium.ch/");
     await this.switchToTab("Technium.ch Home - Technium");
   }
 
-  async visitWWWSubdomainUrl()
-  {
+  async visitWWWSubdomainUrl() {
     await browser.newWindow("https://www.thesalarycalculator.co.uk");
     await this.switchToTab(
-      "The Salary Calculator - 2023 / 2024 Tax Calculator");
+      "The Salary Calculator - 2023 / 2024 Tax Calculator"
+    );
   }
 
-  async visitNonWWWSubdomainUrl()
-  {
+  async visitNonWWWSubdomainUrl() {
     await browser.newWindow("https://home.macdronic.com/");
     await this.switchToTab("MACDRONIC.COM | Macdronic.com");
   }
 
-  get oneClickButton()
-  {
+  get oneClickButton() {
     return $(".fc-button-whitelist");
   }
 
-  get oneClickGFCPaywall()
-  {
+  get oneClickGFCPaywall() {
     return $(".fc-dialog-container");
   }
 
-  get oneClickDismissPaywallX()
-  {
+  get oneClickDismissPaywallX() {
     return $(".fc-close");
   }
 
-  get whichExtensionMessage()
-  {
+  get whichExtensionMessage() {
     return $("//div[text()='Which of these extensions do you have?']");
   }
 
-  async clickOneClickButton(timeoutMs = 1500)
-  {
+  async clickOneClickButton(timeoutMs = 1500) {
     await this.waitForEnabledThenClick(this.oneClickButton, timeoutMs);
   }
 
-  async clickDismissPaywallX(timeoutMs = 1000)
-  {
+  async clickDismissPaywallX(timeoutMs = 1000) {
     await this.waitForEnabledThenClick(this.oneClickDismissPaywallX, timeoutMs);
   }
 
-  async isOneClickGFCPaywallDisplayed(reverse = false)
-  {
-    return await this.
-      waitForDisplayedNoError(this.oneClickGFCPaywall, reverse, 2000);
+  async isOneClickGFCPaywallDisplayed(reverse = false) {
+    return await this.waitForDisplayedNoError(
+      this.oneClickGFCPaywall,
+      reverse,
+      2000
+    );
   }
 
-  async isWhichExtensionMessageDisplayed(reverse = false)
-  {
+  async isWhichExtensionMessageDisplayed(reverse = false) {
     const frameElement = await $("#fc-whitelist-iframe");
     await browser.switchToFrame(frameElement);
-    return await this.
-      waitForDisplayedNoError(this.whichExtensionMessage, reverse, 2000);
+    return await this.waitForDisplayedNoError(
+      this.whichExtensionMessage,
+      reverse,
+      2000
+    );
   }
 }
 

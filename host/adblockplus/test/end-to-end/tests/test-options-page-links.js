@@ -17,168 +17,156 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber, isFirefox, isChrome,
-       isEdge} = require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber,
+  isFirefox,
+  isChrome,
+  isEdge
+} = require("../helpers");
+const { expect } = require("chai");
 const FooterChunk = require("../page-objects/footer.chunk");
 const GeneralPage = require("../page-objects/general.page");
 const AdvancedPage = require("../page-objects/advanced.page");
 const HelpPage = require("../page-objects/help.page");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
 const dataLinks = require("../test-data/data-links");
 let lastTest = false;
 
-describe("test options page links", function()
-{
+describe("test options page links", function () {
   let optionsUrl;
 
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({optionsUrl} = await beforeSequence());
+  before(async function () {
+    ({ optionsUrl } = await beforeSequence());
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await browser.closeWindow();
       await afterSequence(optionsUrl);
     }
   });
 
-  it("should open contribute page", async function()
-  {
+  it("should open contribute page", async function () {
     const footerChunk = new FooterChunk(browser);
     await footerChunk.clickContributeButton();
     await footerChunk.switchToContributeTab();
     expect(await footerChunk.getCurrentUrl()).to.include(
-      dataLinks.contributeUrl);
+      dataLinks.contributeUrl
+    );
   });
 
-  it("should open AA criteria page", async function()
-  {
+  it("should open AA criteria page", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
     await generalPage.clickAcceptableAdsCriteriaLink();
     await generalPage.switchToAACriteriaTab();
     expect(await generalPage.getCurrentUrl()).to.include(
-      dataLinks.aaCriteriaUrl);
+      dataLinks.aaCriteriaUrl
+    );
   });
 
-  it("should open AA learn more page", async function()
-  {
+  it("should open AA learn more page", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
     await generalPage.clickAcceptableAdsLearnMoreLink();
     await generalPage.switchToAAInfoTab();
     expect(await generalPage.getCurrentUrl()).to.include(
-      dataLinks.aaLearnMoreUrl);
+      dataLinks.aaLearnMoreUrl
+    );
   });
 
-  it("should open allowlisting learn more page", async function()
-  {
+  it("should open allowlisting learn more page", async function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
     await allowistedWebsitesPage.clickAllowlistingLearnMoreLink();
     await allowistedWebsitesPage.switchToABPFAQTab();
     expect(await allowistedWebsitesPage.getCurrentUrl()).to.include(
-      dataLinks.allowlistingLearnMoreUrl);
+      dataLinks.allowlistingLearnMoreUrl
+    );
   });
 
-  it("should open subscriptions page", async function()
-  {
+  it("should open subscriptions page", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickFilterListsLearnMoreLink();
     await advancedPage.switchToSubscriptionsTab();
     expect(await advancedPage.getCurrentUrl()).to.include(
-      dataLinks.subscriptionsUrl);
+      dataLinks.subscriptionsUrl
+    );
   });
 
-  it("should open how to write filters page", async function()
-  {
+  it("should open how to write filters page", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickLearnHowToWriteFiltersLink();
     await advancedPage.switchToHowToWriteFiltersTab();
     expect(await advancedPage.getCurrentUrl()).to.include(
-      dataLinks.howToWriteFiltersUrl);
+      dataLinks.howToWriteFiltersUrl
+    );
   });
 
-  it("should open help center page", async function()
-  {
+  it("should open help center page", async function () {
     const helpPage = new HelpPage(browser);
     await helpPage.init();
     await helpPage.clickVisitOurHelpCenterLink();
     await helpPage.switchToHelpCenterTab();
-    expect(await helpPage.getCurrentUrl()).to.include(
-      dataLinks.helpCenterUrl);
+    expect(await helpPage.getCurrentUrl()).to.include(dataLinks.helpCenterUrl);
   });
 
-  it("should open bug report page", async function()
-  {
+  it("should open bug report page", async function () {
     const helpPage = new HelpPage(browser);
     await helpPage.init();
     await helpPage.clickSendUsABugReportLink();
     await helpPage.switchToBugReportTab();
     expect(await helpPage.getCurrentUrl()).to.include(
-      dataLinks.reportAnIssueUrl);
+      dataLinks.reportAnIssueUrl
+    );
   });
 
-  it("should open forum page", async function()
-  {
+  it("should open forum page", async function () {
     const helpPage = new HelpPage(browser);
     await helpPage.init();
     await helpPage.clickForumLink();
-    if (isFirefox())
-    {
+    if (isFirefox()) {
       await helpPage.switchToForumTabFirefox();
       expect(await helpPage.getCurrentUrl()).to.include(
-        dataLinks.forumUrlFirefox);
-    }
-    else if (isChrome())
-    {
+        dataLinks.forumUrlFirefox
+      );
+    } else if (isChrome()) {
       await helpPage.switchToForumTabChrome();
       expect(await helpPage.getCurrentUrl()).to.include(
-        dataLinks.forumUrlChrome);
-    }
-    else if (isEdge())
-    {
+        dataLinks.forumUrlChrome
+      );
+    } else if (isEdge()) {
       await helpPage.switchToForumTabEdge();
-      expect(await helpPage.getCurrentUrl()).to.include(
-        dataLinks.forumUrlEdge);
+      expect(await helpPage.getCurrentUrl()).to.include(dataLinks.forumUrlEdge);
     }
   });
 
-  it("should open X page", async function()
-  {
+  it("should open X page", async function () {
     const helpPage = new HelpPage(browser);
     await helpPage.init();
     await helpPage.clickXLink();
     await helpPage.switchToXTab();
-    expect(await helpPage.getCurrentUrl()).to.match(
-      dataLinks.XUrl);
+    expect(await helpPage.getCurrentUrl()).to.match(dataLinks.XUrl);
   });
 
-  it("should open facebook page", async function()
-  {
+  it("should open facebook page", async function () {
     lastTest = true;
     const helpPage = new HelpPage(browser);
     await helpPage.init();
     await helpPage.clickFacebookLink();
     await helpPage.switchToFacebookTab();
-    try
-    {
+    try {
+      expect(await helpPage.getCurrentUrl()).to.include(dataLinks.facebookUrl);
+    } catch (Exception) {
       expect(await helpPage.getCurrentUrl()).to.include(
-        dataLinks.facebookUrl);
-    }
-    catch (Exception)
-    {
-      expect(await helpPage.getCurrentUrl()).to.include(
-        dataLinks.facebookFallbackUrl);
+        dataLinks.facebookFallbackUrl
+      );
     }
   });
 });

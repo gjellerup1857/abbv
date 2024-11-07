@@ -25,7 +25,7 @@ const {
   isTrustedSender,
   port: messagingPort
 } = require("../../src/core/messaging/background");
-const {getPage} = require("../../src/core/pages/background");
+const { getPage } = require("../../src/core/pages/background");
 const {
   SessionStorage
 } = require("../../adblockpluschrome/lib/storage/session.js");
@@ -47,34 +47,26 @@ const optionsUrl = browser.runtime.getURL(
 
 const session = new SessionStorage("options");
 
-async function onMessage(message, port)
-{
-  if (message.type != "app.listen")
-    return;
+async function onMessage(message, port) {
+  if (message.type != "app.listen") return;
 
   const optionsMessage = await session.get(optionsMessageKey);
-  if (!optionsMessage)
-    return;
+  if (!optionsMessage) return;
 
   await session.delete(optionsMessageKey);
 
   port.postMessage(optionsMessage);
 }
 
-async function onConnect(port)
-{
-  if (!isTrustedSender(port.sender))
-    return;
+async function onConnect(port) {
+  if (!isTrustedSender(port.sender)) return;
 
-  if (port.name != "ui")
-    return;
+  if (port.name != "ui") return;
 
-  if (!port.sender.tab || port.sender.tab.url !== optionsUrl)
-    return;
+  if (!port.sender.tab || port.sender.tab.url !== optionsUrl) return;
 
   optionsPort = port;
-  optionsPort.onDisconnect.addListener(() =>
-  {
+  optionsPort.onDisconnect.addListener(() => {
     optionsPort = null;
   });
   optionsPort.onMessage.addListener(onMessage);
@@ -85,37 +77,29 @@ browser.runtime.onConnect.addListener(onConnect);
  * Opens the options page, or switches to its existing tab.
  * @param {Object} [message] - Message to send to options page
  */
-async function showOptions(message)
-{
+async function showOptions(message) {
   await session.delete(optionsMessageKey);
 
   // If the options page is already open, focus its tab manually to avoid
   // potentially opening it again, due to browser.runtime.openOptionsPage()
   // behaving differently across browsers
-  if (optionsPort)
-  {
+  if (optionsPort) {
     // Firefox for Android doesn't support browser.windows
-    if ("windows" in browser)
-    {
-      await browser.windows.update(
-        optionsPort.sender.tab.windowId,
-        {focused: true}
-      );
+    if ("windows" in browser) {
+      await browser.windows.update(optionsPort.sender.tab.windowId, {
+        focused: true
+      });
     }
 
-    await browser.tabs.update(optionsPort.sender.tab.id, {active: true});
+    await browser.tabs.update(optionsPort.sender.tab.id, { active: true });
 
     // Send message after focusing options page
-    if (message)
-    {
+    if (message) {
       optionsPort.postMessage(message);
     }
-  }
-  else
-  {
+  } else {
     // Send message after initializing options page
-    if (message)
-    {
+    if (message) {
       await session.set(optionsMessageKey, message);
     }
 
@@ -130,25 +114,22 @@ module.exports.showOptions = showOptions;
 // Firefox from the manifest at all, instead setting it here only for
 // non-mobile.
 // [1] - https://bugzilla.mozilla.org/show_bug.cgi?id=1414613
-Promise.all([browser.action.getPopup({}),
-             browser.runtime.getPlatformInfo()]).then(
-  ([popup, platformInfo]) =>
-  {
-    if (!popup && platformInfo.os != "android")
-      browser.action.setPopup({popup: "popup.html"});
-  }
-);
+Promise.all([
+  browser.action.getPopup({}),
+  browser.runtime.getPlatformInfo()
+]).then(([popup, platformInfo]) => {
+  if (!popup && platformInfo.os != "android")
+    browser.action.setPopup({ popup: "popup.html" });
+});
 
 // On Firefox for Android, open the options page directly when the browser
 // action is clicked.
-browser.action.onClicked.addListener(async() =>
-{
-  const [tab] = await browser.tabs.query({active: true});
+browser.action.onClicked.addListener(async () => {
+  const [tab] = await browser.tabs.query({ active: true });
   const currentPage = await getPage(tab);
 
   let message = null;
-  if (/^https?:$/.test(currentPage.url.protocol))
-  {
+  if (/^https?:$/.test(currentPage.url.protocol)) {
     const isAllowlisted = await ewe.filters.isResourceAllowlisted(
       currentPage.url,
       "document",
@@ -175,7 +156,6 @@ browser.action.onClicked.addListener(async() =>
  *
  * @event "options.open"
  */
-messagingPort.on("options.open", async(message, sender) =>
-{
+messagingPort.on("options.open", async (message, sender) => {
   await showOptions(message && message.followUpMessage);
 });

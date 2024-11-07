@@ -15,12 +15,11 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {start as startBrowser} from "./browser.mjs";
-import {start as startMessaging} from "./messaging.mjs";
-import {start as startXhr} from "./xhr.mjs";
+import { start as startBrowser } from "./browser.mjs";
+import { start as startMessaging } from "./messaging.mjs";
+import { start as startXhr } from "./xhr.mjs";
 
-function start()
-{
+function start() {
   startBrowser();
   startMessaging();
   startXhr();

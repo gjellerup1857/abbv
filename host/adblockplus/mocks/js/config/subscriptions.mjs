@@ -15,13 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {params} from "./env.mjs";
+import { params } from "./env.mjs";
 
 const URL_SUBSCRIPTION_BASE = "https://easylist-downloads.adblockplus.org";
 const URL_BLOCKLIST = `${URL_SUBSCRIPTION_BASE}/easylistgermany+easylist.txt`;
 const URL_ALLOWLIST = `${URL_SUBSCRIPTION_BASE}/exceptionrules.txt`;
-const URL_ALLOWLIST_PRIVACY =
-  `${URL_SUBSCRIPTION_BASE}/exceptionrules-privacy-friendly.txt`;
+const URL_ALLOWLIST_PRIVACY = `${URL_SUBSCRIPTION_BASE}/exceptionrules-privacy-friendly.txt`;
 const URL_PREMIUM = `${URL_SUBSCRIPTION_BASE}/adblock_premium.txt`;
 const URL_DOCLINK_BASE = "https://adblockplus.org/redirect?link=";
 const URL_UNKNOWN = "https://www.example.com/filters.txt";

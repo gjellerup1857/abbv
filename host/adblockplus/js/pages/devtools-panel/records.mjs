@@ -17,8 +17,7 @@
 
 let records = [];
 
-function add(target, filter, subscriptions)
-{
+function add(target, filter, subscriptions) {
   const changes = [];
   const newRecord = {
     filter: getFilterInfo(filter, subscriptions),
@@ -27,22 +26,18 @@ function add(target, filter, subscriptions)
 
   let matchesAny = false;
 
-  for (let i = 0; i < records.length; i++)
-  {
+  for (let i = 0; i < records.length; i++) {
     const oldRecord = records[i];
 
     const matches = hasRecord(newRecord, oldRecord);
-    if (!matches)
-      continue;
+    if (!matches) continue;
 
     matchesAny = true;
 
     // Update record without filters, if filter matches on later checks
-    if (!filter)
-      break;
+    if (!filter) break;
 
-    if (oldRecord.filter)
-      continue;
+    if (oldRecord.filter) continue;
 
     oldRecord.filter = filter;
 
@@ -55,8 +50,7 @@ function add(target, filter, subscriptions)
     });
   }
 
-  if (!matchesAny)
-  {
+  if (!matchesAny) {
     changes.push({
       filter: newRecord.filter,
       request: newRecord.target,
@@ -69,35 +63,29 @@ function add(target, filter, subscriptions)
   return changes;
 }
 
-function clear()
-{
+function clear() {
   records = [];
 }
 
-function getFilterInfo(filter, subscriptions)
-{
-  if (!filter)
-    return null;
+function getFilterInfo(filter, subscriptions) {
+  if (!filter) return null;
 
   let userDefined = false;
   let subscriptionTitle = null;
 
-  for (const subscription of subscriptions)
-  {
-    if (subscription.url.startsWith("~user~"))
-    {
+  for (const subscription of subscriptions) {
+    if (subscription.url.startsWith("~user~")) {
       userDefined = true;
       break;
     }
 
     subscriptionTitle = subscription.title;
-    if (subscriptionTitle)
-      break;
+    if (subscriptionTitle) break;
   }
 
   return {
-    allowlisted: filter.type == "allowing" ||
-      filter.type == "elemhideexception",
+    allowlisted:
+      filter.type == "allowing" || filter.type == "elemhideexception",
     csp: filter.csp,
     selector: filter.selector,
     subscription: subscriptionTitle,
@@ -106,42 +94,35 @@ function getFilterInfo(filter, subscriptions)
   };
 }
 
-function hasRecord(newRecord, oldRecord)
-{
-  if (oldRecord.target.url !== newRecord.target.url)
-    return false;
+function hasRecord(newRecord, oldRecord) {
+  if (oldRecord.target.url !== newRecord.target.url) return false;
 
-  if (oldRecord.target.docDomain !== newRecord.target.docDomain)
-    return false;
+  if (oldRecord.target.docDomain !== newRecord.target.docDomain) return false;
 
   // Ignore frame content allowlisting if there is already
   // a DOCUMENT exception which disables all means of blocking.
-  if (oldRecord.target.type === "DOCUMENT")
-  {
-    if (!newRecord.target.isFrame)
-      return false;
-  }
-  else if (oldRecord.target.type !== newRecord.target.type)
-  {
+  if (oldRecord.target.type === "DOCUMENT") {
+    if (!newRecord.target.isFrame) return false;
+  } else if (oldRecord.target.type !== newRecord.target.type) {
     return false;
   }
 
   // Matched element hiding filters don't relate to a particular request,
   // so we have to compare the selector in order to avoid duplicates.
-  if (oldRecord.filter && newRecord.filter)
-  {
-    if (oldRecord.filter.selector !== newRecord.filter.selector)
-      return false;
+  if (oldRecord.filter && newRecord.filter) {
+    if (oldRecord.filter.selector !== newRecord.filter.selector) return false;
   }
 
   // We apply multiple CSP filters to a document, but we must still remove
   // any duplicates. Two CSP filters are duplicates if both have identical
   // text.
-  if (oldRecord.filter && oldRecord.filter.csp &&
-      newRecord.filter && newRecord.filter.csp)
-  {
-    if (oldRecord.filter.text !== newRecord.filter.text)
-      return false;
+  if (
+    oldRecord.filter &&
+    oldRecord.filter.csp &&
+    newRecord.filter &&
+    newRecord.filter.csp
+  ) {
+    if (oldRecord.filter.text !== newRecord.filter.text) return false;
   }
 
   return true;

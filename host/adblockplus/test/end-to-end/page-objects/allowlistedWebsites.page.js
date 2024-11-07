@@ -19,89 +19,77 @@
 
 const BasePage = require("./base.page");
 
-class AllowlistedWebsitesPage extends BasePage
-{
-  constructor(browser)
-  {
+class AllowlistedWebsitesPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get _allowlistedWebsitesTabButton()
-  {
-    return $("//a[contains(@data-i18n, 'options_tab_allowlist')" +
-        "and text()='Allowlisted websites']");
+  get _allowlistedWebsitesTabButton() {
+    return $(
+      "//a[contains(@data-i18n, 'options_tab_allowlist')" +
+        "and text()='Allowlisted websites']"
+    );
   }
 
-  async init()
-  {
+  async init() {
     await this.waitForDisplayedNoError(this._allowlistedWebsitesTabButton);
     await (await this._allowlistedWebsitesTabButton).click();
   }
 
-  get addWebsiteButton()
-  {
+  get addWebsiteButton() {
     return $("#allowlisting-add-button");
   }
 
-  get allowlistingLearnMoreLink()
-  {
-    return $("//a[contains(@data-doclink, 'allowlist')" +
-        "and text()='Learn more']");
+  get allowlistingLearnMoreLink() {
+    return $(
+      "//a[contains(@data-doclink, 'allowlist') and text()='Learn more']"
+    );
   }
 
-  get allowlistingTableItems()
-  {
+  get allowlistingTableItems() {
     // eslint-disable-next-line no-undef
     return $$("//*[@id='allowlisting-table']/li");
   }
 
-  get allowlistingTextbox()
-  {
+  get allowlistingTextbox() {
     return $("#allowlisting-textbox");
   }
 
-  async clickAllowlistingLearnMoreLink()
-  {
+  async clickAllowlistingLearnMoreLink() {
     await (await this.allowlistingLearnMoreLink).click();
   }
 
-  async clickAddWebsiteButton()
-  {
+  async clickAddWebsiteButton() {
     await (await this.addWebsiteButton).click();
   }
 
-  async getAttributeOfAllowlistingTableItems(attribute)
-  {
+  async getAttributeOfAllowlistingTableItems(attribute) {
     const classNames = [];
     const tableItems = await this.allowlistingTableItems;
-    for (const element of tableItems)
-    {
+    for (const element of tableItems) {
       classNames.push(await element.getAttribute(attribute));
     }
     return classNames;
   }
 
-  async isAddWebsiteButtonEnabled()
-  {
+  async isAddWebsiteButtonEnabled() {
     return await (await this.addWebsiteButton).isEnabled();
   }
 
-  async removeAllowlistedDomain(domainName)
-  {
-    const domainDeleteButton = await $("//li[@aria-label='" +
-      domainName + "']/button");
+  async removeAllowlistedDomain(domainName) {
+    const domainDeleteButton = await $(
+      "//li[@aria-label='" + domainName + "']/button"
+    );
     await this.waitForEnabledThenClick(domainDeleteButton, 4000);
   }
 
-  async setAllowlistingTextboxValue(value)
-  {
+  async setAllowlistingTextboxValue(value) {
     await (await this.allowlistingTextbox).click();
     await browser.keys(value);
   }
 
-  async switchToABPFAQTab()
-  {
+  async switchToABPFAQTab() {
     await this.switchToTab("FAQ - Basic functionality");
   }
 }

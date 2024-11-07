@@ -19,33 +19,30 @@
 
 const BasePage = require("./base.page");
 
-class PaywallChunk extends BasePage
-{
-  constructor(browser)
-  {
+class PaywallChunk extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get allowAdsButton()
-  {
+  get allowAdsButton() {
     return $("div.bt-sw-cctamodal-default-cta-button-group");
   }
 
-  get paywallContent()
-  {
+  get paywallContent() {
     return $("#bt-softwall");
   }
 
-  async clickAllowAdsButton()
-  {
+  async clickAllowAdsButton() {
     await (await this.allowAdsButton).click();
   }
 
-  async isPaywallContentDisplayed(reverseOption = false, timeoutMs = 5000)
-  {
-    return await this.waitForDisplayedNoError(this.paywallContent,
-                                              reverseOption, timeoutMs);
+  async isPaywallContentDisplayed(reverseOption = false, timeoutMs = 5000) {
+    return await this.waitForDisplayedNoError(
+      this.paywallContent,
+      reverseOption,
+      timeoutMs
+    );
   }
 }
 

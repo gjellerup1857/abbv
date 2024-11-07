@@ -52,7 +52,7 @@
         "firefox": "if [[ -z \"$1\" || \"$1\" == \"firefox\" ]]; then $ create.release firefox 2; fi"
       }
     },
-    "create": {      
+    "create": {
       "devenv": "gulp devenv -t $1 -m $2 --unhandled-rejections=strict",
       "dist": {
         "icons": "node build/icons-generation/index.js"

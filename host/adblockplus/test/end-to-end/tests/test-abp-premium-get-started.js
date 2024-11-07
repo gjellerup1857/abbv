@@ -17,23 +17,23 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       enablePremiumByUI} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  enablePremiumByUI
+} = require("../helpers");
+const { expect } = require("chai");
 const PremiumPage = require("../page-objects/premium.page");
 const WelcomeToPremiumPage = require("../page-objects/welcomeToPremium.page");
 
-describe("test abp premium get started", function()
-{
+describe("test abp premium get started", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display onboarding page for premium user", async function()
-  {
+  it("should display onboarding page for premium user", async function () {
     await enablePremiumByUI();
     const premiumPage = new PremiumPage(browser);
     const welcomeToPremiumPage = new WelcomeToPremiumPage(browser);
@@ -41,8 +41,10 @@ describe("test abp premium get started", function()
     await premiumPage.clickGetStartedWithABPPremiumButton();
     await premiumPage.switchToTab("Welcome to Adblock Plus Premium");
     expect(await premiumPage.getCurrentUrl()).to.include(
-      "premium-onboarding.html");
-    expect(await welcomeToPremiumPage.
-      isEnableAllPremiumFeaturesButtonDisplayed()).to.be.true;
+      "premium-onboarding.html"
+    );
+    expect(
+      await welcomeToPremiumPage.isEnableAllPremiumFeaturesButtonDisplayed()
+    ).to.be.true;
   });
 });

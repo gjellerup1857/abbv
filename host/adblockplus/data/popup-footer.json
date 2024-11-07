@@ -6,7 +6,10 @@
       {
         "action": "open-doclink",
         "doclink": "adblock_browser_ios_store",
-        "image": {"url": "skin/icons/apple.svg", "i18nAlt": "browser_store_ios"}
+        "image": {
+          "url": "skin/icons/apple.svg",
+          "i18nAlt": "browser_store_ios"
+        }
       },
       {
         "action": "open-doclink",

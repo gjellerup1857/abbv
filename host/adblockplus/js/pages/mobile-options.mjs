@@ -16,8 +16,8 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {convertDoclinks, getDoclink, getErrorMessage} from "../common.mjs";
-import {initI18n} from "../../src/i18n/index.ts";
+import { convertDoclinks, getDoclink, getErrorMessage } from "../common.mjs";
+import { initI18n } from "../../src/i18n/index.ts";
 
 import "../../src/mobile-options/ui/mobile-options.css";
 
@@ -30,37 +30,29 @@ import "../../src/mobile-options/ui/mobile-options.css";
 
   /* Utility functions */
 
-  function get(selector, origin)
-  {
+  function get(selector, origin) {
     return (origin || document).querySelector(selector);
   }
 
-  function getAll(selector, origin)
-  {
+  function getAll(selector, origin) {
     return (origin || document).querySelectorAll(selector);
   }
 
-  function create(parent, tagName, content, attributes, onclick)
-  {
+  function create(parent, tagName, content, attributes, onclick) {
     const element = document.createElement(tagName);
 
-    if (typeof content == "string")
-    {
+    if (typeof content == "string") {
       element.textContent = content;
     }
 
-    if (attributes)
-    {
-      for (const name in attributes)
-      {
+    if (attributes) {
+      for (const name in attributes) {
         element.setAttribute(name, attributes[name]);
       }
     }
 
-    if (onclick)
-    {
-      element.addEventListener("click", (ev) =>
-      {
+    if (onclick) {
+      element.addEventListener("click", (ev) => {
         onclick(ev);
         ev.stopPropagation();
       });
@@ -72,81 +64,69 @@ import "../../src/mobile-options/ui/mobile-options.css";
 
   /* Extension interactions */
 
-  function getInstalled()
-  {
-    return browser.runtime.sendMessage({type: "subscriptions.get"});
+  function getInstalled() {
+    return browser.runtime.sendMessage({ type: "subscriptions.get" });
   }
 
-  function getAcceptableAdsUrl()
-  {
-    return browser.runtime.sendMessage(
-      {type: "app.get", what: "acceptableAdsUrl"});
-  }
-
-  function getRecommendedAds()
-  {
+  function getAcceptableAdsUrl() {
     return browser.runtime.sendMessage({
       type: "app.get",
-      what: "recommendations"
-    })
-    .then((recommendations) =>
-    {
-      return recommendations
-        .filter((recommendation) => recommendation.type == "ads")
-        .map((recommendation) =>
-        {
-          return {
-            title: recommendation.title,
-            url: recommendation.url
-          };
-        });
+      what: "acceptableAdsUrl"
     });
   }
 
-  function installSubscription(url, title)
-  {
-    browser.runtime.sendMessage({type: "subscriptions.add", url, title});
+  function getRecommendedAds() {
+    return browser.runtime
+      .sendMessage({
+        type: "app.get",
+        what: "recommendations"
+      })
+      .then((recommendations) => {
+        return recommendations
+          .filter((recommendation) => recommendation.type == "ads")
+          .map((recommendation) => {
+            return {
+              title: recommendation.title,
+              url: recommendation.url
+            };
+          });
+      });
   }
 
-  function uninstallSubscription(url)
-  {
-    browser.runtime.sendMessage({type: "subscriptions.remove", url});
+  function installSubscription(url, title) {
+    browser.runtime.sendMessage({ type: "subscriptions.add", url, title });
+  }
+
+  function uninstallSubscription(url) {
+    browser.runtime.sendMessage({ type: "subscriptions.remove", url });
   }
 
   /* Actions */
 
-  function setFilter({disabled, text}, action)
-  {
-    if (!allowlistFilter || text != allowlistFilter)
-      return;
+  function setFilter({ disabled, text }, action) {
+    if (!allowlistFilter || text != allowlistFilter) return;
 
-    get("#enabled").checked = (action == "remove" || disabled);
+    get("#enabled").checked = action == "remove" || disabled;
   }
 
-  function setSubscription(subscription, action)
-  {
-    const {disabled, filters, title, url} = subscription;
-    if (disabled)
-    {
+  function setSubscription(subscription, action) {
+    const { disabled, filters, title, url } = subscription;
+    if (disabled) {
       action = "remove";
     }
 
     // Handle custom subscription
-    if (/^~user/.test(url))
-    {
-      for (const filter of filters)
-      {
+    if (/^~user/.test(url)) {
+      for (const filter of filters) {
         setFilter(filter, action);
       }
       return;
     }
 
-    promisedAcceptableAdsUrl.then((acceptableAdsUrl) =>
-    {
+    promisedAcceptableAdsUrl.then((acceptableAdsUrl) => {
       // Update Acceptable Ads
-      if (url == acceptableAdsUrl)
-      {
-        get(`#${idAcceptableAds}`).checked = (action != "remove");
+      if (url == acceptableAdsUrl) {
+        get(`#${idAcceptableAds}`).checked = action != "remove";
         return;
       }
 
@@ -154,100 +134,76 @@ import "../../src/mobile-options/ui/mobile-options.css";
       const installed = get(`[data-url="${url}"]`, listInstalled);
 
       // Remove subscription
-      if (action == "remove")
-      {
-        if (installed)
-        {
+      if (action == "remove") {
+        if (installed) {
           installed.parentNode.removeChild(installed);
         }
 
         const recommended = get(`#${idRecommended} [data-url="${url}"]`);
-        if (recommended)
-        {
+        if (recommended) {
           recommended.classList.remove("installed");
         }
       }
       // Update subscription
-      else if (installed)
-      {
+      else if (installed) {
         const titleElement = get("span", installed);
         titleElement.textContent = title || url;
       }
       // Add subscription
-      else if (action == "add")
-      {
-        const element = create(listInstalled, "li", null, {"data-url": url});
+      else if (action == "add") {
+        const element = create(listInstalled, "li", null, { "data-url": url });
         create(element, "span", title || url);
-        create(
-          element, "button", null, {class: "remove"},
-          () => uninstallSubscription(url)
+        create(element, "button", null, { class: "remove" }, () =>
+          uninstallSubscription(url)
         );
 
         const recommended = get(`#${idRecommended} [data-url="${url}"]`);
-        if (recommended)
-        {
+        if (recommended) {
           recommended.classList.add("installed");
         }
       }
     });
   }
 
-  function setDialog(id, options)
-  {
-    if (!id)
-    {
+  function setDialog(id, options) {
+    if (!id) {
       delete document.body.dataset.dialog;
       return;
     }
 
     const fields = getAll(`#dialog-${id} input`);
-    for (const field of fields)
-    {
-      const {name} = field;
-      field.value = (options && name in options) ? options[name] : "";
+    for (const field of fields) {
+      const { name } = field;
+      field.value = options && name in options ? options[name] : "";
     }
     setError(id, null);
 
     document.body.dataset.dialog = id;
   }
 
-  function setError(dialogId, fieldName)
-  {
+  function setError(dialogId, fieldName) {
     const dialog = get(`#dialog-${dialogId}`);
-    if (fieldName)
-    {
+    if (fieldName) {
       dialog.dataset.error = fieldName;
-    }
-    else
-    {
+    } else {
       delete dialog.dataset.error;
     }
   }
 
-  function populateLists()
-  {
+  function populateLists() {
     Promise.all([getInstalled(), getRecommendedAds()])
-      .then(([installed, recommended]) =>
-      {
+      .then(([installed, recommended]) => {
         const listRecommended = get(`#${idRecommended}`);
-        for (const {title, url} of recommended)
-        {
-          create(
-            listRecommended, "li", title, {"data-url": url},
-            (ev) =>
-            {
-              if (ev.target.classList.contains("installed"))
-                return;
+        for (const { title, url } of recommended) {
+          create(listRecommended, "li", title, { "data-url": url }, (ev) => {
+            if (ev.target.classList.contains("installed")) return;
 
-              setDialog(dialogSubscribe, {title, url});
-            }
-          );
+            setDialog(dialogSubscribe, { title, url });
+          });
         }
 
-        for (const subscription of installed)
-        {
-          if (subscription.disabled)
-            continue;
+        for (const subscription of installed) {
+          if (subscription.disabled) continue;
 
           setSubscription(subscription, "add");
         }
@@ -257,53 +213,39 @@ import "../../src/mobile-options/ui/mobile-options.css";
 
   /* Listeners */
 
-  function onChange(ev)
-  {
-    if (ev.target.id != idAcceptableAds)
-      return;
+  function onChange(ev) {
+    if (ev.target.id != idAcceptableAds) return;
 
-    promisedAcceptableAdsUrl.then((acceptableAdsUrl) =>
-    {
-      if (ev.target.checked)
-      {
+    promisedAcceptableAdsUrl.then((acceptableAdsUrl) => {
+      if (ev.target.checked) {
         installSubscription(acceptableAdsUrl, null);
-      }
-      else
-      {
+      } else {
         uninstallSubscription(acceptableAdsUrl);
       }
     });
   }
   document.addEventListener("change", onChange);
 
-  function toggleAllowlistFilter(toggle)
-  {
-    if (allowlistFilter)
-    {
-      browser.runtime.sendMessage(
-        {
-          type: (toggle.checked) ? "filters.remove" : "filters.add",
+  function toggleAllowlistFilter(toggle) {
+    if (allowlistFilter) {
+      browser.runtime
+        .sendMessage({
+          type: toggle.checked ? "filters.remove" : "filters.add",
           text: allowlistFilter
-        }
-      ).then(errors =>
-      {
-        if (errors.length < 1)
-          return;
+        })
+        .then((errors) => {
+          if (errors.length < 1) return;
 
-        console.error(getErrorMessage(errors[0]));
-        toggle.checked = !toggle.checked;
-      });
-    }
-    else
-    {
+          console.error(getErrorMessage(errors[0]));
+          toggle.checked = !toggle.checked;
+        });
+    } else {
       console.error("Allowlist filter hasn't been initialized yet");
     }
   }
 
-  function onClick(ev)
-  {
-    switch (ev.target.dataset.action)
-    {
+  function onClick(ev) {
+    switch (ev.target.dataset.action) {
       case "close-dialog":
         setDialog(null);
         break;
@@ -318,18 +260,14 @@ import "../../src/mobile-options/ui/mobile-options.css";
   }
   document.addEventListener("click", onClick);
 
-  function onSubmit(ev)
-  {
+  function onSubmit(ev) {
     const fields = ev.target.elements;
     const title = fields.title.value;
     const url = fields.url.value;
 
-    if (!url)
-    {
+    if (!url) {
       setError(dialogSubscribe, "url");
-    }
-    else
-    {
+    } else {
       installSubscription(url, title);
       setDialog(null);
     }
@@ -338,26 +276,22 @@ import "../../src/mobile-options/ui/mobile-options.css";
   }
   document.addEventListener("submit", onSubmit);
 
-  function onMessage(msg)
-  {
-    switch (msg.type)
-    {
+  function onMessage(msg) {
+    switch (msg.type) {
       case "app.respond": {
-        switch (msg.action)
-        {
+        switch (msg.action) {
           case "addSubscription":
             const [subscription] = msg.args;
 
-            let {title, url} = subscription;
-            if (!title || title == url)
-            {
+            let { title, url } = subscription;
+            if (!title || title == url) {
               title = "";
             }
 
-            setDialog(dialogSubscribe, {title, url});
+            setDialog(dialogSubscribe, { title, url });
             break;
           case "showPageOptions":
-            const [{host, allowlisted}] = msg.args;
+            const [{ host, allowlisted }] = msg.args;
             allowlistFilter = `@@||${host}^$document`;
             get("#enabled-domain").textContent = host;
             const toggle = get("#enabled");
@@ -369,14 +303,13 @@ import "../../src/mobile-options/ui/mobile-options.css";
         break;
       }
       case "filters.respond": {
-        const action = (msg.action == "added") ? "add" : "remove";
+        const action = msg.action == "added" ? "add" : "remove";
         setFilter(msg.args[0], action);
         break;
       }
       case "subscriptions.respond": {
         const [subscription, property] = msg.args;
-        switch (msg.action)
-        {
+        switch (msg.action) {
           case "added":
             setSubscription(subscription, "add");
             break;
@@ -385,7 +318,7 @@ import "../../src/mobile-options/ui/mobile-options.css";
               subscription,
               // We're also receiving these messages for subscriptions that are
               // not installed so we shouldn't add those by accident
-              (property === "enabled") ? "add" : "update"
+              property === "enabled" ? "add" : "update"
             );
             break;
           case "removed":
@@ -409,12 +342,10 @@ import "../../src/mobile-options/ui/mobile-options.css";
   initI18n();
   populateLists();
 
-  getDoclink("privacy").then((url) =>
-  {
+  getDoclink("privacy").then((url) => {
     get("#privacy-policy").href = url;
   });
-  getDoclink("imprint").then((url) =>
-  {
+  getDoclink("imprint").then((url) => {
     get("#imprint").href = url;
   });
 

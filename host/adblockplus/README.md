@@ -24,9 +24,9 @@ Adblock Plus is an open source project licensed under [GPLv3][gpl3] and subject
 to its [Terms of Use][eyeo-terms]. [eyeo GmbH][eyeo] is the parent company of
 Adblock Plus.
 
-## Running scripts 
+## Running scripts
 
-Please note that all scripts should be run from the root of the repository, not 
+Please note that all scripts should be run from the root of the repository, not
 this host folder.
 
 ## Building
@@ -44,7 +44,7 @@ only required if you wish to enable the sending of telemetry.
 ### Bundling the UI
 
 Various files need to be generated before using the UI. When building the UI
-for inclusion in the extension, this is achieved using 
+for inclusion in the extension, this is achieved using
 `npm run dist -w=host/adblockplus` from the root folder (not this host folder).
 
 For usage [in the test environment](#testing), run the
@@ -125,7 +125,7 @@ npm run build:local
 npm start --workspace host/adblockplus
 ```
 
-After running `npm start --workspace host/adblockplus`, you can access the HTML 
+After running `npm start --workspace host/adblockplus`, you can access the HTML
 pages under the URL shown in the terminal, e.g. http://127.0.0.1:8080.
 
 Various aspects of the pages can be tested by setting parameters in the URL (see
@@ -137,9 +137,9 @@ that you want to test.
 ### Unit testing
 
 The `./test/unit` folder contains various mocha unit tests files
-which can be run via `npm run $ test.unit.legacy --workspace host/adblockplus`. 
-For `.ts` files we have jest unit tests that can be run via 
-`npm run $ test.unit.love --workspace host/adblockplus`. Those can be run 
+which can be run via `npm run $ test.unit.legacy --workspace host/adblockplus`.
+For `.ts` files we have jest unit tests that can be run via
+`npm run $ test.unit.love --workspace host/adblockplus`. Those can be run
 together via `npm test -- --scope=adblockplus`.
 
 ### End-to-end testing
@@ -166,47 +166,47 @@ headful mode instead of headless.
 DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used to be able
 to test with locally served pages and AA-related filter rules.
 
-Note: By default webDriverIO in Firefox is opening every tab or window as a new tab. 
-More details can be found in the [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206). 
+Note: By default webDriverIO in Firefox is opening every tab or window as a new tab.
+More details can be found in the [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
 
 #### LambdaTest run
 
 To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
 
 - Create a new .env.e2e file with your Lambda credentials. You can use the
-[.env.e2e.defaults](./.env.e2e.defaults)
-provided as a guide. The values in `.env.e2e.defaults` will be used as default
-values, so you can choose to only copy the values you wish to override.
-- Generate the [release builds](../../README.md#building-the-extensions-in-release-mode) 
-of the extension.
+  [.env.e2e.defaults](./.env.e2e.defaults)
+  provided as a guide. The values in `.env.e2e.defaults` will be used as default
+  values, so you can choose to only copy the values you wish to override.
+- Generate the [release builds](../../README.md#building-the-extensions-in-release-mode)
+  of the extension.
 - Additional steps are needed for running the tests with MV3 version of the extension:
   - Install the axios package globally: `npm install -g axios`
   - Upload the extension to LambdaTest by running (in this host folder): `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
-- Run the test:end-to-end npm script 
-`npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv2 all` or
-`npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv3 all`.
+- Run the test:end-to-end npm script
+  `npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv2 all` or
+  `npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv3 all`.
 
 #### Notes
 
 - You can replace `all` tests with a specific test suite (`e2e`, `integration`,
-`smoke`).
+  `smoke`).
 - If you only want to execute a single test file, you can replace the value of the
-`all` property in [suites.js](./test/end-to-end/suites.js#L21)
-to an array containing only the [path](./test/end-to-end/tests)
-to the test(s) you want to run. Example:
+  `all` property in [suites.js](./test/end-to-end/suites.js#L21)
+  to an array containing only the [path](./test/end-to-end/tests)
+  to the test(s) you want to run. Example:
 
   ```js
   all: ["./tests/test-options-page-dialog-links.js"],
   ```
 
 - Allure reporter is used for displaying the results after the execution has been
-completed. The report can be generated and opened using the
-`npm run --workspace host/adblockplus test:generate-and-open-report` command.
+  completed. The report can be generated and opened using the
+  `npm run --workspace host/adblockplus test:generate-and-open-report` command.
 - Screenshots of failing tests get saved to `./test/end-to-end/screenshots`
 
 #### Docker run
 
-These commands should be run from the repository root, not this host folder. 
+These commands should be run from the repository root, not this host folder.
 
 Prerequisites: Docker
 
@@ -251,6 +251,7 @@ Optional environment variables:
 ### Linting
 
 You can lint all files via `npm run lint` or lint only specific file types:
+
 - JavaScript/TypeScript: `npm run --workspace host/adblockplus $ lint.js`
 - Translation files: `npm run --workspace host/adblockplus $ lint.locale`
 - Other files: `npm run --workspace host/adblockplus $ lint.prettier`

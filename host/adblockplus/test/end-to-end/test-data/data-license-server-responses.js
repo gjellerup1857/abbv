@@ -81,7 +81,8 @@ const serverResponsesData = [
       });
     `,
     premiumStatus: "enabled",
-    errorId: /Premium license check failed \(retries: 0\).*Error: Received error response \(code: 500\)/
+    errorId:
+      /Premium license check failed \(retries: 0\).*Error: Received error response \(code: 500\)/
   },
   {
     testName: "non-json",
@@ -97,7 +98,8 @@ const serverResponsesData = [
       });
     `,
     premiumStatus: "enabled",
-    errorId: /Premium license check failed.*SyntaxError: Unexpected token 'o',.*"non_json_response.*" is not valid JSON/
+    errorId:
+      /Premium license check failed.*SyntaxError: Unexpected token 'o',.*"non_json_response.*" is not valid JSON/
   },
   {
     testName: "wrong status",
@@ -113,7 +115,8 @@ const serverResponsesData = [
       });
     `,
     premiumStatus: "disabled",
-    errorId: /Invalid Premium license.*Error: Unknown license status: wrong_status/
+    errorId:
+      /Invalid Premium license.*Error: Unknown license status: wrong_status/
   },
   {
     testName: "wrong version",

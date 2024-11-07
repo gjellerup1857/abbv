@@ -26,45 +26,40 @@ import {
   toSerializableFilter,
   toSerializableSubscription
 } from "../../src/core/messaging/background";
-import {pageEmitter} from "../../src/core/pages/background";
-import {compareVersions} from "../../src/version/shared";
-import {TabSessionStorage} from "./storage/tab-session.js";
-import {info} from "../../src/info/background";
+import { pageEmitter } from "../../src/core/pages/background";
+import { compareVersions } from "../../src/version/shared";
+import { TabSessionStorage } from "./storage/tab-session.js";
+import { info } from "../../src/info/background";
 
 const reloadStateByPage = new TabSessionStorage("devtools:reloadState");
 
-async function onBlockableItem(emit, blockableItem)
-{
-  const {filter} = blockableItem;
+async function onBlockableItem(emit, blockableItem) {
+  const { filter } = blockableItem;
 
   let subscriptions = [];
-  if (filter)
-  {
+  if (filter) {
     subscriptions = await ewe.subscriptions.getForFilter(filter.text);
     subscriptions = subscriptions
-      .filter(subscription => subscription.enabled)
+      .filter((subscription) => subscription.enabled)
       .map(toSerializableSubscription);
   }
 
   emit(
     toSerializableBlockableItem(blockableItem),
-    (filter) ? toSerializableFilter(filter) : null,
+    filter ? toSerializableFilter(filter) : null,
     subscriptions
   );
 }
 
-function onPageFrame(emit, details)
-{
-  void reloadStateByPage.transaction(async() =>
-  {
-    const {tabId} = details;
+function onPageFrame(emit, details) {
+  void reloadStateByPage.transaction(async () => {
+    const { tabId } = details;
     const reloadState = await reloadStateByPage.get(tabId);
 
     // Clear the devtools panel and reload the inspected tab without caching
     // when a new request is issued. However, make sure that we don't end up
     // in an infinite recursion if we already triggered a reload.
-    if (reloadState === "reloading")
-    {
+    if (reloadState === "reloading") {
       await reloadStateByPage.delete(tabId);
       return;
     }
@@ -79,42 +74,38 @@ function onPageFrame(emit, details)
   });
 }
 
-function onPageLoad(page)
-{
-  void reloadStateByPage.transaction(async() =>
-  {
+function onPageLoad(page) {
+  void reloadStateByPage.transaction(async () => {
     const reloadState = await reloadStateByPage.get(page.id);
 
     // Reloading the tab is the only way that allows bypassing all caches, in
     // order to see all requests in the devtools panel. Reloading must not be
     // performed before the tab changes to "loading", otherwise it will load the
     // previous URL.
-    if (reloadState === "needsReload")
-    {
+    if (reloadState === "needsReload") {
       await reloadStateByPage.set(page.id, "reloading");
-      browser.tabs.reload(page.id, {bypassCache: true});
+      browser.tabs.reload(page.id, { bypassCache: true });
     }
   });
 }
 
-export function start()
-{
+export function start() {
   /**
    * Returns true if our devtools panel is supported by the browser.
    *
    * @event "devtools.supported"
    * @returns {boolean}
    */
-  port.on("devtools.supported", (message, sender) =>
-    info.platform == "chromium" ||
-  info.application == "firefox" &&
-  compareVersions(info.applicationVersion, "54") >= 0
+  port.on(
+    "devtools.supported",
+    (message, sender) =>
+      info.platform == "chromium" ||
+      (info.application == "firefox" &&
+        compareVersions(info.applicationVersion, "54") >= 0)
   );
 
-  installHandler("requests", null, (emit, action, targetTabId) =>
-  {
-    switch (action)
-    {
+  installHandler("requests", null, (emit, action, targetTabId) => {
+    switch (action) {
       case "hits":
         const blockableItemsOptions = {
           filterType: "all",
@@ -128,8 +119,7 @@ export function start()
           localOnBlockableItem,
           blockableItemsOptions
         );
-        return () =>
-        {
+        return () => {
           ewe.reporting.onBlockableItem.removeListener(
             localOnBlockableItem,
             blockableItemsOptions
@@ -139,22 +129,17 @@ export function start()
         const localOnPageFrame = onPageFrame.bind(null, emit);
         const localOnPageLoad = onPageLoad.bind(null, emit);
 
-        browser.webRequest.onBeforeRequest.addListener(
-          localOnPageFrame,
-          {
-            urls: ["http://*/*", "https://*/*"],
-            types: ["main_frame"],
-            tabId: targetTabId
-          }
-        );
+        browser.webRequest.onBeforeRequest.addListener(localOnPageFrame, {
+          urls: ["http://*/*", "https://*/*"],
+          types: ["main_frame"],
+          tabId: targetTabId
+        });
         pageEmitter.on("loading", localOnPageLoad);
 
-        return () =>
-        {
+        return () => {
           browser.webRequest.onBeforeRequest.removeListener(localOnPageFrame);
           pageEmitter.off("loading", localOnPageLoad);
         };
     }
   });
 }
-

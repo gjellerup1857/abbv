@@ -15,24 +15,31 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Port} from "../shared/index.mjs";
+import { Port } from "../shared/index.mjs";
 
-function postMessage(msg)
-{
-  parent.postMessage({
-    type: "port",
-    id: this._id,
-    payload: msg
-  }, "*");
+function postMessage(msg) {
+  parent.postMessage(
+    {
+      type: "port",
+      id: this._id,
+      payload: msg
+    },
+    "*"
+  );
 }
 
-export function start()
-{
-  window.addEventListener("load", () =>
-  {
-    parent.postMessage({
-      type: "backgroundPageLoaded"
-    }, "*");
-  }, false);
+export function start() {
+  window.addEventListener(
+    "load",
+    () => {
+      parent.postMessage(
+        {
+          type: "backgroundPageLoaded"
+        },
+        "*"
+      );
+    },
+    false
+  );
   Port.prototype.postMessage = postMessage;
 }

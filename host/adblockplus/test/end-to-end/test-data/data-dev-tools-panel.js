@@ -17,11 +17,7 @@
 
 "use strict";
 
-const devPanelFilteringStates = [
-  "all",
-  "blocked",
-  "allowlisted"
-];
+const devPanelFilteringStates = ["all", "blocked", "allowlisted"];
 
 const devPanelFilteringTypes = [
   "any",
@@ -48,7 +44,6 @@ const devPanelFilteringTypes = [
   "REMOVE",
   "SNIPPET"
 ];
-
 
 exports.devPanelFilteringStates = devPanelFilteringStates;
 exports.devPanelFilteringTypes = devPanelFilteringTypes;

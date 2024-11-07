@@ -19,23 +19,18 @@
 
 const minimist = require("minimist");
 
-const {exportTranslations} = require("./export");
-const {importTranslations} = require("./import");
+const { exportTranslations } = require("./export");
+const { importTranslations } = require("./import");
 
 const argv = minimist(process.argv.slice(2));
 const helpText = `Missing arguments: check "Translations CSV exporter" section
 in the README file for more details`;
 
-if (argv.e)
-{
+if (argv.e) {
   exportTranslations(argv.e);
-}
-else if (argv.i)
-{
+} else if (argv.i) {
   importTranslations(argv.i);
-}
-else
-{
+} else {
   // eslint-disable-next-line no-console
   console.log(helpText);
 }

@@ -1,4 +1,3 @@
-
 /* eslint-disable indent */
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
@@ -19,65 +18,63 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
-const AllowlistedWebsitesPage =
-  require("../page-objects/allowlistedWebsites.page");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
+const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
 
-describe("test allowlisted websites tab", function()
-{
+describe("test allowlisted websites tab", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display allowlisted websites default state", async function()
-  {
+  it("should display allowlisted websites default state", async function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    const attributesOfAllowlistingTableItems = await
-      allowistedWebsitesPage.getAttributeOfAllowlistingTableItems("class");
-    attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("empty-placeholder");
     });
-    expect(await allowistedWebsitesPage.
-      isAddWebsiteButtonEnabled()).to.be.false;
+    expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be
+      .false;
   });
 
-  it("should add a website to allowlisted websites", async function()
-  {
+  it("should add a website to allowlisted websites", async function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    await allowistedWebsitesPage.
-      setAllowlistingTextboxValue("allowlisted-domain.com");
-    expect(await allowistedWebsitesPage.
-      isAddWebsiteButtonEnabled()).to.be.true;
+    await allowistedWebsitesPage.setAllowlistingTextboxValue(
+      "allowlisted-domain.com"
+    );
+    expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
     await allowistedWebsitesPage.clickAddWebsiteButton();
-    const attributesOfAllowlistingTableItems = await
-      allowistedWebsitesPage.
-      getAttributeOfAllowlistingTableItems("aria-label");
-      attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "aria-label"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("allowlisted-domain.com");
     });
   });
 
-  it("should remove a website from allowlisted websites", async function()
-  {
+  it("should remove a website from allowlisted websites", async function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
-    await allowistedWebsitesPage.
-      setAllowlistingTextboxValue("allowlisted-domain.com");
+    await allowistedWebsitesPage.setAllowlistingTextboxValue(
+      "allowlisted-domain.com"
+    );
     await allowistedWebsitesPage.clickAddWebsiteButton();
-    await allowistedWebsitesPage.
-      removeAllowlistedDomain("allowlisted-domain.com");
-    const attributesOfAllowlistingTableItems = await
-      allowistedWebsitesPage.getAttributeOfAllowlistingTableItems("class");
-      attributesOfAllowlistingTableItems.forEach(async(element) =>
-    {
+    await allowistedWebsitesPage.removeAllowlistedDomain(
+      "allowlisted-domain.com"
+    );
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("empty-placeholder");
     });
   });

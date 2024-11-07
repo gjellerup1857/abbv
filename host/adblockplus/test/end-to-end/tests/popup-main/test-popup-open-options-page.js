@@ -17,21 +17,18 @@
 
 "use strict";
 
-const {doesTabExist, switchToABPOptionsTab} = require("../../helpers");
-const {expect} = require("chai");
+const { doesTabExist, switchToABPOptionsTab } = require("../../helpers");
+const { expect } = require("chai");
 const PopupPage = require("../../page-objects/popup.page");
 
-module.exports = function()
-{
+module.exports = function () {
   let popupUrl;
 
-  before(function()
-  {
-    (popupUrl = this.test.parent.parent.popupUrl);
+  before(function () {
+    popupUrl = this.test.parent.parent.popupUrl;
   });
 
-  it("should open settings page", async function()
-  {
+  it("should open settings page", async function () {
     // make sure that the settings page is not opened by default
     await switchToABPOptionsTab();
     await browser.closeWindow();

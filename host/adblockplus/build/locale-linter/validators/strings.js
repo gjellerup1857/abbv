@@ -17,10 +17,10 @@
 
 "use strict";
 
-const {ResultGroup, reStringId} = require("../common");
-const {validate: validatePlaceholders} = require("./placeholders");
-const {validate: validateTags} = require("./tags");
-const {validate: validateWords} = require("./words");
+const { ResultGroup, reStringId } = require("../common");
+const { validate: validatePlaceholders } = require("./placeholders");
+const { validate: validateTags } = require("./tags");
+const { validate: validateWords } = require("./words");
 
 /**
  * Validates the contents of an i18n file for the given locale.
@@ -32,24 +32,23 @@ const {validate: validateWords} = require("./words");
  *   exceptions
  * @returns {ResultGroup} The validation result
  */
-function validate(locale, stringInfos, importantWords, importantWordsExceptions)
-{
+function validate(
+  locale,
+  stringInfos,
+  importantWords,
+  importantWordsExceptions
+) {
   const results = new ResultGroup("Validate strings");
 
-  for (const stringId in stringInfos)
-  {
-    const stringResults = new ResultGroup(
-      `Validate string '${stringId}'`
-    );
+  for (const stringId in stringInfos) {
+    const stringResults = new ResultGroup(`Validate string '${stringId}'`);
 
-    if (!reStringId.test(stringId))
-    {
+    if (!reStringId.test(stringId)) {
       stringResults.push(`Invalid string ID '${stringId}'`);
     }
 
     const stringInfo = stringInfos[stringId];
-    if (!("message" in stringInfo))
-    {
+    if (!("message" in stringInfo)) {
       stringResults.push("Missing 'message' property");
       // We can't go on here, let's push the results we have so far and move
       // on to process the next `stringId`.
@@ -57,18 +56,15 @@ function validate(locale, stringInfos, importantWords, importantWordsExceptions)
       continue;
     }
 
-    if (/\n/.test(stringInfo.message))
-    {
+    if (/\n/.test(stringInfo.message)) {
       stringResults.push("Unexpected newline character");
     }
 
-    if (/^\s|\s$/.test(stringInfo.message))
-    {
+    if (/^\s|\s$/.test(stringInfo.message)) {
       stringResults.push("Unexpected leading/trailing space");
     }
 
-    if (/\s{2,}/.test(stringInfo.message))
-    {
+    if (/\s{2,}/.test(stringInfo.message)) {
       stringResults.push("Unexpected redundant space");
     }
 

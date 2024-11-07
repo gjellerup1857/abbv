@@ -24,14 +24,12 @@
  * relatively positioned due to the following CSS properties. Therefore we
  * need to reset their values.
  */
-#page-info > div
-{
+#page-info > div {
   transform: initial;
   will-change: initial;
 }
 
-.overlay
-{
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -46,8 +44,7 @@
 
 #block-element,
 #block-element:hover,
-#block-element:focus
-{
+#block-element:focus {
   position: relative;
   z-index: 1;
   border: 3px solid var(--color-brand-primary);

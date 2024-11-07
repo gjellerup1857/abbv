@@ -17,45 +17,41 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const PopupPage = require("../page-objects/popup.page");
 const GeneralPage = require("../page-objects/general.page");
 let popupUrl;
 let lastTest = false;
 
-describe.skip("test filter list suggestion", function()
-{
+describe.skip("test filter list suggestion", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({popupUrl} = await beforeSequence());
+  before(async function () {
+    ({ popupUrl } = await beforeSequence());
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await afterSequence();
     }
   });
 
-  it("should display default behaviour", async function()
-  {
+  it("should display default behaviour", async function () {
     await browser.url("https://www.ansa.it/");
     await browser.url("https://www.ilfattoquotidiano.it/");
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 
-  it("should display filterlist suggestion notification", async function()
-  {
+  it("should display filterlist suggestion notification", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickNotifyLanguageFilterListsTooltipCheckbox();
     await browser.url("https://www.ansa.it/");
@@ -64,24 +60,26 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.true;
-    const notificationText = "It looks like you visited a website in: " +
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.true;
+    const notificationText =
+      "It looks like you visited a website in: " +
       "italiano. Would you like to block ads on all websites " +
       "in this language?";
-    expect(await popupPage.
-      getNotificationMessageText().includes(notificationText)).to.be.true;
+    expect(
+      await popupPage.getNotificationMessageText().includes(notificationText)
+    ).to.be.true;
     await popupPage.clickYesButton();
-    expect(await generalPage.
-      getPredefinedDialogTitleText().includes("Are you sure you want to add" +
-      " this filter list?")).to.be.true;
+    expect(
+      await generalPage
+        .getPredefinedDialogTitleText()
+        .includes("Are you sure you want to add this filter list?")
+    ).to.be.true;
     await generalPage.clickAddPredefinedSubscriptionButton();
-    expect(await generalPage.
-      isItalianoPlusEnglishLanguageTableItemDisplayed()).to.be.true;
+    expect(await generalPage.isItalianoPlusEnglishLanguageTableItemDisplayed())
+      .to.be.true;
   });
 
-  it("should not display FL suggestion for same TLD", async function()
-  {
+  it("should not display FL suggestion for same TLD", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickNotifyLanguageFilterListsTooltipCheckbox();
     await browser.url("https://www.repubblica.it/");
@@ -90,12 +88,10 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.repubblica.it/esteri");
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 
-  it("should only trigger notification once per language", async function()
-  {
+  it("should only trigger notification once per language", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickNotifyLanguageFilterListsTooltipCheckbox();
     await browser.url("https://www.ansa.it/");
@@ -104,29 +100,25 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.true;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.true;
     await popupPage.clickCloseNotificationButton();
     await browser.url("https://www.ansa.it/");
     await browser.url("https://www.ilfattoquotidiano.it/");
     await browser.url("https://www.repubblica.it/");
     await browser.url("https://www.tiscali.it/");
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
     await browser.url("https://www.lavanguardia.com/");
     await browser.url("https://elpais.com/");
     await browser.url("https://www.elmundo.es/");
     await browser.url("https://www.abc.es/");
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.true;
-    expect(await popupPage.
-      getNotificationMessageText().includes("español")).to.be.true;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.true;
+    expect(await popupPage.getNotificationMessageText().includes("español")).to
+      .be.true;
   });
 
-  it("should not trigger notification for more than 3 FLs", async function()
-  {
+  it("should not trigger notification for more than 3 FLs", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickNotifyLanguageFilterListsTooltipCheckbox();
     await generalPage.clickAddALanguageButton();
@@ -139,12 +131,10 @@ describe.skip("test filter list suggestion", function()
     await browser.url("https://www.tiscali.it/");
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 
-  it("should not trigger notification if FL already installed", async function()
-  {
+  it("should not trigger notification if FL already installed", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickNotifyLanguageFilterListsTooltipCheckbox();
     await generalPage.clickAddALanguageButton();
@@ -156,7 +146,6 @@ describe.skip("test filter list suggestion", function()
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
     lastTest = true;
-    expect(await popupPage.
-      isNotificationMessageDisplayed()).to.be.false;
+    expect(await popupPage.isNotificationMessageDisplayed()).to.be.false;
   });
 });

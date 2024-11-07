@@ -17,330 +17,277 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 const BasePage = require("./base.page");
-const {waitForAssertion} = require("../helpers");
+const { waitForAssertion } = require("../helpers");
 
 // This is used for content available on any test pages
-class TestPages extends BasePage
-{
-  constructor(browser)
-  {
+class TestPages extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  get autoplayVideosBlockingFilterId()
-  {
+  get autoplayVideosBlockingFilterId() {
     return $("#autoplayvideo-blocking-filter");
   }
 
-  get autoplayVideosHidingFilterId()
-  {
+  get autoplayVideosHidingFilterId() {
     return $("#product-video-container");
   }
 
-  get banneradsFilter()
-  {
+  get banneradsFilter() {
     return $("#bannerads-blocking-filter");
   }
 
-  get customBlockingFilter()
-  {
+  get customBlockingFilter() {
     return $("#custom-blocking");
   }
 
-  get customBlockingRegexFilter()
-  {
+  get customBlockingRegexFilter() {
     return $("#custom-blocking-regex");
   }
 
-  get customHidingClass()
-  {
+  get customHidingClass() {
     return $("#custom-hiding-class");
   }
 
-  get customHidingId()
-  {
+  get customHidingId() {
     return $("#custom-hiding-id");
   }
 
-  get popadsFilter()
-  {
+  get popadsFilter() {
     return $("#popads-blocking-filter");
   }
 
-  get ecosiaAdPill()
-  {
+  get ecosiaAdPill() {
     return $("//span[@class='ad-pill']");
   }
 
-  get ecosiaAdPillAlternate()
-  {
+  get ecosiaAdPillAlternate() {
     return $("span*=Ad");
   }
 
-  get hiddenBySnippetText()
-  {
+  get hiddenBySnippetText() {
     return $("p*=This should be hidden by a snippet");
   }
 
-  get newsletterPopupsBlockingFilterId()
-  {
+  get newsletterPopupsBlockingFilterId() {
     return $("#newsletter-blocking-filter");
   }
 
-  get newsletterPopupsHidingFilterId()
-  {
+  get newsletterPopupsHidingFilterId() {
     return $("#newsletterMsg");
   }
 
-  get pushNotificationsBlockingFilterId()
-  {
+  get pushNotificationsBlockingFilterId() {
     return $("#pushnotifications-blocking-filter");
   }
 
-  get pushNotificationsHidingFilterId()
-  {
+  get pushNotificationsHidingFilterId() {
     return $("#pushnotifications-hiding-filter");
   }
 
-  get searchAdDiv()
-  {
+  get searchAdDiv() {
     return $("#search-ad");
   }
 
-  get snippetFilterDiv()
-  {
+  get snippetFilterDiv() {
     return $("#snippet-filter");
   }
 
-  get subscribeLink()
-  {
+  get subscribeLink() {
     return $("//*[@id='subscription-link']/a");
   }
 
-  get subscriptionBlocking()
-  {
+  get subscriptionBlocking() {
     return $("#subscription-blocking");
   }
 
-  get subscriptionBlockingRegex()
-  {
+  get subscriptionBlockingRegex() {
     return $("#subscription-blocking-regex");
   }
 
-  get subscriptionHidingClass()
-  {
+  get subscriptionHidingClass() {
     return $("#subscription-hiding-class");
   }
 
-  get subscriptionHidingId()
-  {
+  get subscriptionHidingId() {
     return $("#subscription-hiding-id");
   }
 
-  get surveysBlockingFilterId()
-  {
+  get surveysBlockingFilterId() {
     return $("#survey-blocking-filter");
   }
 
-  get surveysHidingFilterId()
-  {
+  get surveysHidingFilterId() {
     return $("#survey-feedback-to-left");
   }
 
-  get AdContainerDiv()
-  {
+  get AdContainerDiv() {
     return $("#AdContainer");
   }
 
-  async clickSubscribeLink()
-  {
+  async clickSubscribeLink() {
     await this.waitForEnabledThenClick(this.subscribeLink);
   }
 
-  get cookieBanner()
-  {
+  get cookieBanner() {
     return $("#cookieConsentModal");
   }
 
-  async getCustomBlockingFilterText()
-  {
+  async getCustomBlockingFilterText() {
     return await (await this.customBlockingFilter).getText();
   }
 
-  async getCustomBlockingRegexFilterText()
-  {
+  async getCustomBlockingRegexFilterText() {
     return await (await this.customBlockingRegexFilter).getText();
   }
 
-  async getCustomHidingClassText()
-  {
+  async getCustomHidingClassText() {
     return await (await this.customHidingClass).getText();
   }
 
-  async getCustomHidingIdText()
-  {
+  async getCustomHidingIdText() {
     return await (await this.customHidingId).getText();
   }
 
-  async getBanneradsFilterText()
-  {
+  async getBanneradsFilterText() {
     return await (await this.banneradsFilter).getText();
   }
 
-  async getPopadsFilterText()
-  {
-    await (await this.popadsFilter).waitForEnabled({timeout: 4000});
+  async getPopadsFilterText() {
+    await (await this.popadsFilter).waitForEnabled({ timeout: 4000 });
     return await (await this.popadsFilter).getText();
   }
 
-  async getSearchAdDivText()
-  {
+  async getSearchAdDivText() {
     return await (await this.searchAdDiv).getText();
   }
 
-  async getSubscriptionBlockingText()
-  {
-    await (await this.subscriptionBlocking).waitForEnabled({timeout: 2000});
+  async getSubscriptionBlockingText() {
+    await (await this.subscriptionBlocking).waitForEnabled({ timeout: 2000 });
     return await (await this.subscriptionBlocking).getText();
   }
 
-  async getSubscriptionBlockingRegexText()
-  {
+  async getSubscriptionBlockingRegexText() {
     return await (await this.subscriptionBlockingRegex).getText();
   }
 
-  async getSubscriptionHidingClassText()
-  {
+  async getSubscriptionHidingClassText() {
     return await (await this.subscriptionHidingClass).getText();
   }
 
-  async getSubscriptionHidingIdText()
-  {
+  async getSubscriptionHidingIdText() {
     return await (await this.subscriptionHidingId).getText();
   }
 
-  async getAdContainerDivText()
-  {
+  async getAdContainerDivText() {
     return await (await this.AdContainerDiv).getText();
   }
 
-  async isAutoplayVideosBlockingFilterIdDisplayed()
-  {
+  async isAutoplayVideosBlockingFilterIdDisplayed() {
     return await (await this.autoplayVideosBlockingFilterId).isDisplayed();
   }
 
-  async isAutoplayVideosHidingFilterIdDisplayed()
-  {
+  async isAutoplayVideosHidingFilterIdDisplayed() {
     return await (await this.autoplayVideosHidingFilterId).isDisplayed();
   }
 
-  async isCookieBannerDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      cookieBanner, reverseOption, 2000);
+  async isCookieBannerDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.cookieBanner,
+      reverseOption,
+      2000
+    );
   }
 
-  async isCustomHidingClassDisplayed()
-  {
+  async isCustomHidingClassDisplayed() {
     return await (await this.customHidingClass).isDisplayed();
   }
 
-  async isCustomHidingIdDisplayed()
-  {
+  async isCustomHidingIdDisplayed() {
     return await (await this.customHidingId).isDisplayed();
   }
 
-  async isEcosiaAdPillDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      ecosiaAdPill, reverseOption, 2000);
+  async isEcosiaAdPillDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.ecosiaAdPill,
+      reverseOption,
+      2000
+    );
   }
 
-  async isEcosiaAdPillAlternateDisplayed(reverseOption = false)
-  {
-    return await this.waitForDisplayedNoError(this.
-      ecosiaAdPillAlternate, reverseOption, 2000);
+  async isEcosiaAdPillAlternateDisplayed(reverseOption = false) {
+    return await this.waitForDisplayedNoError(
+      this.ecosiaAdPillAlternate,
+      reverseOption,
+      2000
+    );
   }
 
-  async isHiddenBySnippetTextDisplayed()
-  {
+  async isHiddenBySnippetTextDisplayed() {
     return await (await this.hiddenBySnippetText).isDisplayed();
   }
 
-  async isNewsletterPopupsBlockingFilterIdDisplayed()
-  {
+  async isNewsletterPopupsBlockingFilterIdDisplayed() {
     return await (await this.newsletterPopupsBlockingFilterId).isDisplayed();
   }
 
-  async isNewsletterPopupsHidingFilterIdDisplayed()
-  {
+  async isNewsletterPopupsHidingFilterIdDisplayed() {
     return await (await this.newsletterPopupsHidingFilterId).isDisplayed();
   }
 
-  async isPushNotificationsBlockingFilterIdDisplayed()
-  {
+  async isPushNotificationsBlockingFilterIdDisplayed() {
     return await (await this.pushNotificationsBlockingFilterId).isDisplayed();
   }
 
-  async isPushNotificationsHidingFilterIdDisplayed()
-  {
+  async isPushNotificationsHidingFilterIdDisplayed() {
     return await (await this.pushNotificationsHidingFilterId).isDisplayed();
   }
 
-  async isSearchAdDivDisplayed()
-  {
+  async isSearchAdDivDisplayed() {
     return await (await this.searchAdDiv).isDisplayed();
   }
 
-  async isSubscriptionHidingClassDisplayed()
-  {
+  async isSubscriptionHidingClassDisplayed() {
     return await (await this.subscriptionHidingClass).isDisplayed();
   }
 
-  async isSubscriptionHidingIdDisplayed()
-  {
+  async isSubscriptionHidingIdDisplayed() {
     return await (await this.subscriptionHidingId).isDisplayed();
   }
 
-  async isSurveysBlockingFilterIdDisplayed()
-  {
+  async isSurveysBlockingFilterIdDisplayed() {
     return await (await this.surveysBlockingFilterId).isDisplayed();
   }
 
-  async isSurveysHidingFilterIdDisplayed()
-  {
+  async isSurveysHidingFilterIdDisplayed() {
     return await (await this.surveysHidingFilterId).isDisplayed();
   }
 
-  async isSnippetFilterDivDisplayed()
-  {
+  async isSnippetFilterDivDisplayed() {
     return await (await this.snippetFilterDiv).isDisplayed();
   }
 
-  async isAdContainerDivDisplayed()
-  {
+  async isAdContainerDivDisplayed() {
     return await (await this.AdContainerDiv).isDisplayed();
   }
 
-  async checkPage({expectAllowlisted = false})
-  {
+  async checkPage({ expectAllowlisted = false }) {
     let expectedPopadsText = "pop_ads.js was blocked";
     let expectedBanneradsText = "bannerads/* was blocked";
 
-    if (expectAllowlisted)
-    {
+    if (expectAllowlisted) {
       expectedPopadsText = "pop_ads.js blocking filter should block this";
       // eslint-disable-next-line max-len
-      expectedBanneradsText = "first bannerads/* blocking filter should block this";
+      expectedBanneradsText =
+        "first bannerads/* blocking filter should block this";
     }
 
     const timeout = 15000;
     await waitForAssertion(
-      async() =>
-      {
+      async () => {
         expect(await this.getPopadsFilterText()).to.include(expectedPopadsText);
         expect(await this.getBanneradsFilterText()).to.include(
           expectedBanneradsText
@@ -351,13 +298,10 @@ class TestPages extends BasePage
       `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`
     );
 
-    if (expectAllowlisted)
-    {
+    if (expectAllowlisted) {
       expect(await this.isSearchAdDivDisplayed()).to.be.true;
       expect(await this.isAdContainerDivDisplayed()).to.be.true;
-    }
-    else
-    {
+    } else {
       expect(await this.isSearchAdDivDisplayed()).to.be.false;
       expect(await this.isAdContainerDivDisplayed()).to.be.false;
     }

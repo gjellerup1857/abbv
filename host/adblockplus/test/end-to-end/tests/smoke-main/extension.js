@@ -17,50 +17,54 @@
 
 "use strict";
 
-const {switchToABPOptionsTab, waitForAssertion, reloadExtension, isEdge} =
-  require("../../helpers");
-const {expect} = require("chai");
+const {
+  switchToABPOptionsTab,
+  waitForAssertion,
+  reloadExtension,
+  isEdge
+} = require("../../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
 const PopupPage = require("../../page-objects/popup.page");
 
-module.exports = function()
-{
+module.exports = function () {
   let globalOrigin;
   let popupUrl;
 
-  before(function()
-  {
-    ({globalOrigin, popupUrl} = this.test.parent.parent);
+  before(function () {
+    ({ globalOrigin, popupUrl } = this.test.parent.parent);
   });
 
-  it("displays total ad block count", async function()
-  {
-    const url = "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
+  it("displays total ad block count", async function () {
+    const url =
+      "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const popupPage = new PopupPage(browser);
     const maxAdsBlocked = 15;
 
     await browser.newWindow(url);
     await popupPage.init(popupUrl);
-    const blockedFirst =
-      await popupPage.waitForNumberOfAdsBlockedToBeInRange(0, maxAdsBlocked);
+    const blockedFirst = await popupPage.waitForNumberOfAdsBlockedToBeInRange(
+      0,
+      maxAdsBlocked
+    );
     await browser.closeWindow();
 
     await browser.switchWindow(url);
     await browser.refresh();
     await popupPage.init(popupUrl);
     await popupPage.waitForNumberOfAdsBlockedToBeInRange(
-      blockedFirst, maxAdsBlocked);
+      blockedFirst,
+      maxAdsBlocked
+    );
     await browser.closeWindow();
 
     await browser.switchWindow(url);
     await browser.closeWindow();
   });
 
-  it("resets settings", async function()
-  {
+  it("resets settings", async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge())
-      this.skip();
+    if (isEdge()) this.skip();
 
     await switchToABPOptionsTab();
 
@@ -72,32 +76,47 @@ module.exports = function()
     await advancedPage.init();
     expect(await advancedPage.getFlTableEmptyPlaceholderText()).to.equal(
       "You have not added any filter lists to Adblock Plus. Filter lists " +
-      "you add will be shown here.");
+        "you add will be shown here."
+    );
 
     // reload the extension after resetting the settings
     await reloadExtension();
 
     // check the settings
-    await waitForAssertion(async() =>
-    {
-      await switchToABPOptionsTab({refresh: true});
-      await advancedPage.init();
-      expect(await advancedPage.isAbpFiltersFLDisplayed()).to.be.true;
-    }, 30000, "ABP filters FL is not displayed", 2000);
+    await waitForAssertion(
+      async () => {
+        await switchToABPOptionsTab({ refresh: true });
+        await advancedPage.init();
+        expect(await advancedPage.isAbpFiltersFLDisplayed()).to.be.true;
+      },
+      30000,
+      "ABP filters FL is not displayed",
+      2000
+    );
     expect(await advancedPage.isEasyListFLDisplayed()).to.be.true;
-    expect(await advancedPage.
-      isAllowNonintrusiveAdvertisingFLDisplayed()).to.be.true;
+    expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
+      .true;
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
-    await waitForAssertion(async() =>
-    {
-      expect(String(await popupPage.getNotificationMessageText()).includes(
-        "An issue has caused your ABP settings to be reset to default. Fix " +
-        "the issue and learn more")).to.be.true;
-    }, 30000, "Popup page didn't show reset settings message", 2000);
+    await waitForAssertion(
+      async () => {
+        expect(
+          String(await popupPage.getNotificationMessageText()).includes(
+            "An issue has caused your ABP settings to be reset to default. Fix " +
+              "the issue and learn more"
+          )
+        ).to.be.true;
+      },
+      30000,
+      "Popup page didn't show reset settings message",
+      2000
+    );
     await popupPage.clickLinkInNotificationMessage();
     await popupPage.switchToProblemPageTab();
-    expect(String(await popupPage.
-      getCurrentUrl()).includes(`${globalOrigin}/problem.html`)).to.be.true;
+    expect(
+      String(await popupPage.getCurrentUrl()).includes(
+        `${globalOrigin}/problem.html`
+      )
+    ).to.be.true;
   });
 };

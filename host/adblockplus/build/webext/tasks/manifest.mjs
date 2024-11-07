@@ -15,58 +15,50 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {resolve} from "path";
+import { resolve } from "path";
 import fs from "fs";
-import {Readable} from "stream";
+import { Readable } from "stream";
 import Vinyl from "vinyl";
 
 let manifest;
 
-async function editManifest(data, version, channel, target)
-{
+async function editManifest(data, version, channel, target) {
   data.version = version;
   data.name = `__MSG_name_${channel == "development" ? "dev" : channel}build__`;
 
-  if (target == "chrome")
-    delete data.applications;
+  if (target == "chrome") delete data.applications;
 
-  if (target == "firefox")
-  {
-    const {gecko} = data.applications;
+  if (target == "firefox") {
+    const { gecko } = data.applications;
 
-    if (channel == "development")
-      gecko.id = gecko.app_id_devbuild;
-    else
-      gecko.id = gecko.app_id_release;
+    if (channel == "development") gecko.id = gecko.app_id_devbuild;
+    else gecko.id = gecko.app_id_release;
 
     delete gecko.app_id_devbuild;
     delete gecko.app_id_release;
 
     delete data.minimum_chrome_version;
     delete data.minimum_opera_version;
-    if ("action" in data)
-      delete data.action.default_popup;
-    if ("browser_action" in data)
-      delete data.browser_action.default_popup;
+    if ("action" in data) delete data.action.default_popup;
+    if ("browser_action" in data) delete data.browser_action.default_popup;
     delete data.optional_permissions;
     delete data.storage;
 
     data.applications.gecko = gecko;
   }
 
-  if ("declarative_net_request" in data)
-  {
-    let rulesPath = "node_modules/@adblockinc/rules" +
-        "/dist/adblockplus/manifest/adblockplus.json";
+  if ("declarative_net_request" in data) {
+    let rulesPath =
+      "node_modules/@adblockinc/rules" +
+      "/dist/adblockplus/manifest/adblockplus.json";
 
-    if (!fs.existsSync(rulesPath))
-    {
-      rulesPath = "../../node_modules/@adblockinc/rules" +
+    if (!fs.existsSync(rulesPath)) {
+      rulesPath =
+        "../../node_modules/@adblockinc/rules" +
         "/dist/adblockplus/manifest/adblockplus.json";
     }
 
-    if (!fs.existsSync(rulesPath))
-    {
+    if (!fs.existsSync(rulesPath)) {
       throw new Error("@adblockinc/rules not found. Maybe npm install?");
     }
 
@@ -77,8 +69,7 @@ async function editManifest(data, version, channel, target)
   return data;
 }
 
-export function createManifest(contents)
-{
+export function createManifest(contents) {
   return new Readable.from([
     new Vinyl({
       contents: Buffer.from(JSON.stringify(contents, null, 2)),
@@ -87,25 +78,19 @@ export function createManifest(contents)
   ]);
 }
 
-async function getJSON(path)
-{
+async function getJSON(path) {
   const content = await fs.promises.readFile(resolve(path));
   return JSON.parse(content);
 }
 
-export async function getManifestContent(options)
-{
-  const {target, version, channel, manifestPath, manifestVersion} = options;
-  if (manifest)
-    return manifest;
+export async function getManifestContent(options) {
+  const { target, version, channel, manifestPath, manifestVersion } = options;
+  if (manifest) return manifest;
 
   let raw;
-  if (manifestPath)
-  {
+  if (manifestPath) {
     raw = await getJSON(resolve(manifestPath));
-  }
-  else
-  {
+  } else {
     const base = await getJSON("build/webext/manifest.base.json");
     const specific = await getJSON(
       `build/webext/manifest.v${manifestVersion}.json`

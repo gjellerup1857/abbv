@@ -18,30 +18,22 @@
 let configs = {};
 const parsedConfigs = {};
 
-function mergeObjectArray(base, override = [])
-{
+function mergeObjectArray(base, override = []) {
   const result = base.slice(0);
 
-  override.forEach(elem =>
-  {
-    const commonDest = base.findIndex(baseElem => baseElem.dest == elem.dest);
+  override.forEach((elem) => {
+    const commonDest = base.findIndex((baseElem) => baseElem.dest == elem.dest);
 
-    if (commonDest != -1)
-    {
-      if (elem.overwrite)
-      {
+    if (commonDest != -1) {
+      if (elem.overwrite) {
         result[commonDest] = elem;
-      }
-      else
-      {
+      } else {
         result[commonDest] = {
           ...result[commonDest],
           src: removeDuplicates(result[commonDest].src, elem.src)
         };
       }
-    }
-    else
-    {
+    } else {
       result.push(elem);
     }
   });
@@ -49,36 +41,32 @@ function mergeObjectArray(base, override = [])
   return result;
 }
 
-function removeDuplicates(base, override = [])
-{
-  const unique = base.filter(elem =>
-  {
-    const duplicate = override
-      .find(value => value.replace(/!/, "") == elem.replace(/!/, ""));
+function removeDuplicates(base, override = []) {
+  const unique = base.filter((elem) => {
+    const duplicate = override.find(
+      (value) => value.replace(/!/, "") == elem.replace(/!/, "")
+    );
     return !duplicate;
   });
 
   return unique.concat(override);
 }
 
-function mergeWebpack(base, override)
-{
+function mergeWebpack(base, override) {
   return {
-    alias: {...base.alias, ...override.alias},
+    alias: { ...base.alias, ...override.alias },
     bundles: mergeObjectArray(base.bundles, override.bundles)
   };
 }
 
-function mergeTranslations(base, override = {})
-{
+function mergeTranslations(base, override = {}) {
   return {
     dest: override.dest || base.dest,
     src: removeDuplicates(base.src, override.src)
   };
 }
 
-function mergeMapping(base, override = {})
-{
+function mergeMapping(base, override = {}) {
   const result = {};
 
   result.copy = mergeObjectArray(base.copy, override.copy);
@@ -87,16 +75,13 @@ function mergeMapping(base, override = {})
   return result;
 }
 
-function mergeConfig(target)
-{
-  if (parsedConfigs[target])
-    return parsedConfigs[target];
+function mergeConfig(target) {
+  if (parsedConfigs[target]) return parsedConfigs[target];
 
   const config = configs[target];
 
-  if (!config.extends)
-  {
-    parsedConfigs[target] = {...config};
+  if (!config.extends) {
+    parsedConfigs[target] = { ...config };
     parsedConfigs[target].webpack.baseConfig = configs.webpack;
 
     return parsedConfigs[target];
@@ -108,7 +93,8 @@ function mergeConfig(target)
   const webpack = mergeWebpack(baseConfig.webpack, config.webpack);
   const translations = mergeTranslations(
     baseConfig.translations,
-    config.translations);
+    config.translations
+  );
 
   webpack.baseConfig = configs.webpack;
 
@@ -123,17 +109,14 @@ function mergeConfig(target)
   return parsedConfigs[target];
 }
 
-export function getSection(target, section)
-{
+export function getSection(target, section) {
   return mergeConfig(target)[section];
 }
 
-export function setConfig(config)
-{
+export function setConfig(config) {
   configs = config;
 }
 
-export function hasTarget(name)
-{
+export function hasTarget(name) {
   return !!configs[name];
 }

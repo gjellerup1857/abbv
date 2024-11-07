@@ -18,10 +18,10 @@
 "use strict";
 
 const fs = require("fs");
-const {glob} = require("glob");
-const {promisify} = require("util");
+const { glob } = require("glob");
+const { promisify } = require("util");
 
-const {localesDir, defaultLocale} = require("./common/config");
+const { localesDir, defaultLocale } = require("./common/config");
 
 const getFilepaths = promisify(glob);
 const readFile = promisify(fs.readFile);
@@ -29,31 +29,25 @@ const writeFile = promisify(fs.writeFile);
 
 // Assigns object keys in alphabetical order to ensure a deterministic
 // key order by relying on V8's JSON serialization logic
-function sortObjectProperties(obj)
-{
+function sortObjectProperties(obj) {
   const sorted = Object.create(null);
 
   const keys = Object.keys(obj).sort();
-  for (const key of keys)
-  {
+  for (const key of keys) {
     sorted[key] = obj[key];
   }
 
   return sorted;
 }
 
-function normalizeStrings(strings)
-{
-  for (const string of Object.values(strings))
-  {
+function normalizeStrings(strings) {
+  for (const string of Object.values(strings)) {
     // Translation files aren't supposed to include any descriptions
-    if ("description" in string)
-    {
+    if ("description" in string) {
       delete string.description;
     }
 
-    if ("placeholders" in string)
-    {
+    if ("placeholders" in string) {
       string.placeholders = sortObjectProperties(string.placeholders);
     }
   }
@@ -61,8 +55,7 @@ function normalizeStrings(strings)
   return sortObjectProperties(strings);
 }
 
-async function normalizeFile(filepath)
-{
+async function normalizeFile(filepath) {
   const content = await readFile(filepath);
   const strings = JSON.parse(content);
   const normalizedStrings = normalizeStrings(strings);
@@ -71,8 +64,7 @@ async function normalizeFile(filepath)
   await writeFile(filepath, normalizedContent, "utf8");
 }
 
-async function normalizeFiles()
-{
+async function normalizeFiles() {
   const filepaths = await getFilepaths(
     `./${localesDir}/!(${defaultLocale})/**/*.json`
   );

@@ -15,16 +15,12 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const $ = (selector, container) =>
-{
-  if (!container)
-    container = document;
+export const $ = (selector, container) => {
+  if (!container) container = document;
   return container.querySelector(selector);
 };
-export const $$ = (selector, container) =>
-{
-  if (!container)
-    container = document;
+export const $$ = (selector, container) => {
+  if (!container) container = document;
   return container.querySelectorAll(selector);
 };
 
@@ -32,11 +28,9 @@ export const $$ = (selector, container) =>
 export const clipboard = {
   // warning: Firefox needs a proper event to work
   //          such click or mousedown or similar.
-  copy(text)
-  {
+  copy(text) {
     const selection = document.getSelection();
-    const selected = selection.rangeCount > 0 ?
-                      selection.getRangeAt(0) : null;
+    const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
     const el = document.createElement("textarea");
     el.value = text;
     el.setAttribute("readonly", "");
@@ -44,8 +38,7 @@ export const clipboard = {
     document.body.appendChild(el).select();
     document.execCommand("copy");
     document.body.removeChild(el);
-    if (selected)
-    {
+    if (selected) {
       selection.removeAllRanges();
       // simply putting back selected doesn't work anymore
       const range = document.createRange();
@@ -57,10 +50,8 @@ export const clipboard = {
   // optionally accepts a `paste` DOM event
   // it uses global clipboardData, if available, otherwise.
   // i.e. input.onpaste = event => console.log(dom.clipboard.paste(event));
-  paste(event)
-  {
-    if (!event)
-      event = window;
+  paste(event) {
+    if (!event) event = window;
     const clipboardData = event.clipboardData || window.clipboardData;
     return clipboardData ? clipboardData.getData("text") : "";
   }
@@ -68,17 +59,14 @@ export const clipboard = {
 
 // helper to provide the relative coordinates
 // to the closest positioned containing element
-export function relativeCoordinates(event)
-{
-  return {x: event.offsetX, y: event.offsetY};
+export function relativeCoordinates(event) {
+  return { x: event.offsetX, y: event.offsetY };
 }
 
 // helper to format as indented string any HTML/XML node
-export function asIndentedString(element, indentation = 0)
-{
+export function asIndentedString(element, indentation = 0) {
   // only the first time it's called
-  if (!indentation)
-  {
+  if (!indentation) {
     // get the top meaningful element to parse
     if (element.nodeType === Node.DOCUMENT_NODE)
       element = element.documentElement;
@@ -91,18 +79,13 @@ export function asIndentedString(element, indentation = 0)
   const before = "  ".repeat(indentation + 1);
   const after = "  ".repeat(indentation);
   const doc = element.ownerDocument;
-  for (const child of Array.from(element.childNodes))
-  {
-    const {nodeType} = child;
-    if (nodeType === Node.ELEMENT_NODE || nodeType === Node.TEXT_NODE)
-    {
-      if (nodeType === Node.TEXT_NODE)
-      {
+  for (const child of Array.from(element.childNodes)) {
+    const { nodeType } = child;
+    if (nodeType === Node.ELEMENT_NODE || nodeType === Node.TEXT_NODE) {
+      if (nodeType === Node.TEXT_NODE) {
         const content = child.textContent.trim();
         child.textContent = content.length ? `\n${before}${content}` : "";
-      }
-      else
-      {
+      } else {
         element.insertBefore(doc.createTextNode(`\n${before}`), child);
         asIndentedString(child, indentation + 1);
       }
@@ -111,8 +94,7 @@ export function asIndentedString(element, indentation = 0)
       element.appendChild(doc.createTextNode(`\n${after}`));
   }
   // inner calls don't need to bother serialization
-  if (indentation)
-    return "";
+  if (indentation) return "";
   // easiest way to recognize an HTML element from an XML one
   if (/^https?:\/\/www\.w3\.org\/1999\/xhtml$/.test(element.namespaceURI))
     return element.outerHTML;

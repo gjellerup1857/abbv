@@ -17,15 +17,13 @@
 
 @import "../../theme/ui/z-index.css";
 
-io-list-box
-{
+io-list-box {
   display: block;
   position: relative;
   box-sizing: border-box;
 }
 
-body:not(.premium) io-list-box [role="option"].premium
-{
+body:not(.premium) io-list-box [role="option"].premium {
   display: none;
 }
 
@@ -33,8 +31,7 @@ io-list-box,
 io-list-box button,
 io-list-box [role="listbox"],
 io-list-box [role="option"],
-io-list-box .group
-{
+io-list-box .group {
   margin: 0;
   padding: 0;
   color: #4a4a4a;
@@ -45,8 +42,7 @@ io-list-box .group
 }
 
 io-list-box button,
-io-list-box [role="listbox"]
-{
+io-list-box [role="listbox"] {
   box-sizing: inherit;
   width: var(--width, 100%);
   border: 1px solid #bcbcbc;
@@ -54,79 +50,67 @@ io-list-box [role="listbox"]
 }
 
 io-list-box .group,
-io-list-box [role="option"]
-{
+io-list-box [role="option"] {
   padding: 0.6rem 32px;
 }
 
-io-list-box button
-{
+io-list-box button {
   padding: 0.6rem 0.8rem;
   border: 1px solid #bcbcbc;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 
-io-list-box button[aria-expanded="false"]
-{
-  color: #0797E1;
+io-list-box button[aria-expanded="false"] {
+  color: #0797e1;
   background: #e9f6fc;
   text-transform: uppercase;
 }
 
-io-list-box[detached] button[aria-expanded="false"]
-{
+io-list-box[detached] button[aria-expanded="false"] {
   border-radius: var(--border-radius);
 }
 
-io-list-box button:focus
-{
+io-list-box button:focus {
   outline: none;
 }
 
-io-list-box [role="listbox"]
-{
+io-list-box [role="listbox"] {
   overflow: auto;
   position: absolute;
   z-index: var(--z-popout-active);
   bottom: 2.2em;
   max-height: 290px;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
-  box-shadow: 0 -4px 20px 0 rgba(0,0,0,0.11);
+  box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.11);
 }
 
-io-list-box [role="option"].hover
-{
+io-list-box [role="option"].hover {
   background: #e1f2fa;
 }
 
 io-list-box .group,
 io-list-box [role="option"][aria-disabled="true"],
-io-list-box [role="option"][aria-disabled="true"].hover
-{
+io-list-box [role="option"][aria-disabled="true"].hover {
   background-color: #eee;
   cursor: default;
 }
 
-io-list-box [role="option"][aria-selected="true"]
-{
+io-list-box [role="option"][aria-selected="true"] {
   background-image: url(/skin/icons/checkmark.svg?default#default);
   background-repeat: no-repeat;
   background-position: 8px center;
   background-size: 20px 20px;
 }
 
-io-list-box [role="combobox"]
-{
+io-list-box [role="combobox"] {
   z-index: 1;
 }
 
-html[dir="rtl"] io-list-box [role="option"][aria-selected="true"]
-{
+html[dir="rtl"] io-list-box [role="option"][aria-selected="true"] {
   background-position: calc(100% - 8px) center;
 }
 
-io-list-box .group
-{
+io-list-box .group {
   font-weight: 600;
   text-transform: uppercase;
 }

@@ -19,19 +19,15 @@
 
 import webextPolyfill from "webextension-polyfill";
 
-if (!("browser" in self))
-  self.browser = webextPolyfill;
+if (!("browser" in self)) self.browser = webextPolyfill;
 
 // browser.action and browser.browserAction are exclusive
 // to Manifest v2 and v3 respectively
-if (!("action" in browser))
-  browser.action = browser.browserAction;
+if (!("action" in browser)) browser.action = browser.browserAction;
 
 // Firefox (at least up to 93) does not support OffscreenCanvas
-if (typeof OffscreenCanvas == "undefined")
-{
-  self.OffscreenCanvas = function(width, height)
-  {
+if (typeof OffscreenCanvas == "undefined") {
+  self.OffscreenCanvas = function (width, height) {
     let canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;

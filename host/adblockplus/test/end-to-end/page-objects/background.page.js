@@ -19,16 +19,13 @@
 
 const BasePage = require("./base.page");
 
-class BackgroundPage extends BasePage
-{
-  constructor(browser)
-  {
+class BackgroundPage extends BasePage {
+  constructor(browser) {
     super();
     this.browser = browser;
   }
 
-  async init(origin)
-  {
+  async init(origin) {
     await browser.newWindow(`${origin}/_generated_background_page.html`);
   }
 }

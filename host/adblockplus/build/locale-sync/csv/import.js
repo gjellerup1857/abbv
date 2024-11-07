@@ -19,10 +19,10 @@
 
 const csv = require("csv");
 const fs = require("fs");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
-const {importFilesObjects} = require("../common/import");
-const {localesDir, defaultLocale} = require("./config");
+const { importFilesObjects } = require("../common/import");
+const { localesDir, defaultLocale } = require("./config");
 
 const readFile = promisify(fs.readFile);
 const csvParser = promisify(csv.parse);
@@ -31,48 +31,41 @@ const csvParser = promisify(csv.parse);
  * Import strings from the CSV file
  * @param  {string} filePath - CSV file path to import from
  */
-function importTranslations(filePath)
-{
-  readFile(filePath, "utf8").then((fileObjects) =>
-  {
-    return csvParser(fileObjects);
-  }).then((dataMatrix) =>
-  {
-    const fileObjects = dataTreeObjFromDataMatrix(dataMatrix);
-    importFilesObjects(fileObjects, localesDir, defaultLocale);
-  });
+function importTranslations(filePath) {
+  readFile(filePath, "utf8")
+    .then((fileObjects) => {
+      return csvParser(fileObjects);
+    })
+    .then((dataMatrix) => {
+      const fileObjects = dataTreeObjFromDataMatrix(dataMatrix);
+      importFilesObjects(fileObjects, localesDir, defaultLocale);
+    });
 }
 
-function dataTreeObjFromDataMatrix(dataMatrix)
-{
+function dataTreeObjFromDataMatrix(dataMatrix) {
   const headLocales = dataMatrix.shift().slice(5);
   const dataTreeObj = {};
-  for (const rowId in dataMatrix)
-  {
+  for (const rowId in dataMatrix) {
     const row = dataMatrix[rowId];
     let [
-      /* type */,
-      currentFilename,
+      ,
+      /* type */ currentFilename,
       stringId,
       description,
       placeholders,
       ...messages
     ] = row;
-    if (!stringId)
-      continue;
+    if (!stringId) continue;
 
     stringId = stringId.trim();
     // Check if it's the filename row
-    if (!(currentFilename in dataTreeObj))
-      dataTreeObj[currentFilename] = {};
+    if (!(currentFilename in dataTreeObj)) dataTreeObj[currentFilename] = {};
 
     description = description.trim();
-    for (let i = 0; i < headLocales.length; i++)
-    {
+    for (let i = 0; i < headLocales.length; i++) {
       const locale = headLocales[i].trim();
       const message = messages[i].trim();
-      if (!message)
-        continue;
+      if (!message) continue;
 
       // Create Object tree from the Objects array, for easier search
       // ex.: {dektop-options.json: {en_US: {...}, {de: {...}, {ru: {...}}}
@@ -88,12 +81,10 @@ function dataTreeObjFromDataMatrix(dataMatrix)
         stringObj.description = description;
 
       stringObj.message = message;
-      if (placeholders)
-        stringObj.placeholders = JSON.parse(placeholders);
+      if (placeholders) stringObj.placeholders = JSON.parse(placeholders);
     }
   }
   return dataTreeObj;
 }
 
-
-module.exports = {importTranslations};
+module.exports = { importTranslations };

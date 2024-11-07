@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const showOptions = function()
-{
+export const showOptions = function () {
   if (!/\/(?:mobile|desktop)-options\.html\b/.test(top.location.href))
     window.open("../desktop-options.html", "_blank");
 

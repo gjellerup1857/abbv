@@ -16,21 +16,18 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
-import {$} from "../../dom.mjs";
+import { $ } from "../../dom.mjs";
 import IOElement from "../../io-element.mjs";
-import {setPref} from "./utils.mjs";
+import { setPref } from "./utils.mjs";
 
-messaging.notifications.get("popup")
-  .then((notification) =>
-  {
-    if (notification)
-    {
-      window.dispatchEvent(
-        new CustomEvent("extension:notification", {detail: notification})
-      );
-      messaging.notifications.seen();
-    }
-  });
+messaging.notifications.get("popup").then((notification) => {
+  if (notification) {
+    window.dispatchEvent(
+      new CustomEvent("extension:notification", { detail: notification })
+    );
+    messaging.notifications.seen();
+  }
+});
 
 // Using an event to make testing as easy as possible.
 /* @example
@@ -46,8 +43,7 @@ dispatchEvent(new CustomEvent("extension:notification", {
 */
 window.addEventListener(
   "extension:notification",
-  (event) =>
-  {
+  (event) => {
     const notification = event.detail;
     const notifier = IOElement.wire()`
     <div class="${"content " + notification.type}">
@@ -58,13 +54,13 @@ window.addEventListener(
         <p id="notification-message"></p>
         <hr>
         <button onclick="${dismiss}">
-          ${{i18n: "overlay_notification_closing_button_hide"}}
+          ${{ i18n: "overlay_notification_closing_button_hide" }}
         </button>
         <button
           data-pref="notifications_ignoredcategories"
           hidden="${/^(?:critical|relentless)$/.test(notification.type)}"
           onclick="${dismiss}">
-          ${{i18n: "overlay_notification_closing_button_optout"}}
+          ${{ i18n: "overlay_notification_closing_button_optout" }}
         </button>
       </div>
     </div>`;
@@ -81,36 +77,32 @@ window.addEventListener(
       (notification.links || []).map((link) => `#${link}`)
     );
 
-    messageElement.addEventListener("click", evt =>
-    {
+    messageElement.addEventListener("click", (evt) => {
       const link = evt.target.closest("a");
       // The contains(other) method, when invoked,
       // must return true if other is an inclusive descendant
       // of context object, and false otherwise
       // (including when other is null).
-      if (!messageElement.contains(link))
-        return;
+      if (!messageElement.contains(link)) return;
 
       evt.preventDefault();
       evt.stopPropagation();
 
       const linkTarget = link.hash.slice(1);
-      if (!linkTarget)
-        throw new Error("Link has no target");
+      if (!linkTarget) throw new Error("Link has no target");
 
-      browser.runtime.sendMessage({
-        type: "notifications.clicked",
-        id: notification.id,
-        link: linkTarget
-      })
-      .then(() => window.close());
+      browser.runtime
+        .sendMessage({
+          type: "notifications.clicked",
+          id: notification.id,
+          link: linkTarget
+        })
+        .then(() => window.close());
     });
 
-    function dismiss(evt)
-    {
+    function dismiss(evt) {
       const el = evt.currentTarget;
-      if (el.dataset.pref)
-        setPref(el.dataset.pref, true);
+      if (el.dataset.pref) setPref(el.dataset.pref, true);
       container.setAttribute("hidden", "");
       notifier.parentNode.removeChild(notifier);
       browser.runtime.sendMessage({
@@ -119,11 +111,9 @@ window.addEventListener(
       });
     }
 
-    function insertMessage(element, text, links)
-    {
+    function insertMessage(element, text, links) {
       const match = /^(.*?)<(a|strong)>(.*?)<\/\2>(.*)$/.exec(text);
-      if (!match)
-      {
+      if (!match) {
         element.appendChild(document.createTextNode(text));
         return;
       }
@@ -144,5 +134,5 @@ window.addEventListener(
       insertMessage(element, after, links);
     }
   },
-  {once: true}
+  { once: true }
 );

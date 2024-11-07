@@ -15,71 +15,58 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {Page} from "./polyfills/shared/index.mjs";
-import {port} from "./lib/messaging.mjs";
-import {params} from "./config/env.mjs";
+import { Page } from "./polyfills/shared/index.mjs";
+import { port } from "./lib/messaging.mjs";
+import { params } from "./config/env.mjs";
 
 // this is imported instead of in a script tag to keep it
 // in the same context for the port event emitter
 import "./messageResponder.mjs";
 
-(function()
-{
-  window.addEventListener("message", (event) =>
-  {
-    if (event.data.type != "message")
-      return;
-    const {payload: message, messageId} = event.data;
+(function () {
+  window.addEventListener("message", (event) => {
+    if (event.data.type != "message") return;
+    const { payload: message, messageId } = event.data;
     const sender = {
       page: new Page(event.source)
     };
 
     const listeners = port._listeners[message.type];
 
-    if (!listeners)
-      return;
+    if (!listeners) return;
 
-    function reply(responseMessage)
-    {
-      event.source.postMessage({
-        type: "response",
-        messageId,
-        payload: responseMessage
-      }, "*");
+    function reply(responseMessage) {
+      event.source.postMessage(
+        {
+          type: "response",
+          messageId,
+          payload: responseMessage
+        },
+        "*"
+      );
     }
 
-    for (const listener of listeners)
-    {
+    for (const listener of listeners) {
       const response = listener(message, sender);
-      if (response && typeof response.then == "function")
-      {
-        response.then(
-          reply,
-          (reason) =>
-          {
-            console.error(reason);
-            reply();
-          }
-        );
-      }
-      else if (typeof response != "undefined")
-      {
+      if (response && typeof response.then == "function") {
+        response.then(reply, (reason) => {
+          console.error(reason);
+          reply();
+        });
+      } else if (typeof response != "undefined") {
         reply(response);
       }
     }
   });
 
-  if (params.addSubscription)
-  {
+  if (params.addSubscription) {
     // We don't know how long it will take for the page to fully load
     // so we'll post the message after one second
-    setTimeout(() =>
-    {
+    setTimeout(() => {
       let url = "https://example.com/custom.txt";
 
       let title = "Custom subscription";
-      switch (params.addSubscription)
-      {
+      switch (params.addSubscription) {
         case "title-none":
           title = null;
           break;
@@ -94,37 +81,42 @@ import "./messageResponder.mjs";
           break;
       }
 
-      window.postMessage({
-        type: "message",
-        payload: {
-          title, url,
-          confirm: true,
-          type: "subscriptions.add"
-        }
-      }, "*");
+      window.postMessage(
+        {
+          type: "message",
+          payload: {
+            title,
+            url,
+            confirm: true,
+            type: "subscriptions.add"
+          }
+        },
+        "*"
+      );
     }, 1000);
   }
 
-  if (params.showPageOptions)
-  {
+  if (params.showPageOptions) {
     // We don't know how long it will take for the page to fully load
     // so we'll post the message after one second
-    setTimeout(() =>
-    {
-      window.postMessage({
-        type: "message",
-        payload: {
-          type: "app.open",
-          what: "options",
-          action: "showPageOptions",
-          args: [
-            {
-              host: "example.com",
-              allowlisted: false
-            }
-          ]
-        }
-      }, "*");
+    setTimeout(() => {
+      window.postMessage(
+        {
+          type: "message",
+          payload: {
+            type: "app.open",
+            what: "options",
+            action: "showPageOptions",
+            args: [
+              {
+                host: "example.com",
+                allowlisted: false
+              }
+            ]
+          }
+        },
+        "*"
+      );
     }, 1000);
   }
-}());
+})();

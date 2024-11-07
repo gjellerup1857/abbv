@@ -26,50 +26,57 @@ const customErrors = [
   {
     testName: "No active domain for snippets",
     customFilter: "#$#noactivedomain",
-    errorText: "No active domain specified. Please specify at " +
-    "least one domain for this snippet filter."
+    errorText:
+      "No active domain specified. Please specify at " +
+      "least one domain for this snippet filter."
   },
   {
     testName: "No active domain for element hiding",
     customFilter: "#?#foo",
-    errorText: "No active domain specified. Please specify at least one " +
-    "domain for this extended element hiding filter."
+    errorText:
+      "No active domain specified. Please specify at least one " +
+      "domain for this extended element hiding filter."
   },
   {
     testName: "Filter list header",
     customFilter: "[header]",
-    errorText: "Filter list headers are only supported in " +
-    "downloadable filter lists."
+    errorText:
+      "Filter list headers are only supported in " +
+      "downloadable filter lists."
   },
   {
     testName: "CSP",
     customFilter: " test.com$csp=base-uri",
-    errorText: "Invalid content security policy (syntax does " +
-    "not adhere to standard)."
+    errorText:
+      "Invalid content security policy (syntax does " +
+      "not adhere to standard)."
   },
   {
     testName: "Invalid regex",
     customFilter: " /[[/",
-    errorText: "Invalid regular expression (syntax does not " +
-    "adhere to standard)."
+    errorText:
+      "Invalid regular expression (syntax does not adhere to standard)."
   },
   {
     testName: "Empty domain",
     customFilter: " ,##emptydomain",
-    errorText: "Invalid or empty domain. Domain list must contain one " +
-    "or more domains separated by a comma (,), e.g. abc.com,def.com,ghi.com."
+    errorText:
+      "Invalid or empty domain. Domain list must contain one " +
+      "or more domains separated by a comma (,), e.g. abc.com,def.com,ghi.com."
   },
   {
     testName: "Short pattern",
     customFilter: "foo",
-    errorText: "URL pattern is too short. Please use a longer pattern or " +
-    "specify at least one domain for this filter."
+    errorText:
+      "URL pattern is too short. Please use a longer pattern or " +
+      "specify at least one domain for this filter."
   },
   {
     testName: "CSS selector too short",
     customFilter: "##aa",
-    errorText: "CSS selector is too short. Please use a longer selector or " +
-    "specify at least one domain for this element hiding filter."
+    errorText:
+      "CSS selector is too short. Please use a longer selector or " +
+      "specify at least one domain for this element hiding filter."
   },
   {
     testName: "Generic error",

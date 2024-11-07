@@ -21,7 +21,7 @@ import {
   subscriptionUrls
 } from "./subscriptions.mjs";
 
-const {URL_BLOCKLIST} = subscriptionUrls;
+const { URL_BLOCKLIST } = subscriptionUrls;
 
 const records = [
   // blocked request

@@ -17,61 +17,52 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, enablePremiumByMockServer} =
-  require("../helpers");
-const {expect} = require("chai");
-const ManagePremiumAccountPage =
-  require("../page-objects/managePremiumAccount.page");
+const {
+  afterSequence,
+  beforeSequence,
+  enablePremiumByMockServer
+} = require("../helpers");
+const { expect } = require("chai");
+const ManagePremiumAccountPage = require("../page-objects/managePremiumAccount.page");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 const linksPremiumUsers =
   require("../test-data/data-premium-links").linksPremiumUsers;
 let lastTest = false;
 
-describe("test premium links for free users", function()
-{
-  before(async function()
-  {
+describe("test premium links for free users", function () {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
+  afterEach(async function () {
+    if (lastTest == false) {
       await browser.closeWindow();
       await afterSequence();
     }
   });
 
-  linksPremiumUsers.forEach(async(dataSet) =>
-  {
-    it("should open link: " + dataSet.testName, async function()
-    {
-      if (dataSet.testName == "Options page - Premium button")
-      {
+  linksPremiumUsers.forEach(async (dataSet) => {
+    it("should open link: " + dataSet.testName, async function () {
+      if (dataSet.testName == "Options page - Premium button") {
         lastTest = true;
       }
       await enablePremiumByMockServer();
       const premiumHeaderChunk = new PremiumHeaderChunk(browser);
       await dataSet.clickOnLink(premiumHeaderChunk);
-      await premiumHeaderChunk.switchToTab(
-        "accounts.adblockplus.org");
+      await premiumHeaderChunk.switchToTab("accounts.adblockplus.org");
       const currentUrl = await premiumHeaderChunk.getCurrentUrl();
       expect(currentUrl).to.match(
-        /https:\/\/accounts\.adblockplus\.org\/en.*\/manage\?lic=license_code&s=desktop-options/);
+        /https:\/\/accounts\.adblockplus\.org\/en.*\/manage\?lic=license_code&s=desktop-options/
+      );
       const managePremiumAccountPage = new ManagePremiumAccountPage(browser);
-      try
-      {
-        expect(await managePremiumAccountPage.
-          isNeedAFewMinutesErrorDisplayed()).to.be.true;
-      }
-      catch (Exception)
-      {
-        await premiumHeaderChunk.switchToTab(
-          "accounts.adblockplus.org");
+      try {
+        expect(await managePremiumAccountPage.isNeedAFewMinutesErrorDisplayed())
+          .to.be.true;
+      } catch (Exception) {
+        await premiumHeaderChunk.switchToTab("accounts.adblockplus.org");
         await browser.pause(1000);
-        expect(await managePremiumAccountPage.
-          isNeedAFewMinutesErrorDisplayed()).to.be.true;
+        expect(await managePremiumAccountPage.isNeedAFewMinutesErrorDisplayed())
+          .to.be.true;
       }
     });
   });

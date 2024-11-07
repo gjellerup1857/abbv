@@ -17,44 +17,41 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, isChrome, isFirefox, isEdge} =
-  require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  isChrome,
+  isFirefox,
+  isEdge
+} = require("../helpers");
+const { expect } = require("chai");
 const HeartDialogChunk = require("../page-objects/heartDialog.chunk");
 const UpdatesPage = require("../page-objects/updates.page");
-const updatesPageData =
-  require("../test-data/data-page-links").updatesPageData;
+const updatesPageData = require("../test-data/data-page-links").updatesPageData;
 let globalOrigin;
 
-describe("test page links - updates", function()
-{
+describe("test page links - updates", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  updatesPageData.forEach(async(dataSet) =>
-  {
-    it("should have a link for: " + dataSet.testName, async function()
-    {
-      if (dataSet.testName == "Updates - Rate it" && isEdge())
-        this.skip();
+  updatesPageData.forEach(async (dataSet) => {
+    it("should have a link for: " + dataSet.testName, async function () {
+      if (dataSet.testName == "Updates - Rate it" && isEdge()) this.skip();
 
       const updatesPage = new UpdatesPage(browser);
       await updatesPage.init(globalOrigin);
-      if (dataSet.testName == "Updates - Envelope icon")
-      {
-        expect(await updatesPage[dataSet.elementToClick].
-          getAttribute("href")).to.equal(dataSet.newTabUrl);
-      }
-      else if (dataSet.testName == "Updates - Rate it")
-      {
+      if (dataSet.testName == "Updates - Envelope icon") {
+        expect(
+          await updatesPage[dataSet.elementToClick].getAttribute("href")
+        ).to.equal(dataSet.newTabUrl);
+      } else if (dataSet.testName == "Updates - Rate it") {
         await updatesPage.waitForEnabledThenClick(
-          updatesPage[dataSet.elementToClick]);
-        if (isChrome())
-        {
+          updatesPage[dataSet.elementToClick]
+        );
+        if (isChrome()) {
           await updatesPage.switchToTab(dataSet.chromeWebstorePageTitle);
           // Cookies agreement page was removed by Chrome.
           // Keeping this functionality here in case it changes back.
@@ -64,44 +61,40 @@ describe("test page links - updates", function()
           // await browser.keys("Tab");
           // await browser.keys("Enter");
           expect(await updatesPage.getCurrentUrl()).to.equal(
-            dataSet.newTabUrlChrome);
-        }
-        else if (isFirefox())
-        {
+            dataSet.newTabUrlChrome
+          );
+        } else if (isFirefox()) {
           const heartDialogChunk = new HeartDialogChunk(browser);
           await heartDialogChunk.switchToAddonsTab();
           expect(await heartDialogChunk.getCurrentUrl()).to.match(
-            dataSet.newTabUrlFirefox);
+            dataSet.newTabUrlFirefox
+          );
         }
-      }
-      else if (dataSet.testName == "Updates - Facebook icon")
-      {
+      } else if (dataSet.testName == "Updates - Facebook icon") {
         await updatesPage.waitForEnabledThenClick(
-          updatesPage[dataSet.elementToClick]);
-        try
-        {
+          updatesPage[dataSet.elementToClick]
+        );
+        try {
           await updatesPage.switchToTab(dataSet.newTabUrl);
           expect(await updatesPage.getCurrentUrl()).to.include(
-            dataSet.newTabUrl);
-        }
-        catch (Exception)
-        {
+            dataSet.newTabUrl
+          );
+        } catch (Exception) {
           await updatesPage.switchToTab(dataSet.fallbackNewTabUrl);
           expect(await updatesPage.getCurrentUrl()).to.include(
-            dataSet.fallbackNewTabUrl);
+            dataSet.fallbackNewTabUrl
+          );
         }
-      }
-      else if (dataSet.testName == "Updates - X icon")
-      {
+      } else if (dataSet.testName == "Updates - X icon") {
         await updatesPage.waitForEnabledThenClick(
-          updatesPage[dataSet.elementToClick]);
+          updatesPage[dataSet.elementToClick]
+        );
         await updatesPage.switchToTab(dataSet.newTabUrl);
         expect(await updatesPage.getCurrentUrl()).to.match(dataSet.newTabUrl);
-      }
-      else
-      {
+      } else {
         await updatesPage.waitForEnabledThenClick(
-          updatesPage[dataSet.elementToClick]);
+          updatesPage[dataSet.elementToClick]
+        );
         await updatesPage.switchToTab(dataSet.newTabUrl);
         expect(await updatesPage.getCurrentUrl()).to.include(dataSet.newTabUrl);
       }

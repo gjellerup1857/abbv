@@ -15,8 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-io-popup-footer
-{
+io-popup-footer {
   --footer-height: calc(50px - var(--border-width-thin));
   --tabs-height: 8px;
   --panels-height: calc(var(--footer-height) - var(--tabs-height));
@@ -26,23 +25,20 @@ io-popup-footer
   height: var(--footer-height);
 }
 
-io-popup-footer ul
-{
+io-popup-footer ul {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-io-popup-footer a
-{
+io-popup-footer a {
   display: flex;
   justify-content: center;
   align-items: center;
   transition: all 0.4s ease-out;
 }
 
-io-popup-footer a:not(.icon)
-{
+io-popup-footer a:not(.icon) {
   padding: 5px 10px;
   border: 1px solid transparent;
   border-radius: var(--border-radius-primary);
@@ -51,39 +47,33 @@ io-popup-footer a:not(.icon)
 }
 
 io-popup-footer a:not(.icon):hover,
-io-popup-footer a:not(.icon):focus
-{
+io-popup-footer a:not(.icon):focus {
   border-color: var(--border-color-ternary);
   background-color: var(--background-color-ternary);
 }
 
-io-popup-footer a.icon
-{
+io-popup-footer a.icon {
   margin: 0 var(--margin-secondary);
   width: var(--font-size-primary);
   opacity: 0.5;
 }
 
 io-popup-footer a.icon:hover,
-io-popup-footer a.icon:focus
-{
+io-popup-footer a.icon:focus {
   opacity: 1;
 }
 
-io-popup-footer a.icon img
-{
+io-popup-footer a.icon img {
   pointer-events: none;
 }
 
-io-popup-footer .panels
-{
+io-popup-footer .panels {
   overflow: hidden;
   position: relative;
   height: var(--panels-height);
 }
 
-io-popup-footer .panels > li
-{
+io-popup-footer .panels > li {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -96,40 +86,34 @@ io-popup-footer .panels > li
   transition: transform 0.3s ease;
 }
 
-io-popup-footer .panels > [aria-hidden="false"]
-{
+io-popup-footer .panels > [aria-hidden="false"] {
   opacity: 1;
   transform: translateY(0);
 }
 
-io-popup-footer [role="tabpanel"] > .message
-{
+io-popup-footer [role="tabpanel"] > .message {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-io-popup-footer [role="tabpanel"] > .buttons
-{
+io-popup-footer [role="tabpanel"] > .buttons {
   display: flex;
 }
 
-io-popup-footer .tabs
-{
+io-popup-footer .tabs {
   display: flex;
   position: absolute;
   bottom: 0;
   width: 100%;
 }
 
-io-popup-footer .tabs > li
-{
+io-popup-footer .tabs > li {
   flex: 1;
   padding: 0 1px;
 }
 
-io-popup-footer .tabs button
-{
+io-popup-footer .tabs button {
   position: relative;
   height: var(--tabs-height);
   width: 100%;
@@ -141,8 +125,7 @@ io-popup-footer .tabs button
  * ::after styles the progress bar area of the tab
  */
 io-popup-footer .tabs button::before,
-io-popup-footer .tabs button::after
-{
+io-popup-footer .tabs button::after {
   position: absolute;
   left: 0;
   right: 0;
@@ -157,58 +140,47 @@ io-popup-footer .tabs button::after
 io-popup-footer .tabs button[aria-selected="true"]::before,
 io-popup-footer .tabs button:hover::before,
 io-popup-footer .tabs button:focus::before,
-io-popup-footer .tabs button[aria-selected="true"]::after
-{
+io-popup-footer .tabs button[aria-selected="true"]::after {
   height: 100%;
 }
 
-io-popup-footer .tabs:not(.animated) button[aria-selected="true"]::before
-{
+io-popup-footer .tabs:not(.animated) button[aria-selected="true"]::before {
   opacity: 0.5;
 }
 
-io-popup-footer .tabs button::after
-{
+io-popup-footer .tabs button::after {
   right: 100%;
   height: 50%;
   opacity: 0.5;
   --animation-name: progress-bar;
 }
 
-html[dir="rtl"] io-popup-footer .tabs button::after
-{
+html[dir="rtl"] io-popup-footer .tabs button::after {
   right: 0%;
   left: 100%;
   --animation-name: progress-bar-rtl;
 }
 
-io-popup-footer .tabs.animated button[aria-selected="true"]::after
-{
+io-popup-footer .tabs.animated button[aria-selected="true"]::after {
   animation: var(--animation-name) var(--animation-duration) linear 0s;
 }
 
-@keyframes progress-bar
-{
-  from
-  {
+@keyframes progress-bar {
+  from {
     right: 100%;
   }
 
-  to
-  {
+  to {
     right: 0;
   }
 }
 
-@keyframes progress-bar-rtl
-{
-  from
-  {
+@keyframes progress-bar-rtl {
+  from {
     left: 100%;
   }
 
-  to
-  {
+  to {
     left: 0;
   }
 }

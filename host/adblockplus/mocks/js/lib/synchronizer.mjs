@@ -19,20 +19,15 @@ import filterNotifier from "./filter-notifier.mjs";
 
 const synchronizer = {
   _downloading: false,
-  execute(subscription, manual)
-  {
+  execute(subscription, manual) {
     this._downloading = true;
-    filterNotifier.emit(
-      "subscription.downloading", subscription
-    );
-    setTimeout(() =>
-    {
+    filterNotifier.emit("subscription.downloading", subscription);
+    setTimeout(() => {
       this._downloading = false;
       subscription.lastDownload = Date.now() / 1000;
     }, 500);
   },
-  isExecuting(url)
-  {
+  isExecuting(url) {
     return this._downloading;
   }
 };

@@ -61,9 +61,7 @@ export default {
       // Specific to Firefox Mobile
       {
         dest: "skin",
-        src: [
-          "skin/icons/mobile/**"
-        ]
+        src: ["skin/icons/mobile/**"]
       },
       {
         dest: "",

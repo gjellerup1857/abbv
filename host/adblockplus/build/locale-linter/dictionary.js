@@ -58,4 +58,4 @@ const importantWordsExceptions = {
   }
 };
 
-module.exports = {importantWords, importantWordsExceptions};
+module.exports = { importantWords, importantWordsExceptions };

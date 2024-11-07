@@ -17,25 +17,26 @@
 
 "use strict";
 
-const {beforeSequence, getCurrentDate, getABPOptionsTabId,
-       globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  getCurrentDate,
+  getABPOptionsTabId,
+  globalRetriesNumber
+} = require("../helpers");
+const { expect } = require("chai");
 const IssueReportPage = require("../page-objects/issueReport.page");
 const IssueReporterPage = require("../page-objects/issueReporter.page");
 const dataIssueReporter = require("../test-data/data-issue-reporter");
 let globalOrigin;
 
-describe("test issue reporter", function()
-{
+describe("test issue reporter", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should send an issue report", async function()
-  {
+  it("should send an issue report", async function () {
     const issueReporterPage = new IssueReporterPage(browser);
     const tabId = await getABPOptionsTabId();
     await browser.url(dataIssueReporter.testPageUrl);
@@ -43,79 +44,84 @@ describe("test issue reporter", function()
     await issueReporterPage.clickPageIsBrokenButton();
     await issueReporterPage.clickContinueButton();
     await issueReporterPage.clickContinueButton();
-    expect(await issueReporterPage.
-      isContinueButtonEnabled()).to.be.false;
-    await issueReporterPage.typeTextToEmailTextbox(
-      "test@adblock.org");
+    expect(await issueReporterPage.isContinueButtonEnabled()).to.be.false;
+    await issueReporterPage.typeTextToEmailTextbox("test@adblock.org");
     await issueReporterPage.typeTextToCommentTextbox(
-      dataIssueReporter.commentText);
+      dataIssueReporter.commentText
+    );
     await issueReporterPage.clickSendReportButton();
     expect(await issueReporterPage.getReportSavedText()).to.include(
-      dataIssueReporter.savedReportText);
+      dataIssueReporter.savedReportText
+    );
     await issueReporterPage.clickReportSavedLink();
     const issueReportPage = new IssueReportPage(browser);
-    try
-    {
+    try {
       await issueReporterPage.switchToIssueReportLoadingTab();
       let attempts = 0;
-      while (attempts < 2)
-      {
-        try
-        {
-          expect(await issueReportPage.getReportBeingProcessedText()).to.
-            include(dataIssueReporter.reportBeingProcessedText);
+      while (attempts < 2) {
+        try {
+          expect(
+            await issueReportPage.getReportBeingProcessedText()
+          ).to.include(dataIssueReporter.reportBeingProcessedText);
           break;
-        }
-        catch (StaleElementException)
-        {
+        } catch (StaleElementException) {
           await browser.pause(1000);
         }
         attempts++;
       }
       expect(await issueReportPage.getReportBeingProcessedText()).to.include(
-        dataIssueReporter.reportBeingProcessedText);
-    }
-    catch (Exception) {}
+        dataIssueReporter.reportBeingProcessedText
+      );
+    } catch (Exception) {}
     await issueReportPage.switchToIssueReportTab();
     expect(await issueReportPage.getStatusLabelCellText()).to.include(
-      dataIssueReporter.statusCellLabelText);
+      dataIssueReporter.statusCellLabelText
+    );
     expect(await issueReportPage.getStatusValueCellText()).to.include(
-      dataIssueReporter.statusCellText);
+      dataIssueReporter.statusCellText
+    );
     expect(await issueReportPage.getWebsiteLabelCellText()).to.include(
-      dataIssueReporter.websiteLabelText);
+      dataIssueReporter.websiteLabelText
+    );
     expect(await issueReportPage.getWebsiteValueCellHref()).to.include(
-      dataIssueReporter.websiteCellHref);
+      dataIssueReporter.websiteCellHref
+    );
     expect(await issueReportPage.getIssueTypeLabelText()).to.include(
-      dataIssueReporter.issueTypeLableText);
+      dataIssueReporter.issueTypeLableText
+    );
     expect(await issueReportPage.getIssueTypeValueText()).to.include(
-      dataIssueReporter.issueTypeText);
+      dataIssueReporter.issueTypeText
+    );
     expect(await issueReportPage.getTimeLabelCellText()).to.include(
-      dataIssueReporter.timeCellText);
+      dataIssueReporter.timeCellText
+    );
     let isDatePresent = false;
     const actualDate = await issueReportPage.getTimeValueCellText();
-    if (actualDate.includes(getCurrentDate("en-GB")) ||
-      actualDate.includes(getCurrentDate("en-US")))
-    {
+    if (
+      actualDate.includes(getCurrentDate("en-GB")) ||
+      actualDate.includes(getCurrentDate("en-US"))
+    ) {
       isDatePresent = true;
     }
     expect(isDatePresent).to.be.true;
     expect(await issueReportPage.getCommentLabelText()).to.include(
-      dataIssueReporter.commentLabelText);
+      dataIssueReporter.commentLabelText
+    );
     expect(await issueReportPage.getCommentValueText()).to.include(
-      dataIssueReporter.commentText);
+      dataIssueReporter.commentText
+    );
     expect(await issueReportPage.getEmailLabelCellText()).to.include(
-      dataIssueReporter.emailLabelText);
+      dataIssueReporter.emailLabelText
+    );
     expect(await issueReportPage.getEmailValueCellText()).to.include(
-      dataIssueReporter.emailText);
+      dataIssueReporter.emailText
+    );
     await issueReportPage.clickRequestsTabButton();
-    expect(await issueReportPage.getNumberOfRowsForRequests()).to.equal(
-      6);
+    expect(await issueReportPage.getNumberOfRowsForRequests()).to.equal(6);
     await issueReportPage.clickFiltersTabButton();
-    expect(await issueReportPage.getNumberOfRowsForFilters()).to.equal(
-      5);
+    expect(await issueReportPage.getNumberOfRowsForFilters()).to.equal(5);
     await issueReportPage.clickSubscriptionsTabButton();
-    expect(await issueReportPage.getNumberOfRowsForSubscriptions()).to.equal(
-      4);
+    expect(await issueReportPage.getNumberOfRowsForSubscriptions()).to.equal(4);
     await issueReportPage.clickScreenshotTabButton();
     expect(await issueReportPage.isScreenshotDisplayed()).to.be.true;
   });

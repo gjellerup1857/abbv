@@ -17,87 +17,76 @@
 
 "use strict";
 
-const {expect} = require("chai");
+const { expect } = require("chai");
 
 const {
   validate
 } = require("../../../build/locale-linter/validators/placeholders");
 
-
-describe("Locale Linter: Placeholder Validator", () =>
-{
+describe("Locale Linter: Placeholder Validator", () => {
   const placeholderDefinition = {
     one: "",
     two: ""
   };
 
-  it("should approve a string without placeholders", () =>
-  {
+  it("should approve a string without placeholders", () => {
     const result = validate("no placeholders here");
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should approve a string w/o placeholders and empty defs", () =>
-  {
+  it("should approve a string w/o placeholders and empty defs", () => {
     const result = validate("no placeholders here", {});
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should approve a valid string / definition combination", () =>
-  {
+  it("should approve a valid string / definition combination", () => {
     const input = "some $one$ words $two$ here";
     const result = validate(input, placeholderDefinition);
 
     expect(result.hasErrors()).to.be.false;
   });
 
-  it("should reject when a definition for a placeholder is missing", () =>
-  {
+  it("should reject when a definition for a placeholder is missing", () => {
     const input = "some $one$ words $two$ here $three$";
     const result = validate(input, placeholderDefinition);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject when a placeholder is missing", () =>
-  {
+  it("should reject when a placeholder is missing", () => {
     const input = "some $one$ words";
     const result = validate(input, placeholderDefinition);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject multiple unenclosed placeholders in input", () =>
-  {
+  it("should reject multiple unenclosed placeholders in input", () => {
     const input = "some $one $two words";
     const result = validate(input, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject `$#` style placeholders in input", () =>
-  {
+  it("should reject `$#` style placeholders in input", () => {
     const input = "some $1 $2 words";
     const result = validate(input, {});
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject invalid placeholder names", () =>
-  {
+  it("should reject invalid placeholder names", () => {
     const input = "some $foo-bar$ words";
-    const defs = {"foo-bar": ""};
+    const defs = { "foo-bar": "" };
     const result = validate(input, defs);
 
     expect(result.hasErrors()).to.be.true;
   });
 
-  it("should reject placeholder and definition mismatch names", () =>
-  {
+  it("should reject placeholder and definition mismatch names", () => {
     const input = "some $one$ words";
-    const defs = {two: ""};
+    const defs = { two: "" };
     const result = validate(input, defs);
 
     expect(result.hasErrors()).to.be.true;

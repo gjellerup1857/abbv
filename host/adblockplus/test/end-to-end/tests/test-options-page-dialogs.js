@@ -17,39 +17,34 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber, isEdge} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber, isEdge } = require("../helpers");
+const { expect } = require("chai");
 const FooterChunk = require("../page-objects/footer.chunk");
 const AboutDialogChunk = require("../page-objects/aboutDialog.chunk");
-const AcceptableAdsDialogChunk =
-  require("../page-objects/acceptableAdsDialog.chunk");
+const AcceptableAdsDialogChunk = require("../page-objects/acceptableAdsDialog.chunk");
 const HeartDialogChunk = require("../page-objects/heartDialog.chunk");
 const GeneralPage = require("../page-objects/general.page");
 
-describe("test options page dialogs", function()
-{
+describe("test options page dialogs", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display copyright and version number", async function()
-  {
+  it("should display copyright and version number", async function () {
     const footerChunk = new FooterChunk(browser);
     await footerChunk.clickAboutABPLink();
     const aboutDialogChunk = new AboutDialogChunk(browser);
     expect(await aboutDialogChunk.getCopyrightText()).to.match(
-      /Copyright © 20\d\d/);
+      /Copyright © 20\d\d/
+    );
     await aboutDialogChunk.clickCloseButton();
     expect(await aboutDialogChunk.isDialogDisplayed()).to.be.false;
   });
 
-  it("should contain donate and rate us button", async function()
-  {
-    if (await isEdge())
-      this.skip();
+  it("should contain donate and rate us button", async function () {
+    if (await isEdge()) this.skip();
 
     const footerChunk = new FooterChunk(browser);
     await footerChunk.clickHeartButton();
@@ -61,15 +56,14 @@ describe("test options page dialogs", function()
     expect(await heartDialogChunk.isRateUsButtonDisplayed(true)).to.be.true;
   });
 
-  it("should contain go to survey and no thanks button", async function()
-  {
+  it("should contain go to survey and no thanks button", async function () {
     const generalPage = new GeneralPage(browser);
     await generalPage.clickAllowAcceptableAdsCheckbox();
     const acceptableAdsDialogChunk = new AcceptableAdsDialogChunk(browser);
-    expect(await acceptableAdsDialogChunk.isGoToSurveyButtonDisplayed())
-      .to.be.true;
-    expect(await acceptableAdsDialogChunk.isNoThanksButtonDisplayed())
-      .to.be.true;
+    expect(await acceptableAdsDialogChunk.isGoToSurveyButtonDisplayed()).to.be
+      .true;
+    expect(await acceptableAdsDialogChunk.isNoThanksButtonDisplayed()).to.be
+      .true;
     await acceptableAdsDialogChunk.clickNoThanksButton();
     expect(await acceptableAdsDialogChunk.isAADialogDisplayed()).to.be.false;
   });

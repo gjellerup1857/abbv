@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {$, $$} from "../../dom.mjs";
+import { $, $$ } from "../../dom.mjs";
 
 // both components are needed,
 // and handled, by this file
@@ -28,10 +28,8 @@ const managers = [
   // first screen, the welcome one
   // as soon as one radiobox is selected
   // the user can move forward
-  ({ioSteps, page, index}) =>
-  {
-    page.addEventListener("change", event =>
-    {
+  ({ ioSteps, page, index }) => {
+    page.addEventListener("change", (event) => {
       ioSteps.setCompleted(index, true);
       enableContinue();
     });
@@ -42,13 +40,10 @@ const managers = [
   // computed with or height so the component itself
   // is injected only after the page has been selected
   // for the very first time only
-  ({ioSteps, page, index, screenshot}) =>
-  {
+  ({ ioSteps, page, index, screenshot }) => {
     // setup only first time is visible
-    ioSteps.addEventListener("step:click", function once(event)
-    {
-      if (event.detail !== index)
-        return;
+    ioSteps.addEventListener("step:click", function once(event) {
+      if (event.detail !== index) return;
       ioSteps.removeEventListener(event.type, once);
       const ioHighlighter = document.createElement("io-highlighter");
       page.appendChild(ioHighlighter);
@@ -61,48 +56,36 @@ const managers = [
   // third page, optional extra details where
   // the user can move on only if a valid email
   // is entered or the anonymous checkbox is used
-  ({ioSteps, page, index}) =>
-  {
+  ({ ioSteps, page, index }) => {
     Promise.all([
-      new Promise(resolve =>
-      {
+      new Promise((resolve) => {
         ioSteps.addEventListener("requestcollected", resolve);
       }),
-      new Promise(resolve =>
-      {
-        ioSteps.addEventListener("formvalidated", event =>
-        {
+      new Promise((resolve) => {
+        ioSteps.addEventListener("formvalidated", (event) => {
           ioSteps.setCompleted(index, event.detail);
           $("button:last-child", ioSteps).disabled = true;
-          if (event.detail)
-            resolve();
+          if (event.detail) resolve();
         });
       })
-    ]).then(() =>
-    {
+    ]).then(() => {
       $("#continue").hidden = true;
       $("#send").hidden = false;
     });
   },
 
   // last page, the sending of the report
-  ({ioSteps, page, index, resolve}) =>
-  {
-    ioSteps.addEventListener("step:click", function once(event)
-    {
+  ({ ioSteps, page, index, resolve }) => {
+    ioSteps.addEventListener("step:click", function once(event) {
       ioSteps.removeEventListener(event.type, once);
       const ioHighlighter = $("io-highlighter");
-      ioHighlighter.changeDepth.then(() =>
-      {
+      ioHighlighter.changeDepth.then(() => {
         resolve({
-          screenshot:
-          {
-            get edited()
-            {
+          screenshot: {
+            get edited() {
               return ioHighlighter.edited;
             },
-            get data()
-            {
+            get data() {
               return ioHighlighter.toDataURL();
             }
           }
@@ -112,21 +95,17 @@ const managers = [
   }
 ];
 
-const stepManager = ({screenshot}) => new Promise(resolve =>
-{
-  const ioSteps = $("io-steps");
-  const pages = $$("main > .page");
-  const btnContinue = $("#continue");
-  let currentPage = pages[0];
-  let index = 0;
-  ioSteps.addEventListener(
-    "step:click",
-    event =>
-    {
+const stepManager = ({ screenshot }) =>
+  new Promise((resolve) => {
+    const ioSteps = $("io-steps");
+    const pages = $$("main > .page");
+    const btnContinue = $("#continue");
+    let currentPage = pages[0];
+    let index = 0;
+    ioSteps.addEventListener("step:click", (event) => {
       index = event.detail;
       const nextPage = pages[index];
-      if (nextPage === currentPage)
-        return;
+      if (nextPage === currentPage) return;
       currentPage.hidden = true;
       currentPage = nextPage;
       currentPage.hidden = false;
@@ -134,25 +113,18 @@ const stepManager = ({screenshot}) => new Promise(resolve =>
       // already completed so that there's no reason to disable
       // the continue button
       btnContinue.disabled = !ioSteps.getCompleted(index);
-    }
-  );
-  btnContinue.addEventListener(
-    "click",
-    event =>
-    {
+    });
+    btnContinue.addEventListener("click", (event) => {
       ioSteps.dispatchEvent(
-        new CustomEvent("step:click", {detail: index + 1})
+        new CustomEvent("step:click", { detail: index + 1 })
       );
-    }
-  );
-  managers.forEach((setup, i) =>
-  {
-    setup({ioSteps, page: pages[i], index: i, resolve, screenshot});
+    });
+    managers.forEach((setup, i) => {
+      setup({ ioSteps, page: pages[i], index: i, resolve, screenshot });
+    });
   });
-});
 
-function enableContinue()
-{
+function enableContinue() {
   $("#continue").disabled = false;
 }
 

@@ -17,41 +17,45 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       globalRetriesNumber, switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  enablePremiumByMockServer,
+  globalRetriesNumber,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const GeneralPage = require("../page-objects/general.page");
 const WelcomeToPremiumPage = require("../page-objects/welcomeToPremium.page");
 let globalOrigin;
 
-describe("should test onboarding page for premium user", function()
-{
+describe("should test onboarding page for premium user", function () {
   this.retries(globalRetriesNumber);
 
-  beforeEach(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
+  beforeEach(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
   });
 
-  it("should display onboarding page for premium user", async function()
-  {
+  it("should display onboarding page for premium user", async function () {
     await enablePremiumByMockServer();
     await browser.newWindow(`${globalOrigin}/premium-onboarding.html`);
     const welcomeToPremiumPage = new WelcomeToPremiumPage(browser);
     await welcomeToPremiumPage.switchToTab("Welcome to Adblock Plus Premium");
-    expect(await welcomeToPremiumPage.
-      isBlockCookieConsentPopupsCheckboxEnabled()).to.be.true;
-    expect(await welcomeToPremiumPage.
-      isUpgradeNowButtonDisplayed()).to.be.false;
-    expect(await welcomeToPremiumPage.
-      isEnableAllPremiumFeaturesButtonDisplayed()).to.be.true;
+    expect(
+      await welcomeToPremiumPage.isBlockCookieConsentPopupsCheckboxEnabled()
+    ).to.be.true;
+    expect(await welcomeToPremiumPage.isUpgradeNowButtonDisplayed()).to.be
+      .false;
+    expect(
+      await welcomeToPremiumPage.isEnableAllPremiumFeaturesButtonDisplayed()
+    ).to.be.true;
     await welcomeToPremiumPage.clickEnableAllPremiumFeaturesButton();
-    expect(await welcomeToPremiumPage.
-      isBlockCookieConsentPopupsCheckboxSelected()).to.be.true;
+    expect(
+      await welcomeToPremiumPage.isBlockCookieConsentPopupsCheckboxSelected()
+    ).to.be.true;
     await welcomeToPremiumPage.clickDoneButton();
     await switchToABPOptionsTab();
     const generalPage = new GeneralPage(browser);
-    expect(await generalPage.
-      isBlockCookieConsentPopupsCheckboxSelected()).to.be.true;
+    expect(await generalPage.isBlockCookieConsentPopupsCheckboxSelected()).to.be
+      .true;
   });
 });

@@ -17,61 +17,77 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber,
-       executeAsyncScript, doesTabExist, waitForCondition,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  globalRetriesNumber,
+  executeAsyncScript,
+  doesTabExist,
+  waitForCondition,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const IPMChunk = require("../page-objects/ipm.chunk");
-const {port: ipmPort} =
-  require("../../../../../test-utils/ipm-server/test-ipm-server.js");
+const {
+  port: ipmPort
+} = require("../../../../../test-utils/ipm-server/test-ipm-server.js");
 
-describe("test ABP IPM in page dialog CTA", function()
-{
+describe("test ABP IPM in page dialog CTA", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should display in page dialog CTA", async function()
-  {
-    try
-    {
+  it("should display in page dialog CTA", async function () {
+    try {
       await switchToABPOptionsTab();
-    }
-    catch (Exception) {}
-    await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
-      ", key: 'ipm_server_url', value: " +
-      `'http://localhost:${ipmPort}'});`);
-    await executeAsyncScript("browser.runtime.sendMessage({type: 'prefs.set'" +
-      ", key: 'installation_id', value: 'opdnavigationctaABP'});");
-    await executeAsyncScript("browser.runtime.sendMessage({type: " +
-      "'testing.ping_ipm_server'});");
+    } catch (Exception) {}
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'prefs.set'" +
+        ", key: 'ipm_server_url', value: " +
+        `'http://localhost:${ipmPort}'});`
+    );
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'prefs.set'" +
+        ", key: 'installation_id', value: 'opdnavigationctaABP'});"
+    );
+    await executeAsyncScript(
+      "browser.runtime.sendMessage({type: 'testing.ping_ipm_server'});"
+    );
     const ipmChunk = new IPMChunk(browser);
     await browser.newWindow("https://example.com");
     await ipmChunk.switchToTab(/example/);
-    try
-    {
-      await waitForCondition("isIPMiFrameExisting",
-                             10000, ipmChunk, true, 1000);
-    }
-    catch (Exception)
-    {
+    try {
+      await waitForCondition(
+        "isIPMiFrameExisting",
+        10000,
+        ipmChunk,
+        true,
+        1000
+      );
+    } catch (Exception) {
       await switchToABPOptionsTab();
-      await executeAsyncScript("browser.runtime.sendMessage({type: " +
-      "'testing.ping_ipm_server'});");
+      await executeAsyncScript(
+        "browser.runtime.sendMessage({type: 'testing.ping_ipm_server'});"
+      );
       await ipmChunk.switchToTab(/example/);
-      await waitForCondition("isIPMiFrameExisting",
-                             10000, ipmChunk, true, 1000);
+      await waitForCondition(
+        "isIPMiFrameExisting",
+        10000,
+        ipmChunk,
+        true,
+        1000
+      );
     }
     await ipmChunk.init();
     expect(await ipmChunk.getIPMTitleText()).to.include(
       "OPD was created after navigation to google.com, " +
-      "example.com, wikipedia.org");
+        "example.com, wikipedia.org"
+    );
     expect(await ipmChunk.getIPMBodyText()).to.include(
       "Should only be shown to FREE users, button target is /premium, " +
-      "CTA button should be clicked");
+        "CTA button should be clicked"
+    );
     await ipmChunk.clickIPMCTAButton();
     await doesTabExist("https://accounts.adblockplus.org/premium");
   });

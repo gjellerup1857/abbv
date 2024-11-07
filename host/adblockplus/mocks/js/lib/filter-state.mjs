@@ -20,24 +20,23 @@ import filterNotifier from "./filter-notifier.mjs";
 const map = new Map();
 
 const filterState = {
-  isEnabled(filterText)
-  {
+  isEnabled(filterText) {
     const state = map.get(filterText);
     return state ? !state.disabled : true;
   },
-  setEnabled(filterText, enabled)
-  {
+  setEnabled(filterText, enabled) {
     const oldEnabled = this.isEnabled(filterText);
 
-    if (enabled)
-      map.delete(filterText);
-    else
-      map.set(filterText, {disabled: true});
+    if (enabled) map.delete(filterText);
+    else map.set(filterText, { disabled: true });
 
-    if (enabled !== oldEnabled)
-    {
-      filterNotifier.emit("filterState.enabled", filterText, enabled,
-                          oldEnabled);
+    if (enabled !== oldEnabled) {
+      filterNotifier.emit(
+        "filterState.enabled",
+        filterText,
+        enabled,
+        oldEnabled
+      );
     }
   }
 };

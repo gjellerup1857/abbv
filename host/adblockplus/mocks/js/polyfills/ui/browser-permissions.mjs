@@ -15,18 +15,15 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function contains()
-{
+export function contains() {
   return Promise.resolve();
 }
 
-export function request(opts)
-{
+export function request(opts) {
   const granted = confirm(`Grant permissions?\n${opts.permissions}`);
   return Promise.resolve(granted);
 }
 
-export function remove(opts)
-{
+export function remove(opts) {
   return Promise.resolve(true);
 }

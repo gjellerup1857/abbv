@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
 import {
-  beforeSequence, isFirefox,
+  beforeSequence,
+  isFirefox,
   switchToABPOptionsTab,
   waitForExtension
 } from "../../helpers.js";

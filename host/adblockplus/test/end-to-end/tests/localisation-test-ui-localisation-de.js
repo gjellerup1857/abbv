@@ -19,8 +19,8 @@
 
 "use strict";
 
-const {beforeSequence, globalRetriesNumber} = require("../helpers");
-const {expect} = require("chai");
+const { beforeSequence, globalRetriesNumber } = require("../helpers");
+const { expect } = require("chai");
 const DayOne = require("../page-objects/dayOne.page");
 const FirstRunPage = require("../page-objects/firstRun.page");
 const GeneralPage = require("../page-objects/general.page");
@@ -31,37 +31,40 @@ const uiLocalisationData =
   require("../test-data/data-localisation-tests").uiLocalisationDataDE;
 let globalOrigin;
 
-describe("test ui for different languages - German", function()
-{
+describe("test ui for different languages - German", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} =
-      await beforeSequence({expectInstalledTab: false}));
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence({
+      expectInstalledTab: false
+    }));
   });
 
-  uiLocalisationData.forEach(async(dataSet) =>
-  {
+  uiLocalisationData.forEach(async (dataSet) => {
     // eslint-disable-next-line max-len
-    it("should correctly display ui for different languages - de_" + dataSet.pageObject, async function()
-    {
-      const dayOnePage = new DayOne(browser);
-      const generalPage = new GeneralPage(browser);
-      const firstRunPage = new FirstRunPage(browser);
-      const popupPage = new PopupPage(browser);
-      const problemPage = new ProblemPage(browser);
-      const updatesPage = new UpdatesPage(browser);
-      if (!dataSet.pageObject.includes("generalPage"))
-        await await eval(dataSet.pageObject).init(globalOrigin);
-      else
-        await generalPage.switchToTab(/options\.html/);
-      expect((await eval(dataSet.pageObject)[dataSet.functionName]()).
-          includes(dataSet.text)).to.be.true;
-      const htmlLangAttribute = await $("html").getAttribute("lang");
-      const htmlDirAttribute = await $("html").getAttribute("dir");
-      expect(htmlLangAttribute).to.equal("de");
-      expect(htmlDirAttribute).to.equal("ltr");
-    });
+    it(
+      "should correctly display ui for different languages - de_" +
+        dataSet.pageObject,
+      async function () {
+        const dayOnePage = new DayOne(browser);
+        const generalPage = new GeneralPage(browser);
+        const firstRunPage = new FirstRunPage(browser);
+        const popupPage = new PopupPage(browser);
+        const problemPage = new ProblemPage(browser);
+        const updatesPage = new UpdatesPage(browser);
+        if (!dataSet.pageObject.includes("generalPage"))
+          await await eval(dataSet.pageObject).init(globalOrigin);
+        else await generalPage.switchToTab(/options\.html/);
+        expect(
+          (await eval(dataSet.pageObject)[dataSet.functionName]()).includes(
+            dataSet.text
+          )
+        ).to.be.true;
+        const htmlLangAttribute = await $("html").getAttribute("lang");
+        const htmlDirAttribute = await $("html").getAttribute("dir");
+        expect(htmlLangAttribute).to.equal("de");
+        expect(htmlDirAttribute).to.equal("ltr");
+      }
+    );
   });
 });

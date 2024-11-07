@@ -17,26 +17,27 @@
 
 "use strict";
 
-const {beforeSequence, enablePremiumByMockServer,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  enablePremiumByMockServer,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
 const ServiceWorkerPage = require("../page-objects/serviceWorker.page");
 
-describe("test abp premium license check retries", function()
-{
-  before(async function()
-  {
+describe("test abp premium license check retries", function () {
+  before(async function () {
     await beforeSequence();
   });
 
-  it("should retry the request 3 times in 1 minute intervals", async function()
-  {
+  it("should retry the request 3 times in 1 minute intervals", async function () {
     await enablePremiumByMockServer();
     const serviceWorkerPage = new ServiceWorkerPage(browser);
     await serviceWorkerPage.init();
     await switchToABPOptionsTab();
-    await browser.executeScript(`
+    await browser.executeScript(
+      `
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({ type: "premium.activate",
         userId: "server_error_500" }, response => {
@@ -47,20 +48,24 @@ describe("test abp premium license check retries", function()
           }
         });
       });
-    `, []);
+    `,
+      []
+    );
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isPremiumButtonDisplayed()).to.be.true;
     await browser.pause(2000);
     let logText;
-    for (let i = 0; i < 4; i++)
-    {
+    for (let i = 0; i < 4; i++) {
       await serviceWorkerPage.switchToTab(/serviceworker/);
       logText = await serviceWorkerPage.getLogTextAreaText();
-      expect(JSON.stringify(logText)).to.match(new RegExp(
-        "Premium license check failed \\(retries: " + i +
-        "\\)[^a-z]*Error: Received error response \\(code: 500\\)"));
-      if (i < 3)
-      {
+      expect(JSON.stringify(logText)).to.match(
+        new RegExp(
+          "Premium license check failed \\(retries: " +
+            i +
+            "\\)[^a-z]*Error: Received error response \\(code: 500\\)"
+        )
+      );
+      if (i < 3) {
         await browser.refresh();
         await switchToABPOptionsTab();
         // Wait 1 minute for a retry

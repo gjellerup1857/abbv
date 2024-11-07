@@ -17,29 +17,31 @@
 
 "use strict";
 
-const {beforeSequence, doesTabExist, enablePremiumByMockServer,
-       globalRetriesNumber,
-       isFirefox} = require("../helpers");
-const {expect} = require("chai");
+const {
+  beforeSequence,
+  doesTabExist,
+  enablePremiumByMockServer,
+  globalRetriesNumber,
+  isFirefox
+} = require("../helpers");
+const { expect } = require("chai");
 const ExtensionsPage = require("../page-objects/extensions.page");
 let appVersion;
 let globalOrigin;
 
-describe("test update page", function()
-{
+describe("test update page", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
-    ({origin: globalOrigin} = await beforeSequence());
-    appVersion = await browser.
-      executeScript("return browser.runtime.getManifest().version;", []);
+  before(async function () {
+    ({ origin: globalOrigin } = await beforeSequence());
+    appVersion = await browser.executeScript(
+      "return browser.runtime.getManifest().version;",
+      []
+    );
   });
 
-  it("should not display update page for Chrome and Edge", async function()
-  {
-    if (isFirefox())
-      this.skip();
+  it("should not display update page for Chrome and Edge", async function () {
+    if (isFirefox()) this.skip();
     const extensionsPage = new ExtensionsPage(browser);
     await extensionsPage.init();
     await extensionsPage.clickReloadExtensionButton();
@@ -49,10 +51,8 @@ describe("test update page", function()
     expect(await doesTabExist(/update/)).to.be.false;
   });
 
-  it("should display update page for free Firefox user", async function()
-  {
-    if (!isFirefox())
-      this.skip();
+  it("should display update page for free Firefox user", async function () {
+    if (!isFirefox()) this.skip();
     const extensionsPage = new ExtensionsPage(browser);
     await extensionsPage.init();
     await extensionsPage.clickReloadExtensionButton();
@@ -79,10 +79,8 @@ describe("test update page", function()
     expect(await doesTabExist(/update/)).to.be.false;
   });
 
-  it("should not display update page for premium Firefox user", async function()
-  {
-    if (!isFirefox())
-      this.skip();
+  it("should not display update page for premium Firefox user", async function () {
+    if (!isFirefox()) this.skip();
     await browser.newWindow("about:blank");
     await browser.url(`${globalOrigin}/desktop-options.html`);
     await enablePremiumByMockServer();

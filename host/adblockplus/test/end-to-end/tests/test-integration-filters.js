@@ -17,81 +17,80 @@
 
 "use strict";
 
-const {afterSequence, beforeSequence, globalRetriesNumber, isEdge, isFirefox,
-       switchToABPOptionsTab} = require("../helpers");
-const {expect} = require("chai");
+const {
+  afterSequence,
+  beforeSequence,
+  globalRetriesNumber,
+  isEdge,
+  isFirefox,
+  switchToABPOptionsTab
+} = require("../helpers");
+const { expect } = require("chai");
 const AdvancedPage = require("../page-objects/advanced.page");
 const TestPages = require("../page-objects/testPages.page");
 let lastTest = false;
 
-describe("test custom filters as part of the integration tests", function()
-{
+describe("test custom filters as part of the integration tests", function () {
   this.retries(globalRetriesNumber);
 
-  before(async function()
-  {
+  before(async function () {
     await beforeSequence();
   });
 
-  afterEach(async function()
-  {
-    if (lastTest == false)
-    {
-      try
-      {
+  afterEach(async function () {
+    if (lastTest == false) {
+      try {
         const advancedPage = new AdvancedPage(browser);
         await advancedPage.init();
         await advancedPage.clickCustomFLTableHeadCheckbox();
         await advancedPage.clickDeleteCustomFLButton();
-      }
-      catch (Exception) {}
+      } catch (Exception) {}
       await afterSequence();
     }
   });
 
-  it("should block/show ad by adding/removing custom filter", async function()
-  {
+  it("should block/show ad by adding/removing custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    const filtersToAdd = ["/custom-blocking.js", "/custom-blocking-regex*",
-                          "###custom-hiding-id", "##.custom-hiding-class"];
+    const filtersToAdd = [
+      "/custom-blocking.js",
+      "/custom-blocking-regex*",
+      "###custom-hiding-id",
+      "##.custom-hiding-class"
+    ];
     await advancedPage.addCustomFiltersOneByOne(filtersToAdd);
-    const customFiltersTestPage = "https://adblockinc.gitlab.io/QA-team/adbl" +
+    const customFiltersTestPage =
+      "https://adblockinc.gitlab.io/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
-    if (isEdge())
-      await browser.pause(2000);
+    if (isEdge()) await browser.pause(2000);
 
     const testPages = new TestPages(browser);
-    if (isFirefox())
-    {
-      if (await testPages.getCurrentTitle() != "Blocking and hiding")
-      {
+    if (isFirefox()) {
+      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
         await browser.refresh();
         await testPages.switchToTab(/custom-filters-testpage/);
         await browser.pause(1000);
       }
     }
-    try
-    {
+    try {
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter applied");
-    }
-    catch (Exception)
-    {
+        "custom blocking filter applied"
+      );
+    } catch (Exception) {
       await browser.pause(2000);
       await browser.refresh();
       await browser.pause(2000);
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter applied");
+        "custom blocking filter applied"
+      );
     }
     expect(await testPages.getCustomBlockingRegexFilterText()).to.include(
-      "custom blocking regex filter applied");
-    expect(await testPages.
-      isCustomHidingIdDisplayed()).to.be.false;
-    expect(await testPages.
-      isCustomHidingClassDisplayed()).to.be.false;
+      "custom blocking regex filter applied"
+    );
+    expect(await testPages.isCustomHidingIdDisplayed()).to.be.false;
+    expect(await testPages.isCustomHidingClassDisplayed()).to.be.false;
 
     await switchToABPOptionsTab();
     await advancedPage.init();
@@ -100,97 +99,99 @@ describe("test custom filters as part of the integration tests", function()
     await advancedPage.switchToTab(/custom-filters-testpage/);
     await browser.refresh();
     expect(await testPages.getCustomBlockingFilterText()).to.include(
-      "custom blocking filter should block this");
+      "custom blocking filter should block this"
+    );
     expect(await testPages.getCustomBlockingRegexFilterText()).to.include(
-      "custom regex blocking filter should block this");
+      "custom regex blocking filter should block this"
+    );
     expect(await testPages.getCustomHidingIdText()).to.include(
-      "custom id hiding filter should hide this");
+      "custom id hiding filter should hide this"
+    );
     expect(await testPages.getCustomHidingClassText()).to.include(
-      "custom class hiding filter should hide this");
+      "custom class hiding filter should hide this"
+    );
   });
 
-  it("should block/show ad using enable/disable custom filter", async function()
-  {
+  it("should block/show ad using enable/disable custom filter", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     const filtersToAdd = ["/custom-blocking-regex*", "/custom-blocking.js"];
     await advancedPage.addCustomFiltersOneByOne(filtersToAdd);
     await advancedPage.clickCustomFilterListsFirstItemToggle();
-    const customFiltersTestPage = "https://adblockinc.gitlab.io/QA-team/adbl" +
+    const customFiltersTestPage =
+      "https://adblockinc.gitlab.io/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
     const testPages = new TestPages(browser);
     expect(await testPages.getCustomBlockingFilterText()).to.include(
-      "custom blocking filter should block this");
+      "custom blocking filter should block this"
+    );
     expect(await testPages.getCustomBlockingRegexFilterText()).to.include(
-      "custom blocking regex filter applied");
+      "custom blocking regex filter applied"
+    );
     await switchToABPOptionsTab();
     await advancedPage.clickCustomFilterListsFirstItemToggle();
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
-    try
-    {
+    try {
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter applied");
-    }
-    catch (Exception)
-    {
+        "custom blocking filter applied"
+      );
+    } catch (Exception) {
       await browser.pause(1000);
       await browser.refresh();
       await browser.pause(1500);
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter applied");
+        "custom blocking filter applied"
+      );
     }
     expect(await testPages.getCustomBlockingRegexFilterText()).to.include(
-      "custom blocking regex filter applied");
+      "custom blocking regex filter applied"
+    );
   });
 
-  it("should block ad by edited custom filter", async function()
-  {
+  it("should block ad by edited custom filter", async function () {
     lastTest = true;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     const inputText = "/custom-blocking.js";
-    try
-    {
+    try {
       await advancedPage.clickCustomFLTableHeadCheckbox();
       await advancedPage.clickDeleteCustomFLButton();
-    }
-    catch (Exception) {}
+    } catch (Exception) {}
     await advancedPage.typeTextToAddCustomFilterListInput(inputText);
     await advancedPage.clickAddCustomFilterListButton();
     await advancedPage.clickCustomFilterListsNthItemText("1");
-    for (let i = 0; i < inputText.length; i++)
-    {
+    for (let i = 0; i < inputText.length; i++) {
       await browser.keys("Backspace");
     }
     const text = "/custom-blocking-regex*";
-    for (const char of text)
-    {
+    for (const char of text) {
       await browser.keys(char);
     }
     await browser.keys("Enter");
     await advancedPage.verifyTextPresentInCustomFLTable(text);
-    const customFiltersTestPage = "https://adblockinc.gitlab.io/QA-team/adbl" +
+    const customFiltersTestPage =
+      "https://adblockinc.gitlab.io/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
     const testPages = new TestPages(browser);
-    try
-    {
+    try {
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter should block this");
-    }
-    catch (Exception)
-    {
+        "custom blocking filter should block this"
+      );
+    } catch (Exception) {
       await browser.pause(1000);
       await browser.refresh();
       await browser.pause(1500);
       expect(await testPages.getCustomBlockingFilterText()).to.include(
-        "custom blocking filter should block this");
+        "custom blocking filter should block this"
+      );
     }
     expect(await testPages.getCustomBlockingRegexFilterText()).to.include(
-      "custom blocking regex filter applied");
+      "custom blocking regex filter applied"
+    );
   });
 });

@@ -19,19 +19,16 @@
 
 const path = require("path");
 
-const {validate: validateFile} = require("./validators/files");
-const {ResultGroup} = require("./common");
-const {importantWords, importantWordsExceptions} = require("./dictionary");
+const { validate: validateFile } = require("./validators/files");
+const { ResultGroup } = require("./common");
+const { importantWords, importantWordsExceptions } = require("./dictionary");
 
-async function run()
-{
+async function run() {
   const results = new ResultGroup("Validate translations");
 
-  try
-  {
+  try {
     const filepaths = process.argv.slice(2);
-    for (let filepath of filepaths)
-    {
+    for (let filepath of filepaths) {
       filepath = path.resolve(filepath);
 
       const result = await validateFile(
@@ -41,20 +38,15 @@ async function run()
       );
       results.push(result);
     }
-  }
-  catch (ex)
-  {
+  } catch (ex) {
     results.push(ex);
   }
 
   const output = results.toString();
-  if (results.hasErrors())
-  {
+  if (results.hasErrors()) {
     console.error(output);
     process.exit(1);
-  }
-  else
-  {
+  } else {
     /* eslint-disable-next-line no-console */
     console.log(output);
   }

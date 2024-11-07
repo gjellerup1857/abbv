@@ -15,8 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {params} from "./env.mjs";
-import {subscriptionUrls} from "./subscriptions.mjs";
+import { params } from "./env.mjs";
+import { subscriptionUrls } from "./subscriptions.mjs";
 
 const prefsData = {
   additional_subscriptions: params.additionalSubscriptions.split(","),

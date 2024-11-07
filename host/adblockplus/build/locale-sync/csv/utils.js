@@ -19,7 +19,7 @@
 
 const csv = require("csv");
 const fs = require("fs");
-const {promisify} = require("util");
+const { promisify } = require("util");
 
 const csvStringify = promisify(csv.stringify);
 const writeFile = promisify(fs.writeFile);
@@ -30,12 +30,10 @@ const writeFile = promisify(fs.writeFile);
  * @param  {String} outputFileName - name of the output file
  * @returns {Promise}
  */
-const arrayToCsv = (csvArray, outputFileName) =>
-{
-  return csvStringify(csvArray).then((output) =>
-  {
+const arrayToCsv = (csvArray, outputFileName) => {
+  return csvStringify(csvArray).then((output) => {
     return writeFile(outputFileName, output, "utf8");
   });
 };
 
-module.exports = {arrayToCsv};
+module.exports = { arrayToCsv };

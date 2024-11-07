@@ -42,9 +42,7 @@ export const capabilities = {
   browserName: "chromium",
   "goog:chromeOptions": options,
   acceptInsecureCerts: true,
-  exclude: [
-    "./tests/legacy-unit.js"
-  ]
+  exclude: ["./tests/legacy-unit.js"]
 };
 
 /**
@@ -55,10 +53,7 @@ export const edgeCapabilities = {
   browserName: "MicrosoftEdge",
   "ms:edgeOptions": options,
   acceptInsecureCerts: true,
-  exclude: [
-    "./tests/test-issue-reporter.js",
-    "./tests/legacy-unit.js"
-  ]
+  exclude: ["./tests/test-issue-reporter.js", "./tests/legacy-unit.js"]
 };
 
 // On Docker, sometimes `Error: End of central directory not found` appears

@@ -15,19 +15,17 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {$} from "../../dom.mjs";
-import {isTabAllowlisted} from "./utils.mjs";
+import { $ } from "../../dom.mjs";
+import { isTabAllowlisted } from "./utils.mjs";
 
 // remember initial state to better toggle content
 let toggleChecked;
 
-function setupToggles(tab)
-{
+function setupToggles(tab) {
   const domain = $("#page-status .domain io-circle-toggle");
   const page = $("#page-status .page io-circle-toggle");
 
-  domain.addEventListener("click", () =>
-  {
+  domain.addEventListener("click", () => {
     // when the domain is clicked it will either
     // allowlist or un-allowlist the whole domain,
     // and in both cases we should ignore page changes
@@ -36,41 +34,31 @@ function setupToggles(tab)
     // as the attribute is sensible to animations while the state
     // is set only after, so it's the source of truth, avoiding
     // inconsistent behavior with Firefox or Edge
-    setPageStateAfterDomain(
-      page,
-      !domain.state.checked,
-      domain.state.checked
-    );
+    setPageStateAfterDomain(page, !domain.state.checked, domain.state.checked);
   });
 
-  $("#page-refresh button").addEventListener("click", () =>
-  {
+  $("#page-refresh button").addEventListener("click", () => {
     browser.tabs.reload(tab.id).then(window.close);
   });
 
-  isTabAllowlisted(tab).then((isAllowlisted) =>
-  {
+  isTabAllowlisted(tab).then((isAllowlisted) => {
     document.body.classList.toggle(
       "disabled",
       isAllowlisted.hostname || isAllowlisted.page
     );
-    if (isAllowlisted.hostname)
-    {
+    if (isAllowlisted.hostname) {
       // avoid triggering an event on this change
-      domain.setState({checked: false}, false);
+      domain.setState({ checked: false }, false);
       domain.checked = false;
       setPageStateAfterDomain(page, false, true);
-    }
-    else if (isAllowlisted.page)
-    {
+    } else if (isAllowlisted.page) {
       setPageStateAfterDomain(page, false, false);
     }
     toggleChecked = domain.checked;
   });
 
-  domain.addEventListener("change", () =>
-  {
-    const {checked} = domain;
+  domain.addEventListener("change", () => {
+    const { checked } = domain;
     document.body.classList.toggle("refresh", toggleChecked !== checked);
     browser.runtime.sendMessage({
       type: checked ? "filters.unallowlist" : "filters.allowlist",
@@ -79,8 +67,7 @@ function setupToggles(tab)
     });
   });
 
-  page.addEventListener("change", () =>
-  {
+  page.addEventListener("change", () => {
     document.body.classList.toggle("refresh");
     browser.runtime.sendMessage({
       type: page.checked ? "filters.unallowlist" : "filters.allowlist",
@@ -91,9 +78,8 @@ function setupToggles(tab)
   });
 }
 
-function setPageStateAfterDomain(page, checked, disabled)
-{
-  page.setState({checked}, checked);
+function setPageStateAfterDomain(page, checked, disabled) {
+  page.setState({ checked }, checked);
   page.checked = checked;
   page.disabled = disabled;
 }

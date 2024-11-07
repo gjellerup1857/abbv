@@ -84,7 +84,7 @@ Naming convention: `subject` `.` `action` (e.g. `filters.get`)
 - **string** [link] - (if "what" is `doclink`; may include `{browser}` placeholder)
 - **string** [link] - (if "what" is `ctalink`)
 - **object** queryParams - (if "what" is `ctalink`; optional parameter)
-  - **string** source 
+  - **string** source
 - **string** what
   - `acceptableAdsUrl`
   - `acceptableAdsPrivacyUrl`
@@ -102,9 +102,11 @@ Naming convention: `subject` `.` `action` (e.g. `filters.get`)
 **string** doclink (if "what" is `doclink`)
 
 **object** features (if "what" is `features`)
+
 - **boolean** devToolsPanel
 
 **object** localeInfo (if "what" is `localeInfo`)
+
 - **string** bidiDir
   - `ltr`
   - `rtl`
@@ -203,8 +205,9 @@ If filter includes `showPageOptions`:
 **Response**
 
 **object** isAllowlisted
-  - **boolean** hostname
-  - **boolean** page
+
+- **boolean** hostname
+- **boolean** page
 
 #### filters.listen
 
@@ -470,6 +473,7 @@ If filter includes `blocked_total`:
 **Response**
 
 **[Subscription](#subscription)[]** subscriptions
+
 - **string[]** disabledFilters
 
 #### subscriptions.getInitIssues
@@ -477,6 +481,7 @@ If filter includes `blocked_total`:
 **Response**
 
 **object** issues
+
 - **boolean** dataCorrupted
 - **boolean** reinitialized
 
@@ -509,7 +514,6 @@ If filter includes `blocked_total`:
 - **boolean** newValue (if filter is `filtersDisabled`)
 - **boolean** oldValue (if filter is `filtersDisabled`)
 
-
 #### subscriptions.remove
 
 **Arguments**
@@ -529,8 +533,6 @@ If filter includes `blocked_total`:
 
 - **string** [url]
 
-
-
 ### testing
 
 #### testing.getReadyState
@@ -542,8 +544,9 @@ _none_
 **Response**
 
 **string** ReadyState
-  - `loading`
-  - `started`
+
+- `loading`
+- `started`
 
 ## Types
 

@@ -17,32 +17,19 @@
         "bypass.preload.js"
       ],
       "match_about_blank": true,
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
-      "js": [
-        "onpage-dialog.preload.js"
-      ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["onpage-dialog.preload.js"],
+      "matches": ["http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
       "all_frames": true,
-      "js": [
-        "onpage-dialog-ui.preload.js"
-      ],
+      "js": ["onpage-dialog-ui.preload.js"],
       "match_about_blank": true,
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -60,20 +47,12 @@
       "run_at": "document_start"
     },
     {
-      "js": [
-        "yt-wall-detection.preload.js"
-      ],
-      "matches": [
-        "https://youtube.com/*",
-        "https://www.youtube.com/*"
-      ],
+      "js": ["yt-wall-detection.preload.js"],
+      "matches": ["https://youtube.com/*", "https://www.youtube.com/*"],
       "run_at": "document_start"
     },
     {
-      "js": [
-        "polyfill.js",
-        "info-injector.preload.js"
-      ],
+      "js": ["polyfill.js", "info-injector.preload.js"],
       "matches": [
         "https://adblockplus.org/*",
         "https://accounts.adblockplus.org/*",
@@ -85,10 +64,7 @@
       "run_at": "document_start"
     },
     {
-      "js": [
-        "polyfill.js",
-        "options.preload.js"
-      ],
+      "js": ["polyfill.js", "options.preload.js"],
       "matches": [
         "https://adblockplus.org/installed",
         "https://adblockplus.org/installed?*",
@@ -116,10 +92,7 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "optional_permissions": [
-    "contentSettings",
-    "management"
-  ],
+  "optional_permissions": ["contentSettings", "management"],
   "storage": {
     "managed_schema": "managed-storage-schema.json"
   }

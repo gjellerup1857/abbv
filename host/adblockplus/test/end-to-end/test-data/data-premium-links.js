@@ -21,8 +21,7 @@ const linksFreeUsers = [
   {
     testName: "Options page - Learn more",
     page: "Header",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickLearnMorePremiumLink();
     },
     source: "desktop-options"
@@ -30,8 +29,7 @@ const linksFreeUsers = [
   {
     testName: "Options page - Upgrade button in header",
     page: "Header",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickUpgradeButton();
     },
     source: "desktop-options"
@@ -39,8 +37,7 @@ const linksFreeUsers = [
   {
     testName: "Options page - Upgrade button in General",
     page: "Options",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickUpgradeButtonGeneral();
     },
     source: "general-tab"
@@ -48,8 +45,7 @@ const linksFreeUsers = [
   {
     testName: "Popup - Upgrade button",
     page: "Popup",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickUpgradeButton();
     },
     source: "popup"
@@ -57,8 +53,7 @@ const linksFreeUsers = [
   {
     testName: "Popup - Block cookie consent pop-ups",
     page: "Popup",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickBlockCookieConsentPopupsTitle();
     },
     source: "popup"
@@ -66,8 +61,7 @@ const linksFreeUsers = [
   {
     testName: "Popup - Block more distractions",
     page: "Popup",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickBlockMoreDistractionsTitle();
     },
     source: "popup"
@@ -77,15 +71,13 @@ const linksFreeUsers = [
 const linksPremiumUsers = [
   {
     testName: "Options page - Manage my subscription",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickManageMySubscriptionButton();
     }
   },
   {
     testName: "Options page - Premium button",
-    async clickOnLink(pageObject)
-    {
+    async clickOnLink(pageObject) {
       await pageObject.clickPremiumButton();
     }
   }

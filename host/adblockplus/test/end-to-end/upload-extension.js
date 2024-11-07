@@ -27,10 +27,11 @@ const username = process.argv[2];
 const password = process.argv[3];
 const filePath = process.argv[4];
 
-if (!username || !password || !filePath)
-{
-  console.error("Error: Username, password, or file path is missing. " +
-    "Please provide all three as arguments.");
+if (!username || !password || !filePath) {
+  console.error(
+    "Error: Username, password, or file path is missing. " +
+      "Please provide all three as arguments."
+  );
   process.exit(1);
 }
 
@@ -55,11 +56,9 @@ const axiosPostConfig = {
 };
 
 axios(axiosPostConfig)
-  .then(response =>
-  {
+  .then((response) => {
     const responseData = response.data;
-    if (responseData.status === "success" && responseData.data.length > 0)
-    {
+    if (responseData.status === "success" && responseData.data.length > 0) {
       const s3Url = responseData.data[0].s3_url;
       // eslint-disable-next-line no-console
       console.log(s3Url);
@@ -68,9 +67,10 @@ axios(axiosPostConfig)
     console.error("Error uploading file:", responseData.message);
     return null;
   })
-  .catch(error =>
-  {
-    console.error("Error uploading file:",
-      error.response ? error.response.data : error.message);
+  .catch((error) => {
+    console.error(
+      "Error uploading file:",
+      error.response ? error.response.data : error.message
+    );
     return null;
   });

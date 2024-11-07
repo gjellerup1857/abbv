@@ -15,14 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {mockBrowser} from "../shared/index.mjs";
+import { mockBrowser } from "../shared/index.mjs";
 import * as permissions from "./browser-permissions.mjs";
 import * as runtime from "./browser-runtime.mjs";
 import * as scripting from "./browser-scripting.mjs";
 import * as tabs from "./browser-tabs.mjs";
 
-export function start()
-{
+export function start() {
   window.browser = {
     ...mockBrowser,
     permissions,
