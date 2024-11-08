@@ -28,7 +28,7 @@
     "sentry:login": "sentry-cli login",
     "sentry:release-new": "sentry-cli releases new $VERSION --project adblock-plus",
     "sentry:release-finalize": "sentry-cli releases finalize $VERSION --project adblock-plus",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./host/adblockplus/dist/release && sentry-cli sourcemaps upload --org eyeo --project adblock-plus  ./host/adblockplus/dist/release",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./dist/release && sentry-cli sourcemaps upload --org eyeo --project adblock-plus  ./dist/release",
     "test": "npm run $ test.unit",
     "test:cleanup-reports": "rm -r allure-report test/end-to-end/allure-results",
     "test:end-to-end": "npm run $ test.end-to-end",
