@@ -26,12 +26,7 @@ export default () => {
     const { driver, origin, premiumURL } = this;
 
     await initOptionsPremiumTab(driver, getOptionsHandle());
-    await checkPremiumPageHeader(
-      driver,
-      "#locked-user-pay-section-mab > p",
-      "#get-it-now-mab",
-      premiumURL,
-    );
+    await checkPremiumPageHeader("#locked-user-pay-section-mab > p", "#get-it-now-mab", premiumURL);
 
     const features = await driver.findElements(webdriver.By.css("#myadblock-features > div"));
     expect(features.length).toEqual(4);
@@ -66,7 +61,6 @@ export default () => {
 
       await initOptionsThemesTab(driver, getOptionsHandle());
       await checkPremiumPageHeader(
-        driver,
         "#locked-user-pay-section-themes > p",
         "#get-it-now-themes",
         premiumURL,
@@ -96,7 +90,6 @@ export default () => {
     await initOptionsImageSwapTab(driver, getOptionsHandle());
 
     await checkPremiumPageHeader(
-      driver,
       "#locked-user-pay-section-image-swap > p",
       "#get-it-now-image-swap",
       premiumURL,
@@ -119,7 +112,6 @@ export default () => {
 
     await initOptionsBackupSyncTab(driver, getOptionsHandle());
     await checkPremiumPageHeader(
-      driver,
       "#locked-user-pay-section-sync > p",
       "#get-it-now-sync",
       premiumURL,
@@ -136,7 +128,6 @@ export default () => {
 
     await initOptionsPremiumFlTab(driver, getOptionsHandle());
     await checkPremiumPageHeader(
-      driver,
       "#locked-user-pay-section-distraction-control > p",
       "#get-it-now-distraction-control",
       premiumURL,

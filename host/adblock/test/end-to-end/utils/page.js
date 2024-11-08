@@ -411,9 +411,10 @@ export async function updatePrefs(key, value) {
   });
 }
 
-export async function checkPremiumPageHeader(driver, ctaTextSelector, ctaLinkSelector, premiumURL) {
+export async function checkPremiumPageHeader(ctaTextSelector, ctaLinkSelector, premiumURL) {
+  const { driver } = global;
   // sometimes the elements are displayed with a delay
-  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 3000, false);
+  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 4000, false);
   expect(await ctaText.getText()).toEqual(
     "You’ll be an ad blocking pro with these easy-to-use add-ons.",
   );
