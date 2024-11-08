@@ -392,3 +392,19 @@ create_release:
     - VERSION=$version npm run sentry:release-new
     - npm run sentry:sourcemaps
     - VERSION=$version npm run sentry:release-finalize
+
+upload_sourcemaps:
+  stage: release
+  image: gitlab/glab
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "sentry-sourcemaps"'
+      when: on_success
+    - when: never
+  script:
+    - apk add nodejs
+  # To be dynamically loaded
+    - version=897898
+    - npm run sentry:login
+    - VERSION=$version npm run sentry:release-new
+    - npm run sentry:sourcemaps
+    - VERSION=$version npm run sentry:release-finalize
