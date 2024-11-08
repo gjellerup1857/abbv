@@ -394,10 +394,11 @@ create_release:
     # - VERSION=$version npm run sentry:release-finalize
 
 upload_sourcemaps:
-  stage: build
+  stage: release
+  needs: ["build"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "sentry-sourcemaps"'
-      when: on_success
+      when: always
     - when: never
   script:
     - npm i 
