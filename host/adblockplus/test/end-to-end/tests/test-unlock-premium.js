@@ -79,7 +79,15 @@ describe("test unlock premium", function () {
       ])
     );
     expect(expectedToggleValues).to.deep.equal(actualToggleValues);
-    await popupPage.clickBlockCookieConsentPopupsToggle();
+    await browser.waitUntil(async() =>
+    {
+      try
+      {
+        await popupPage.clickBlockCookieConsentPopupsToggle();
+        return true;
+      }
+      catch (e) {}
+    });
     await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
     expect(await popupPage.isBlockCookieConsentPopupsToggleSelected()).to.be
       .true;
