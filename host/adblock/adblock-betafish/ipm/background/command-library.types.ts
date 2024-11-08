@@ -21,6 +21,12 @@
 export const commandLibraryVersion = 1;
 
 /**
+ * The maximum number of commands that the extension can process when
+ * handling a IPM server response.
+ */
+export const maximumProcessableCommands = 100;
+
+/**
  * The key for the command storage.
  */
 export const commandStorageKey = "ipm_commands";

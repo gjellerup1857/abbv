@@ -59,10 +59,6 @@ async function processResponse(response: Response): Promise<void> {
       commands = [bodyJSON];
     }
 
-    if (commands.length > 100) {
-      throw new Error("Too many commands were received.");
-    }
-
     executeIPMCommands(commands);
   } catch (error) {
     logError("[Telemetry]: Error parsing IPM response.", error);

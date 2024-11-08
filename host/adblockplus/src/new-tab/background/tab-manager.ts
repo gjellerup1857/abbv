@@ -69,7 +69,7 @@ function registerEvent(
   ipmId: string,
   name: CommandEventType | CreationSuccess | CreationError | CreationRejection
 ): void {
-  void recordEvent(ipmId, CommandName.createTab, name);
+  recordEvent(ipmId, CommandName.createTab, name);
 }
 
 /**

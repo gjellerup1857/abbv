@@ -60,10 +60,6 @@ class IPMTelemetry extends TelemetryBase {
         commands = [bodyJSON];
       }
 
-      if (commands.length > 100) {
-        throw new Error("Too many commands were received.");
-      }
-
       executeIPMCommands(commands);
     } catch (error) {
       logger.error("[Telemetry]: Error parsing IPM response.", error);

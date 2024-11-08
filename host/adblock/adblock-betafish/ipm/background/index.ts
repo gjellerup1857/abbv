@@ -23,3 +23,4 @@ export * from "./license";
 export * from "./param-validator";
 export * from "./param-validator.types";
 export * from "./url";
+export * from "./event-recording";

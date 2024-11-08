@@ -87,7 +87,7 @@ function recordDialogEvent(dialog: Dialog, eventType: CommandEventType | DialogE
   eventEmitter.emit(eventType, dialog);
 
   if (typeof dialog.ipmId === "string") {
-    void recordEvent(dialog.ipmId, CommandName.createOnPageDialog, eventType);
+    recordEvent(dialog.ipmId, CommandName.createOnPageDialog, eventType);
   }
 }
 
@@ -98,7 +98,7 @@ function recordDialogEvent(dialog: Dialog, eventType: CommandEventType | DialogE
  * @param eventType - Dialog event type
  */
 function recordDialogErrorEvent(eventType: DialogErrorEventType): void {
-  void recordEvent(null, CommandName.createOnPageDialog, eventType);
+  recordEvent(null, CommandName.createOnPageDialog, eventType);
 }
 
 /**

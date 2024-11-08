@@ -355,7 +355,7 @@ function recordDialogEvent(
   eventEmitter.emit(eventType, dialog);
 
   if (typeof dialog.ipmId === "string") {
-    void recordEvent(dialog.ipmId, CommandName.createOnPageDialog, eventType);
+    recordEvent(dialog.ipmId, CommandName.createOnPageDialog, eventType);
   }
 }
 

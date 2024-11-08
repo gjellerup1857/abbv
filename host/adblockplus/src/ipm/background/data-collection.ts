@@ -19,11 +19,7 @@ import * as browser from "webextension-polyfill";
 
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getStoredCommandIds } from "./command-library";
-import {
-  type CommandName,
-  CommandVersion,
-  commandLibraryVersion
-} from "./command-library.types";
+import { commandLibraryVersion } from "./command-library.types";
 import {
   type BaseAttributes,
   DataType,
@@ -97,12 +93,15 @@ async function getBaseAttributes(): Promise<BaseAttributes> {
  * Creates an object containing all data for an event that the IPM server expects.
  *
  * @param ipmId The IPM command id
+ * @param commandName - The name of the command the event belongs to
+ * @param commandVersion - The version of the command the event belongs to
  * @param name The event name
  * @returns A fully qualified event data object
  */
 async function getEventData(
   ipmId: string,
-  command: CommandName,
+  commandName: string,
+  commandVersion: number,
   name: string
 ): Promise<EventData> {
   return {
@@ -115,8 +114,8 @@ async function getEventData(
     attributes: {
       ...(await getBaseAttributes()),
       ipm_id: ipmId,
-      command_name: command,
-      command_version: CommandVersion[command]
+      command_name: commandName,
+      command_version: commandVersion
     }
   };
 }
@@ -194,18 +193,29 @@ export async function clearEvents(): Promise<void> {
 }
 
 /**
- * Records a user event
+ * Generates and stores event data.
  *
- * @param ipmId - The IPM ID
- * @param name - The name of the event to record
+ * **NOTE**: To record events, please do not use this function directly.
+ * Instead refer to the functions provided in the event recording file.
+ *
+ * @param ipmId An ipm ID (or a replacement string)
+ * @param commandName A command name (or a replacement string)
+ * @param commandVersion A command version (or a replacement number)
+ * @param name The name of the event to store
  */
-export async function recordEvent(
+export async function storeEvent(
   ipmId: string,
-  command: CommandName,
+  commandName: string,
+  commandVersion: number,
   name: string
 ): Promise<void> {
   await Prefs.untilLoaded;
-  const eventData = await getEventData(ipmId, command, name);
+  const eventData = await getEventData(
+    ipmId,
+    commandName,
+    commandVersion,
+    name
+  );
   const eventStorage = Prefs.get(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
   void Prefs.set(eventStorageKey, eventStorage);

@@ -26,3 +26,4 @@ export { start as startTelemetry } from "./telemetry";
 export { initialize as initializeCDP } from "./cdp";
 export { initialize as initializeEyeometryMACCounting } from "./eyeometry-mac-counting";
 export * from "./url";
+export * from "./event-recording";

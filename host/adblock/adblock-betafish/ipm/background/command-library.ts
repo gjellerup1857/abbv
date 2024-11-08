@@ -27,9 +27,10 @@ import {
   commandStorageKey,
   Content,
   DeleteEventType,
+  maximumProcessableCommands,
 } from "./command-library.types";
 import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
-import { recordEvent } from "./data-collection";
+import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 
 /**
@@ -253,6 +254,12 @@ function storeCommands(commands: Command[]): void {
 export function executeIPMCommands(commands: unknown[], isInitialization: boolean = false): void {
   const actorByExecutableCommand = new Map<Command, CommandActor>();
 
+  if (commands.length > maximumProcessableCommands) {
+    logger.error("[ipm]: Too many commands received.");
+    recordGenericEvent("too_many_commands");
+    return;
+  }
+
   for (const command of commands) {
     if (!isCommand(command)) {
       logger.error("[ipm]: Invalid command received.");
@@ -277,7 +284,7 @@ export function executeIPMCommands(commands: unknown[], isInitialization: boolea
 
     if (isCommandExpired(command)) {
       logger.error("[ipm]: Command has expired.");
-      void recordEvent(command.ipm_id, command.command_name, CommandEventType.expired);
+      recordEvent(command.ipm_id, command.command_name, CommandEventType.expired);
 
       // cleanup commands that have expired from local storage
       if (isInitialization) {
@@ -343,7 +350,7 @@ export async function removeAllCommands(name: CommandName): Promise<void> {
  * @param name The event name to register
  */
 function registerDeleteEvent(ipmId: string, name: CommandEventType | DeleteEventType): void {
-  void recordEvent(ipmId, CommandName.deleteCommands, name);
+  recordEvent(ipmId, CommandName.deleteCommands, name);
 }
 
 /**

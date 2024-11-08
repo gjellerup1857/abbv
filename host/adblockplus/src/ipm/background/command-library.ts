@@ -23,12 +23,13 @@ import {
   CommandName,
   CommandVersion,
   type Content,
-  DeleteEventType
+  DeleteEventType,
+  maximumProcessableCommands
 } from "./command-library.types";
 import * as logger from "../../logger/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
-import { recordEvent } from "./data-collection";
+import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 
 /**
@@ -268,6 +269,12 @@ export function executeIPMCommands(
 ): void {
   const actorByExecutableCommand = new Map<Command, CommandActor>();
 
+  if (commands.length > maximumProcessableCommands) {
+    logger.error("[ipm]: Too many commands received.");
+    recordGenericEvent("too_many_commands");
+    return;
+  }
+
   for (const command of commands) {
     if (!isCommand(command)) {
       logger.error("[ipm]: Invalid command received.");
@@ -295,7 +302,7 @@ export function executeIPMCommands(
 
     if (isCommandExpired(command)) {
       logger.error("[ipm]: Command has expired.");
-      void recordEvent(
+      recordEvent(
         command.ipm_id,
         command.command_name,
         CommandEventType.expired
@@ -349,7 +356,7 @@ function registerDeleteEvent(
   ipmId: string,
   name: CommandEventType | DeleteEventType
 ): void {
-  void recordEvent(ipmId, CommandName.deleteCommands, name);
+  recordEvent(ipmId, CommandName.deleteCommands, name);
 }
 
 /**

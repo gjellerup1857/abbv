@@ -15,8 +15,6 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type CommandName } from "./command-library.types";
-
 /**
  * The types of data sent to the IPM server required by MoEngage
  */
@@ -80,7 +78,7 @@ interface EventAttributes extends BaseAttributes {
   /**
    * The name of the command to which the event is associated.
    */
-  command_name: CommandName;
+  command_name: string;
   /**
    * The version of the command to which the event is associated.
    */
@@ -201,7 +199,7 @@ export interface UserData {
 }
 
 /**
- * Atributes related to a specific IPM command in the extension
+ * Attributes related to a specific IPM command in the extension
  */
 interface IpmCommand {
   id: string;

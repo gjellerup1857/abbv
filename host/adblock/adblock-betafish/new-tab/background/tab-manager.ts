@@ -65,7 +65,7 @@ function registerEvent(
   ipmId: string,
   name: CommandEventType | NewTabEventType | NewTabExitEventType | NewTabErrorEventType,
 ): void {
-  void recordEvent(ipmId, CommandName.createTab, name);
+  recordEvent(ipmId, CommandName.createTab, name);
 }
 
 /**
