@@ -64,6 +64,11 @@ const newTabMessageSendTrigger = [1, 10, 20, 100, 200];
 const waitingTabs: Record<string, NewTab> = {};
 
 /**
+ * Maps the IDs of the tabs we crated to the IPM IDs that caused their creation.
+ */
+const createdTabsMap = new Map<number, string>();
+
+/**
  * Compares two new tab requests to see which has the higher priority.
  *
  * @param newTabA The first new tab request
@@ -127,19 +132,29 @@ export async function isCoolDownPeriodOngoing(): Promise<boolean> {
 }
 
 /**
- * Event handler for the on tab updated event
+ * Checks whether the updated tab is one that we created ourselves. If it is
+ * and has finished loading, we register an event to be sent to the IPM server.
  *
  * @param tabId - The id of the tab updated
  * @param changeInfo - Lists the changes to the state of the tab that is updated
  * @param tab - The tab updated
  */
 const openNewtabOnUpdated = (
-  ipmId: string,
   tabId: number,
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab,
 ) => {
-  if (changeInfo.status !== "complete" || tab === null || tabId !== tab.id) {
+  if (
+    changeInfo.status !== "complete" ||
+    tab === null ||
+    tabId !== tab.id ||
+    !createdTabsMap.has(tabId)
+  ) {
+    return;
+  }
+
+  const ipmId = createdTabsMap.get(tabId);
+  if (typeof ipmId !== "string") {
     return;
   }
   const onUpdatedHandler = openNewtabOnUpdatedHandlerByIPMids.get(ipmId);
@@ -194,8 +209,8 @@ async function openNewtab(): Promise<void> {
     // eslint-disable-next-line no-await-in-loop
     if (await isCoolDownPeriodOngoing()) {
       logger.debug("[new-tab]: Cool down period still ongoing");
-      // We need to exit the loop here. Not only to save unneeded iterations, 
-      // but also to prevent a priority mismatch for the case the period 
+      // We need to exit the loop here. Not only to save unneeded iterations,
+      // but also to prevent a priority mismatch for the case the period
       // might end during the iteration.
       return;
     }
@@ -246,23 +261,29 @@ async function openNewtab(): Promise<void> {
       continue;
     }
 
-    let tab: browser.Tabs.Tab | null = null;
-    const onUpdatedHandler = openNewtabOnUpdated.bind(null, ipmId);
-    openNewtabOnUpdatedHandlerByIPMids.set(ipmId, onUpdatedHandler);
-    browser.tabs.onUpdated.addListener(onUpdatedHandler);
+    const loadEventListener = openNewtabOnUpdated.bind(null);
+    browser.tabs.onUpdated.addListener(loadEventListener);
 
     // eslint-disable-next-line no-await-in-loop
-    tab = await browser.tabs.create({ url }).catch((error) => {
+    const tab = await browser.tabs.create({ url }).catch((error) => {
       logger.error("[new-tab]: create tab error", error);
       registerEvent(ipmId, NewTabErrorEventType.tabCreationError);
       return null;
     });
-    if (tab !== null) {
-      // eslint-disable-next-line no-await-in-loop
-      await Prefs.set(lastShownKey, Date.now());
-      registerEvent(ipmId, NewTabEventType.created);
-      dismissCommand(ipmId);
+
+    if (tab === null || typeof tab.id !== "number") {
+      // There was an error during tab creation. Let's retry later.
+      registerEvent(ipmId, NewTabErrorEventType.tabCreationError);
+      continue;
     }
+
+    createdTabsMap.set(tab.id, ipmId);
+    openNewtabOnUpdatedHandlerByIPMids.set(ipmId, loadEventListener);
+
+    // eslint-disable-next-line no-await-in-loop
+    await Prefs.set(lastShownKey, Date.now());
+    registerEvent(ipmId, NewTabEventType.created);
+    dismissCommand(ipmId);
   }
 }
 

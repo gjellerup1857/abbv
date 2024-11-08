@@ -70,6 +70,11 @@ const tabIds = new Set<number>();
 const newTabUpdateListeners = new Map<string, Listener>();
 
 /**
+ * Maps the IDs of the tabs we crated to the IPM IDs that caused their creation.
+ */
+const createdTabsMap = new Map<number, string>();
+
+/**
  * Compares two new tab requests to see which has the higher priority.
  *
  * @param newTabA The first new tab request
@@ -140,18 +145,26 @@ function registerEvent(
  * contents have been loaded. We do this to send an event back to the
  * IPM server.
  *
- * @param ipmId - The ipmId of the command that lead to attachment of this listener
  * @param tabId - The id of the tab updated
  * @param changeInfo - Lists the changes to the state of the tab that is updated
  * @param tab - The tab updated
  */
 function onNewTabUpdated(
-  ipmId: string,
   tabId: number,
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab
 ): void {
-  if (changeInfo.status !== "complete" || tab === null || tabId !== tab.id) {
+  if (
+    changeInfo.status !== "complete" ||
+    tab === null ||
+    tabId !== tab.id ||
+    !createdTabsMap.has(tabId)
+  ) {
+    return;
+  }
+
+  const ipmId = createdTabsMap.get(tabId);
+  if (typeof ipmId !== "string") {
     return;
   }
 
@@ -192,8 +205,8 @@ async function openNewTab(): Promise<void> {
     // Check if the global new tab cool down period is still ongoing.
     if (await isCoolDownPeriodOngoing()) {
       logger.debug("[new-tab]: Cool down period still ongoing");
-      // We need to exit the loop here. Not only to save unneeded iterations, 
-      // but also to prevent a priority mismatch for the case the period 
+      // We need to exit the loop here. Not only to save unneeded iterations,
+      // but also to prevent a priority mismatch for the case the period
       // might end during the iteration.
       return;
     }
@@ -238,20 +251,22 @@ async function openNewTab(): Promise<void> {
     }
 
     // Add update listener to see when our tab is done loading.
-    const updateListener = onNewTabUpdated.bind(null, ipmId);
-    newTabUpdateListeners.set(ipmId, updateListener);
-    browser.tabs.onUpdated.addListener(updateListener);
+    const loadEventListener = onNewTabUpdated.bind(null);
+    browser.tabs.onUpdated.addListener(loadEventListener);
 
     const tab = await browser.tabs.create({ url: targetUrl }).catch((error) => {
       logger.error("[new-tab]: create tab error", error);
       return null;
     });
 
-    if (tab === null) {
+    if (tab === null || typeof tab.id !== "number") {
       // There was an error during tab creation. Let's retry later.
       registerEvent(ipmId, CreationError.tabCreationError);
       continue;
     }
+
+    createdTabsMap.set(tab.id, ipmId);
+    newTabUpdateListeners.set(ipmId, loadEventListener);
 
     await Prefs.set(lastShownKey, Date.now());
     registerEvent(ipmId, CreationSuccess.created);
