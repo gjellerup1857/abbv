@@ -155,6 +155,13 @@ class GeneralPage extends BasePage {
     return $("//li[@aria-label='Deutsch + English']/button[@title='remove']");
   }
 
+  get deutschPlusEnglishLanguageChangeButton() {
+    return $(
+      "//li[@aria-label='Deutsch + English']/" +
+        "button[@data-dialog='language-change']"
+    );
+  }
+
   get englishLanguageChangeButton() {
     return $(
       "//li[@aria-label='English']/button[@data-dialog='language-change']"
@@ -318,6 +325,12 @@ class GeneralPage extends BasePage {
     await this.scrollIntoViewAndClick(this.deutschPlusEnglishLanguageTrashIcon);
   }
 
+  async clickDeutschPlusEnglishLanguageChangeButton() {
+    await this.scrollIntoViewAndClick(
+      this.deutschPlusEnglishLanguageChangeButton
+    );
+  }
+
   async clickEnglishLanguageChangeButton() {
     await (await this.englishLanguageChangeButton).click();
   }
@@ -416,15 +429,18 @@ class GeneralPage extends BasePage {
     );
   }
 
-  async isBlockAdditionalTrackingCheckboxSelected(reverse = false) {
+  async isBlockAdditionalTrackingCheckboxSelected(
+    reverse = false,
+    timeout = 3000
+  ) {
     await (
       await this.blockAdditionalTrackingCheckbox
-    ).waitForEnabled({ timeout: 3000 });
+    ).waitForEnabled({ timeout });
     return await this.waitUntilAttributeValueIs(
       this.blockAdditionalTrackingCheckbox,
       "aria-checked",
       "true",
-      3000,
+      timeout,
       reverse
     );
   }
@@ -514,10 +530,14 @@ class GeneralPage extends BasePage {
     );
   }
 
-  async isDeutschPlusEnglishLanguageTableItemDisplayed(reverseOption = false) {
+  async isDeutschPlusEnglishLanguageTableItemDisplayed(
+    reverseOption = false,
+    timeout = 5000
+  ) {
     return await this.waitForDisplayedNoError(
       this.deutschPlusEnglishLanguageTableItem,
-      reverseOption
+      reverseOption,
+      timeout
     );
   }
 
@@ -557,7 +577,7 @@ class GeneralPage extends BasePage {
     );
   }
 
-  async isItalianoPlusEnglishLanguageTableItemDisplayed(wait = false) {
+  async isItalianoPlusEnglishLanguageTableItemDisplayed(wait = false, timeout) {
     let returnValue = null;
     if (!wait) {
       returnValue = await (
@@ -565,7 +585,8 @@ class GeneralPage extends BasePage {
       ).isDisplayed();
     } else {
       returnValue = await this.waitForDisplayedNoError(
-        this.italianoPlusEnglishLanguageTableItem
+        this.italianoPlusEnglishLanguageTableItem,
+        timeout
       );
     }
     return returnValue;

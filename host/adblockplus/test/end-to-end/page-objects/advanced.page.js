@@ -177,6 +177,11 @@ class AdvancedPage extends BasePage {
     return $("//io-filter-list/table/tbody/tr[" + n + "]/td[3]/div");
   }
 
+  async customFilterListsCheckboxByText(text) {
+    return $(`//tr[td[3]/div[contains(text(),
+      "${text}")]]/td[@data-column="selected"]/io-checkbox/button`);
+  }
+
   get customFilterListsFirstItemToggle() {
     return $("//io-filter-list/table/tbody/tr[1]/td[2]/io-toggle/button");
   }
@@ -546,6 +551,12 @@ class AdvancedPage extends BasePage {
   async clickCustomFilterListsNthItemText(n) {
     await this.scrollIntoViewAndClick(
       await this.customFilterListsNthItemText(n)
+    );
+  }
+
+  async clickCustomFilterListsCheckboxByText(text) {
+    await this.scrollIntoViewAndClick(
+      await this.customFilterListsCheckboxByText(text)
     );
   }
 
