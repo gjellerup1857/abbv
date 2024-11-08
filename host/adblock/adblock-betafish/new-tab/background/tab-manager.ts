@@ -288,12 +288,12 @@ async function openNewtab(): Promise<void> {
 }
 
 /**
- * Once we've determined the conditions to open new are met,
- * do some housecleaning and then open the new tab
+ * Removes the create, update and remove listeners that were set up for the
+ * given IPM id.
  *
- * @param ipmId - IPM ID
+ * @param ipmId The IPM id to delete the handlers for
  */
-const openNotificationTab = (ipmId: string) => {
+function removeListeners(ipmId: string): void {
   const onCreatedHandler = onCreatedHandlerByIPMids.get(ipmId);
   onCreatedHandlerByIPMids.delete(ipmId);
   const onUpdatedHandler = onUpdatedHandlerByIPMids.get(ipmId);
@@ -306,7 +306,16 @@ const openNotificationTab = (ipmId: string) => {
   }
   // eslint-disable-next-line no-use-before-define
   browser.tabs.onRemoved.removeListener(onRemoved);
+}
 
+/**
+ * Once we've determined the conditions to open new are met,
+ * do some housecleaning and then open the new tab
+ *
+ * @param ipmId - IPM ID
+ */
+const openNotificationTab = (ipmId: string) => {
+  removeListeners(ipmId);
   tabIds.clear();
   openNewtab();
 };
