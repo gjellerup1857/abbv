@@ -383,7 +383,6 @@ create_release:
       when: on_success
     - when: never
   script:
-    - apk add nodejs
     - version=${CI_COMMIT_TAG/adblockplus-/""}
     - release_notes=$(node scripts/release-utils/get-release-notes.js adblockplus $version)
     - glab auth login --token $GITLAB_TOKEN_RELEASE
