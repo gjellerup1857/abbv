@@ -401,10 +401,8 @@ upload_sourcemaps:
     - when: never
   script:
     - npm i 
-  # To be dynamically loaded
     - cd host/adblockplus
-    - version=897898
     - npm run sentry:login -- --auth-token $SENTRY_AUTH_TOKEN
-    - VERSION=$version npm run sentry:release-new
+    - VERSION=${CI_COMMIT_TAG} npm run sentry:release-new
     - npm run sentry:sourcemaps
-    - VERSION=$version npm run sentry:release-finalize
+    - VERSION=${CI_COMMIT_TAG} npm run sentry:release-finalize
