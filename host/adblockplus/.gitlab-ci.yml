@@ -398,7 +398,7 @@ upload_sourcemaps:
   needs: ["build"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "sentry-sourcemaps"'
-      when: always
+      when: on_success
     - when: never
   script:
     - npm i 
