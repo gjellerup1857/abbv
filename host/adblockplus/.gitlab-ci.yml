@@ -402,6 +402,7 @@ upload_sourcemaps:
   script:
     - npm i 
   # To be dynamically loaded
+    - cd host/adblockplus
     - version=897898
     - npm run sentry:login
     - VERSION=$version npm run sentry:release-new
