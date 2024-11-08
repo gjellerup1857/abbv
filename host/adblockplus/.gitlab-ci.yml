@@ -402,9 +402,9 @@ upload_sourcemaps:
   script:
     - npm i 
     - cd host/adblockplus
-    - version=$CI_COMMIT_TAG
-    - echo "Version is $CI_COMMIT_TAG"
+    - version=$CI_COMMIT_BRANCH
+    - echo "Version is $CI_COMMIT_BRANCH"
     - npm run sentry:login -- --auth-token $SENTRY_AUTH_TOKEN
-    - VERSION=$CI_COMMIT_TAG npm run sentry:release-new
+    - VERSION=$CI_COMMIT_BRANCH npm run sentry:release-new
     - npm run sentry:sourcemaps
-    - VERSION==$CI_COMMIT_TAG npm run sentry:release-finalize
+    - VERSION==$CI_COMMIT_BRANCH npm run sentry:release-finalize
