@@ -394,7 +394,7 @@ create_release:
     - VERSION=$version npm run sentry:release-finalize
 
 upload_sourcemaps:
-  stage: release
+  stage: build
   image: gitlab/glab
   rules:
     - if: '$CI_COMMIT_BRANCH == "sentry-sourcemaps"'
