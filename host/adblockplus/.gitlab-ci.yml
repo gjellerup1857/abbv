@@ -395,7 +395,6 @@ create_release:
 
 upload_sourcemaps:
   stage: build
-  image: gitlab/glab
   rules:
     - if: '$CI_COMMIT_BRANCH == "sentry-sourcemaps"'
       when: on_success
