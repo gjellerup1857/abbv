@@ -353,7 +353,6 @@ const onRemoved = (tabId: number) => {
  * @param tab - The tab updated
  */
 const onUpdated = (
-  ipmId: string,
   tabId: number,
   changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
   tab: browser.Tabs.Tab,
@@ -370,7 +369,8 @@ const onUpdated = (
   // that isn't part of the user browsing the web.
   if (tab.url && /^https?:/.test(tab.url)) {
     newTabCounter += 1;
-    if (newTabMessageSendTrigger.includes(newTabCounter)) {
+    const ipmId = createdTabsMap.get(tabId);
+    if (typeof ipmId === "string" && newTabMessageSendTrigger.includes(newTabCounter)) {
       recordEvent(ipmId, CommandName.createTab, `${NewTabEventType.has_content}:${newTabCounter}`);
     }
     return;
@@ -427,7 +427,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   const onCreatedHandler = onCreated.bind(null);
   onCreatedHandlerByIPMids.set(ipmId, onCreatedHandler);
 
-  const onUpdatedHandler = onUpdated.bind(null, ipmId);
+  const onUpdatedHandler = onUpdated.bind(null);
   onUpdatedHandlerByIPMids.set(ipmId, onUpdatedHandler);
 
   browser.tabs.onCreated.addListener(onCreatedHandler);
