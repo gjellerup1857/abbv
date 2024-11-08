@@ -404,5 +404,6 @@ upload_sourcemaps:
     - cd host/adblockplus
     - npm run sentry:login -- --auth-token $SENTRY_AUTH_TOKEN
     - VERSION=$CI_COMMIT_BRANCH npm run sentry:release-new
+    - ls -la
     - npm run sentry:sourcemaps
     - VERSION==$CI_COMMIT_BRANCH npm run sentry:release-finalize
