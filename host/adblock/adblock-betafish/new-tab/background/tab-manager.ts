@@ -205,6 +205,8 @@ async function openNewtab(): Promise<void> {
     // Run mandatory language skew check
     void checkLanguage(ipmId);
 
+    removeListeners(ipmId);
+
     // Check if the global new tab cool down period is still ongoing.
     // eslint-disable-next-line no-await-in-loop
     if (await isCoolDownPeriodOngoing()) {
@@ -314,8 +316,7 @@ function removeListeners(ipmId: string): void {
  *
  * @param ipmId - IPM ID
  */
-const openNotificationTab = (ipmId: string) => {
-  removeListeners(ipmId);
+const openNotificationTab = () => {
   tabIds.clear();
   openNewtab();
 };
@@ -325,11 +326,11 @@ const openNotificationTab = (ipmId: string) => {
  *
  * @param tab - The tab created
  */
-const onCreated = (ipmId: string, tab: browser.Tabs.Tab) => {
+const onCreated = (tab: browser.Tabs.Tab) => {
   // Firefox loads its New Tab Page immediately and doesn't notify us
   // when it's complete so we need to open our new tab already here.
   if (tab.url === "about:newtab") {
-    openNotificationTab(ipmId);
+    openNotificationTab();
     return;
   }
   tabIds.add(tab.id);
@@ -375,7 +376,7 @@ const onUpdated = (
     return;
   }
 
-  openNotificationTab(ipmId);
+  openNotificationTab();
 };
 
 /**
@@ -423,7 +424,7 @@ async function handleCommand(ipmId: string): Promise<void> {
   }
 
   // Add listeners
-  const onCreatedHandler = onCreated.bind(null, ipmId);
+  const onCreatedHandler = onCreated.bind(null);
   onCreatedHandlerByIPMids.set(ipmId, onCreatedHandler);
 
   const onUpdatedHandler = onUpdated.bind(null, ipmId);
