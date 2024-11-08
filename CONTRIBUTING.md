@@ -35,7 +35,10 @@ Assuming your changes have an impact on the extensions in a visible/feature way,
 
 - Updated the thing to be different. (EXT-77)
 - Fixed the way we do that other thing to be much faster. (EXT-324)
+- Changes tracked on a non-EXT board. (IM-123)
 ```
+
+Please add the ID of any item (on whichever tracking software you're using) as a suffix. This allows us to accurately update the status of that item when a release occurs. 
 
 ### What does this mean for me as a reviewer of a merge request?
 
