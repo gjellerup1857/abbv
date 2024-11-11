@@ -1,5 +1,7 @@
 # Unreleased
 
+# 4.9.2 - 2024-11-11
+
 - Updated webext-ad-filtering-solution to 1.17.0
 
 # 4.9 - 2024-10-23
