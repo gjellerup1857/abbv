@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-
 /**
  * Checkbox component for controlled and uncontrolled use.
  *
@@ -30,13 +29,10 @@ export const Checkbox = ({
   }
 
   const defaultStyles = [
-    'form-checkbox', 'inline-block', 'align-middle', 'cursor-pointer',
+    'inline-block', 'align-middle', 'cursor-pointer',
 
     // Size
     'w-5', 'h-5',
-
-    // Focus
-    'focus:ring-0', 'focus:ring-offset-0',
 
     // Transition
     'transition', 'duration-200', 'ease-in-out',
