@@ -15,9 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
 import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
+import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
+import { findProjectRoot, sleep, testPagesPort } from "@eyeo/test-utils";
+import { reloadExtension } from "../helpers.js";
 
 /**
  * The manifest version passed as the command line arguments.
@@ -137,4 +141,98 @@ export function loadChromiumExtensions(capabilities, extensionPaths = []) {
   capabilities[optionsKey].args.push(
     `--load-extension=${extensionPaths.join(",")}`
   );
+}
+
+/**
+ * Extracts the extension from the release folder and triggers extension reload
+ * @returns {Promise<void>}
+ */
+export async function upgradeExtension() {
+  // Firefox on WebdriverIO does not support upgrades, but
+  // selenium webdriver does :)
+  if (typeof driver === "undefined" && isFirefoxArg()) {
+    throw new Error("Firefox does not support extension upgrades!");
+  }
+
+  const rootPath = findProjectRoot();
+  const releasePath = path.join(rootPath, "dist", "release");
+  const liveBuildsDirPath = path.join(rootPath, "dist", "live");
+
+  const unpackedDirPath = path.join(liveBuildsDirPath, "ext-unpacked");
+  await extractExtension(releasePath, unpackedDirPath);
+
+  // reload the extension after upgrading
+  await reloadExtension();
+}
+
+/**
+ * Starts the browser with the extension installed
+ *
+ * @param {string} extensionPath - The path to the extension to install
+ * @param {number} retry - The number of times to retry starting the browser
+ * @returns {Promise<(*|string|string|(function(): *)|number)[]>}
+ */
+export async function startBrowser(extensionPath, retry = 0) {
+  const version = "latest";
+  const browserName = getBrowserNameArg();
+
+  try {
+    const { versionNumber } =
+      await BROWSERS[browserName].installBrowser(version);
+    console.log(`Installed ${browserName} ${versionNumber} ...`);
+
+    const extensionPaths = [
+      path.join(
+        findProjectRoot(),
+        "dist",
+        "devenv",
+        `helper-extension-mv${getManifestVersionArg()}`
+      ),
+      extensionPath
+    ];
+
+    const headless = process.env.FORCE_HEADFUL !== "true";
+
+    let options;
+    let extraArgs;
+    if (browserName === "firefox") {
+      extraArgs = ["-width=1400", "-height=1000"];
+      // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+      // to be able to test with locally hosted page. For FF we use PAC file
+      // to set proxy
+      const proxy = `http://localhost:${testPagesPort}/proxy-config.pac`;
+      options = { headless, extensionPaths, extraArgs, proxy };
+    } else {
+      extraArgs = [
+        "--window-size=1400,1000",
+        // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+        // to be able to test with locally hosted page.
+        "--host-resolver-rules=MAP testpages.adblockplus.org 127.0.0.1",
+        "--ignore-certificate-errors",
+        "--disable-search-engine-choice-screen"
+      ];
+      options = { headless, extensionPaths, extraArgs };
+    }
+
+    const driver = await BROWSERS[browserName].getDriver(version, options);
+
+    const cap = await driver.getCapabilities();
+    const browserVersion = cap.getBrowserVersion();
+    console.log(`Browser: ${cap.getBrowserName()} ${browserVersion}`);
+
+    return [
+      driver,
+      browserName,
+      browserVersion,
+      getMajorVersion(browserVersion)
+    ];
+  } catch (e) {
+    if (retry < 5) {
+      console.warn(`Failed to start the browser, retrying (${retry})...`, e);
+      await sleep(1000);
+      return startBrowser(extensionPath, retry + 1);
+    }
+
+    throw e;
+  }
 }

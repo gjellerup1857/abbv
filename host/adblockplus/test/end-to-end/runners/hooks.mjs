@@ -7,7 +7,8 @@ import {
   getFileAsBase64,
   getManifestVersionArg,
   isFirefoxArg,
-  loadChromiumExtensions
+  loadChromiumExtensions,
+  startBrowser
 } from "./helpers.mjs";
 
 const rootDir = findProjectRoot();
@@ -41,6 +42,31 @@ export async function screenshotHook(test, context, { error }) {
   } catch (err) {
     console.warn(`Screenshot could not be saved: ${err}`);
   }
+}
+
+/**
+ * Hook to take a screenshot after each test if the test failed
+ *
+ * @returns {Promise<void>}
+ */
+export async function seleniumScreenshotsHook() {
+  const { driver } = global;
+
+  if (this.currentTest.state !== "failed") {
+    return;
+  }
+
+  const data = await driver.takeScreenshot();
+  const base64Data = data.replace(/^data:image\/png;base64,/, "");
+  const title = this.currentTest.title.replaceAll(" ", "_");
+
+  // ensure screenshots directory exists and write the screenshot to a file
+  await fs.promises.mkdir(screenshotsPath, { recursive: true });
+  await fs.promises.writeFile(
+    path.join(screenshotsPath, `${title}.png`),
+    base64Data,
+    "base64"
+  );
 }
 
 /**
@@ -94,4 +120,37 @@ export async function loadExtensionHook(capabilities, buildsDirPath) {
     unpackedDirPath,
     helperUnpackedDirPath
   ]);
+}
+
+/**
+ * Hook to set up the browser before the tests
+ *
+ * @param {string} buildsDirPath - The path to the directory containing the extension builds
+ * @param {string} unpackedDirPath - The path to the directory to extract the extension to
+ * @returns {Promise<void>}
+ */
+export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
+  const extensionPath = await extractExtension(buildsDirPath, unpackedDirPath);
+
+  const [driver, browserName, fullBrowserVersion, majorBrowserVersion] =
+    await startBrowser(extensionPath);
+
+  // Set global variables for the tests
+  global.driver = driver;
+  global.browserName = browserName;
+  global.fullBrowserVersion = fullBrowserVersion;
+  global.majorBrowserVersion = majorBrowserVersion;
+}
+
+/**
+ * Hook to clean up after the tests
+ *
+ * @returns {Promise<void>}
+ */
+export async function cleanupHook() {
+  const { driver } = global;
+
+  if (driver) {
+    await driver.quit();
+  }
 }

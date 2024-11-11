@@ -199,7 +199,7 @@ class AdvancedPage extends BasePage {
   }
 
   get customFilterListsTableRowsTexts() {
-    return $("//io-filter-list/table").$$("//div[@class='content']");
+    return $$("//io-filter-list/table//div[@class='content']");
   }
 
   get customFLTableHeadAlertIcon() {

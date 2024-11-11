@@ -7,6 +7,7 @@
 /test/end-to-end/lambda_api.log
 /test/end-to-end/screenshots/
 /testpages.adblockplus.org/
+browser-snapshots/
 
 # generated test coverage
 coverage/

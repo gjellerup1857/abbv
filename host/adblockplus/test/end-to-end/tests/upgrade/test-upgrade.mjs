@@ -30,6 +30,8 @@ import GeneralPage from "../../page-objects/general.page.js";
 import AdvancedPage from "../../page-objects/advanced.page.js";
 import testData from "../../test-data/data-smoke-tests.js";
 import AllowlistedWebsitesPage from "../../page-objects/allowlistedWebsites.page.js";
+import { upgradeExtension } from "../../runners/helpers.mjs";
+
 let popupUrl;
 let prevExtVersion;
 
@@ -63,216 +65,235 @@ async function getTotalCount() {
   return parseInt(count, 10);
 }
 
-describe("test extension upgrade", function () {
-  before(async function () {
-    ({ popupUrl, extVersion: prevExtVersion } = await beforeSequence());
-  });
+export default () => {
+  describe("test extension upgrade", function () {
+    before(async function () {
+      ({ popupUrl, extVersion: prevExtVersion } = await beforeSequence());
+    });
 
-  it("keeps current settings after upgrade", async function () {
-    const advancedPage = new AdvancedPage(browser);
-    const allowlistedPage = new AllowlistedWebsitesPage(browser);
-    const generalPage = new GeneralPage(browser);
-    const popup = new PopupPage(browser);
-    const testPage = new TestPage(browser);
+    it("keeps current settings after upgrade", async function () {
+      const advancedPage = new AdvancedPage(browser);
+      const allowlistedPage = new AllowlistedWebsitesPage(browser);
+      const generalPage = new GeneralPage(browser);
+      const popup = new PopupPage(browser);
+      const testPage = new TestPage(browser);
 
-    // block and hide ads on a page
-    await blockSomeItems();
+      // block and hide ads on a page
+      await blockSomeItems();
 
-    // check total ads blocked count
-    const totalCount = await getTotalCount();
+      // check total ads blocked count
+      const totalCount = await getTotalCount();
 
-    // activate premium
-    await enablePremiumByMockServer();
+      // activate premium
+      await enablePremiumByMockServer();
 
-    // Uncheck "show number of ads blocked in icon" checkbox
-    await advancedPage.init();
-    await advancedPage.clickShowNumberOfAdsBlockedCheckbox();
+      // Uncheck "show number of ads blocked in icon" checkbox
+      await advancedPage.init();
+      await advancedPage.clickShowNumberOfAdsBlockedCheckbox();
 
-    // note: we need easylist to be off, otherwise there is not enough space
-    // for all the filterlists used in test below (MV3)
-    await advancedPage.clickEasyListFLTrashButton();
+      // note: we need easylist to be off, otherwise there is not enough space
+      // for all the filterlists used in test below (MV3)
+      await advancedPage.clickEasyListFLTrashButton();
 
-    await switchToABPOptionsTab();
-    await generalPage.init();
+      await switchToABPOptionsTab();
+      await generalPage.init();
 
-    // block additional tracking
-    await generalPage.clickBlockAdditionalTrackingCheckbox();
+      // block additional tracking
+      await generalPage.clickBlockAdditionalTrackingCheckbox();
 
-    // turn off AA
-    await generalPage.clickAllowAcceptableAdsCheckbox();
+      // turn off AA
+      await generalPage.clickAllowAcceptableAdsCheckbox();
 
-    // enable premium lists
-    await generalPage.clickBlockCookieConsentPopupsCheckbox();
-    await generalPage.clickBlockCookieConsentPopupsDialogOkButton();
+      // enable premium lists
+      await generalPage.clickBlockCookieConsentPopupsCheckbox();
+      await generalPage.clickBlockCookieConsentPopupsDialogOkButton();
 
-    // add German + English language filter list
-    await generalPage.clickAddALanguageButton();
-    await generalPage.clickDeutschPlusEnglishListItem();
+      // add German + English language filter list
+      await generalPage.clickAddALanguageButton();
+      await generalPage.clickDeutschPlusEnglishListItem();
 
-    // allowlist test page
-    await browser.newWindow("http://localhost:3005/test.html");
-    await testPage.switchToTab("localhost:3005/test.html");
-    const tabId = await getTabId({ title: "localhost:3005/test.html" });
-    await popup.init(popupUrl, tabId);
-    await popup.clickThisPageToggle();
-    // wait for refresh button to appear to confirm
-    // that allowlist filter got saved
-    await popup.isRefreshButtonDisplayed();
+      // allowlist test page
+      await browser.newWindow("http://localhost:3005/test.html");
+      await testPage.switchToTab("localhost:3005/test.html");
+      const tabId = await getTabId({ title: "localhost:3005/test.html" });
+      await popup.init(popupUrl, tabId);
+      await popup.clickThisPageToggle();
+      // wait for refresh button to appear to confirm
+      // that allowlist filter got saved
+      await popup.isRefreshButtonDisplayed();
 
-    // add custom filter
-    await switchToABPOptionsTab();
-    await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "/testfiles/blocking/partial-path/"
-    );
-    await advancedPage.clickAddCustomFilterListButton();
-    expect(
-      await advancedPage.verifyTextPresentInCustomFLTable(
+      // add custom filter
+      await switchToABPOptionsTab();
+      await advancedPage.init();
+      await advancedPage.typeTextToAddCustomFilterListInput(
         "/testfiles/blocking/partial-path/"
-      )
-    ).to.be.true;
+      );
+      await advancedPage.clickAddCustomFilterListButton();
+      expect(
+        await advancedPage.verifyTextPresentInCustomFLTable(
+          "/testfiles/blocking/partial-path/"
+        )
+      ).to.be.true;
 
-    // upgrade extension
-    await browser.upgradeExtension();
-    const { extVersion } = await waitForExtension();
+      // upgrade extension
+      await upgradeExtension();
+      const { extVersion } = await waitForExtension();
 
-    // eslint-disable-next-line no-console
-    console.log(`Extension upgraded from ${prevExtVersion} to ${extVersion}`);
+      // eslint-disable-next-line no-console
+      console.log(`Extension upgraded from ${prevExtVersion} to ${extVersion}`);
 
-    // check total ads blocked count and if total count
-    // is still increasing
-    expect(await getTotalCount()).to.be.equal(totalCount);
-    await blockSomeItems();
-    expect(await getTotalCount()).to.be.greaterThan(totalCount);
+      // check total ads blocked count and if total count
+      // is still increasing
+      expect(await getTotalCount()).to.be.equal(totalCount);
+      await blockSomeItems();
+      expect(await getTotalCount()).to.be.greaterThan(totalCount);
 
-    // check if additional tracking is enabled & disable it
-    await generalPage.init();
-    expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected()).to.be
-      .true;
-    await generalPage.clickBlockAdditionalTrackingCheckbox();
-    await browser.pause(100);
-    await waitForAssertion(
-      async () => {
-        expect(
-          await generalPage.isBlockAdditionalTrackingCheckboxSelected(
-            false,
-            500
-          )
-        ).to.be.false;
-      },
-      5000,
-      "Block Additional Tracking Checkbox is selected"
-    );
-
-    // check premium lists & deactivate, AA disabled & enable it
-    const checkboxes = [
-      {
-        method: () => generalPage.isBlockMoreDistractionsCheckboxSelected(),
-        expected: true,
-        text: "Block More Distractions"
-      },
-      {
-        method: () => generalPage.isBlockCookieConsentPopupsCheckboxSelected(),
-        expected: true,
-        text: "Block Cookie Consent"
-      },
-      {
-        method: () => generalPage.isAllowAcceptableAdsCheckboxSelected(),
-        expected: false,
-        text: "Allow Acceptable Ads"
-      }
-    ];
-    for (const checkbox of checkboxes) {
-      expect(await checkbox.method()).to.be.equal(checkbox.expected);
-    }
-
-    await generalPage.clickBlockMoreDistractionsCheckbox();
-    await generalPage.clickBlockCookieConsentPopupsCheckbox();
-    await generalPage.clickAllowAcceptableAdsCheckbox();
-
-    for (const checkbox of checkboxes) {
+      // check if additional tracking is enabled & disable it
+      await generalPage.init();
+      expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected()).to
+        .be.true;
+      await generalPage.clickBlockAdditionalTrackingCheckbox();
+      await browser.pause(100);
       await waitForAssertion(
         async () => {
-          expect(await checkbox.method()).to.be.equal(!checkbox.expected);
+          expect(
+            await generalPage.isBlockAdditionalTrackingCheckboxSelected(
+              false,
+              500
+            )
+          ).to.be.false;
         },
-        5000,
-        `Checkbox ${checkbox.text} didn't change after click`
+        {
+          timeout: 5000,
+          timeoutMsg: "Block Additional Tracking Checkbox is selected"
+        }
       );
-    }
-    // check if language filter list is still there
-    expect(await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed())
-      .to.be.true;
-    await generalPage.clickDeutschPlusEnglishLanguageChangeButton();
-    await generalPage.clickItalianoPlusEnglishListItem();
-    await waitForAssertion(
-      async () => {
-        expect(
-          await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed(
-            false,
-            500
-          )
-        ).to.be.false;
-      },
-      5000,
-      "Deutch + English item is still visible after 5000 ms"
-    );
-    await waitForAssertion(
-      async () => {
-        expect(
-          await generalPage.isItalianoPlusEnglishLanguageTableItemDisplayed(
-            true,
-            500
-          )
-        ).to.be.true;
-      },
-      5000,
-      "Italian item is not visible"
-    );
 
-    // we need to switch focus to options tab to be able to switch to other
-    await switchToABPOptionsTab();
+      // check premium lists & deactivate, AA disabled & enable it
+      const checkboxes = [
+        {
+          method: () => generalPage.isBlockMoreDistractionsCheckboxSelected(),
+          expected: true,
+          text: "Block More Distractions"
+        },
+        {
+          method: () =>
+            generalPage.isBlockCookieConsentPopupsCheckboxSelected(),
+          expected: true,
+          text: "Block Cookie Consent"
+        },
+        {
+          method: () => generalPage.isAllowAcceptableAdsCheckboxSelected(),
+          expected: false,
+          text: "Allow Acceptable Ads"
+        }
+      ];
+      for (const checkbox of checkboxes) {
+        expect(await checkbox.method()).to.be.equal(checkbox.expected);
+      }
 
-    // check if "show number of ads blocked in icon" checkbox is unchecked
-    await advancedPage.init();
-    expect(await advancedPage.isShowNumberOfAdsBlockedCheckboxSelected()).to.be
-      .false;
+      await generalPage.clickBlockMoreDistractionsCheckbox();
+      await generalPage.clickBlockCookieConsentPopupsCheckbox();
+      await generalPage.clickAllowAcceptableAdsCheckbox();
 
-    // webdriverIO in headless doesn't "see" custom filter list
-    // table until we add something into it. Adding another custom
-    // filter as a workaround.
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "/testfiles/blocking/another-custom-filter/"
-    );
-    await advancedPage.clickAddCustomFilterListButton();
-    // check if custom filter is still there
-    expect(
-      await advancedPage.verifyTextPresentInCustomFLTable(
+      for (const checkbox of checkboxes) {
+        await waitForAssertion(
+          async () => {
+            expect(await checkbox.method()).to.be.equal(!checkbox.expected);
+          },
+          {
+            timeout: 5000,
+            timeoutMsg: `Checkbox ${checkbox.text} didn't change after click`
+          }
+        );
+      }
+      // check if language filter list is still there
+      expect(await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed())
+        .to.be.true;
+      await generalPage.clickDeutschPlusEnglishLanguageChangeButton();
+      await generalPage.clickItalianoPlusEnglishListItem();
+      await waitForAssertion(
+        async () => {
+          expect(
+            await generalPage.isDeutschPlusEnglishLanguageTableItemDisplayed(
+              false,
+              500
+            )
+          ).to.be.false;
+        },
+        {
+          timeout: 5000,
+          timeoutMsg: "Deutsch + English item is still visible after 5000 ms",
+          // refreshing will change the focus to top-window
+          refresh: false
+        }
+      );
+      await waitForAssertion(
+        async () => {
+          expect(
+            await generalPage.isItalianoPlusEnglishLanguageTableItemDisplayed(
+              true,
+              500
+            )
+          ).to.be.true;
+        },
+        {
+          timeout: 5000,
+          timeoutMsg: "Italian item is not visible",
+          // refreshing will change the focus to top-window
+          refresh: false
+        }
+      );
+
+      // we need to switch focus to options tab to be able to switch to other
+      await switchToABPOptionsTab();
+
+      // check if "show number of ads blocked in icon" checkbox is unchecked
+      await advancedPage.init();
+      expect(await advancedPage.isShowNumberOfAdsBlockedCheckboxSelected()).to
+        .be.false;
+
+      // webdriverIO in headless doesn't "see" custom filter list
+      // table until we add something into it. Adding another custom
+      // filter as a workaround.
+      await advancedPage.typeTextToAddCustomFilterListInput(
+        "/testfiles/blocking/another-custom-filter/"
+      );
+      await advancedPage.clickAddCustomFilterListButton();
+      // check if custom filter is still there
+      expect(
+        await advancedPage.verifyTextPresentInCustomFLTable(
+          "/testfiles/blocking/partial-path/"
+        )
+      ).to.be.true;
+      // check that removal works
+      await advancedPage.clickCustomFilterListsCheckboxByText(
         "/testfiles/blocking/partial-path/"
-      )
-    ).to.be.true;
-    // check that removal works
-    await advancedPage.clickCustomFilterListsCheckboxByText(
-      "/testfiles/blocking/partial-path/"
-    );
-    await advancedPage.clickDeleteCustomFLButton();
-    await waitForAssertion(
-      async () => {
-        expect(
-          await advancedPage.verifyTextPresentInCustomFLTable(
-            "/testfiles/blocking/partial-path/"
-          )
-        ).to.be.false;
-      },
-      5000,
-      "Custom Filter wasn't removed"
-    );
+      );
+      await advancedPage.clickDeleteCustomFLButton();
+      await waitForAssertion(
+        async () => {
+          expect(
+            await advancedPage.verifyTextPresentInCustomFLTable(
+              "/testfiles/blocking/partial-path/"
+            )
+          ).to.be.false;
+        },
+        {
+          timeout: 5000,
+          timeoutMsg: "Custom Filter wasn't removed"
+        }
+      );
 
-    // check allowlisted
-    // we need to switch to options tab from filters view
-    await switchToABPOptionsTab();
-    await allowlistedPage.init();
-    const allowlistedTableItems =
-      await allowlistedPage.getAttributeOfAllowlistingTableItems("aria-label");
-    expect(allowlistedTableItems[0]).to.equal("localhost:3005/test.html");
+      // check allowlisted
+      // we need to switch to options tab from filters view
+      await switchToABPOptionsTab();
+      await allowlistedPage.init();
+      const allowlistedTableItems =
+        await allowlistedPage.getAttributeOfAllowlistingTableItems(
+          "aria-label"
+        );
+      expect(allowlistedTableItems[0]).to.equal("localhost:3005/test.html");
+    });
   });
-});
+};

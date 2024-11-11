@@ -78,6 +78,15 @@ module.exports = function () {
     await addFiltersToABP("/pop_ads.js");
   });
 
+  after(async function () {
+    const generalPage = new GeneralPage(browser);
+    await generalPage.init();
+
+    const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
+    if (selected !== aaCheckboxSelected)
+      await generalPage.clickAllowAcceptableAdsCheckbox();
+  });
+
   it("uses sitekey to allowlist content", async function () {
     const manifestVersion = process.env.MANIFEST_VERSION;
     const sitekeyUrl = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
@@ -187,20 +196,13 @@ module.exports = function () {
           "bannerads/* was blocked"
         );
       },
-      timeout,
-      "pop_ads.js or bannerads/* was not blocked"
+      {
+        timeout,
+        timeoutMsg: "pop_ads.js or bannerads/* was not blocked"
+      }
     );
     expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
-  });
-
-  after(async function () {
-    const generalPage = new GeneralPage(browser);
-    await generalPage.init();
-
-    const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
-    if (selected != aaCheckboxSelected)
-      await generalPage.clickAllowAcceptableAdsCheckbox();
   });
 
   it("displays acceptable ads", async function () {

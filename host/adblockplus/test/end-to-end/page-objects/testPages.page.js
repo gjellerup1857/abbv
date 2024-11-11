@@ -292,19 +292,18 @@ class TestPages extends BasePage {
         expect(await this.getBanneradsFilterText()).to.include(
           expectedBanneradsText
         );
-      },
-      timeout,
-      // eslint-disable-next-line max-len
-      `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`
-    );
 
-    if (expectAllowlisted) {
-      expect(await this.isSearchAdDivDisplayed()).to.be.true;
-      expect(await this.isAdContainerDivDisplayed()).to.be.true;
-    } else {
-      expect(await this.isSearchAdDivDisplayed()).to.be.false;
-      expect(await this.isAdContainerDivDisplayed()).to.be.false;
-    }
+        expect(await this.isSearchAdDivDisplayed()).to.equal(expectAllowlisted);
+        expect(await this.isAdContainerDivDisplayed()).to.equal(
+          expectAllowlisted
+        );
+      },
+      {
+        timeout,
+        // eslint-disable-next-line max-len
+        timeoutMsg: `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`
+      }
+    );
   }
 }
 

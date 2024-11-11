@@ -586,6 +586,7 @@ class GeneralPage extends BasePage {
     } else {
       returnValue = await this.waitForDisplayedNoError(
         this.italianoPlusEnglishLanguageTableItem,
+        false,
         timeout
       );
     }

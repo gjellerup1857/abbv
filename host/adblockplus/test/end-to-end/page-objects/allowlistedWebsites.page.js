@@ -73,6 +73,28 @@ class AllowlistedWebsitesPage extends BasePage {
     return classNames;
   }
 
+  async waitUntilAllowlistingTableContains(
+    text,
+    { timeout = 5000, interval = 500 } = {}
+  ) {
+    await browser.waitUntil(
+      async () => {
+        try {
+          const items =
+            await this.getAttributeOfAllowlistingTableItems("aria-label");
+          return items.includes(text);
+        } catch (e) {
+          // no-op
+        }
+      },
+      {
+        timeout,
+        interval,
+        timeoutMsg: `Could not find allowlisted domain "${text}" after ${timeout}ms`
+      }
+    );
+  }
+
   async isAddWebsiteButtonEnabled() {
     return await (await this.addWebsiteButton).isEnabled();
   }

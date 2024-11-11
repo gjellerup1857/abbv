@@ -29,10 +29,6 @@ exports.suites = {
     "./tests/public-api/index.mjs",
     "./tests/test-unlock-premium.js"
   ],
-  upgrade: [
-    // The upgrade suite is only run in the upgrade test
-    "./tests/upgrade/test-upgrade.mjs"
-  ],
   oldbrowsers: [
     "./tests/test-abp-premium-cookiefl-premium-users.js",
     "./tests/test-abp-premium-dcfl-premium-users.js",

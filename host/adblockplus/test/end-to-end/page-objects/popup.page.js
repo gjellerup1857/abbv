@@ -151,7 +151,7 @@ class PopupPage extends BasePage {
   }
 
   get refreshButton() {
-    return $("#page-refresh").$("button");
+    return $("#page-refresh button");
   }
 
   get refreshMessage() {

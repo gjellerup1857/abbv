@@ -89,9 +89,11 @@ module.exports = function () {
         await advancedPage.init();
         expect(await advancedPage.isAbpFiltersFLDisplayed()).to.be.true;
       },
-      30000,
-      "ABP filters FL is not displayed",
-      2000
+      {
+        timeout: 30000,
+        timeoutMsg: "ABP filters FL is not displayed",
+        interval: 2000
+      }
     );
     expect(await advancedPage.isEasyListFLDisplayed()).to.be.true;
     expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
@@ -107,9 +109,11 @@ module.exports = function () {
           )
         ).to.be.true;
       },
-      30000,
-      "Popup page didn't show reset settings message",
-      2000
+      {
+        timeout: 30000,
+        timeoutMsg: "Popup page didn't show reset settings message",
+        interval: 2000
+      }
     );
     await popupPage.clickLinkInNotificationMessage();
     await popupPage.switchToProblemPageTab();

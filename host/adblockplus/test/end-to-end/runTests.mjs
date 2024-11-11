@@ -41,21 +41,40 @@ async function runWdioTests(config) {
   });
 }
 
+async function runMochaTests() {
+  return new Promise((resolve, reject) => {
+    const mochaProcess = spawn(
+      "mocha",
+      // Add the "--paralle" flag to run tests in parallel.
+      // Ensure the real-time logging can work in parallel before doing that and
+      // the CI server can handle the increased load.
+      ["runners/runner.*.mjs", "--timeout", "150000", ...args],
+      { stdio: "inherit" }
+    );
+
+    mochaProcess.on("close", (code) => {
+      code === 0
+        ? resolve()
+        : reject(new Error(`Mocha exited with code ${code}`));
+    });
+  });
+}
+
 async function main() {
   console.log("Starting test server...");
   await runTestServer();
 
   try {
     // Run two WDIO processes with different config files in parallel
-    const configs = [
-      { filename: "local-test.conf.mjs", args },
-      { filename: "local-upgrade.conf.mjs", args: ["--suite", "upgrade"] }
-    ];
+    const configs = [{ filename: "local-test.conf.mjs", args }];
 
     for (const config of configs) {
       console.log(`Running tests with ${config.filename}...`, config);
       await runWdioTests(config);
     }
+
+    // Run Mocha tests
+    await runMochaTests();
   } finally {
     console.log("Stopping test server...");
     await killTestServer();

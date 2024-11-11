@@ -436,9 +436,12 @@ async function waitForNewWindow(url, timeout = 5000) {
 // Polling expect function calls until they pass
 async function waitForAssertion(
   expectFn,
-  timeout = 5000,
-  message = "Timed out",
-  interval = 500
+  {
+    timeout = 5000,
+    timeoutMsg = "Timed out",
+    interval = 500,
+    refresh = true
+  } = {}
 ) {
   return browser.waitUntil(
     async () => {
@@ -446,10 +449,16 @@ async function waitForAssertion(
         await expectFn();
         return true;
       } catch (e) {
-        await browser.refresh();
+        if (refresh) {
+          // [IMPORTANT] Due to how ABP options page is structured (actual
+          // content is in an iframe), the browser.refresh() command will
+          // cause the browser to switch to the top-level browsing context.
+          // Make sure you switch back the context after the refresh.
+          await browser.refresh();
+        }
       }
     },
-    { timeout, interval, timeoutMsg: `${message} after ${timeout}ms` }
+    { timeout, interval, timeoutMsg: `${timeoutMsg} after ${timeout}ms` }
   );
 }
 

@@ -69,7 +69,7 @@ chrome.webNavigation.onCompleted.addListener(
   { url: [{ hostEquals: "adblockplus.org" }] }
 );
 
-openOptionsPage();
+setTimeout(openOptionsPage, 2000);
 
 const closeDataTabInterval = setInterval(() => {
   chrome.tabs.query({}, (tabs) => {
