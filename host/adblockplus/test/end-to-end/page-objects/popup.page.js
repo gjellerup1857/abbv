@@ -28,6 +28,11 @@ class PopupPage extends BasePage {
 
   async init(popupUrl, tabId) {
     await browser.newWindow("about:blank");
+    if (isFirefox()) {
+      // Workaround to avoid "Error: Timeout of 300000ms exceeded"
+      // This sleep should be removed by https://eyeo.atlassian.net/browse/EXT-558
+      await browser.pause(200);
+    }
     await browser.url(`${popupUrl}?testTabId=${tabId}`);
     await (await this.pageStatsCounter).waitForExist({ timeout: 10000 });
   }
