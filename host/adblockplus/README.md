@@ -277,6 +277,20 @@ the setup of the runner is defined in [the devops runner project](https://gitlab
 [here](https://gitlab.com/groups/adblockinc/ext/-/runners). Access to GCP
 resources like the GCloud console can be granted by devops as well.
 
+## Uploading sourcemaps
+
+The gitlab CI configuration has `release` stage and `upload_sourcemaps` job
+which is tarted for tags like `adblockplus-v<number>` and uploads the releases sourcemaps
+to Sentry.
+It requires `SENTRY_AUTH_TOKEN` global variable configured for the project.
+To do the same manually on the command line one has to:
+
+1. Login to Sentry with `npm run sentry:login` and provide Sentry auth token.
+2. Create a release with `VERSION=<version> npm run sentry:release-new`
+3. Actually upload the sourcemaps with `npm run sentry:sourcemaps`.
+   The sourcemaps are overwritten.
+4. Finalize the release with `VERSION=<version> npm run sentry:release-finalize`
+
 ## Release history
 
 [Extension releases (since 3.11)][abp-ext-tags]

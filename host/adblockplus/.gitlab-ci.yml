@@ -388,3 +388,21 @@ create_release:
     - release_notes=$(node scripts/release-utils/get-release-notes.js adblockplus $version)
     - glab auth login --token $GITLAB_TOKEN_RELEASE
     - glab release create $CI_COMMIT_TAG -n "Adblock Plus $version" host/adblockplus/dist/release/* -N "$release_notes"
+
+upload_sourcemaps:
+  stage: release
+  needs: ["build"]
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/'
+      when: on_success
+    - when: never
+  script:
+    - npm i
+    - cd host/adblockplus
+    - npm run sentry:login -- --auth-token $SENTRY_AUTH_TOKEN
+    - version=${CI_COMMIT_TAG/adblockplus-/""}
+    - echo "Uploading the sourcemaps for Adblockplus $version"
+    - VERSION=$version npm run sentry:release-new
+    - mkdir ./dist/release/sourcemaps-mv3 && unzip dist/release/adblockplus-*mv3.zip '*.js.map' -d ./dist/release/sourcemaps-mv3
+    - npm run sentry:sourcemaps
+    - VERSION=$version npm run sentry:release-finalize
