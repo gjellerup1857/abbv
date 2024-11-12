@@ -145,8 +145,8 @@ together via `npm test -- --scope=adblockplus`.
 ### End-to-end testing
 
 The `./test/end-to-end/tests` folder contains various end-to-end tests. These
-tests can be executed locally, (in the latest stable Chrome, Firefox and Edge
-browsers) or they can be executed using [LambdaTest](https://automation.lambdatest.com/).
+tests can be executed either locally or in Docker using the latest stable
+Chrome, Firefox and Edge browsers.
 
 #### Local run
 
@@ -166,42 +166,21 @@ headful mode instead of headless.
 DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used to be able
 to test with locally served pages and AA-related filter rules.
 
-Note: By default webDriverIO in Firefox is opening every tab or window as a new tab.
-More details can be found in the [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
+Notes:
 
-#### LambdaTest run
+- By default webDriverIO in Firefox is opening every tab or window as a new
+  tab. More details can be found in this
+  [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
 
-To run the end-to-end tests using [LambdaTest](https://automation.lambdatest.com/):
-
-- Create a new .env.e2e file with your Lambda credentials. You can use the
-  [.env.e2e.defaults](./.env.e2e.defaults)
-  provided as a guide. The values in `.env.e2e.defaults` will be used as default
-  values, so you can choose to only copy the values you wish to override.
-- Generate the [release builds](../../README.md#building-the-extensions-in-release-mode)
-  of the extension.
-- Additional steps are needed for running the tests with MV3 version of the extension:
-  - Install the axios package globally: `npm install -g axios`
-  - Upload the extension to LambdaTest by running (in this host folder): `export MV3_BUILD_CLOUD_URL=$(node test/end-to-end/upload-extension.js <LambdaTest username> <LambdaTest access key> dist/release/adblockplus-chrome-*-mv3.zip)`
-- Run the test:end-to-end npm script
-  `npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv2 all` or
-  `npm run --workspace host/adblockplus test:end-to-end-lambdatest-mv3 all`.
-
-#### Notes
-
-- You can replace `all` tests with a specific test suite (`e2e`, `integration`,
-  `smoke`).
-- If you only want to execute a single test file, you can replace the value of the
-  `all` property in [suites.js](./test/end-to-end/suites.js#L21)
-  to an array containing only the [path](./test/end-to-end/tests)
-  to the test(s) you want to run. Example:
+- If you only want to execute a single test file, you can replace the values of
+  properties in [suites.js](./test/end-to-end/suites.js) to an array containing
+  only the [path](./test/end-to-end/tests) to the test(s) you want to run.
+  Example:
 
   ```js
   all: ["./tests/test-options-page-dialog-links.js"],
   ```
 
-- Allure reporter is used for displaying the results after the execution has been
-  completed. The report can be generated and opened using the
-  `npm run --workspace host/adblockplus test:generate-and-open-report` command.
 - Screenshots of failing tests get saved to `./test/end-to-end/screenshots`
 
 #### Docker run

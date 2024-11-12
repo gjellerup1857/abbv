@@ -155,14 +155,6 @@ export default function createWdioPolyfill(
     return driver.switchTo().frame(elemWrapper.element);
   };
 
-  polyfillBrowser.setWindowSize = async (width, height) => {
-    console.warn(
-      "Method browser.setWindowSize has been disabled in the polyfill"
-    );
-    // return driver.manage().window().setSize(width, height);
-    return true;
-  };
-
   polyfillBrowser.executeAsync = async (fn, ...args) => {
     return driver.executeAsyncScript(fn, ...args);
   };

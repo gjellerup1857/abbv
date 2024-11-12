@@ -26,6 +26,7 @@ import { runTestServer, killTestServer } from "@eyeo/test-utils";
 const args = process.argv.slice(2);
 
 async function runWdioTests(config) {
+  console.log(`Running WDIO tests with ${config.filename}...`, config);
   return new Promise((resolve, reject) => {
     const wdioProcess = spawn(
       "wdio",
@@ -42,6 +43,7 @@ async function runWdioTests(config) {
 }
 
 async function runMochaTests() {
+  console.log("Running UPGRADE tests...");
   return new Promise((resolve, reject) => {
     const mochaProcess = spawn(
       "mocha",
@@ -65,13 +67,8 @@ async function main() {
   await runTestServer();
 
   try {
-    // Run two WDIO processes with different config files in parallel
-    const configs = [{ filename: "local-test.conf.mjs", args }];
-
-    for (const config of configs) {
-      console.log(`Running tests with ${config.filename}...`, config);
-      await runWdioTests(config);
-    }
+    const config = { filename: "local.conf.mjs", args };
+    await runWdioTests(config);
 
     // Run Mocha tests
     await runMochaTests();

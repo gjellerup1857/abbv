@@ -70,11 +70,10 @@ export async function seleniumScreenshotsHook() {
 }
 
 /**
- * Hook to set the `LOCAL_RUN` environment variable before the test execution
+ * Hook to log info about the current run
  * @returns {Promise<void>}
  */
 export async function beforeHook() {
-  process.env.LOCAL_RUN = "true";
   // eslint-disable-next-line no-console
   console.log(`MANIFEST_VERSION=${process.env.MANIFEST_VERSION}`);
 }

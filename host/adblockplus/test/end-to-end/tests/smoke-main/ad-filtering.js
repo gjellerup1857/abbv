@@ -206,10 +206,6 @@ module.exports = function () {
   });
 
   it("displays acceptable ads", async function () {
-    if (process.env.LOCAL_RUN !== "true") {
-      this.skip();
-    }
-
     async function assertAcceptableAdsIsShown(shown) {
       const shortTimeout = 500;
       const timeout = 5000;

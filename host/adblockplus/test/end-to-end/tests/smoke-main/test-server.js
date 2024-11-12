@@ -21,8 +21,6 @@ const { expect } = require("chai");
 
 module.exports = function () {
   it("loads a test server page", async function () {
-    if (process.env.LOCAL_RUN !== "true") this.skip();
-
     const url = "http://localhost:3005/test.html";
 
     await browser.newWindow(url);

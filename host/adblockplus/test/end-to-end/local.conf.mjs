@@ -28,9 +28,6 @@ import {
   screenshotHook
 } from "./runners/hooks.mjs";
 
-// If enabled, the allure reporter will be used
-const allureEnabled = process.env.ENABLE_ALLURE === "true";
-
 // Get the capabilities based on the browser argument
 let capabilities = [chromium.capabilities];
 if (isEdgeArg()) {
@@ -57,26 +54,15 @@ export const config = {
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   framework: "mocha",
-  reporters: allureEnabled
-    ? [
-        [
-          "allure",
-          {
-            outputDir: "allure-results",
-            disableWebdriverStepsReporting: true,
-            disableWebdriverScreenshotsReporting: false
-          }
-        ]
-      ]
-    : [
-        [
-          "spec",
-          {
-            realtimeReporting: true,
-            showPreface: false
-          }
-        ]
-      ],
+  reporters: [
+    [
+      "spec",
+      {
+        realtimeReporting: true,
+        showPreface: false
+      }
+    ]
+  ],
   mochaOpts: {
     ui: "bdd",
     timeout: 300000

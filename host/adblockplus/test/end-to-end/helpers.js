@@ -29,7 +29,6 @@ const PremiumCheckoutPage = require("./page-objects/premiumCheckout.page");
 const PremiumHeaderChunk = require("./page-objects/premiumHeader.chunk");
 
 const globalRetriesNumber = 0;
-const isGitlab = process.env.CI === "true";
 
 const chromeBuildMV2 = findFirstMatchingFile(
   `../../${process.env.CHROME_BUILD_MV2}`
@@ -92,8 +91,6 @@ async function beforeSequence(
       }
     }
   }
-
-  if (process.env.LOCAL_RUN !== "true") await browser.setWindowSize(1400, 1000);
 
   // beforeSequence() is usually called once at the beggining of test suites
   // right after extension installation. That may stress the browser for a while
@@ -595,27 +592,6 @@ async function getTabId({ title, urlPattern }) {
   return tabId;
 }
 
-function lambdatestRunChecks() {
-  if (isGitlab) {
-    return;
-  }
-
-  if (!process.env.LT_USERNAME || !process.env.LT_ACCESS_KEY) {
-    console.error(
-      "\x1b[33m%s\x1b[0m",
-      `
------------------------------------------------------------------
-Please set the following environment variables in the .env.e2e file:
-LT_USERNAME
-LT_ACCESS_KEY
-https://www.lambdatest.com/support/docs/using-environment-variables-for-authentication-credentials/
------------------------------------------------------------------
-    `
-    );
-    process.exit(1);
-  }
-}
-
 function isBrowser(browserName) {
   return browser.capabilities.browserName.toLowerCase().includes(browserName);
 }
@@ -753,7 +729,6 @@ module.exports = {
   doesTabExist,
   executeAsyncScript,
   enablePremiumByMockServer,
-  lambdatestRunChecks,
   getChromiumMV2Extension,
   getHelperExtension,
   getCurrentDate,

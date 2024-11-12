@@ -2,9 +2,6 @@
 /dist/
 
 /skin/icons/toolbar/*.png
-/allure-report/
-/test/end-to-end/allure-results/
-/test/end-to-end/lambda_api.log
 /test/end-to-end/screenshots/
 /testpages.adblockplus.org/
 browser-snapshots/
