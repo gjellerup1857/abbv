@@ -21,7 +21,8 @@ import {
   switchToABPOptionsTab,
   enablePremiumByMockServer,
   waitForAssertion,
-  waitForExtension
+  waitForExtension,
+  isEdge
 } from "../../helpers.js";
 import { expect } from "chai";
 import PopupPage from "../../page-objects/popup.page.js";
@@ -68,6 +69,9 @@ async function getTotalCount() {
 export default () => {
   describe("test extension upgrade", function () {
     before(async function () {
+      // https://eyeo.atlassian.net/browse/EXT-153
+      if (isEdge()) this.skip();
+
       ({ popupUrl, extVersion: prevExtVersion } = await beforeSequence());
     });
 
