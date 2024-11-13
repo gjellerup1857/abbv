@@ -33,7 +33,7 @@ const { By } = webdriver;
 
 export default () => {
   it("activates premium", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
@@ -122,7 +122,7 @@ export default () => {
   });
 
   it("should have premium features", async function () {
-    const { driver, popupUrl } = this;
+    const { driver, popupUrl } = global;
     const timeout = 4000;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());

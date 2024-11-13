@@ -24,7 +24,7 @@ const { By } = webdriver;
 
 export default () => {
   it("loads a test server page", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const url = "http://localhost:3005/test.html";
 
     await openNewTab(driver, url);

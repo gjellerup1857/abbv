@@ -23,7 +23,7 @@ import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     const userId = await getUserIdFromPage(driver);
     const expectedParams = {

@@ -8,7 +8,7 @@ import {
 
 export default () => {
   beforeEach(async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
@@ -16,7 +16,7 @@ export default () => {
   });
 
   it("allowlists from popup", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     // open new tab with the URL that will be allowlisted
     const websiteHandle = await openNewTab(driver, blockHideUrl);

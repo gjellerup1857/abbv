@@ -45,11 +45,11 @@ async function setFilterListUrl(driver, url) {
 
 export default () => {
   beforeEach(async function () {
-    await initOptionsFiltersTab(this.driver, getOptionsHandle());
+    await initOptionsFiltersTab(global.driver, getOptionsHandle());
   });
 
   it("displays the default state", async function () {
-    const { driver, browserName } = this;
+    const { driver, browserName } = global;
     const defaultFilterLists = getDefaultFilterLists(browserName);
 
     for (const { name, inputId, text, enabled } of defaultFilterLists) {
@@ -66,7 +66,7 @@ export default () => {
   });
 
   it("shows the built in language filter list dropdown", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     const dropdown = await getDisplayedElement(driver, "#language_select");
     const actualLanguageLists = [];
@@ -86,7 +86,7 @@ export default () => {
   });
 
   it("updates all filter lists", async function () {
-    const { driver, browserName } = this;
+    const { driver, browserName } = global;
     const defaultFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
     const checkDefaultSubscriptionsInfo = async (updatedWhen, timeout) => {
@@ -116,7 +116,7 @@ export default () => {
   });
 
   it("goes to a filter list source page", async function () {
-    const { driver, manifestVersion } = this;
+    const { driver, manifestVersion } = global;
     const aaUrl =
       manifestVersion === 2
         ? "https://easylist-downloads.adblockplus.org/exceptionrules.txt"
@@ -161,7 +161,7 @@ export default () => {
 
   for (const name of ["anticircumvent", "easylist"]) {
     it(`disables and reenables the ${name} filter list`, async function () {
-      const { driver, browserName } = this;
+      const { driver, browserName } = global;
       const { inputId } = getDefaultFilterLists(browserName).find((fl) => fl.name === name);
 
       const flEnabled = await isCheckboxEnabled(driver, inputId);
@@ -190,7 +190,7 @@ export default () => {
   }
 
   it("adds and removes a language filter list", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const name = "easylist_plus_vietnamese";
     const inputId = "languageFilterList_24";
 
@@ -205,7 +205,7 @@ export default () => {
   });
 
   it("adds and removes a filter list via URL", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const subscriptionUrl = "https://abptestpages.org/en/abp-testcase-subscription.txt";
     const name = `url:${subscriptionUrl}`;
     const inputId = "customFilterList_1";
@@ -219,7 +219,7 @@ export default () => {
   });
 
   it("displays an error for invalid filter list via URL", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const invalidSubscriptionUrl = "invalid.txt";
     const name = `url:${invalidSubscriptionUrl}`;
 

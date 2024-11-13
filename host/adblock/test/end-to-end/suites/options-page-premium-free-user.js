@@ -17,13 +17,13 @@ import { getDisplayedElement, clickAndCloseNewTab, clickAndNavigateBack } from "
 
 export default () => {
   before(async function () {
-    const { driver } = this;
+    const { driver } = global;
     const userId = await getUserIdFromStorage(driver, getOptionsHandle());
-    this.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
+    global.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
   });
 
   it("displays cta and premium features", async function () {
-    const { driver, origin, premiumURL } = this;
+    const { driver, extOrigin, premiumURL } = global;
 
     await initOptionsPremiumTab(driver, getOptionsHandle());
     await checkPremiumPageHeader("#locked-user-pay-section-mab > p", "#get-it-now-mab", premiumURL);
@@ -35,7 +35,7 @@ export default () => {
     const hashes = ["#premium-filters", "#mab-image-swap", "#mab-themes", "#sync"];
     for (let i = 0; i < hashes.length; i++) {
       const selector = `#myadblock-features > div:nth-child(${i + 1})`;
-      await clickAndNavigateBack(driver, selector, `${origin}/options.html${hashes[i]}`);
+      await clickAndNavigateBack(driver, selector, `${extOrigin}/options.html${hashes[i]}`);
     }
   });
 
@@ -57,7 +57,7 @@ export default () => {
   ];
   for (const { selector, expectedLockedThemeIds } of selectors) {
     it(`shows ${selector} themes correctly`, async function () {
-      const { driver, premiumURL } = this;
+      const { driver, premiumURL } = global;
 
       await initOptionsThemesTab(driver, getOptionsHandle());
       await checkPremiumPageHeader(
@@ -86,7 +86,7 @@ export default () => {
   }
 
   it("shows image swap off", async function () {
-    const { driver, premiumURL } = this;
+    const { driver, premiumURL } = global;
     await initOptionsImageSwapTab(driver, getOptionsHandle());
 
     await checkPremiumPageHeader(
@@ -108,7 +108,7 @@ export default () => {
   });
 
   it("shows backup & sync off", async function () {
-    const { driver, premiumURL } = this;
+    const { driver, premiumURL } = global;
 
     await initOptionsBackupSyncTab(driver, getOptionsHandle());
     await checkPremiumPageHeader(
@@ -124,7 +124,7 @@ export default () => {
   });
 
   it("shows premium filter lists locked in options page", async function () {
-    const { driver, premiumURL } = this;
+    const { driver, premiumURL } = global;
 
     await initOptionsPremiumFlTab(driver, getOptionsHandle());
     await checkPremiumPageHeader(

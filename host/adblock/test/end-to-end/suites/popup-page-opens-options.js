@@ -24,7 +24,7 @@ const { By } = webdriver;
 
 export default () => {
   it("opens the settings page", async function () {
-    const { driver, popupUrl } = this;
+    const { driver, popupUrl } = global;
 
     // Open the Popup page
     await initPopupPage(driver, popupUrl);

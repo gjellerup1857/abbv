@@ -23,12 +23,12 @@ import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   after(async function () {
-    const { driver, expectAAEnabled } = this;
+    const { driver, expectAAEnabled } = global;
     await setAADefaultState(driver, expectAAEnabled);
   });
 
   it("displays AA default state", async function () {
-    const { driver, expectAAEnabled } = this;
+    const { driver, expectAAEnabled } = global;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     await driver.wait(async () => {
@@ -46,7 +46,7 @@ export default () => {
   });
 
   it("only allows ads without third-party tracking", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     let aaPrivacyEnabled = await isCheckboxEnabled(driver, "acceptable_ads_privacy");
@@ -66,7 +66,7 @@ export default () => {
   });
 
   it("disables allow AA", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     await initOptionsGeneralTab(driver, getOptionsHandle());
     const aaEnabled = await isCheckboxEnabled(driver, "acceptable_ads");

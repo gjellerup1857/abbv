@@ -32,7 +32,7 @@ import bypassAPI from "./public-api/bypass-api.js";
 
 export default () => {
   beforeEach(async function () {
-    await beforeEachTasks(this.driver, this.origin);
+    await beforeEachTasks(global.driver, global.extOrigin);
   });
 
   describe("Test server", testServer);

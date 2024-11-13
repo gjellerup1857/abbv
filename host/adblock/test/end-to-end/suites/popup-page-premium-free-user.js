@@ -13,13 +13,13 @@ export default () => {
   ];
 
   before(async function () {
-    const { driver } = this;
+    const { driver } = global;
     const userId = await getUserIdFromStorage(driver, getOptionsHandle());
-    this.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
+    global.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
   });
 
   beforeEach(async function () {
-    const { driver, popupUrl } = this;
+    const { driver, popupUrl } = global;
     await openNewTab(driver, "https://example.com/");
     const tabId = await getTabId(driver, getOptionsHandle());
     await initPopupPage(driver, popupUrl, tabId);
@@ -27,7 +27,7 @@ export default () => {
 
   for (const { selector, title } of premiumFeatures) {
     it(`shows '${title}' as locked`, async function () {
-      const { driver, premiumURL } = this;
+      const { driver, premiumURL } = global;
 
       const titleElem = await getDisplayedElement(driver, `${selector} .title`);
       expect(await titleElem.getText()).toEqual(title);

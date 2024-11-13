@@ -41,12 +41,12 @@ async function cleanupOpenTabs(driver) {
   }
 }
 
-export async function beforeEachTasks(driver, origin) {
+export async function beforeEachTasks(driver, extOrigin) {
   // If the options page handle is not valid anymore, then restore it
   try {
     await driver.switchTo().window(optionsHandle);
   } catch (e) {
-    await openNewTab(driver, `${origin}/options.html`);
+    await openNewTab(driver, `${extOrigin}/options.html`);
     optionsHandle = await driver.getWindowHandle();
   }
 

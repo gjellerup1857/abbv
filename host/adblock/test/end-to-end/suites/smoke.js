@@ -41,7 +41,7 @@ import { getDefaultFilterLists } from "../utils/dataset.js";
 
 export default () => {
   it("opens the install url", async function () {
-    const { driver, browserName, fullBrowserVersion, majorBrowserVersion } = this;
+    const { driver, browserName, fullBrowserVersion, majorBrowserVersion } = global;
     const { url } = await findUrl(driver, installUrl);
 
     const userId = await getUserIdFromPage(driver);
@@ -99,7 +99,7 @@ export default () => {
   });
 
   it("displays total ad block count", async function () {
-    const { driver, popupUrl } = this;
+    const { driver, popupUrl } = global;
 
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
@@ -130,7 +130,7 @@ export default () => {
   });
 
   it("resets settings", async function () {
-    const { driver, browserName } = this;
+    const { driver, browserName } = global;
     const enabledFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
 
     const handleDisabledFilterlistsAlert = async () => {

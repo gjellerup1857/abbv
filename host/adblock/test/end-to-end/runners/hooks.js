@@ -40,13 +40,6 @@ export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
   global.fullBrowserVersion = fullBrowserVersion;
   global.majorBrowserVersion = majorBrowserVersion;
   global.expectAAEnabled = browserName !== "firefox";
-
-  // [DEPRECATED]: Please use the global variables instead
-  this.driver = driver;
-  this.browserName = browserName;
-  this.fullBrowserVersion = fullBrowserVersion;
-  this.majorBrowserVersion = majorBrowserVersion;
-  this.expectAAEnabled = browserName !== "firefox";
 }
 
 /**
@@ -68,11 +61,6 @@ export async function prepareExtensionHook() {
   global.extName = name;
   global.popupUrl = popupUrl;
   global.manifestVersion = manifestVersion;
-
-  // [DEPRECATED]: Please use the global variables instead
-  this.origin = origin;
-  this.popupUrl = popupUrl;
-  this.manifestVersion = manifestVersion;
 }
 
 /**

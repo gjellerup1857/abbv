@@ -22,7 +22,7 @@ import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   it("does not collect data for Firefox", async function () {
-    const { driver, browserName } = this;
+    const { driver, browserName } = global;
 
     if (browserName !== "firefox") {
       this.skip();

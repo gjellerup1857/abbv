@@ -67,7 +67,7 @@ async function blockSomeItems() {
 
 export default () => {
   it("keeps settings after upgrade", async function () {
-    const { driver, browserName } = this;
+    const { driver, browserName } = global;
 
     await blockSomeItems();
     const totalCount = await getTotalCountFromPopup();

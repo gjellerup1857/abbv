@@ -40,12 +40,12 @@ const { By } = webdriver;
 
 export default () => {
   after(async function () {
-    const { driver, expectAAEnabled } = this;
+    const { driver, expectAAEnabled } = global;
     await setAADefaultState(driver, expectAAEnabled);
   });
 
   it("uses sitekey to allowlist content", async function () {
-    const { driver, manifestVersion } = this;
+    const { driver, manifestVersion } = global;
     const url = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
 
     const getTestpagesFilters = async () => {
@@ -104,7 +104,7 @@ export default () => {
   });
 
   it("blocks and hides ads", async function () {
-    const { driver } = this;
+    const { driver } = global;
 
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
@@ -115,7 +115,7 @@ export default () => {
   });
 
   it("uses snippets to block ads", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const filter = "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
     const url = "https://adblockinc.gitlab.io/QA-team/adblocking/snippets/snippets-testpage.html";
 
@@ -132,7 +132,7 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    const { driver } = this;
+    const { driver } = global;
     const filters = ["@@adblockinc.gitlab.io$document", "/pop_ads.js"];
 
     await initOptionsCustomizeTab(driver, getOptionsHandle());
@@ -152,7 +152,7 @@ export default () => {
   });
 
   it("displays acceptable ads", async function () {
-    const { expectAAEnabled, driver } = this;
+    const { expectAAEnabled, driver } = global;
     const aaUrl = "http://testpages.adblockplus.org:3005/aa.html";
     const visibleSelector = "#abptest2";
     const hiddenSelector = "#abptest";
