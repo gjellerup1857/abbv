@@ -137,7 +137,7 @@
     "@adblockinc/rules": "gitlab:eyeo/extensions/rules#eae1d6065c69b1327009ebea903cd8f779473545",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.17.0",
+    "@eyeo/webext-ad-filtering-solution": "1.17.1",
     "@eyeo/yt-wall-detection": "*",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
