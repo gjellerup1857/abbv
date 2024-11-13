@@ -183,6 +183,7 @@ async function enablePremiumByMockServer() {
         return true;
       } catch (e) {
         await browser.refresh();
+        await switchToABPOptionsTab({ switchToFrame: true });
       }
     },
     { timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms` }

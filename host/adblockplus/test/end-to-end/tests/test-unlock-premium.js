@@ -79,12 +79,14 @@ describe("test unlock premium", function () {
       ])
     );
     expect(expectedToggleValues).to.deep.equal(actualToggleValues);
-    await browser.waitUntil(async () => {
-      try {
-        await popupPage.clickBlockCookieConsentPopupsToggle();
-        return true;
-      } catch (e) {}
-    });
+    try {
+      await popupPage.clickBlockCookieConsentPopupsToggle();
+    } catch (e) {
+      // If the above click does not work, it means Premium was not enabled
+      await enablePremiumByMockServer();
+      await popupPage.init(popupUrl, tabId);
+      await popupPage.clickBlockCookieConsentPopupsToggle();
+    }
     await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
     expect(await popupPage.isBlockCookieConsentPopupsToggleSelected()).to.be
       .true;

@@ -176,7 +176,7 @@ class PopupPage extends BasePage {
   }
 
   async clickBlockCookieConsentPopupsToggle() {
-    await (await this.blockCookieConsentPopupsToggle).click();
+    await this.waitForEnabledThenClick(this.blockCookieConsentPopupsToggle);
   }
 
   async clickBlockMoreDistractionsTitle() {
