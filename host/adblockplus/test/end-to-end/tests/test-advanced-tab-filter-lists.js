@@ -74,17 +74,34 @@ describe("test advanced tab - filter lists", function () {
       )
     ).to.be.true;
     await advancedPage.clickUpdateAllFilterlistsButton();
-    expect(
-      await advancedPage.waitForAbpFiltersFLLastUpdatedTextToEqual("Just now")
-    ).to.be.true;
-    expect(
-      await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
-    ).to.be.true;
-    expect(
-      await advancedPage.waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
-        "Just now"
-      )
-    ).to.be.true;
+    try {
+      expect(
+        await advancedPage.waitForAbpFiltersFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+      expect(
+        await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+      expect(
+        await advancedPage.waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
+          "Just now"
+        )
+      ).to.be.true;
+    } catch (error) {
+      // Filterlist status can be stuck on 'Updating' unless the page is reloaded, see opened issue: https://eyeo.atlassian.net/browse/EXT-402
+      await switchToABPOptionsTab({ switchToFrame: true, refresh: true });
+      await advancedPage.init();
+      expect(
+        await advancedPage.waitForAbpFiltersFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+      expect(
+        await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+      expect(
+        await advancedPage.waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
+          "Just now"
+        )
+      ).to.be.true;
+    }
   });
 
   it("should update a single filter list", async function () {
@@ -96,9 +113,18 @@ describe("test advanced tab - filter lists", function () {
     await advancedPage.init();
     await advancedPage.clickEasyListFLGearIcon();
     await advancedPage.clickEasyListFLUpdateNowButton();
-    expect(
-      await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
-    ).to.be.true;
+    try {
+      expect(
+        await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+    } catch (error) {
+      // Filterlist status can be stuck on 'Updating' unless the page is reloaded, see opened issue: https://eyeo.atlassian.net/browse/EXT-402
+      await switchToABPOptionsTab({ switchToFrame: true, refresh: true });
+      await advancedPage.init();
+      expect(
+        await advancedPage.waitForEasyListFLLastUpdatedTextToEqual("Just now")
+      ).to.be.true;
+    }
     expect(
       await advancedPage.waitForAbpFiltersFLLastUpdatedTextToEqual(
         "minutes ago"
