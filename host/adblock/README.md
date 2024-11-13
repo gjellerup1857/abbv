@@ -59,18 +59,17 @@ Optional environment variables:
 End-to-end tests load the release build of the AdBlock extension in the browser
 to run the end to end test suites.
 
-Prerequisite: Do the release builds as described in
-[building the extensions in release mode](../../README.md#building-the-extensions-in-release-mode)
-section of the readme at the root of the monorepo.
+Notes:
 
-Note: Commands given below should be run from the root directory of this
-repository, the same as the build commands.
-
-Note: The browser specified in the command is the browser that tests will be run
-on, not the browser that we specify in build step.
-
-DNS mapping "testpages.adblockplus.org." to "127.0.0.1" is used in browsers in
-order to test with locally served pages and AA-related filter rules.
+- Release builds are needed for both local and Docker runs. The commands for
+  that are added to the examples.
+- Commands given below should be run from the root directory of this
+  repository, the same as the build commands.
+- The browser specified in the command is the browser that tests will be run
+  on, not the browser that we specify in build step.
+- DNS mapping from `testpages.adblockplus.org` to `127.0.0.1` is used in
+  browsers in order to test with locally served pages and AA-related filter
+  rules.
 
 #### Local run
 
@@ -94,6 +93,7 @@ Screenshots for failing tests are stored in `host/adblock/test/end-to-end/screen
 #### Docker run
 
 ```sh
+npm run build:release -- --scope=adblock
 docker build -t end-to-end -f host/adblock/test/end-to-end/Dockerfile .
 docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
 ```
@@ -102,7 +102,7 @@ To use mocha command line options the `--entrypoint` parameter needs to be set.
 Example:
 
 ```sh
-docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run test:end-to-end -- --grep "Smoke"
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run test:end-to-end-local -- --grep "Smoke"
 ```
 
 To access the screenshots for failing tests run the following command, which

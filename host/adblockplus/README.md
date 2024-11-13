@@ -142,11 +142,22 @@ For `.ts` files we have jest unit tests that can be run via
 `npm run $ test.unit.love --workspace host/adblockplus`. Those can be run
 together via `npm test -- --scope=adblockplus`.
 
-### End-to-end testing
+### End-to-end tests
 
-The `./test/end-to-end/tests` folder contains various end-to-end tests. These
-tests can be executed either locally or in Docker using the latest stable
-Chrome, Firefox and Edge browsers.
+End-to-end tests load the release build of the Adblock Plus extension in the
+browser to run the end to end test suites.
+
+Notes:
+
+- Release builds are needed for both local and Docker runs. The commands for
+  that are added to the examples.
+- Commands given below should be run from the root directory of this
+  repository, the same as the build commands.
+- The browser specified in the command is the browser that tests will be run
+  on, not the browser that we specify in build step.
+- DNS mapping from `testpages.adblockplus.org` to `127.0.0.1` is used in
+  browsers in order to test with locally served pages and AA-related filter
+  rules.
 
 #### Local run
 
@@ -157,46 +168,33 @@ npm run build:release -- --scope=adblockplus
 npm run test:end-to-end -- --scope=adblockplus -- {chromium|edge|firefox} {2|3} [{all|filterlists|smoke}]
 ```
 
-Note: Browser specified in the command is the browser that tests will be run on,
-not the browser that we specify in build step.
+By default browsers run headless. Setting the environment variable
+`FORCE_HEADFUL=true` will trigger a headful run instead.
 
-The `FORCE_HEADFUL=true` environment variable may be used to run the browser in
-headful mode instead of headless.
+By default webDriverIO in Firefox is opening every tab or window as a new tab.
+More details can be found in this
+[link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
 
-DNS mapping "testpages.adblockplus.org" to "127.0.0.1" is used to be able
-to test with locally served pages and AA-related filter rules.
+If you only want to execute a single test file, you can replace the values of
+properties in [suites.js](./test/end-to-end/suites.js) to an array containing
+only the [path](./test/end-to-end/tests) to the test(s) you want to run.
+Example:
 
-Notes:
+```js
+all: ["./tests/test-options-page-dialog-links.js"],
+```
 
-- By default webDriverIO in Firefox is opening every tab or window as a new
-  tab. More details can be found in this
-  [link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
-
-- If you only want to execute a single test file, you can replace the values of
-  properties in [suites.js](./test/end-to-end/suites.js) to an array containing
-  only the [path](./test/end-to-end/tests) to the test(s) you want to run.
-  Example:
-
-  ```js
-  all: ["./tests/test-options-page-dialog-links.js"],
-  ```
-
-- Screenshots of failing tests get saved to `./test/end-to-end/screenshots`
+Screenshots for failing tests are stored in `host/adblockplus/test/end-to-end/screenshots`.
 
 #### Docker run
-
-These commands should be run from the repository root, not this host folder.
 
 Prerequisites: Docker
 
 ```sh
-docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile --build-arg MANIFEST_VERSION={2|3} --build-arg BROWSER={chromium|firefox|edge} --build-arg BUILD_EXTENSION={true|false} .
-docker run --cpus=2 --shm-size=2g -it -e SUITE=smoke end-to-end
+npm run build:release -- --scope=adblockplus
+docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile .
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} -e SUITE={all|filterlists|smoke} end-to-end
 ```
-
-The default behaviour builds the extension inside the docker image. Setting the
-`BUILD_EXTENSION` build argument to `false` will use the contents of the local
-`dist` folder instead.
 
 To access the screenshots for failing tests run the following command, which
 copies them to the `host/adblockplus/test/end-to-end/screenshots` folder:
