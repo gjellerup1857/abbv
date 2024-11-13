@@ -118,7 +118,7 @@ const ServerMessages = (function serverMessages() {
     sendMessageToLogServer(eventWithPayload, callback);
   };
 
-  const recordErrorMessage = function (msg, callback, additionalParams) {
+  const recordErrorMessage = function (msg, additionalParams, callback) {
     void recordMessageWithUserID(msg, "error", callback, additionalParams);
   };
 

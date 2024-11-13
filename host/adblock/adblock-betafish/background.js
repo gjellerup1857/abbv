@@ -715,9 +715,20 @@ initialize
     addAllowlistingListeners();
   })
   .catch((e) => {
-    // Send anonymous event to the log server in case there was an error with
-    // initializing the extension.
-    ServerMessages.recordAnonymousErrorMessage("initialization_error", null);
+    const hasInternalError = /internal error/i.test(e.message);
+    if (hasInternalError) {
+      // Send the error message to the log server when internal error occurs.
+      // We want to know the amount of users that are affected by this issue,
+      // as well which rulesets are affected. The ruleset id will be added to
+      // the error message by the WebExt SDK.
+      ServerMessages.recordErrorMessage("internal_error", {
+        errorMsg: e.message,
+      });
+    } else {
+      // Send anonymous event to the log server in case there was an error with
+      // initializing the extension.
+      ServerMessages.recordAnonymousErrorMessage("initialization_error");
+    }
     throw e;
   });
 

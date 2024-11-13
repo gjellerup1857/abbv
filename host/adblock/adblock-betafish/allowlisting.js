@@ -129,8 +129,8 @@ async function start() {
   });
 
   ewe.allowlisting.onUnauthorized.addListener((error) => {
-    ServerMessages.recordErrorMessage("one_click_allowlisting_error", undefined, {
-      errorMessage: error.toString(),
+    ServerMessages.recordErrorMessage("one_click_allowlisting_error", {
+      errorMsg: error.toString(),
     });
     // eslint-disable-next-line no-console
     console.error(error);
