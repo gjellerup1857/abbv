@@ -1,31 +1,30 @@
 import React, { useState } from "react";
-import { GeneralOptionsList } from "./Options";
+import { OptionsList } from "./OptionsList";
 
 const optionsData = [
   {
     name: 'acceptable_ads',
-    text: 'acceptableadsoption',
+    textKey: 'acceptableadsoption',
     helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738480686483-About-the-Acceptable-Ads-program-and-non-intrusive-ads',
     subOptions: [
       {
         name: 'acceptable_ads_privacy',
-        text: 'acceptable_ads_privacy',
+        textKey: 'acceptable_ads_privacy',
         helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738459986707-About-Acceptable-Ads-and-Third-Party-Tracking',
       }
     ],
   },
   {
-    name: 'enable_youtube_channel_whitelist',
-    text: 'allow_whitelisting_youtube_channels2',
+    name: 'youtube_channel_whitelist',
+    textKey: 'allow_whitelisting_youtube_channels2',
     extraInfo: 'require_restart_browser',
     subOptions: [
       {
-        name: 'enable_youtube_manage_subscribed',
-        text: 'youtube_manage_subscribed',
+        name: 'youtube_manage_subscribed',
+        textKey: 'youtube_manage_subscribed',
         helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738459986707-About-Acceptable-Ads-and-Third-Party-Tracking',
-        // TODO (options): Currently calls browser.tabs.create({ url: "https://www.youtube.com/feed/channels" }); Follow up on difference, since example works fine.
         additionalInfoLink: {
-          text: 'settings',
+          textKey: 'settings',
           href: 'https://www.youtube.com/feed/channels'
         }
       }
@@ -33,64 +32,73 @@ const optionsData = [
     helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738502154131-Can-I-use-AdBlock-and-still-allow-ads-on-my-favorite-YouTube-channels',
   },
   {
-    name: 'enable_twitch_channel_allowlist',
-    text: 'allowlisting_twitch_channels',
+    name: 'twitch_channel_allowlist',
+    textKey: 'allowlisting_twitch_channels',
     extraInfo: 'require_restart_browser',
     helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738502507283-Does-AdBlock-block-ads-on-Twitch',
   },
   {
-    name: 'prefs__shouldShowBlockElementMenu',
-    text: 'showcontextmenus2',
+    name: 'shouldShowBlockElementMenu',
+    textKey: 'showcontextmenus2',
   },
   {
-    name: 'prefs__show_statsinicon',
-    text: 'show_on_adblock_button',
+    name: 'show_statsinicon',
+    textKey: 'show_on_adblock_button',
   },
   {
-    name: 'enable_display_menu_stats',
-    text: 'show_on_adblock_menu',
+    name: 'display_menu_stats',
+    textKey: 'show_on_adblock_menu',
   },
   {
-    name: 'prefs__show_devtools_panel',
-    text: 'show_devtools_panel',
+    name: 'show_devtools_panel',
+    textKey: 'show_devtools_panel',
   },
   {
-    name: 'prefs__data_collection_opt_out',
-    text: 'data_collection_opt_out',
+    name: 'data_collection_opt_out',
+    textKey: 'data_collection_opt_out',
     subOptions: [
        {
-         name: 'enable_data_collection_v2',
-         text: 'datacollectionoption',
+         name: 'data_collection_v2',
+         textKey: 'datacollectionoption',
          helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/9738517370259-About-AdBlock-s-opt-in-anonymous-filter-list-usage-and-data-collection',
        },
        {
-         name: 'prefs__send_ad_wall_messages',
-         text: 'allow_ad_wall_messages',
+         name: 'send_ad_wall_messages',
+         textKey: 'allow_ad_wall_messages',
          helpLink: 'https://helpcenter.getadblock.com/hc/en-us/articles/22696374171027/',
        },
        {
-         name: 'enable_onpageMessages',
-         text: 'onpage_messages',
+         name: 'onpageMessages',
+         textKey: 'onpage_messages',
        },
     ],
   },
   {
-    name: 'enable_show_advanced_options',
-    text: 'advanced_options2',
+    name: 'show_advanced_options',
+    textKey: 'advanced_options2',
   },
   {
-    name: 'enable_debug_logging',
-    text: 'debuginlogoption2',
+    name: 'debug_logging',
+    textKey: 'debuginlogoption2',
     extraInfo: 'slows_down_extension',
   },
 ];
 
 const contentWrapperClasses = 'flex flex-col justify-center mx-5 mb-6 flex-initial w-[711px]';
 
-export function App() {
+export function App({ subs, settings, prefsNames }) {
+  const acceptableAdsData = {
+    // If subscribed to acceptable_ads_privacy, then acceptable_ads is not present in subs,
+    // but we still need to check the box
+    acceptable_ads: subs.acceptable_ads?.subscribed || subs.acceptable_ads_privacy?.subscribed,
+    acceptable_ads_privacy: subs.acceptable_ads_privacy?.subscribed
+  };
+  // Change from array to object to match format of settings
+  const prefsNamesIntoObject = Object.fromEntries(prefsNames.map(el => ([el, true])));
+  const unifiedSettingsData = { ...acceptableAdsData, ...settings, ...prefsNamesIntoObject };
   return (
     <div className={ contentWrapperClasses }>
-      <GeneralOptionsList className="option-page-content" items={ optionsData } />
+      <OptionsList className="option-page-content" items={ optionsData } data={ unifiedSettingsData } />
     </div>
   );
 }
