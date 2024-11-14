@@ -32,9 +32,9 @@ import { webpageAPI } from "../content/webpage-api.js";
  * @param sender The sender object
  * @returns {Promise<{object}>} The result of the allowlisting command
  */
-async function handleAllowlisting({allowlistingOption, sender}) {
+async function handleAllowlisting({ allowlistingOption, sender }) {
   // TODO: add implementation
-  const manifest = await browser.runtime.getManifest();
+  const manifest = browser.runtime.getManifest();
   const responses = [
     {
       name: manifest.short_name,
@@ -44,7 +44,7 @@ async function handleAllowlisting({allowlistingOption, sender}) {
       name: manifest.short_name,
       success: false,
       reason: "Failed in the background script",
-    }
+    },
   ];
 
   // Randomly pick one of the two responses
@@ -59,14 +59,14 @@ async function handleAllowlisting({allowlistingOption, sender}) {
  * @param {any} ewe The filter engine
  * @returns {Promise<{source: null, oneCA: boolean, status: boolean}>} The allowlisting state
  */
-async function getAllowlistStatus({tabId, ewe}) {
+async function getAllowlistStatus({ tabId, ewe }) {
   const allowlistingFilters = await ewe.filters.getAllowingFilters(tabId);
   let source = null;
 
   for (const filter of allowlistingFilters) {
     // eslint-disable-next-line no-await-in-loop
     const metadata = await ewe.filters.getMetadata(filter);
-    const {origin} = metadata ?? {};
+    const { origin } = metadata ?? {};
 
     if (origin === "web") {
       source = "1ca";
@@ -80,7 +80,7 @@ async function getAllowlistStatus({tabId, ewe}) {
   return {
     status: allowlistingFilters.length > 0,
     source,
-    oneCA: true
+    oneCA: true,
   };
 }
 
@@ -92,10 +92,15 @@ async function getAllowlistStatus({tabId, ewe}) {
  * @param getAuthPayload
  * @returns {Promise<{extensionInfo: {allowlistState: {source: null, oneCA: boolean, status: boolean}, name: string, version: string}, payload: *}>}
  */
-async function getExtensionStatus({tabId, ewe, getPremiumState, getAuthPayload}) {
+async function getExtensionStatus({
+  tabId,
+  ewe,
+  getPremiumState,
+  getAuthPayload,
+}) {
   // TODO: Finish implementation
-  const manifest = await browser.runtime.getManifest();
-  const allowlistState = await getAllowlistStatus({tabId, ewe});
+  const manifest = browser.runtime.getManifest();
+  const allowlistState = await getAllowlistStatus({ tabId, ewe });
 
   const premiumState = getPremiumState();
   const payload = premiumState.isActive ? getAuthPayload() : null;
@@ -103,10 +108,10 @@ async function getExtensionStatus({tabId, ewe, getPremiumState, getAuthPayload})
   const extensionInfo = {
     name: manifest.short_name,
     version: manifest.version,
-    allowlistState
+    allowlistState,
   };
 
-  return {payload, extensionInfo};
+  return { payload, extensionInfo };
 }
 
 /**
@@ -114,28 +119,44 @@ async function getExtensionStatus({tabId, ewe, getPremiumState, getAuthPayload})
  *
  * @param {import("./types.js").StartParams} StartParams The start parameters
  */
-export function start({ewe, port, addTrustedMessageTypes, getPremiumState, getAuthPayload}) {
-  port.on(allowlistingTriggerEvent, async (message, sender) => handleAllowlisting({message, sender}));
+export function start({
+  ewe,
+  port,
+  addTrustedMessageTypes,
+  getPremiumState,
+  getAuthPayload,
+}) {
+  port.on(allowlistingTriggerEvent, async (message, sender) =>
+    handleAllowlisting({ message, sender }),
+  );
 
-  addTrustedMessageTypes(apiFrameUrl, [
-    allowlistingTriggerEvent,
-  ]);
+  addTrustedMessageTypes(apiFrameUrl, [allowlistingTriggerEvent]);
 
-  browser.webNavigation.onCommitted.addListener(async (details) => {
-    // Only inject in iframes
-    // if (details.frameId !== 0) {
-    // }
-    const {tabId, frameId} = details;
-    const extensionData = await getExtensionStatus({tabId, ewe, getPremiumState, getAuthPayload});
-    injectScriptInFrame({
-      tabId,
-      frameId,
-      func: webpageAPI,
-      args: [{
-        allowlistingTriggerEvent,
-        allowlistingResponseEvent,
-        extensionData,
-      }]
-    });
-  }, {url: [{urlMatches: apiFrameUrl}]});
+  browser.webNavigation.onCommitted.addListener(
+    async (details) => {
+      // Only inject in iframes
+      // if (details.frameId !== 0) {
+      // }
+      const { tabId, frameId } = details;
+      const extensionData = await getExtensionStatus({
+        tabId,
+        ewe,
+        getPremiumState,
+        getAuthPayload,
+      });
+      injectScriptInFrame({
+        tabId,
+        frameId,
+        func: webpageAPI,
+        args: [
+          {
+            allowlistingTriggerEvent,
+            allowlistingResponseEvent,
+            extensionData,
+          },
+        ],
+      });
+    },
+    { url: [{ urlMatches: apiFrameUrl }] },
+  );
 }

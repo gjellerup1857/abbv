@@ -7,6 +7,11 @@ module.exports = {
     es2021: true,
     webextensions: true
   },
+  ignorePatterns: ["dist/"],
+  parserOptions: {
+    ecmaVersion: "latest",
+    sourceType: "module"
+  },
   overrides: [
     {
       files: ["*.ts", "*.tsx"],
@@ -15,10 +20,6 @@ module.exports = {
         "plugin:prettier/recommended"
       ],
       parser: "@typescript-eslint/parser",
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module"
-      },
       rules: {
         "@typescript-eslint/strict-boolean-expressions": "off",
         "curly": "error"
@@ -30,9 +31,6 @@ module.exports = {
       extends: [
         "plugin:prettier/recommended"
       ],
-      "parserOptions": {
-        "sourceType": "module"
-      },
       rules: {
         // Add other JavaScript-specific rules here
       },

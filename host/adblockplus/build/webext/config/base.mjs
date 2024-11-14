@@ -172,7 +172,7 @@ export default {
           "src/problem/ui/problem.html",
           "src/updates/ui/updates.html"
         ]
-      },
+      }
     ],
     rename: [
       {

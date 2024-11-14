@@ -45,7 +45,7 @@ export default function webpack({
       if (bundle.src) {
         return gulp.src(bundle.src).pipe(named(() => bundle.dest));
       }
-    }),
+    })
   ).pipe(
     webpackStream(
       {

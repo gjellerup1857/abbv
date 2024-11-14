@@ -28,8 +28,7 @@ function getMV2ScriptToInject(injectedFunction, ...params) {
   // stringify injectedLib to escape backticks
   let code = JSON.stringify(injectedFunction.toString());
   code = `"(${code.slice(1, -1)}).apply(null,${JSON.stringify(args).slice(1, -1)});"`;
-  let executable =
-    `function injectScriptInMainContext(executable) {
+  let executable = `function injectScriptInMainContext(executable) {
       // injecting phases
       let script = document.createElement("script");
       script.type = "application/javascript";
@@ -66,17 +65,12 @@ function getMV2ScriptToInject(injectedFunction, ...params) {
  * @param {Function} details.func The function to be inserted into main world
  * @param {any[]} details.args The parameters for the funtion.
  */
-export function injectScriptInFrame({
-                                      tabId,
-                                      frameId,
-                                      func,
-                                      args
-                                    }) {
+export function injectScriptInFrame({ tabId, frameId, func, args }) {
   if (browser.scripting && browser.scripting.executeScript) {
     if (Object.values(browser.scripting.ExecutionWorld).includes("MAIN")) {
       console.log("injecting the script into main world MV3");
       browser.scripting.executeScript({
-        target: {tabId, frameIds: [frameId]},
+        target: { tabId, frameIds: [frameId] },
         world: "MAIN",
         injectImmediately: true,
         func,
@@ -89,13 +83,10 @@ export function injectScriptInFrame({
 
   const executable = getMV2ScriptToInject(func, ...args);
   console.log("injecting the script into main world MV2");
-  browser.tabs.executeScript(
-    tabId,
-    {
-      frameId,
-      code: executable,
-      matchAboutBlank: true,
-      runAt: "document_start"
-    }
-  );
+  browser.tabs.executeScript(tabId, {
+    frameId,
+    code: executable,
+    matchAboutBlank: true,
+    runAt: "document_start",
+  });
 }

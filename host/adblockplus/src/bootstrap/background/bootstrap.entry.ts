@@ -47,7 +47,7 @@ import { start as startUpdateCampaign } from "../../update-campaign/background";
 import { start as startPages } from "../../core/pages/background";
 import { start as startGlobals } from "../../globals/background";
 import { start as startPublicAPI } from "@eyeo-fragments/public-api";
-import {port, addTrustedMessageTypes} from "~/core/messaging/background";
+import { port, addTrustedMessageTypes } from "~/core/messaging/background";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { getAuthPayload, getPremiumState } from "~/premium/background";
 
@@ -90,7 +90,7 @@ async function bootstrap(): Promise<void> {
       addTrustedMessageTypes,
       getPremiumState,
       getAuthPayload
-    })
+    });
   } catch (error) {
     reportError(error as Error);
   }

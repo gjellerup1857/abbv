@@ -718,7 +718,7 @@ initialize
       port,
       addTrustedMessageTypes: ext.addTrustedMessageTypes,
       getPremiumState: License.isActiveLicense,
-      getAuthPayload: License.getBypassPayload
+      getAuthPayload: License.getBypassPayload,
     });
     addAllowlistingListeners();
   })

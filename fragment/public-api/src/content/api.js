@@ -23,8 +23,8 @@ import {
 } from "../shared/constants.js";
 
 let throttled = false;
-const manifest = await browser.runtime.getManifest();
-const extName= manifest.short_name;
+const manifest = browser.runtime.getManifest();
+const extName = manifest.short_name;
 
 const extAllowlistingTriggerEvent = `${extName}.${allowlistingTriggerEvent}`;
 const extAllowlistingResponseEvent = `${extName}.${allowlistingResponseEvent}`;
@@ -35,16 +35,16 @@ const extAllowlistingResponseEvent = `${extName}.${allowlistingResponseEvent}`;
  * @param {object} allowlistingCommand The allowlisting command
  * @returns {boolean} True if the command is valid, false otherwise.
  */
-function isValidAllowlistingCommand(allowlistingCommand){
-    return (
-      allowlistingCommand &&
-      typeof allowlistingCommand === "object" &&
-      typeof allowlistingCommand.timeout === "number" &&
-      allowlistingCommand.timeout > 0 &&
-      typeof allowlistingCommand.options === "object" &&
-      typeof allowlistingCommand.options.expiresAt === "number" &&
-      allowlistingCommand.options.expiresAt  > 0
-    );
+function isValidAllowlistingCommand(allowlistingCommand) {
+  return (
+    allowlistingCommand &&
+    typeof allowlistingCommand === "object" &&
+    typeof allowlistingCommand.timeout === "number" &&
+    allowlistingCommand.timeout > 0 &&
+    typeof allowlistingCommand.options === "object" &&
+    typeof allowlistingCommand.options.expiresAt === "number" &&
+    allowlistingCommand.options.expiresAt > 0
+  );
 }
 
 /**
@@ -57,7 +57,7 @@ function isValidAllowlistingCommand(allowlistingCommand){
  * or a timeout error
  */
 async function sendAllowlistCommand(allowlistingCommand) {
-  const {options, timeout} = allowlistingCommand;
+  const { options, timeout } = allowlistingCommand;
 
   const messagePromise = browser.runtime.sendMessage({
     type: allowlistingTriggerEvent,
@@ -65,7 +65,10 @@ async function sendAllowlistCommand(allowlistingCommand) {
   });
 
   const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("Timeout waiting for background response")), timeout)
+    setTimeout(
+      () => reject(new Error("Timeout waiting for background response")),
+      timeout,
+    ),
   );
 
   // Timeout if no response from the background script is received in time
@@ -75,8 +78,8 @@ async function sendAllowlistCommand(allowlistingCommand) {
     return {
       extName,
       success: false,
-      reason: error.message
-    }
+      reason: error.message,
+    };
   }
 }
 
@@ -86,14 +89,16 @@ async function sendAllowlistCommand(allowlistingCommand) {
  * @param response The response to be sent.
  */
 function sendResponseToMainWorld(response) {
-  let options = {detail: response};
+  let options = { detail: response };
   if (typeof cloneInto === "function") {
     // Firefox requires content scripts to clone objects
     // that are passed to the document
     options = cloneInto(options, document.defaultView);
   }
 
-  document.dispatchEvent(new CustomEvent(extAllowlistingResponseEvent, options));
+  document.dispatchEvent(
+    new CustomEvent(extAllowlistingResponseEvent, options),
+  );
 }
 
 /**
@@ -106,12 +111,15 @@ function sendResponseToMainWorld(response) {
  * @returns {Promise<void>} The result of the allowlisting command
  */
 async function allowlistWebsiteListener(allowlistingCommand) {
-  console.log("Received allowlist command from page script", allowlistingCommand);
+  console.log(
+    "Received allowlist command from page script",
+    allowlistingCommand,
+  );
   if (!isValidAllowlistingCommand(allowlistingCommand)) {
     sendResponseToMainWorld({
       extName,
       success: false,
-      reason: "Invalid allowlisting command"
+      reason: "Invalid allowlisting command",
     });
 
     return;
@@ -122,7 +130,7 @@ async function allowlistWebsiteListener(allowlistingCommand) {
   }
 
   throttled = true;
-  const response = await sendAllowlistCommand(allowlistingCommand)
+  const response = await sendAllowlistCommand(allowlistingCommand);
   console.log("received response from extension in content script", response);
   sendResponseToMainWorld(response);
   throttled = false;
@@ -130,7 +138,7 @@ async function allowlistWebsiteListener(allowlistingCommand) {
 
 function start() {
   document.addEventListener(extAllowlistingTriggerEvent, (ev) => {
-    const {detail} = ev;
+    const { detail } = ev;
     return allowlistWebsiteListener(detail);
   });
 }

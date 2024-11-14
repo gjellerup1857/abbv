@@ -23,4 +23,3 @@ export const apiFrameUrl = "https://example.com";
 export const allowlistingTriggerEvent = "public-api.allowlist-website";
 // Event name for replying to the allowlisting action
 export const allowlistingResponseEvent = "public-api.website-allowlisted";
-
