@@ -340,9 +340,9 @@ upload_sourcemaps:
     - npm i
     - cd host/adblockplus
     - npm run sentry:login -- --auth-token $SENTRY_AUTH_TOKEN
-    - version=${CI_COMMIT_TAG/adblockplus-/""}
+    - version="${CI_COMMIT_TAG/adblockplus-/""}"
     - echo "Uploading the sourcemaps for Adblockplus $version"
     - VERSION=$version npm run sentry:release-new
-    - mkdir ./dist/release/sourcemaps-mv3 && unzip dist/release/adblockplus-*mv3.zip '*.js.map' -d ./dist/release/sourcemaps-mv3
-    - npm run sentry:sourcemaps
+    - mkdir ./dist/release/sourcemaps-mv3 && unzip dist/release/adblockplus-*mv3.zip -d ./dist/release/sourcemaps-mv3
+    - VERSION=$version npm run sentry:sourcemaps
     - VERSION=$version npm run sentry:release-finalize

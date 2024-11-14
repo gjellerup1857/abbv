@@ -257,16 +257,22 @@ resources like the GCloud console can be granted by devops as well.
 ## Uploading sourcemaps
 
 The gitlab CI configuration has `release` stage and `upload_sourcemaps` job
-which is tarted for tags like `adblockplus-v<number>` and uploads the releases sourcemaps
-to Sentry.
+which is runs for tags like `adblockplus-v<number>` and uploads the releases sourcemaps to Sentry.
 It requires `SENTRY_AUTH_TOKEN` global variable configured for the project.
 To do the same manually on the command line one has to:
 
 1. Login to Sentry with `npm run sentry:login` and provide Sentry auth token.
 2. Create a release with `VERSION=<version> npm run sentry:release-new`
-3. Actually upload the sourcemaps with `npm run sentry:sourcemaps`.
+3. Prepare unzipped file:
+
+```
+mkdir ./dist/release/sourcemaps-mv3
+&& unzip dist/release/adblockplus-*mv3.zip '*.js.map' -d ./dist/release/sourcemaps-mv3
+```
+
+4. Upload the sourcemaps with `VERSION=<version> npm run sentry:sourcemaps`.
    The sourcemaps are overwritten.
-4. Finalize the release with `VERSION=<version> npm run sentry:release-finalize`
+5. Finalize the release with `VERSION=<version> npm run sentry:release-finalize`
 
 ## Release history
 
