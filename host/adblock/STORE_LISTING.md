@@ -65,9 +65,6 @@ environment, and reload the extension in the browser.
 
 ## Third Party Libraries in AdBlock:
 
-PubNub
-https://github.com/pubnub/javascript/releases/tag/v4.27.3
-
 DomPurify (version 2.2.6)
 https://github.com/cure53/DOMPurify/releases/tag/2.2.6
 

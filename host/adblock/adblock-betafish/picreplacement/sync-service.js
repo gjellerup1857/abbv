@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, channels,
    getUserFilters, Prefs, abpPrefPropertyNames,
-   adblockIsDomainPaused, PubNub, adblockIsPaused,
+   adblockIsDomainPaused, adblockIsPaused,
    pausedFilterText1, pausedFilterText2,
    isWhitelistFilter */
 
@@ -35,7 +35,6 @@ import { License } from "./check";
 import { channelsNotifier } from "./channels";
 import SubscriptionAdapter from "../subscriptionadapter";
 import { getSettings, setSetting, settingsNotifier, settings } from "../prefs/background";
-import ServerMessages from "../servermessages";
 import postData from "../fetch-util";
 import {
   chromeStorageDeleteHelper,
@@ -49,7 +48,6 @@ const SyncService = (function getSyncService() {
   let storedSyncDomainPauses = [];
   let syncCommitVersion = 0;
   let currentExtensionName = "";
-  let pubnub;
   const syncSchemaVersion = 1;
   const syncCommitVersionKey = "SyncCommitKey";
   const syncLogMessageKey = "SyncLogMessageKey";
@@ -1013,40 +1011,6 @@ const SyncService = (function getSyncService() {
     browser.alarms.create(periodicSyncAlarmName, { periodInMinutes: periodicSyncInterval });
   }
 
-  async function enablePubNub() {
-    pubnub = new PubNub({
-      subscribeKey: License.MAB_CONFIG.subscribeKey,
-      authKey: `${License.get().licenseId}_${await getUserId()}`,
-      ssl: true,
-    });
-
-    pubnub.addListener({
-      message(response) {
-        if (response.message && response.message && response.message.commitVersion) {
-          processFetchRequest(response.message.commitVersion);
-        }
-      },
-      status(msg) {
-        if (msg.category === "PNNetworkUpCategory") {
-          pubnub.subscribe({
-            channels: [License.get().licenseId],
-          });
-        }
-        if (msg.error === true && msg.category && msg.operation) {
-          ServerMessages.recordGeneralMessage("pubnub_error", undefined, {
-            licenseId: License.get().licenseId,
-            category: msg.category,
-            operation: msg.operation,
-          });
-        }
-      },
-    });
-
-    pubnub.subscribe({
-      channels: [License.get().licenseId],
-    });
-  }
-
   const addSyncEventListeners = function () {
     syncNotifier.on("sync.data.getting.error", onSyncDataGettingErrorAddLogEntry);
     syncNotifier.on(
@@ -1093,12 +1057,7 @@ const SyncService = (function getSyncService() {
       }
       // wait a moment at start to allow all of the backgound scripts to load
       setTimeout(() => {
-        if (typeof PubNub !== "undefined") {
-          enablePubNub();
-        } else {
-          // If we don't have PubNub, we need to periodically run a sync ourselves.
-          startPeriodicSync();
-        }
+        startPeriodicSync();
       }, 1000);
 
       self.addEventListener("online", updateNetworkStatus);
@@ -1117,21 +1076,10 @@ const SyncService = (function getSyncService() {
     addListeners();
   };
 
-  function disablePubNub() {
-    if (!pubnub) {
-      return;
-    }
-
-    pubnub.removeAllListeners();
-    pubnub.unsubscribeAll();
-    pubnub = undefined;
-  }
-
   const disableSync = function (removeName) {
     stopPeriodicSync();
     setSetting("sync_settings", false);
     syncCommitVersion = 0;
-    disablePubNub();
     ewe.subscriptions.onAdded.removeListener(onFilterListsSubAdded);
     ewe.subscriptions.onRemoved.removeListener(onFilterListsSubRemoved);
 

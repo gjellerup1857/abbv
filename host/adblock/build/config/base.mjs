@@ -168,7 +168,6 @@ export default {
           "COPYING",
           "adblock-betafish/translators.json",
           "adblock-betafish/jquery/jquery-3.5.1.min.js",
-          "adblock-betafish/pubnub/pubnub.min.js",
           "adblock-betafish/lib/*",
           "adblock-betafish/adblock.css",
           "adblock-betafish/picreplacement/contentscript-loader.js",

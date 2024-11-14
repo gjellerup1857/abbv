@@ -1,8 +1,5 @@
 Bundled Library versions:
 
-PubNub
-https://github.com/pubnub/javascript/releases/tag/v4.27.3
-
 DomPurify
 https://github.com/cure53/DOMPurify/releases/tag/3.0.11
 

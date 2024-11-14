@@ -1,6 +1,7 @@
 # Unreleased
 
 - Updated webext-ad-filtering-solution to 1.17.1
+- Removed PubNub integration (EXT-544)
 
 # 6.11.0 - 2024-10-30
 
