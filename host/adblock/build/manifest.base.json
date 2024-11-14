@@ -68,6 +68,12 @@
         "https://vpn.getadblock.com/*"
       ],
       "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "js": ["public-api.preload.js"],
+      "matches": ["*://*.example.com/*"],
+      "run_at": "document_start"
     }
   ],
   "content_security_policy": "default-src 'self'; img-src 'self' data: blob: https://cdn.adblockcdn.com; style-src 'self' 'unsafe-inline'; connect-src *; frame-src 'self' https://getadblock.com",

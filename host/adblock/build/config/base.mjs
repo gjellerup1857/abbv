@@ -80,6 +80,11 @@ export default {
         package: "@eyeo/yt-wall-detection",
         src: "/content",
       },
+      {
+        dest: "public-api.preload.js",
+        package: "@eyeo-fragments/public-api",
+        src: "/content",
+      },
       // TODO (ui-components): Uncomment this when you want to integrate ui-components
       // {
       //   dest: "button/react-popup.js",

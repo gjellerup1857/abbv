@@ -15,6 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { createRequire } from "module";
 import Dotenv from "dotenv-webpack";
 import gulp from "gulp";
 import merge2 from "merge2";
@@ -22,6 +23,8 @@ import webpackStream from "webpack-stream";
 import webpackMerge from "webpack-merge";
 import webpackMain from "webpack";
 import named from "vinyl-named";
+
+const require = createRequire(import.meta.url);
 
 export default function webpack({
   webpackInfo,
@@ -33,9 +36,16 @@ export default function webpack({
   // important, because if the order changes webpack can give results that are
   // functionally the same between runs, but not byte-for-byte identical.
   return merge2(
-    ...webpackInfo.bundles.map((bundle) =>
-      gulp.src(bundle.src).pipe(named(() => bundle.dest))
-    )
+    ...webpackInfo.bundles.map((bundle) => {
+      if (bundle.package) {
+        return gulp
+          .src(require.resolve(`${bundle.package}${bundle.src}`))
+          .pipe(named(() => bundle.dest));
+      }
+      if (bundle.src) {
+        return gulp.src(bundle.src).pipe(named(() => bundle.dest));
+      }
+    }),
   ).pipe(
     webpackStream(
       {

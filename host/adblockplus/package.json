@@ -114,6 +114,7 @@
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
     "@eyeo/webext-ad-filtering-solution": "1.17.1",
+    "@eyeo-fragments/public-api": "*",
     "@sentry/browser": "8.2.1",
     "@sentry/cli": "2.37.0",
     "argparse": "1.0.10",

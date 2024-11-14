@@ -125,6 +125,11 @@ export default {
       {
         dest: "info-injector.preload.js",
         src: ["src/info-injector/content/index.ts"]
+      },
+      {
+        dest: "public-api.preload.js",
+        package: "@eyeo-fragments/public-api",
+        src: ["/content"]
       }
     ]
   },
@@ -167,7 +172,7 @@ export default {
           "src/problem/ui/problem.html",
           "src/updates/ui/updates.html"
         ]
-      }
+      },
     ],
     rename: [
       {
