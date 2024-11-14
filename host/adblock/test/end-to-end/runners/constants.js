@@ -17,11 +17,13 @@ export function getManifestVersionArg() {
   return process.env.MANIFEST_VERSION || "3";
 }
 
+// Screenshots path without the runnerId subfolder
+export const screenshotsBasePath = path.join(process.cwd(), "test", "end-to-end", "screenshots");
+
 /**
- * The path to the screenshots directory
+ * The path to the screenshots directory for a specific runner
  * @returns {string}
  */
 export function getScreenshotsPath() {
-  const { runnerId } = global;
-  return path.join(process.cwd(), "test", "end-to-end", "screenshots", runnerId);
+  return path.join(screenshotsBasePath, global.runnerId);
 }

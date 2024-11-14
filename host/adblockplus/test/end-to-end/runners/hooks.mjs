@@ -15,6 +15,11 @@ const rootDir = findProjectRoot();
 const testDir = path.join(rootDir, "test", "end-to-end");
 const screenshotsPath = path.join(testDir, "screenshots");
 
+// Removes the screenshots folder
+export async function removeScreenshots() {
+  await fs.promises.rm(screenshotsPath, { recursive: true, force: true });
+}
+
 /**
  * Hook to take a screenshot after each test if the test failed
  *

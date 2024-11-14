@@ -20,10 +20,14 @@ import path from "path";
 import fs from "fs";
 import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
-import { getBrowserNameArg, getManifestVersionArg } from "./constants.js";
+import {
+  getBrowserNameArg,
+  getManifestVersionArg,
+  getScreenshotsPath,
+  screenshotsBasePath,
+} from "./constants.js";
 import { reloadExtension } from "../utils/page.js";
 import { sleep } from "@eyeo/test-utils";
-import { getScreenshotsPath } from "./constants.js";
 
 /**
  * Extracts the extension from the release folder based on the browser name
@@ -194,4 +198,9 @@ export async function screenshot(title) {
   const screenshotsPath = getScreenshotsPath();
   await fs.promises.mkdir(screenshotsPath, { recursive: true });
   await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
+}
+
+// Removes the screenshots base folder
+export async function removeScreenshots() {
+  await fs.promises.rm(screenshotsBasePath, { recursive: true, force: true });
 }

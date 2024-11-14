@@ -2,6 +2,8 @@
 import { spawn } from "child_process";
 import { runTestServer, killTestServer } from "@eyeo/test-utils";
 
+import { removeScreenshots } from "./runners/helpers.js";
+
 // Extract command-line arguments after the script name
 // e.g., --suite filterlists
 const args = process.argv.slice(2);
@@ -24,9 +26,8 @@ async function runMochaTests() {
 }
 
 async function main() {
-  console.log("Starting test server...");
-
   await runTestServer();
+  await removeScreenshots();
 
   try {
     await runMochaTests();
