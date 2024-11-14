@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { MS_IN_DAY } from "./constants.js";
+
 /**
  * Returns an MV2 script to inject into the page.
  *
@@ -28,8 +30,7 @@ function getMV2ScriptToInject(injectedFunction, ...params) {
   // stringify injectedLib to escape backticks
   let code = JSON.stringify(injectedFunction.toString());
   code = `"(${code.slice(1, -1)}).apply(null,${JSON.stringify(args).slice(1, -1)});"`;
-  let executable =
-    `function injectScriptInMainContext(executable) {
+  let executable = `function injectScriptInMainContext(executable) {
       // injecting phases
       let script = document.createElement("script");
       script.type = "application/javascript";
@@ -66,17 +67,12 @@ function getMV2ScriptToInject(injectedFunction, ...params) {
  * @param {Function} details.func The function to be inserted into main world
  * @param {any[]} details.args The parameters for the funtion.
  */
-export function injectScriptInFrame({
-                                      tabId,
-                                      frameId,
-                                      func,
-                                      args
-                                    }) {
+export function injectScriptInFrame({ tabId, frameId, func, args }) {
   if (browser.scripting && browser.scripting.executeScript) {
     if (Object.values(browser.scripting.ExecutionWorld).includes("MAIN")) {
       console.log("injecting the script into main world MV3");
       browser.scripting.executeScript({
-        target: {tabId, frameIds: [frameId]},
+        target: { tabId, frameIds: [frameId] },
         world: "MAIN",
         injectImmediately: true,
         func,
@@ -89,13 +85,63 @@ export function injectScriptInFrame({
 
   const executable = getMV2ScriptToInject(func, ...args);
   console.log("injecting the script into main world MV2");
-  browser.tabs.executeScript(
-    tabId,
-    {
-      frameId,
-      code: executable,
-      matchAboutBlank: true,
-      runAt: "document_start"
-    }
-  );
+  browser.tabs.executeScript(tabId, {
+    frameId,
+    code: executable,
+    matchAboutBlank: true,
+    runAt: "document_start",
+  });
+}
+
+/**
+ * Checks if the allowlisting options are valid
+ * If expiresAt is option is present, then it's value needs to be between 1 and 365 days.
+ *
+ * @param allowlistingOptions The allowlisting options
+ */
+export function hasValidAllowlistingOptions(allowlistingOptions) {
+  if (!allowlistingOptions) {
+    return true;
+  }
+
+  const { expiresAt } = allowlistingOptions;
+  if (
+    Object.keys(allowlistingOptions).length !== 1 ||
+    !Number.isInteger(expiresAt)
+  ) {
+    return false;
+  }
+
+  const now = Date.now();
+  const minExpiresAt = now + MS_IN_DAY;
+  const maxExpiresAt = now + 365 * MS_IN_DAY;
+
+  return expiresAt >= minExpiresAt && expiresAt <= maxExpiresAt;
+}
+
+/**
+ * Checks if the allowlisting command has the right format.
+ *
+ * @param {object} allowlistingCommand The allowlisting command
+ * @returns {boolean} True if the command is valid, false otherwise.
+ */
+export function isValidAllowlistingCommand(allowlistingCommand) {
+  if (typeof allowlistingCommand !== "object" || !allowlistingCommand) {
+    return false;
+  }
+
+  const allowedKeys = ["options", "timeout"];
+  const commandKeys = Object.keys(allowlistingCommand);
+  if (!commandKeys.every((key) => allowedKeys.includes(key))) {
+    return false;
+  }
+
+  const { options, timeout } = allowlistingCommand;
+
+  // Ensure timeout is a positive integer
+  if (!Number.isInteger(timeout) || timeout <= 0) {
+    return false;
+  }
+
+  return hasValidAllowlistingOptions(options);
 }

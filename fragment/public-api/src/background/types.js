@@ -3,8 +3,8 @@
  * @property {any} ewe The filter engine.
  * @property {any} port A reference to the port object
  * @property {addTrustedMessageTypesFunction} addTrustedMessageTypes Function to add the trusted message types
- * @property {Function} getPremiumState Function to get the premium state of the user
- * @property {Function} getAuthPayload Function to get the license of the user
+ * @property {Function} isPremiumActive Function to get the premium state of the user
+ * @property {Function} getEncodedLicense Function to get the encoded license of the user
  */
 
 /**

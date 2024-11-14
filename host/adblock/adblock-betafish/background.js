@@ -717,8 +717,8 @@ initialize
       ewe,
       port,
       addTrustedMessageTypes: ext.addTrustedMessageTypes,
-      getPremiumState: License.isActiveLicense,
-      getAuthPayload: License.getBypassPayload
+      isPremiumActive: License.isActiveLicense,
+      getEncodedLicense: License.getBypassPayload,
     });
     addAllowlistingListeners();
   })

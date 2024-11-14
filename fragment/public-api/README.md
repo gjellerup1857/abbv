@@ -2,7 +2,7 @@
 
 ## Intro
 
-This fragment contains the content and background page (service worker) scripts needed to 
+This fragment contains the content and background page (service worker) scripts needed to
 make the public extension API available.
 
 ## Running scripts

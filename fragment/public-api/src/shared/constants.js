@@ -24,3 +24,5 @@ export const allowlistingTriggerEvent = "public-api.allowlist-website";
 // Event name for replying to the allowlisting action
 export const allowlistingResponseEvent = "public-api.website-allowlisted";
 
+// Milliseconds in a day
+export const MS_IN_DAY = 1000 * 60 * 60 * 24;

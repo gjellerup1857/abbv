@@ -3,16 +3,9 @@
   "type": "module",
   "license": "GPL-3.0",
   "private": true,
-  "types": "dist/index.d.ts",
+  "types": "./dist/background/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./src/background/index.js"
-    },
-    "./background": {
-      "types": "./dist/index.d.ts",
-      "import": "./src/background/index.js"
-    },
+    ".": "./src/background/index.js",
     "./content": "./src/content/index.js"
   },
   "scripts": {

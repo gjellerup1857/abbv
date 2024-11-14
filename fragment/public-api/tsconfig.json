@@ -5,12 +5,8 @@
     "allowJs": true,
     "checkJs": false,
     "esModuleInterop": true,
-    "outFile": "./dist/index.d.ts",
     "skipLibCheck": true,
-    "moduleResolution": "node",
-    "paths": {
-      "@eyeo-fragments/public-api": ["./src/background/index.js"]
-    }
+    "outDir": "./dist/"
   },
   "include": ["src/background/index.js"],
   "exclude": ["node_modules", "src/content/*.js", "src/shared/*.js"]

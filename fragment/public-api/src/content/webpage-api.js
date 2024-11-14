@@ -26,15 +26,15 @@
  * @param {object} details.extensionData The extension data to be passed on the page.
  */
 export function webpageAPI({
-                             allowlistingTriggerEvent,
-                             allowlistingResponseEvent,
-                             extensionData,
-                           }) {
-  const {extensionInfo} = extensionData;
+  allowlistingTriggerEvent,
+  allowlistingResponseEvent,
+  extensionData,
+}) {
+  const { extensionInfo } = extensionData;
   const API_VERSION = "1.0.0";
   const namespacePrefix = "extension_";
   const extName = extensionInfo.name;
-  const namespaceName = `${namespacePrefix}${extName}`
+  const namespaceName = `${namespacePrefix}${extName}`;
   const extAllowlistingTriggerEvent = `${extName}.${allowlistingTriggerEvent}`;
   const extAllowlistingResponseEvent = `${extName}.${allowlistingResponseEvent}`;
 
@@ -46,38 +46,43 @@ export function webpageAPI({
    * @returns {Promise<unknown>} The response from the extension
    */
   async function allowlistWebsite(allowlistingOptions, timeoutMs = 3000) {
-    // Trigger the allowlisting in the content script
-    document.dispatchEvent(
-      new CustomEvent(extAllowlistingTriggerEvent, {
-        detail: {
-          options: allowlistingOptions,
-          timeout: timeoutMs
-        }
-      })
+    console.log(
+      "sent trigger event to content script",
+      extAllowlistingTriggerEvent,
     );
-    console.log("sent trigger event to content script", extAllowlistingTriggerEvent)
     return new Promise((resolve, reject) => {
       function eventHandler(event) {
-        console.log("received response from the extension in main world", event, event.detail);
+        console.log(
+          "received response from the extension in main world",
+          event,
+          event.detail,
+        );
 
-        document.removeEventListener(extAllowlistingResponseEvent, eventHandler);
+        document.removeEventListener(
+          extAllowlistingResponseEvent,
+          eventHandler,
+        );
         resolve(event.detail);
       }
 
       document.addEventListener(extAllowlistingResponseEvent, eventHandler);
+
+      // Trigger the allowlisting in the content script
+      document.dispatchEvent(
+        new CustomEvent(extAllowlistingTriggerEvent, {
+          detail: {
+            options: allowlistingOptions,
+            timeout: timeoutMs,
+          },
+        }),
+      );
     });
   }
 
   const namespace = Object.freeze({
     API_VERSION,
-    getStatus: () => {
-      return {
-        name: extName,
-        success: true,
-        value: extensionData
-      }
-    },
-    allowlistWebsite
+    getStatus: () => extensionData,
+    allowlistWebsite,
   });
 
   /**
@@ -94,7 +99,10 @@ export function webpageAPI({
       if (key.startsWith(namespacePrefix)) {
         const namespaceObject = window[key];
 
-        if (namespaceObject && typeof namespaceObject[callName] === 'function') {
+        if (
+          namespaceObject &&
+          typeof namespaceObject[callName] === "function"
+        ) {
           responses.push(namespaceObject[callName](...args));
         }
       }
@@ -117,8 +125,12 @@ export function webpageAPI({
    *
    * @returns {any[]} An array with the registered extensions statuses
    */
-  async function allowlistCurrentWebsite({expiresAt}, timeoutMs) {
-    return await callExtensionAPIs("allowlistWebsite", {expiresAt}, timeoutMs)
+  async function allowlistCurrentWebsite({ expiresAt }, timeoutMs) {
+    return await callExtensionAPIs(
+      "allowlistWebsite",
+      { expiresAt },
+      timeoutMs,
+    );
   }
 
   /**
@@ -126,15 +138,15 @@ export function webpageAPI({
    */
   function init() {
     // Define the publicAPI on the window object
-    if (!window.hasOwnProperty('publicAPI')) {
-      Object.defineProperty(window, 'publicAPI', {
+    if (!window.hasOwnProperty("publicAPI")) {
+      Object.defineProperty(window, "publicAPI", {
         value: {
           getExtensionsStatus,
-          allowlistCurrentWebsite
+          allowlistCurrentWebsite,
         },
-        writable: false,  // Prevent modification of the value
-        configurable: false,  // Prevent the property from being deleted or redefined
-        enumerable: true  // Allow the property to be enumerated (optional)
+        writable: false, // Prevent modification of the value
+        configurable: false, // Prevent the property from being deleted or redefined
+        enumerable: true, // Allow the property to be enumerated (optional)
       });
     }
 
@@ -143,10 +155,10 @@ export function webpageAPI({
       value: namespace,
       writable: false,
       configurable: false,
-      enumerable: true
+      enumerable: true,
     });
   }
 
   init();
-  console.log("API was initialized on the page.")
+  console.log("API was initialized on the page.");
 }
