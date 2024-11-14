@@ -52,9 +52,7 @@ function isValidAllowlistingCommand(allowlistingCommand) {
  * timoutMS then this will return and error response
  *
  * @param allowlistingCommand The command to be passed to the background script
- * @param timeoutMs How long should it wait for a reply
- * @returns {Promise<{reason: string, success: boolean, extName: string}>} The result from the background script
- * or a timeout error
+ * @returns {Promise<object>} The result from the background script or a timeout error
  */
 async function sendAllowlistCommand(allowlistingCommand) {
   const { options, timeout } = allowlistingCommand;

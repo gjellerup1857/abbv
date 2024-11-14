@@ -23,3 +23,20 @@ export const apiFrameUrl = "https://example.com";
 export const allowlistingTriggerEvent = "public-api.allowlist-website";
 // Event name for replying to the allowlisting action
 export const allowlistingResponseEvent = "public-api.website-allowlisted";
+
+export const trustedSoftonicDomains = [
+  "softonic-ar.com",
+  "softonic-id.com",
+  "softonic-th.com",
+  "softonic.cn",
+  "softonic.com",
+  "softonic.com.br",
+  "softonic.com.tr",
+  "softonic.jp",
+  "softonic.kr",
+  "softonic.nl",
+  "softonic.pl",
+  "softonic.ru",
+  "softonic.vn",
+  "softoniclabs.com"
+];

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {trustedSoftonicDomains} from "./constants.js";
+
 /**
  * Returns an MV2 script to inject into the page.
  *
@@ -89,4 +91,51 @@ export function injectScriptInFrame({ tabId, frameId, func, args }) {
     matchAboutBlank: true,
     runAt: "document_start",
   });
+}
+
+/**
+ * Return a root domain to allowlist for Softonic subdomains
+ *
+ * @param hostname - hostname to parse
+ */
+function getAllowlistingDomain(hostname) {
+  // Softonic generates subdomains for various software
+  // (e.g., chrome.softonic.com, minecraft.softonic.com).
+  // Allowlisting the subdomains of the trusted Softonic domains list
+  // is intended to affect other subdomains.
+  if (hostname.includes("softonic")) {
+    const domainParts = hostname.split(".");
+    while (domainParts.length > 0) {
+      const subdomain = domainParts.join(".");
+      if (trustedSoftonicDomains.includes(subdomain)) {
+        return subdomain;
+      }
+
+      domainParts.shift();
+    }
+  }
+
+  return hostname.replace(/^www\./, "");
+}
+
+/**
+ * Remove all web based allowlisting filters
+ *
+ * @param {any} ewe The filter engine
+ */
+async function removeWebAllowlistingFilters(ewe) {
+  const allowlistingFilters = (await ewe.filters.getUserFilters()).filter(
+    (filter) => filter.type === "allowing",
+  );
+
+  const allowlistingFiltersWithMetadata = await Promise.all(
+    allowlistingFilters.map(async (filter) => {
+      const metadata = await ewe.filters.getMetadata(filter.text);
+      return { filter, metadata };
+    }),
+  );
+  const webAllowlistingFilters = allowlistingFiltersWithMetadata
+    .filter(({ metadata }) => metadata && metadata.origin === "web")
+    .map(({ filter }) => filter);
+  return ewe.filters.remove(webAllowlistingFilters.map((filter) => filter.text));
 }

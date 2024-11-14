@@ -25,31 +25,46 @@ import {
 import { injectScriptInFrame } from "../shared/helpers.js";
 import { webpageAPI } from "../content/webpage-api.js";
 
+const {short_name: extName, version: extVersion} = browser.runtime.getManifest();
+
 /**
  * Handles the allowlisting of a website
  *
  * @param allowlistingOption The allowlisting options sent from the content script.
  * @param sender The sender object
+ * @param ewe The filter engine
  * @returns {Promise<{object}>} The result of the allowlisting command
  */
-async function handleAllowlisting({ allowlistingOption, sender }) {
+async function handleAllowlisting({ allowlistingOption, sender}, ewe) {
   // TODO: add implementation
-  const manifest = browser.runtime.getManifest();
-  const responses = [
-    {
-      name: manifest.short_name,
-      success: true,
-    },
-    {
-      name: manifest.short_name,
+  // Check validations from webext-ad-filtering-solution/sdk/background/allowlisting.js
+  console.log("allowlist, message and sender", allowlistingOption, sender)
+  if (sender.tab.id === -1) {
+    return {
+      name: extName,
       success: false,
-      reason: "Failed in the background script",
-    },
-  ];
+      reason: "invalid_frame",
+    }
+  }
 
-  // Randomly pick one of the two responses
-  const randomIndex = Math.floor(Math.random() * responses.length);
-  return responses[randomIndex];
+  let tabDomain;
+  try {
+    const parsedUrl = new URL(sender.tab.url);
+    tabDomain = parsedUrl.hostname;
+  } catch {
+    return {
+      name: extName,
+      success: false,
+      reason: "invalid_frame_url",
+    }
+  }
+
+  const metadata ={
+    origin: "web",
+    created: Date.now(),
+    expiresAt,
+  }
+  ewe.filters.add([`@@${tabDomain}$document`], metadata);
 }
 
 /**
@@ -85,6 +100,7 @@ async function getAllowlistStatus({ tabId, ewe }) {
 }
 
 /**
+ * Retrieves the current extension status
  *
  * @param tabId
  * @param ewe
@@ -98,16 +114,12 @@ async function getExtensionStatus({
   getPremiumState,
   getAuthPayload,
 }) {
-  // TODO: Finish implementation
-  const manifest = browser.runtime.getManifest();
   const allowlistState = await getAllowlistStatus({ tabId, ewe });
-
   const premiumState = getPremiumState();
   const payload = premiumState.isActive ? getAuthPayload() : null;
-
   const extensionInfo = {
-    name: manifest.short_name,
-    version: manifest.version,
+    name: extName,
+    version: extVersion,
     allowlistState,
   };
 
@@ -126,9 +138,13 @@ export function start({
   getPremiumState,
   getAuthPayload,
 }) {
-  port.on(allowlistingTriggerEvent, async (message, sender) =>
-    handleAllowlisting({ message, sender }),
-  );
+  port.on(allowlistingTriggerEvent, async (message, sender) =>{
+      if (getPremiumState()) {
+        return;
+      }
+
+      return handleAllowlisting({ allowlistingOption:message, sender }, ewe)
+  });
 
   addTrustedMessageTypes(apiFrameUrl, [allowlistingTriggerEvent]);
 
@@ -160,3 +176,4 @@ export function start({
     { url: [{ urlMatches: apiFrameUrl }] },
   );
 }
+
