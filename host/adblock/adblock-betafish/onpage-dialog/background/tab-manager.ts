@@ -50,6 +50,7 @@ import {
   TabPage,
 } from "./tab-manager.types";
 import { shouldBeDismissed, shouldBeShown, start as setupTimings } from "./timing";
+import { checkLanguage } from "../../ipm/background/language-check";
 
 /**
  * Tab-specific session storage for dialogs
@@ -418,6 +419,11 @@ export async function showOnpageDialog(
   tab: Tabs.Tab,
   dialog: Dialog,
 ): Promise<ShowOnpageDialogResult> {
+  // If we're here because of an IPM command, run the mandatory language skew check
+  if (typeof dialog.ipmId === "string") {
+    void checkLanguage(dialog.ipmId);
+  }
+
   // Ignore and dismiss dialog if user opted-out of notifications
   if (await shouldBeIgnored()) {
     logger.debug("[onpage-dialog]: User ignores notifications");

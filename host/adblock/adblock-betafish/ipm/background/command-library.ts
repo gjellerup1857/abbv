@@ -15,6 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser from "webextension-polyfill";
 import * as logger from "../../utilities/background";
 import { Prefs } from "../../alias/prefs";
 import {
@@ -32,6 +33,7 @@ import {
 import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
 import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
+import { checkLanguage } from "./language-check";
 
 /**
  * A list of known commands.
@@ -306,6 +308,15 @@ export function executeIPMCommands(commands: unknown[], isInitialization: boolea
       continue;
     }
 
+    // add timestamp and language information
+    if (!("attributes" in command)) {
+      // eslint-disable-next-line no-param-reassign
+      command.attributes = {
+        received: Date.now(),
+        language: browser.i18n.getUILanguage(),
+      };
+    }
+
     if (!isInitialization) {
       if (hasProcessedCommand(command.ipm_id)) {
         logger.error("[ipm]: Campaign already processed:", command.ipm_id);
@@ -371,6 +382,9 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
     logger.error("[delete-commands]: Invalid command behavior.");
     return;
   }
+
+  // run mandatory language check
+  void checkLanguage(ipmId);
 
   // Ignore and dismiss command if it has expired
   if (isCommandExpired(command)) {

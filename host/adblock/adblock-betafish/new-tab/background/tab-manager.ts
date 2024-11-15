@@ -39,6 +39,7 @@ import {
   blockCountQueryParameter,
 } from "./tab-manager.types";
 import { Prefs } from "../../alias/prefs";
+import { checkLanguage } from "../../ipm/background/language-check";
 
 const tabIds = new Set<number | undefined>();
 
@@ -125,6 +126,9 @@ async function openNewtab(ipmId: string): Promise<void> {
   if (!command) {
     return;
   }
+
+  // Run mandatory language skew check
+  void checkLanguage(ipmId);
 
   // Ignore and dismiss command if it has no behavior
   const behavior = getBehavior(ipmId);

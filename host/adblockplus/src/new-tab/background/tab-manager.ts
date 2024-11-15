@@ -41,6 +41,7 @@ import {
   CreationSuccess,
   CreationRejection
 } from "./tab-manager.types";
+import { checkLanguage } from "~/ipm/background/language-check";
 
 /**
  * Maps IPM IDs to the listeners that have been attached by them.
@@ -118,6 +119,9 @@ async function openNewTab(ipmId: string): Promise<void> {
   removeListeners(ipmId);
   listenerMap.delete(ipmId);
   tabIds.clear();
+
+  // Run mandatory language skew check
+  void checkLanguage(ipmId);
 
   // Ignore and dismiss command if it has invalid behavior.
   const behavior = getBehavior(ipmId);

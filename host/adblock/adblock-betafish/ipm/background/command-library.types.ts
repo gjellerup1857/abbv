@@ -83,7 +83,7 @@ export const CommandVersion: Record<CommandName, number> = {
  */
 export interface CommandMetaData {
   /**
-   * The command library version.
+   * The command version.
    */
   version: number;
   /**
@@ -98,6 +98,25 @@ export interface CommandMetaData {
    * The command expiration date.
    */
   expiry: string;
+  /**
+   * A collection of attributes that do not come in via the IPM server, but
+   * that are rather added by the internal IPM system instead.
+   */
+  attributes?: InternalAttributes;
+}
+
+export interface InternalAttributes {
+  /**
+   * A timestamp denoting when the command was received. This will not come
+   * from the IPM server, but instead will be added by the extension.
+   */
+  received: number;
+  /**
+   * The browser language at the time when the command was received. We use
+   * this to track whether the language changes between the command being
+   * received and it being executed.
+   */
+  language: string;
 }
 
 /**
