@@ -19,7 +19,7 @@ import webdriver from "selenium-webdriver";
 
 const { By } = webdriver;
 
-export async function findUrl(driver, expectedUrl, timeout = 5000) {
+export async function findUrl(expectedUrl, timeout = 5000) {
   let url;
   let handle;
   await driver.wait(
@@ -47,7 +47,7 @@ export async function findUrl(driver, expectedUrl, timeout = 5000) {
 
 // Gets the ID of current tab using the browser.tabs WebExtension API.
 // This is mainly used to work with the popup when it is open in a tab.
-export async function getTabId(driver, optionsHandle) {
+export async function getTabId(optionsHandle) {
   const currentHandle = await driver.getWindowHandle();
   const url = await driver.getCurrentUrl();
 
@@ -77,7 +77,7 @@ export async function getTabId(driver, optionsHandle) {
 
 // The forceRefresh parameter is a temporary workaround, to be removed when fixing
 // https://eyeo.atlassian.net/browse/EXT-335
-export async function getDisplayedElement(driver, cssSelector, timeout = 500, forceRefresh = true) {
+export async function getDisplayedElement(cssSelector, timeout = 500, forceRefresh = true) {
   let elem;
   const findElement = async () => {
     await driver.wait(
@@ -108,7 +108,7 @@ export async function getDisplayedElement(driver, cssSelector, timeout = 500, fo
   return elem;
 }
 
-export async function openNewTab(driver, url) {
+export async function openNewTab(url) {
   await driver.switchTo().newWindow("tab");
   await driver.navigate().to(url);
   return driver.getWindowHandle();
@@ -118,11 +118,11 @@ export function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
+export function waitForNotDisplayed(cssText, timeout = 1000) {
   return driver.wait(
     async () => {
       try {
-        await getDisplayedElement(driver, cssText, 500, false);
+        await getDisplayedElement(cssText, 500, false);
         return false;
       } catch (err) {
         if (err.name === "TimeoutError") {
@@ -136,7 +136,7 @@ export function waitForNotDisplayed(driver, cssText, timeout = 1000) {
   );
 }
 
-export async function waitForNotNullAttribute(driver, id, attribute, timeout = 1000) {
+export async function waitForNotNullAttribute(id, attribute, timeout = 1000) {
   let value;
   await driver.wait(
     async () => {
@@ -159,19 +159,18 @@ export async function waitForNotNullAttribute(driver, id, attribute, timeout = 1
   return value;
 }
 
-export function isCheckboxEnabled(driver, inputId) {
-  return waitForNotNullAttribute(driver, inputId, "checked");
+export function isCheckboxEnabled(inputId) {
+  return waitForNotNullAttribute(inputId, "checked");
 }
 
 export async function waitAndClickOnElement(selector, timeout = 1000) {
-  const { driver } = global;
-  const elem = await getDisplayedElement(driver, selector, timeout, false);
+  const elem = await getDisplayedElement(selector, timeout, false);
   await elem.click();
 }
 
-export async function clickAndNavigateBack(driver, selector, expectedURL) {
+export async function clickAndNavigateBack(selector, expectedURL) {
   const currentURL = await driver.getCurrentUrl();
-  const elem = await getDisplayedElement(driver, selector);
+  const elem = await getDisplayedElement(selector);
   await elem.click();
 
   const newURL = await driver.getCurrentUrl();
@@ -183,11 +182,11 @@ export async function clickAndNavigateBack(driver, selector, expectedURL) {
   await driver.navigate().refresh();
 }
 
-export async function clickAndCloseNewTab(driver, selector, expectedURL) {
+export async function clickAndCloseNewTab(selector, expectedURL) {
   const currentWindowHandle = await driver.getWindowHandle();
   const initialWindowHandles = await driver.getAllWindowHandles();
 
-  const elem = await getDisplayedElement(driver, selector);
+  const elem = await getDisplayedElement(selector);
   await elem.click();
 
   await driver.wait(

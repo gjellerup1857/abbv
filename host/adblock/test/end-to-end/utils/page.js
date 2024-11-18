@@ -36,15 +36,15 @@ export const installUrl = "getadblock.com/en/installed";
 export const blockHideUrl =
   "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
 
-export async function initPopupPage(driver, popupUrl, tabId) {
+export async function initPopupPage(tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";
-  const url = `${popupUrl}${tabIdParam}`;
-  const handle = await openNewTab(driver, url);
-  await getDisplayedElement(driver, ".header-logo", 5000);
+  const url = `${extension.popupUrl}${tabIdParam}`;
+  const handle = await openNewTab(url);
+  await getDisplayedElement(".header-logo", 5000);
   return handle;
 }
 
-async function loadOptionsTab(driver, optionsHandle, id) {
+async function loadOptionsTab(optionsHandle, id) {
   await driver.switchTo().window(optionsHandle);
 
   await driver.wait(
@@ -78,51 +78,49 @@ async function loadOptionsTab(driver, optionsHandle, id) {
   );
 }
 
-export async function initOptionsFiltersTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "filters");
+export async function initOptionsFiltersTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "filters");
   // Wait until a filterlist is displayed
-  await getDisplayedElement(driver, '[name="easylist"]', 8000);
+  await getDisplayedElement('[name="easylist"]', 8000);
 }
 
-export async function initOptionsCustomizeTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "customize");
+export async function initOptionsCustomizeTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "customize");
 }
 
-export async function initOptionsGeneralTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "general");
-  await waitForNotNullAttribute(driver, "acceptable_ads", "checked");
+export async function initOptionsGeneralTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "general");
+  await waitForNotNullAttribute("acceptable_ads", "checked");
   // https://eyeo.atlassian.net/browse/EXT-335
   await driver.sleep(2500);
 }
 
-export async function initOptionsPremiumTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "mab");
+export async function initOptionsPremiumTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "mab");
   // https://eyeo.atlassian.net/browse/EXT-335
   await driver.sleep(3000);
   await driver.navigate().refresh();
 }
 
-export async function initOptionsThemesTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "mab-themes");
+export async function initOptionsThemesTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "mab-themes");
 }
 
-export async function initOptionsImageSwapTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "mab-image-swap");
+export async function initOptionsImageSwapTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "mab-image-swap");
 }
 
-export async function initOptionsBackupSyncTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "sync");
+export async function initOptionsBackupSyncTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "sync");
 }
 
-export async function initOptionsPremiumFlTab(driver, optionsHandle) {
-  await loadOptionsTab(driver, optionsHandle, "premium-filters");
-  await getDisplayedElement(driver, "#premium-filter-lists > div:nth-child(2)", 2000);
+export async function initOptionsPremiumFlTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "premium-filters");
+  await getDisplayedElement("#premium-filter-lists > div:nth-child(2)", 2000);
 }
 
 export async function getCustomFilters() {
-  const { driver } = global;
-
-  const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
+  const filtersAdvancedElem = await getDisplayedElement("#txtFiltersAdvanced");
   // filters are loaded with a delay
   await driver.sleep(2000);
   const filters = await filtersAdvancedElem.getAttribute("value");
@@ -130,8 +128,7 @@ export async function getCustomFilters() {
 }
 
 export async function setCustomFilters(filters, append = false) {
-  const { driver } = global;
-  const editButton = await getDisplayedElement(driver, "#btnEditAdvancedFilters", 2000);
+  const editButton = await getDisplayedElement("#btnEditAdvancedFilters", 2000);
 
   // The edit button functionality may take some time to be ready.
   // Retrying as a workaround
@@ -139,12 +136,12 @@ export async function setCustomFilters(filters, append = false) {
   await driver.wait(async () => {
     try {
       await editButton.click();
-      saveButton = await getDisplayedElement(driver, "#btnSaveAdvancedFilters", 500, false);
+      saveButton = await getDisplayedElement("#btnSaveAdvancedFilters", 500, false);
       return true;
     } catch (e) {}
   });
 
-  const filtersAdvancedElem = await getDisplayedElement(driver, "#txtFiltersAdvanced");
+  const filtersAdvancedElem = await getDisplayedElement("#txtFiltersAdvanced");
   if (!append) {
     await filtersAdvancedElem.clear();
   }
@@ -157,7 +154,7 @@ export async function setCustomFilters(filters, append = false) {
 }
 
 export async function getUserIdFromPage(driver) {
-  await findUrl(driver, installUrl);
+  await findUrl(installUrl);
 
   let userId;
   await driver.wait(async () => {
@@ -172,7 +169,7 @@ export async function getUserIdFromPage(driver) {
   return userId;
 }
 
-export async function getUserIdFromStorage(driver, optionsHandle) {
+export async function getUserIdFromStorage(optionsHandle) {
   const currentHandle = await driver.getWindowHandle();
 
   await driver.switchTo().window(optionsHandle);
@@ -185,7 +182,7 @@ export async function getUserIdFromStorage(driver, optionsHandle) {
   return userId;
 }
 
-export async function getSubscriptionInfo(driver, name) {
+export async function getSubscriptionInfo(name) {
   let text;
   await driver.wait(async () => {
     const info = await driver.findElement(By.css(`[name="${name}"] .subscription_info`));
@@ -197,7 +194,7 @@ export async function getSubscriptionInfo(driver, name) {
 }
 
 // This function assumes initOptionsFiltersTab() being called beforehand
-export async function clickFilterlist(driver, name, id, enabledAfterClick) {
+export async function clickFilterlist(name, id, enabledAfterClick) {
   await driver.findElement(By.css(`[name="${name}"]`)).click();
 
   // Language filter lists get removed from the UI after disabling them.
@@ -209,7 +206,7 @@ export async function clickFilterlist(driver, name, id, enabledAfterClick) {
   const text = enabledAfterClick ? "enabled" : "disabled";
   await driver.wait(
     async () => {
-      return (await isCheckboxEnabled(driver, id)) === enabledAfterClick;
+      return (await isCheckboxEnabled(id)) === enabledAfterClick;
     },
     1000,
     `The filterlist "${name}" was not ${text} after clicking`,
@@ -223,7 +220,7 @@ export async function clickFilterlist(driver, name, id, enabledAfterClick) {
  * @param {string} filters - The filter rules to add
  * @returns {Promise<void>}
  */
-export async function addFiltersToAdBlock(driver, filters) {
+export async function addFiltersToAdBlock(filters) {
   const err = await driver.executeAsyncScript(async (filtersToAdd, callback) => {
     const errors = await browser.runtime.sendMessage({
       type: "filters.importRaw",
@@ -248,7 +245,7 @@ export async function addFiltersToAdBlock(driver, filters) {
  * @param {boolean} [expectAllowlisted=false] - Whether the page is allowlisted
  * @returns {Promise<void>}
  */
-export async function checkBlockHidePage(driver, { expectAllowlisted = false }) {
+export async function checkBlockHidePage(expectAllowlisted) {
   let expectedPopadsText = "pop_ads.js was blocked";
   let expectedBanneradsText = "bannerads/* was blocked";
 
@@ -259,8 +256,8 @@ export async function checkBlockHidePage(driver, { expectAllowlisted = false }) 
 
   await driver.wait(
     async () => {
-      const popadsElem = await getDisplayedElement(driver, "#popads-blocking-filter");
-      const banneradsElem = await getDisplayedElement(driver, "#bannerads-blocking-filter");
+      const popadsElem = await getDisplayedElement("#popads-blocking-filter");
+      const banneradsElem = await getDisplayedElement("#bannerads-blocking-filter");
 
       try {
         expect(await popadsElem.getText()).toEqual(expectedPopadsText);
@@ -275,11 +272,11 @@ export async function checkBlockHidePage(driver, { expectAllowlisted = false }) 
   );
 
   if (expectAllowlisted) {
-    await getDisplayedElement(driver, "#search-ad", 2000);
-    await getDisplayedElement(driver, "#AdContainer", 2000);
+    await getDisplayedElement("#search-ad", 2000);
+    await getDisplayedElement("#AdContainer", 2000);
   } else {
-    await waitForNotDisplayed(driver, "#search-ad", 2000);
-    await waitForNotDisplayed(driver, "#AdContainer", 2000);
+    await waitForNotDisplayed("#search-ad", 2000);
+    await waitForNotDisplayed("#AdContainer", 2000);
   }
 }
 
@@ -291,14 +288,12 @@ export async function checkBlockHidePage(driver, { expectAllowlisted = false }) 
  * @returns {Promise<void>}
  */
 export async function reloadExtension(suppressUpdatePage = true) {
-  const { driver, extOrigin } = global;
-
   // Extension pages will be closed during reload,
   // create a new tab to avoid the "target window already closed" error
-  const safeHandle = await openNewTab(driver, "http://localhost:3005/test.html");
+  const safeHandle = await openNewTab("http://localhost:3005/test.html");
 
   // ensure options page is open
-  await initOptionsGeneralTab(driver, getOptionsHandle());
+  await initOptionsGeneralTab(getOptionsHandle());
 
   // Suppress page or not
   await updateSettings("suppress_update_page", suppressUpdatePage);
@@ -324,8 +319,8 @@ export async function reloadExtension(suppressUpdatePage = true) {
   await driver.wait(
     async () => {
       try {
-        await driver.navigate().to(`${extOrigin}/options.html`);
-        await waitForNotNullAttribute(driver, "acceptable_ads", "checked", 5000);
+        await driver.navigate().to(`${extension.origin}/options.html`);
+        await waitForNotNullAttribute("acceptable_ads", "checked", 5000);
         return true;
       } catch (e) {
         await driver.navigate().refresh();
@@ -344,11 +339,10 @@ export async function reloadExtension(suppressUpdatePage = true) {
  * @param {object} message The message to be sent to the extension
  */
 export async function sendExtMessage(message) {
-  const { driver } = global;
   const currentHandle = await driver.getWindowHandle();
   const optionsHandle = getOptionsHandle();
   if (currentHandle !== optionsHandle) {
-    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await initOptionsGeneralTab(getOptionsHandle());
   }
 
   const extResponse = await driver.executeAsyncScript(async (params, callback) => {
@@ -412,37 +406,39 @@ export async function updatePrefs(key, value) {
 }
 
 export async function checkPremiumPageHeader(ctaTextSelector, ctaLinkSelector, premiumURL) {
-  const { driver } = global;
   // sometimes the elements are displayed with a delay
-  const ctaText = await getDisplayedElement(driver, ctaTextSelector, 4000, false);
+  const ctaText = await getDisplayedElement(ctaTextSelector, 4000, false);
   expect(await ctaText.getText()).toEqual(
     "You’ll be an ad blocking pro with these easy-to-use add-ons.",
   );
 
-  const ctaLink = await getDisplayedElement(driver, ctaLinkSelector);
+  const ctaLink = await getDisplayedElement(ctaLinkSelector);
   expect(await ctaLink.getText()).toEqual("Get It Now");
 
-  await clickAndCloseNewTab(driver, ctaLinkSelector, premiumURL);
+  await clickAndCloseNewTab(ctaLinkSelector, premiumURL);
 }
 
-export async function setAADefaultState(driver, expectAAEnabled) {
+export async function setAADefaultState() {
   const name = "acceptable_ads";
   const inputId = "adblockFilterList_0";
 
-  await initOptionsFiltersTab(driver, getOptionsHandle());
-  const aaEnabled = await isCheckboxEnabled(driver, inputId);
+  await initOptionsFiltersTab(getOptionsHandle());
+  const aaEnabled = await isCheckboxEnabled(inputId);
   // Cleanup setting the AA default state
-  if ((expectAAEnabled && !aaEnabled) || (!expectAAEnabled && aaEnabled)) {
-    await clickFilterlist(driver, name, inputId, expectAAEnabled);
+  if (
+    (browserDetails.expectAAEnabled && !aaEnabled) ||
+    (!browserDetails.expectAAEnabled && aaEnabled)
+  ) {
+    await clickFilterlist(name, inputId, browserDetails.expectAAEnabled);
   }
 }
 
-export async function checkSubscribedInfo(driver, name, inputId, timeout = 3000) {
-  const flEnabled = await isCheckboxEnabled(driver, inputId);
+export async function checkSubscribedInfo(name, inputId, timeout = 3000) {
+  const flEnabled = await isCheckboxEnabled(inputId);
   expect(flEnabled).toEqual(true);
   await driver.wait(
     async () => {
-      const text = await getSubscriptionInfo(driver, name);
+      const text = await getSubscriptionInfo(name);
       return text.includes("updated") || text === "Subscribed.";
     },
     timeout,
@@ -451,31 +447,26 @@ export async function checkSubscribedInfo(driver, name, inputId, timeout = 3000)
 }
 
 export async function setPausedStateFromPopup(url, paused = true) {
-  const { driver, popupUrl } = global;
   const pauseBtnSelector = "[data-text='domain_pause_adblock']";
   const unpauseBtnSelector = "[data-text='unpause_adblock']";
 
   // open new tab with the URL that will be allowlisted
-  const websiteHandle = await openNewTab(driver, url);
+  const websiteHandle = await openNewTab(url);
 
   // initialize the popup for the above page
-  const tabId = await getTabId(driver, getOptionsHandle());
-  await initPopupPage(driver, popupUrl, tabId);
+  const tabId = await getTabId(getOptionsHandle());
+  await initPopupPage(tabId);
 
   // click on the 'Pause' or 'Unpause' button
-  const btn = await getDisplayedElement(
-    driver,
-    paused ? pauseBtnSelector : unpauseBtnSelector,
-    5000,
-  );
+  const btn = await getDisplayedElement(paused ? pauseBtnSelector : unpauseBtnSelector, 5000);
   await btn.click();
 
   await driver.switchTo().window(websiteHandle);
   await driver.navigate().refresh();
 
   // re-open the popup and check state changed
-  await initPopupPage(driver, popupUrl, tabId);
-  await getDisplayedElement(driver, paused ? unpauseBtnSelector : pauseBtnSelector, 5000);
+  await initPopupPage(tabId);
+  await getDisplayedElement(paused ? unpauseBtnSelector : pauseBtnSelector, 5000);
   await driver.close();
 
   // switch to the page
@@ -485,13 +476,11 @@ export async function setPausedStateFromPopup(url, paused = true) {
 }
 
 export async function getTotalCountFromPopup() {
-  const { driver, popupUrl } = global;
-  const websiteHandle = await openNewTab(driver, "http://localhost:3005/test.html");
-  const tabId = await getTabId(driver, getOptionsHandle());
-  const popupHandle = await initPopupPage(driver, popupUrl, tabId);
+  const websiteHandle = await openNewTab("http://localhost:3005/test.html");
+  const tabId = await getTabId(getOptionsHandle());
+  const popupHandle = await initPopupPage(tabId);
 
   const elem = await getDisplayedElement(
-    driver,
     "#popup_sections popup-detail-stats > div:nth-child(2) > span",
     2000,
     false,
@@ -510,7 +499,6 @@ export async function getTotalCountFromPopup() {
 }
 
 export async function enableTemporaryPremium() {
-  const { driver } = global;
   // activate premium
   await sendExtMessage({ type: "adblock:activate" });
 
@@ -519,8 +507,8 @@ export async function enableTemporaryPremium() {
   const formattedDate = currentDate.toLocaleDateString("en-US", options).toUpperCase();
   const expectedValues = [`SUPPORTER SINCE ${formattedDate}`, "ACTIVE"];
 
-  await initOptionsPremiumTab(driver, getOptionsHandle());
-  const premiumStatus = await getDisplayedElement(driver, "#premium_status_msg", 4000, false);
+  await initOptionsPremiumTab(getOptionsHandle());
+  const premiumStatus = await getDisplayedElement("#premium_status_msg", 4000, false);
   const premiumStatusText = await premiumStatus.getText();
   if (!expectedValues.includes(premiumStatusText)) {
     throw new Error(`Premium not activated.`);

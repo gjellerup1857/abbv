@@ -19,15 +19,8 @@ import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
 import adFiltering from "./ad-filtering.js";
+import { findUrl, openNewTab, isCheckboxEnabled } from "../utils/driver.js";
 import {
-  findUrl,
-  getTabId,
-  getDisplayedElement,
-  openNewTab,
-  isCheckboxEnabled,
-} from "../utils/driver.js";
-import {
-  initPopupPage,
   initOptionsFiltersTab,
   installUrl,
   getUserIdFromPage,
@@ -41,8 +34,7 @@ import { getDefaultFilterLists } from "../utils/dataset.js";
 
 export default () => {
   it("opens the install url", async function () {
-    const { driver, browserName, fullBrowserVersion, majorBrowserVersion } = global;
-    const { url } = await findUrl(driver, installUrl);
+    const { url } = await findUrl(installUrl);
 
     const userId = await getUserIdFromPage(driver);
 
@@ -51,10 +43,10 @@ export default () => {
       return browser.runtime.getManifest().version;
     });
 
-    let browserVersion = `${majorBrowserVersion}.0.0.0`;
+    let browserVersion = `${browserDetails.majorBrowserVersion}.0.0.0`;
     let applicationVersion = browserVersion;
-    if (browserName === "firefox") {
-      applicationVersion = fullBrowserVersion;
+    if (browserDetails.browserName === "firefox") {
+      applicationVersion = browserDetails.fullBrowserVersion;
       const navigatorText = await driver.executeScript(() => {
         return navigator.userAgent;
       });
@@ -87,9 +79,9 @@ export default () => {
         ap: "firefox",
         p: "gecko",
       },
-    }[browserName];
+    }[browserDetails.browserName];
     if (!expectedParams) {
-      throw new Error(`Browser name not recognized: ${browserName}`);
+      throw new Error(`Browser name not recognized: ${browserDetails.browserName}`);
     }
 
     const params = new URLSearchParams(new URL(url).search);
@@ -99,8 +91,6 @@ export default () => {
   });
 
   it("displays total ad block count", async function () {
-    const { driver, popupUrl } = global;
-
     const url =
       "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const maxAdsBlocked = 15;
@@ -120,7 +110,7 @@ export default () => {
       return adsBlocked;
     };
 
-    const websiteHandle = await openNewTab(driver, url);
+    const websiteHandle = await openNewTab(url);
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
 
     await driver.switchTo().window(websiteHandle);
@@ -130,8 +120,7 @@ export default () => {
   });
 
   it("resets settings", async function () {
-    const { driver, browserName } = global;
-    const enabledFilterLists = getDefaultFilterLists(browserName).filter(({ enabled }) => enabled);
+    const enabledFilterLists = getDefaultFilterLists().filter(({ enabled }) => enabled);
 
     const handleDisabledFilterlistsAlert = async () => {
       let alert;
@@ -154,7 +143,7 @@ export default () => {
       await alert.accept();
     };
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await initOptionsFiltersTab(getOptionsHandle());
 
     let lastInputId;
     // Disable the initially enabled filterlists
@@ -168,19 +157,19 @@ export default () => {
         lastInputId = inputId;
       }
 
-      await clickFilterlist(driver, name, id, false);
+      await clickFilterlist(name, id, false);
     }
 
     await handleDisabledFilterlistsAlert();
-    const aaEnabled = await isCheckboxEnabled(driver, lastInputId);
+    const aaEnabled = await isCheckboxEnabled(lastInputId);
     expect(aaEnabled).toEqual(false);
 
     // reload the extension to restore the default settings
     await reloadExtension();
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await initOptionsFiltersTab(getOptionsHandle());
     for (const { name } of enabledFilterLists) {
-      const text = await getSubscriptionInfo(driver, name);
+      const text = await getSubscriptionInfo(name);
       expect(text).toMatch(/(updated|Subscribed)/);
     }
   });

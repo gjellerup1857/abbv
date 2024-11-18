@@ -143,8 +143,8 @@ export const languageFilterLists = [
   },
 ];
 
-export function getDefaultFilterLists(browserName) {
-  const aaEnabled = browserName !== "firefox";
+export function getDefaultFilterLists() {
+  const aaEnabled = browserDetails.browserName !== "firefox";
 
   return [
     {

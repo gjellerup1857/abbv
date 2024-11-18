@@ -24,10 +24,9 @@ const { By } = webdriver;
 
 export default () => {
   it("loads a test server page", async function () {
-    const { driver } = global;
     const url = "http://localhost:3005/test.html";
 
-    await openNewTab(driver, url);
+    await openNewTab(url);
     const elem = await driver.findElement(By.css("h1"));
     expect(await elem.getText()).toEqual("Hello from host pages");
   });

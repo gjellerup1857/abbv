@@ -62,8 +62,6 @@ export async function updateExtPrefAPIKey(prefsKeyName) {
  * @returns {Promise<!IThenable<T>|*>}
  */
 export async function sendExtCommand({ triggerEventName, responseEventName, options }) {
-  const { driver } = global;
-
   const parsedUrl = new URL(blockHideUrl);
   const domain = parsedUrl.hostname;
   const timestamp = Date.now();

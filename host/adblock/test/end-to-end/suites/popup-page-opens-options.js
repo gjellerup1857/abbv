@@ -24,14 +24,12 @@ const { By } = webdriver;
 
 export default () => {
   it("opens the settings page", async function () {
-    const { driver, popupUrl } = global;
-
     // Open the Popup page
-    await initPopupPage(driver, popupUrl);
+    await initPopupPage();
     const popupWindow = driver.getWindowHandle();
 
     // Close the existing options page
-    await findUrl(driver, "options.html");
+    await findUrl("options.html");
     await driver.close();
 
     // Click on the "gear" button
@@ -40,6 +38,6 @@ export default () => {
     await gearButton.click();
 
     // Check that the Options page was opened
-    await findUrl(driver, "options.html");
+    await findUrl("options.html");
   });
 };

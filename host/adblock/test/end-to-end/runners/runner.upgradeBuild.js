@@ -49,9 +49,7 @@ describe("AdBlock upgrade end-to-end tests", function () {
     }
 
     // Start the browser with the extension.
-    // Once the driver and other variables are moved on "global" object
-    // we can remove the bind(this) from the setupBrowserHook
-    await setupBrowserHook.bind(this)(liveBuildsDirPath, unpackedDirPath);
+    await setupBrowserHook(liveBuildsDirPath, unpackedDirPath);
   });
 
   before(prepareExtensionHook);

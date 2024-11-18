@@ -77,11 +77,14 @@ export async function upgradeExtension() {
   const { name, version, manifestVersion, origin, popupUrl } = await getExtensionInfo();
   console.log(`Upgraded extension: ${name} ${version} MV${manifestVersion}`);
 
-  // Set global variables for the tests
-  global.extOrigin = origin;
-  global.extVersion = version;
-  global.popupUrl = popupUrl;
-  global.manifestVersion = manifestVersion;
+  // Reset global extension properties for the tests. Needs to be in sync with `setupBrowserHook`
+  global.extension = {
+    name,
+    manifestVersion,
+    origin,
+    version,
+    popupUrl,
+  };
 }
 
 /**
@@ -150,8 +153,6 @@ export async function startBrowser(extensionPath, retry = 0) {
  * @returns {Promise<{origin}|awaited !IThenable<T>|*|Promise<*>>}
  */
 export async function getExtensionInfo() {
-  const { driver } = global;
-
   const info = await driver.executeAsyncScript(async (callback) => {
     if (typeof browser !== "undefined" && browser.management !== "undefined") {
       const { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
@@ -189,8 +190,6 @@ export async function getExtensionInfo() {
  * @param {string} title - The title of the screenshot image without the extension
  */
 export async function screenshot(title) {
-  const { driver } = global;
-
   const data = await driver.takeScreenshot();
   const base64Data = data.replace(/^data:image\/png;base64,/, "");
 

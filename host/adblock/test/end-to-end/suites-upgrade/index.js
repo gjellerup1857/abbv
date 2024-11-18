@@ -21,8 +21,7 @@ import upgradeExtensionScenario from "./upgrade-extension.js";
 
 export default () => {
   beforeEach(async function () {
-    const { driver, extOrigin } = global;
-    await beforeEachTasks(driver, extOrigin);
+    await beforeEachTasks();
   });
 
   describe("Upgrade Extension", upgradeExtensionScenario);

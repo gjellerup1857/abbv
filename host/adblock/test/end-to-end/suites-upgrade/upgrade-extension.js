@@ -25,7 +25,6 @@ import {
   openNewTab,
   waitForNotDisplayed,
   waitAndClickOnElement,
-  waitForNotNullAttribute,
 } from "../utils/driver.js";
 import {
   addFiltersToAdBlock,
@@ -53,11 +52,10 @@ import {
 const { By } = webdriver;
 
 async function blockSomeItems() {
-  const { driver } = global;
   // This filter no longer exists in easylist
   // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-  await addFiltersToAdBlock(driver, "/pop_ads.js");
-  await openNewTab(driver, blockHideUrl);
+  await addFiltersToAdBlock("/pop_ads.js");
+  await openNewTab(blockHideUrl);
   await driver.sleep(3000); // wait for blocked requests to be counted
 
   // cleanup
@@ -67,8 +65,6 @@ async function blockSomeItems() {
 
 export default () => {
   it("keeps settings after upgrade", async function () {
-    const { driver, browserName } = global;
-
     await blockSomeItems();
     const totalCount = await getTotalCountFromPopup();
     expect(totalCount).toBeGreaterThan(0);
@@ -77,30 +73,26 @@ export default () => {
     await enableTemporaryPremium();
 
     // enable premium filterlists
-    await initOptionsPremiumFlTab(driver, getOptionsHandle());
+    await initOptionsPremiumFlTab(getOptionsHandle());
     for (const list of premiumFilterLists) {
       await waitAndClickOnElement(`span:has(> #${list.inputId})`);
-      await driver.wait(
-        isCheckboxEnabled(driver, list.inputId),
-        2000,
-        `${list.text} is not enabled`,
-      );
+      await driver.wait(isCheckboxEnabled(list.inputId), 2000, `${list.text} is not enabled`);
     }
 
     // turn off the counter on the extension icon
-    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await initOptionsGeneralTab(getOptionsHandle());
     await waitAndClickOnElement("span:has(> #prefs__show_statsinicon)");
     await driver.wait(
       async () => {
-        return !(await isCheckboxEnabled(driver, "prefs__show_statsinicon"));
+        return !(await isCheckboxEnabled("prefs__show_statsinicon"));
       },
       2000,
       "Counter on the extension icon is still on",
     );
 
     // acceptable ads (off), easyList (off), easyprivacy (on)
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-    const lists = getDefaultFilterLists(browserName).filter((list) =>
+    await initOptionsFiltersTab(getOptionsHandle());
+    const lists = getDefaultFilterLists().filter((list) =>
       ["easyprivacy", "acceptable_ads", "easylist"].includes(list.name),
     );
     for (const list of lists) {
@@ -109,34 +101,30 @@ export default () => {
         // if list is enabled by default, it should be unsubscribed
         await driver.wait(
           async () => {
-            return (await getSubscriptionInfo(driver, list.name)) === "Unsubscribed.";
+            return (await getSubscriptionInfo(list.name)) === "Unsubscribed.";
           },
           2000,
           `${list.text} is still subscribed`,
         );
       } else {
         // if list is disabled by default, it should be subscribed
-        await checkSubscribedInfo(driver, list.name, list.inputId);
+        await checkSubscribedInfo(list.name, list.inputId);
       }
     }
 
     // note: we need easylist to be off, otherwise there is no enough space for all the filters (MV3)
     // subscribe to German + English filterlist
     const langList = languageFilterLists.find((list) => list.name === "easylist_plus_german");
-    await getDisplayedElement(driver, "#language_select");
+    await getDisplayedElement("#language_select");
     await driver.findElement(By.css(`#language_select > option[value="${langList.name}"]`)).click();
-    await driver.wait(
-      isCheckboxEnabled(driver, langList.inputId),
-      2000,
-      `${langList.text} is not enabled`,
-    );
-    await checkSubscribedInfo(driver, langList.name, langList.inputId);
+    await driver.wait(isCheckboxEnabled(langList.inputId), 2000, `${langList.text} is not enabled`);
+    await checkSubscribedInfo(langList.name, langList.inputId);
 
     // allowlist the page
     await setPausedStateFromPopup("https://example.com/", true);
 
     // Add custom filter
-    await initOptionsCustomizeTab(driver, getOptionsHandle());
+    await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters(["/testfiles/blocking/partial-path/"], true);
 
     // upgrade extension
@@ -150,12 +138,12 @@ export default () => {
     expect(await getTotalCountFromPopup()).toBeGreaterThan(totalCount);
 
     // check if premium filterlists are still enabled and can be changed
-    await initOptionsPremiumFlTab(driver, getOptionsHandle());
+    await initOptionsPremiumFlTab(getOptionsHandle());
     for (const list of premiumFilterLists) {
       await waitAndClickOnElement(`span:has(> #${list.inputId})`);
       await driver.wait(
         async () => {
-          return !(await isCheckboxEnabled(driver, list.inputId));
+          return !(await isCheckboxEnabled(list.inputId));
         },
         2000,
         `${list.text} is still enabled`,
@@ -163,30 +151,30 @@ export default () => {
     }
 
     // check if the counter on the extension icon is still off
-    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await initOptionsGeneralTab(getOptionsHandle());
     await waitAndClickOnElement("span:has(> #prefs__show_statsinicon)");
     await driver.wait(
-      isCheckboxEnabled(driver, "prefs__show_statsinicon"),
+      isCheckboxEnabled("prefs__show_statsinicon"),
       2000,
       "Counter on the extension icon is still off",
     );
 
     // check if German + English filterlist is still subscribed
-    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await initOptionsFiltersTab(getOptionsHandle());
     await waitAndClickOnElement(`span:has(> #${langList.inputId})`);
-    await waitForNotDisplayed(driver, `span:has(> #${langList.inputId})`);
+    await waitForNotDisplayed(`span:has(> #${langList.inputId})`);
 
     // acceptable ads (on), easylist (on), easyprivacy (off)
     for (const list of lists) {
       await waitAndClickOnElement(`span:has(> #${list.inputId})`);
       if (list.enabled) {
         // if list is enabled by default, it should be subscribed
-        await checkSubscribedInfo(driver, list.name, list.inputId);
+        await checkSubscribedInfo(list.name, list.inputId);
       } else {
         // if list is disabled by default, it should be unsubscribed
         await driver.wait(
           async () => {
-            return (await getSubscriptionInfo(driver, list.name)) === "Unsubscribed.";
+            return (await getSubscriptionInfo(list.name)) === "Unsubscribed.";
           },
           2000,
           `${list.text} is still subscribed`,
@@ -194,14 +182,14 @@ export default () => {
       }
 
       // checkbox should equal to the default value
-      expect(await isCheckboxEnabled(driver, list.inputId)).toEqual(list.enabled);
+      expect(await isCheckboxEnabled(list.inputId)).toEqual(list.enabled);
     }
 
     // check if the page is still allowlisted and can be changed
     await setPausedStateFromPopup("https://example.com/", false);
 
     // check if custom filters are still there and can be changed
-    await initOptionsCustomizeTab(driver, getOptionsHandle());
+    await initOptionsCustomizeTab(getOptionsHandle());
     expect(await getCustomFilters()).toContain("/testfiles/blocking/partial-path/");
     await setCustomFilters([]);
     expect(await getCustomFilters()).not.toContain("/testfiles/blocking/partial-path/");

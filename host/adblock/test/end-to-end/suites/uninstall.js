@@ -23,8 +23,6 @@ import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
-    const { driver } = global;
-
     const userId = await getUserIdFromPage(driver);
     const expectedParams = {
       u: userId,
@@ -43,7 +41,7 @@ export default () => {
       browser.management.uninstallSelf();
     });
 
-    const { url } = await findUrl(driver, "getadblock.com/en/uninstall");
+    const { url } = await findUrl("getadblock.com/en/uninstall");
 
     const params = new URLSearchParams(new URL(url).search);
     const actualParams = Object.fromEntries(params);

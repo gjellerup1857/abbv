@@ -36,10 +36,13 @@ export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
 
   // Set global variables for the tests
   global.driver = driver;
-  global.browserName = browserName;
-  global.fullBrowserVersion = fullBrowserVersion;
-  global.majorBrowserVersion = majorBrowserVersion;
-  global.expectAAEnabled = browserName !== "firefox";
+
+  global.browserDetails = {
+    expectAAEnabled: browserName !== "firefox",
+    browserName,
+    fullBrowserVersion,
+    majorBrowserVersion,
+  };
 }
 
 /**
@@ -48,19 +51,20 @@ export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
  * @returns {Promise<void>}
  */
 export async function prepareExtensionHook() {
-  const { driver } = global;
-  const { handle } = await findUrl(driver, "options.html", 6000);
+  const { handle } = await findUrl("options.html", 6000);
   setOptionsHandle(handle);
 
   const { name, version, manifestVersion, origin, popupUrl } = await getExtensionInfo();
   console.log(`Extension: ${name} ${version} MV${manifestVersion}`);
 
   // Set global variables for the tests
-  global.extOrigin = origin;
-  global.extVersion = version;
-  global.extName = name;
-  global.popupUrl = popupUrl;
-  global.manifestVersion = manifestVersion;
+  global.extension = {
+    name,
+    manifestVersion,
+    origin,
+    version,
+    popupUrl,
+  };
 }
 
 /**
@@ -83,8 +87,6 @@ export async function screenshotsHook() {
  * @returns {Promise<void>}
  */
 export async function cleanupHook() {
-  const { driver } = global;
-
   if (driver) {
     await driver.quit();
   }

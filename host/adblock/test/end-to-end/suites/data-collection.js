@@ -22,19 +22,17 @@ import { getOptionsHandle } from "../utils/hook.js";
 
 export default () => {
   it("does not collect data for Firefox", async function () {
-    const { driver, browserName } = global;
-
-    if (browserName !== "firefox") {
+    if (browserDetails.browserName !== "firefox") {
       this.skip();
     }
 
-    await initOptionsGeneralTab(driver, getOptionsHandle());
-    const dataCollectionOptOut = await isCheckboxEnabled(driver, "prefs__data_collection_opt_out");
+    await initOptionsGeneralTab(getOptionsHandle());
+    const dataCollectionOptOut = await isCheckboxEnabled("prefs__data_collection_opt_out");
     expect(dataCollectionOptOut).toEqual(true);
-    await waitForNotDisplayed(driver, "//label[@for='enable_data_collection_v2']");
-    await waitForNotDisplayed(driver, "//label[@for='prefs__send_ad_wall_messages']");
-    await waitForNotDisplayed(driver, "//label[@for='enable_onpageMessages']");
-    await waitForNotDisplayed(driver, "//label[@for='enable_onpageMessages']");
+    await waitForNotDisplayed("//label[@for='enable_data_collection_v2']");
+    await waitForNotDisplayed("//label[@for='prefs__send_ad_wall_messages']");
+    await waitForNotDisplayed("//label[@for='enable_onpageMessages']");
+    await waitForNotDisplayed("//label[@for='enable_onpageMessages']");
 
     const optOutFlag = await driver.executeScript(() =>
       browser.runtime.sendMessage({

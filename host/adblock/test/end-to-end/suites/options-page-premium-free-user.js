@@ -17,15 +17,12 @@ import { getDisplayedElement, clickAndCloseNewTab, clickAndNavigateBack } from "
 
 export default () => {
   before(async function () {
-    const { driver } = global;
-    const userId = await getUserIdFromStorage(driver, getOptionsHandle());
+    const userId = await getUserIdFromStorage(getOptionsHandle());
     global.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
   });
 
   it("displays cta and premium features", async function () {
-    const { driver, extOrigin, premiumURL } = global;
-
-    await initOptionsPremiumTab(driver, getOptionsHandle());
+    await initOptionsPremiumTab(getOptionsHandle());
     await checkPremiumPageHeader("#locked-user-pay-section-mab > p", "#get-it-now-mab", premiumURL);
 
     const features = await driver.findElements(webdriver.By.css("#myadblock-features > div"));
@@ -35,7 +32,7 @@ export default () => {
     const hashes = ["#premium-filters", "#mab-image-swap", "#mab-themes", "#sync"];
     for (let i = 0; i < hashes.length; i++) {
       const selector = `#myadblock-features > div:nth-child(${i + 1})`;
-      await clickAndNavigateBack(driver, selector, `${extOrigin}/options.html${hashes[i]}`);
+      await clickAndNavigateBack(selector, `${extension.origin}/options.html${hashes[i]}`);
     }
   });
 
@@ -57,16 +54,14 @@ export default () => {
   ];
   for (const { selector, expectedLockedThemeIds } of selectors) {
     it(`shows ${selector} themes correctly`, async function () {
-      const { driver, premiumURL } = global;
-
-      await initOptionsThemesTab(driver, getOptionsHandle());
+      await initOptionsThemesTab(getOptionsHandle());
       await checkPremiumPageHeader(
         "#locked-user-pay-section-themes > p",
         "#get-it-now-themes",
         premiumURL,
       );
 
-      const selectedTheme = await getDisplayedElement(driver, `${selector} .theme-box.selected`);
+      const selectedTheme = await getDisplayedElement(`${selector} .theme-box.selected`);
       expect(await selectedTheme.getAttribute("data-theme")).toEqual("default_theme");
 
       const lockedThemesElems = await driver.findElements(
@@ -80,14 +75,13 @@ export default () => {
       expect(lockedThemesIds.sort()).toEqual(expectedLockedThemeIds.sort());
 
       for (const themeId of expectedLockedThemeIds) {
-        await clickAndCloseNewTab(driver, `${selector} [data-theme="${themeId}"]`, premiumURL);
+        await clickAndCloseNewTab(`${selector} [data-theme="${themeId}"]`, premiumURL);
       }
     });
   }
 
   it("shows image swap off", async function () {
-    const { driver, premiumURL } = global;
-    await initOptionsImageSwapTab(driver, getOptionsHandle());
+    await initOptionsImageSwapTab(getOptionsHandle());
 
     await checkPremiumPageHeader(
       "#locked-user-pay-section-image-swap > p",
@@ -95,7 +89,7 @@ export default () => {
       premiumURL,
     );
 
-    const selectedOption = await getDisplayedElement(driver, "#channel-options .selected");
+    const selectedOption = await getDisplayedElement("#channel-options .selected");
     expect(await selectedOption.getText()).toContain("Don't swap ads");
 
     const lockedOptions = await driver.findElements(webdriver.By.css("#channel-options .locked"));
@@ -103,30 +97,26 @@ export default () => {
 
     // click on all locked options
     for (let i = 0; i < 8; i++) {
-      await clickAndCloseNewTab(driver, `#channel-options > li:nth-child(${i + 2})`, premiumURL);
+      await clickAndCloseNewTab(`#channel-options > li:nth-child(${i + 2})`, premiumURL);
     }
   });
 
   it("shows backup & sync off", async function () {
-    const { driver, premiumURL } = global;
-
-    await initOptionsBackupSyncTab(driver, getOptionsHandle());
+    await initOptionsBackupSyncTab(getOptionsHandle());
     await checkPremiumPageHeader(
       "#locked-user-pay-section-sync > p",
       "#get-it-now-sync",
       premiumURL,
     );
 
-    const ctaLink = await getDisplayedElement(driver, "#get-sync");
+    const ctaLink = await getDisplayedElement("#get-sync");
     expect(await ctaLink.getText()).toEqual("Get Sync");
 
-    await clickAndCloseNewTab(driver, "#get-sync", premiumURL);
+    await clickAndCloseNewTab("#get-sync", premiumURL);
   });
 
   it("shows premium filter lists locked in options page", async function () {
-    const { driver, premiumURL } = global;
-
-    await initOptionsPremiumFlTab(driver, getOptionsHandle());
+    await initOptionsPremiumFlTab(getOptionsHandle());
     await checkPremiumPageHeader(
       "#locked-user-pay-section-distraction-control > p",
       "#get-it-now-distraction-control",
@@ -147,8 +137,8 @@ export default () => {
     expect(listTitles).toEqual(["Distraction Control", "Cookie Consent Cutter"]);
 
     // check distraction control link
-    await clickAndCloseNewTab(driver, "#premium-filter-lists > div:nth-child(1)", premiumURL);
+    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(1)", premiumURL);
     // check cookie consent cutter link
-    await clickAndCloseNewTab(driver, "#premium-filter-lists > div:nth-child(2)", premiumURL);
+    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(2)", premiumURL);
   });
 };

@@ -37,10 +37,8 @@ export default () => {
   });
 
   it("returns adblocking is active extension info", async function () {
-    const { driver, extVersion, extName } = global;
-
     // open the block-hide page
-    await openNewTab(driver, blockHideUrl);
+    await openNewTab(blockHideUrl);
 
     // send request extension info command
     const { extensionInfo } = await sendExtCommand({
@@ -49,8 +47,8 @@ export default () => {
     });
 
     const expectedExtensionInfo = {
-      name: extName.toLowerCase(),
-      version: extVersion,
+      name: extension.name.toLowerCase(),
+      version: extension.version,
       allowlistState: {
         oneCA: true,
         source: null,
@@ -62,19 +60,17 @@ export default () => {
   });
 
   it("returns allowlisted page extension info", async function () {
-    const { driver, extVersion, extName } = global;
-
     // open the block-hide page
-    await openNewTab(driver, blockHideUrl);
+    await openNewTab(blockHideUrl);
 
     // ensure the page looks as it should before allowlisting
-    await checkBlockHidePage(driver, { expectAllowlisted: false });
+    await checkBlockHidePage(false);
 
     // Allowlist the page
     await addFilter("@@||adblockinc.gitlab.io^$document");
 
     // Check that the page was allowlisted
-    await checkBlockHidePage(driver, { expectAllowlisted: true });
+    await checkBlockHidePage(true);
 
     // send request extension info command
     const { extensionInfo } = await sendExtCommand({
@@ -83,8 +79,8 @@ export default () => {
     });
 
     const expectedExtensionInfo = {
-      name: extName.toLowerCase(),
-      version: extVersion,
+      name: extension.name.toLowerCase(),
+      version: extension.version,
       allowlistState: {
         oneCA: true,
         source: "user",

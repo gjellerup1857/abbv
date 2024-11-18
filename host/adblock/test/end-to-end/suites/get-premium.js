@@ -33,32 +33,29 @@ const { By } = webdriver;
 
 export default () => {
   it("activates premium", async function () {
-    const { driver } = global;
-
-    await initOptionsGeneralTab(driver, getOptionsHandle());
-    const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
+    await initOptionsGeneralTab(getOptionsHandle());
+    const premiumTab = await getDisplayedElement('[href="#mab"]');
     await premiumTab.click();
-    const getItNowButton = await getDisplayedElement(driver, "#get-it-now-mab", 10000);
+    const getItNowButton = await getDisplayedElement("#get-it-now-mab", 10000);
     await getItNowButton.click();
 
-    const { url } = await findUrl(driver, "https://getadblock.com/en/premium");
+    const { url } = await findUrl("https://getadblock.com/en/premium");
     await driver.navigate().to(`${url}&testmode`);
-    const getPremiumButton = await getDisplayedElement(driver, '[data-plan="me"]');
+    const getPremiumButton = await getDisplayedElement('[data-plan="me"]');
     await getPremiumButton.click();
     await driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
     await driver.sleep(1000); // Sometimes the scrolling is not done when the element is searched for
-    const completePurchaseButton = await getDisplayedElement(driver, '[i18n="complete_purchase"]');
+    const completePurchaseButton = await getDisplayedElement('[i18n="complete_purchase"]');
     await completePurchaseButton.click();
 
     try {
-      await getDisplayedElement(driver, '[name="paddle_frame"]', 5000, false);
+      await getDisplayedElement('[name="paddle_frame"]', 5000, false);
     } catch (e) {
       await completePurchaseButton.click(); // The complete purchase button is sometimes not clicked the first time
-      await getDisplayedElement(driver, '[name="paddle_frame"]', 5000, false);
+      await getDisplayedElement('[name="paddle_frame"]', 5000, false);
     }
     await driver.switchTo().frame("paddle_frame");
     const emailField = await getDisplayedElement(
-      driver,
       '[data-testid="authenticationEmailInput"]',
       20000,
       false,
@@ -71,49 +68,38 @@ export default () => {
       `test_automation${formattedDateYMD}${randomIntFromInterval(1000000, 9999999).toString()}@adblock.org`,
     );
     try {
-      const zipField = await getDisplayedElement(
-        driver,
-        '[data-testid="postcodeInput"]',
-        5000,
-        false,
-      );
+      const zipField = await getDisplayedElement('[data-testid="postcodeInput"]', 5000, false);
       await zipField.click();
       await zipField.sendKeys("10115");
     } catch (e) {} // Depending on the location, the ZIP may be required or not
-    const submitButton = await getDisplayedElement(driver, '[type="submit"]');
+    const submitButton = await getDisplayedElement('[type="submit"]');
     await submitButton.click();
 
-    const cardNumberField = await getDisplayedElement(driver, "#cardNumber", 5000, false);
+    const cardNumberField = await getDisplayedElement("#cardNumber", 5000, false);
     await cardNumberField.click();
     await cardNumberField.sendKeys("4242424242424242");
-    const cardHolderField = await getDisplayedElement(driver, "#cardHolder");
+    const cardHolderField = await getDisplayedElement("#cardHolder");
     await cardHolderField.click();
     await cardHolderField.sendKeys("Test Automation");
-    const expiryField = await getDisplayedElement(driver, "#expiry");
+    const expiryField = await getDisplayedElement("#expiry");
     await expiryField.click();
     await expiryField.sendKeys("0528");
-    const cvvField = await getDisplayedElement(driver, "#cvv");
+    const cvvField = await getDisplayedElement("#cvv");
     await cvvField.click();
     await cvvField.sendKeys("295");
     const cardSubmitButton = await getDisplayedElement(
-      driver,
       '[data-testid="cardPaymentFormSubmitButton"]',
       20000,
       false,
     );
     await cardSubmitButton.click();
     await driver.switchTo().defaultContent();
-    const getStartedButton = await getDisplayedElement(
-      driver,
-      '[i18n="get_started_cta"]',
-      20000,
-      false,
-    );
+    const getStartedButton = await getDisplayedElement('[i18n="get_started_cta"]', 20000, false);
     await getStartedButton.click();
 
     await driver.switchTo().window(getOptionsHandle());
     await driver.navigate().refresh();
-    const premiumStatusText = await getDisplayedElement(driver, "#premium_status_msg", 4000);
+    const premiumStatusText = await getDisplayedElement("#premium_status_msg", 4000);
     const options = { year: "numeric", month: "long" };
     const formattedDate = currentDate.toLocaleDateString("en-US", options).toUpperCase();
     expect(
@@ -122,43 +108,38 @@ export default () => {
   });
 
   it("should have premium features", async function () {
-    const { driver, popupUrl } = global;
     const timeout = 4000;
 
-    await initOptionsGeneralTab(driver, getOptionsHandle());
+    await initOptionsGeneralTab(getOptionsHandle());
     await sendExtMessage({ type: "adblock:activate" });
     await driver.navigate().refresh();
-    const premiumTab = await getDisplayedElement(driver, '[href="#mab"]');
+    const premiumTab = await getDisplayedElement('[href="#mab"]');
     await premiumTab.click();
-    await getDisplayedElement(driver, "#premium_status_msg", timeout);
+    await getDisplayedElement("#premium_status_msg", timeout);
 
-    const imageSwapTab = await getDisplayedElement(driver, '[href="#mab-image-swap"]', timeout);
+    const imageSwapTab = await getDisplayedElement('[href="#mab-image-swap"]', timeout);
     await imageSwapTab.click();
-    await getDisplayedElement(driver, "#cats", timeout);
-    const themesTab = await getDisplayedElement(driver, '[href="#mab-themes"]', timeout);
+    await getDisplayedElement("#cats", timeout);
+    const themesTab = await getDisplayedElement('[href="#mab-themes"]', timeout);
     await themesTab.click();
 
-    await getDisplayedElement(
-      driver,
-      '[data-key="options_page"][data-theme="dark_theme"]',
-      timeout,
-    );
+    await getDisplayedElement('[data-key="options_page"][data-theme="dark_theme"]', timeout);
     const darkThemeOptionsPageItem = await driver.findElement(
       By.css('[data-key="options_page"][data-theme="dark_theme"] input'),
     );
     await darkThemeOptionsPageItem.click();
-    const darkOptionsPage = await getDisplayedElement(driver, "#dark_theme", timeout);
+    const darkOptionsPage = await getDisplayedElement("#dark_theme", timeout);
     expect(await darkOptionsPage.isDisplayed()).toEqual(true);
 
-    await getDisplayedElement(driver, '[data-key="popup_menu"][data-theme="dark_theme"]', timeout);
+    await getDisplayedElement('[data-key="popup_menu"][data-theme="dark_theme"]', timeout);
     const darkThemePopupItem = await driver.findElement(
       By.css('[data-key="popup_menu"][data-theme="dark_theme"] input'),
     );
     await darkThemePopupItem.click();
-    await openNewTab(driver, "https://example.com/");
-    const tabId = await getTabId(driver, getOptionsHandle());
-    await initPopupPage(driver, popupUrl, tabId);
-    const darkPopupPage = await getDisplayedElement(driver, "#dark_theme", timeout);
+    await openNewTab("https://example.com/");
+    const tabId = await getTabId(getOptionsHandle());
+    await initPopupPage(tabId);
+    const darkPopupPage = await getDisplayedElement("#dark_theme", timeout);
     expect(await darkPopupPage.isDisplayed()).toEqual(true);
 
     const toggleItems = [
@@ -172,25 +153,25 @@ export default () => {
       },
     ];
     for (const item of toggleItems) {
-      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
+      const toggleElement = await getDisplayedElement(item.toggleSelector, timeout);
       expect(await toggleElement.isEnabled()).toEqual(true);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual(null);
       await toggleElement.click();
-      const confirmButton = await getDisplayedElement(driver, item.confirmButton, timeout);
+      const confirmButton = await getDisplayedElement(item.confirmButton, timeout);
       // A sliding animation can sometimes cause this to fail
       await driver.sleep(500);
       await confirmButton.click();
       // Opening the Options page first eliminates a flakiness issue on Edge
-      await initOptionsGeneralTab(driver, getOptionsHandle());
-      await initPopupPage(driver, popupUrl, tabId);
+      await initOptionsGeneralTab(getOptionsHandle());
+      await initPopupPage(tabId);
     }
     for (const item of toggleItems) {
-      const toggleElement = await getDisplayedElement(driver, item.toggleSelector, timeout);
+      const toggleElement = await getDisplayedElement(item.toggleSelector, timeout);
       expect(await toggleElement.getAttribute("data-is-checked")).toEqual("true");
     }
 
     const url = "http://localhost:3005/dc-filters.html";
-    await openNewTab(driver, url);
+    await openNewTab(url);
     const dcFilters = [
       "#pushnotifications-hiding-filter",
       "#pushnotifications-blocking-filter",
@@ -202,7 +183,7 @@ export default () => {
       "#newsletter-blocking-filter",
     ];
     for (const dcFilter of dcFilters) {
-      await waitForNotDisplayed(driver, dcFilter);
+      await waitForNotDisplayed(dcFilter);
     }
   });
 };

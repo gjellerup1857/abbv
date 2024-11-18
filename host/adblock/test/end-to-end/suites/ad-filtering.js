@@ -40,16 +40,14 @@ const { By } = webdriver;
 
 export default () => {
   after(async function () {
-    const { driver, expectAAEnabled } = global;
-    await setAADefaultState(driver, expectAAEnabled);
+    await setAADefaultState();
   });
 
   it("uses sitekey to allowlist content", async function () {
-    const { driver, manifestVersion } = global;
-    const url = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
+    const url = `https://abptestpages.org/en/exceptions/sitekey_mv${extension.manifestVersion}`;
 
     const getTestpagesFilters = async () => {
-      await getDisplayedElement(driver, "pre");
+      await getDisplayedElement("pre");
 
       const filters = [];
       for (const elem of await driver.findElements(By.css("pre"))) {
@@ -76,27 +74,27 @@ export default () => {
       });
     };
 
-    const websiteHandle = await openNewTab(driver, url);
+    const websiteHandle = await openNewTab(url);
     // A failing element is displayed before applying the filters
-    await getDisplayedElement(driver, "#sitekey-fail-1");
+    await getDisplayedElement("#sitekey-fail-1");
 
     const filters = await getTestpagesFilters();
     await driver.switchTo().window(getOptionsHandle());
-    await addFiltersToAdBlock(driver, filters);
+    await addFiltersToAdBlock(filters);
 
     await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
     // A failing element is no longer displayed after applying the filters
-    await waitForNotDisplayed(driver, "#sitekey-fail-1");
-    await waitForNotDisplayed(driver, "#sitekey-fail-2");
-    await getDisplayedElement(driver, "#sitekey-area > div.testcase-examplecontent");
+    await waitForNotDisplayed("#sitekey-fail-1");
+    await waitForNotDisplayed("#sitekey-fail-2");
+    await getDisplayedElement("#sitekey-area > div.testcase-examplecontent");
 
     await driver.switchTo().frame("sitekey-frame");
-    await getDisplayedElement(driver, "#inframe-target");
-    if (manifestVersion === 3) {
-      await waitForNotDisplayed(driver, "#inframe-image");
+    await getDisplayedElement("#inframe-target");
+    if (extension.manifestVersion === 3) {
+      await waitForNotDisplayed("#inframe-image");
     } else {
-      await getDisplayedElement(driver, "#inframe-image");
+      await getDisplayedElement("#inframe-image");
     }
 
     await driver.switchTo().window(getOptionsHandle());
@@ -104,90 +102,85 @@ export default () => {
   });
 
   it("blocks and hides ads", async function () {
-    const { driver } = global;
-
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock(driver, "/pop_ads.js");
+    await addFiltersToAdBlock("/pop_ads.js");
 
-    await openNewTab(driver, blockHideUrl);
-    await checkBlockHidePage(driver, { expectAllowlisted: false });
+    await openNewTab(blockHideUrl);
+    await checkBlockHidePage(false);
   });
 
   it("uses snippets to block ads", async function () {
-    const { driver } = global;
     const filter = "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
     const url = "https://adblockinc.gitlab.io/QA-team/adblocking/snippets/snippets-testpage.html";
 
-    const websiteHandle = await openNewTab(driver, url);
-    const snippetElem = await getDisplayedElement(driver, "#snippet-filter");
+    const websiteHandle = await openNewTab(url);
+    const snippetElem = await getDisplayedElement("#snippet-filter");
     expect(await snippetElem.getText()).toEqual("This should be hidden by a snippet");
 
-    await initOptionsCustomizeTab(driver, getOptionsHandle());
+    await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters([filter]);
 
     await driver.switchTo().window(websiteHandle);
     await driver.navigate().refresh();
-    await waitForNotDisplayed(driver, "#snippet-filter", 2000);
+    await waitForNotDisplayed("#snippet-filter", 2000);
   });
 
   it("allowlists websites", async function () {
-    const { driver } = global;
     const filters = ["@@adblockinc.gitlab.io$document", "/pop_ads.js"];
 
-    await initOptionsCustomizeTab(driver, getOptionsHandle());
+    await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters(filters);
 
-    const websiteHandle = await openNewTab(driver, blockHideUrl);
-    await checkBlockHidePage(driver, { expectAllowlisted: true });
+    const websiteHandle = await openNewTab(blockHideUrl);
+    await checkBlockHidePage(true);
 
-    await initOptionsCustomizeTab(driver, getOptionsHandle());
+    await initOptionsCustomizeTab(getOptionsHandle());
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
     await setCustomFilters(["/pop_ads.js"]);
 
     await driver.switchTo().window(websiteHandle);
-    await checkBlockHidePage(driver, { expectAllowlisted: false });
-    await waitForNotDisplayed(driver, "#snippet-filter");
+    await checkBlockHidePage(false);
+    await waitForNotDisplayed("#snippet-filter");
   });
 
   it("displays acceptable ads", async function () {
-    const { expectAAEnabled, driver } = global;
     const aaUrl = "http://testpages.adblockplus.org:3005/aa.html";
     const visibleSelector = "#abptest2";
     const hiddenSelector = "#abptest";
     const aaTimeout = 500;
     const aaFLButtonId = "adblockFilterList_0";
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
+    await initOptionsFiltersTab(getOptionsHandle());
     await driver.wait(
       // https://eyeo.atlassian.net/browse/EXT-446
       async () => {
-        return (await isCheckboxEnabled(driver, aaFLButtonId)) === expectAAEnabled;
+        return (await isCheckboxEnabled(aaFLButtonId)) === browserDetails.expectAAEnabled;
       },
       2000,
-      `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
+      `Acceptable Ads is not in the default state. Expected state: ${browserDetails.expectAAEnabled}`,
     );
-    const websiteHandle = await openNewTab(driver, aaUrl);
-    if (expectAAEnabled) {
-      await getDisplayedElement(driver, hiddenSelector);
+    const websiteHandle = await openNewTab(aaUrl);
+    if (browserDetails.expectAAEnabled) {
+      await getDisplayedElement(hiddenSelector);
     } else {
-      await waitForNotDisplayed(driver, hiddenSelector);
+      await waitForNotDisplayed(hiddenSelector);
     }
-    await getDisplayedElement(driver, visibleSelector);
+    await getDisplayedElement(visibleSelector);
 
-    await initOptionsFiltersTab(driver, getOptionsHandle());
-    await clickFilterlist(driver, "acceptable_ads", aaFLButtonId, !expectAAEnabled);
+    await initOptionsFiltersTab(getOptionsHandle());
+    await clickFilterlist("acceptable_ads", aaFLButtonId, !browserDetails.expectAAEnabled);
     await driver.switchTo().window(websiteHandle);
     await driver.wait(
       async () => {
         await driver.navigate().refresh();
         try {
-          await getDisplayedElement(driver, visibleSelector, aaTimeout);
-          if (!expectAAEnabled) {
-            await getDisplayedElement(driver, hiddenSelector, aaTimeout);
+          await getDisplayedElement(visibleSelector, aaTimeout);
+          if (!browserDetails.expectAAEnabled) {
+            await getDisplayedElement(hiddenSelector, aaTimeout);
           } else {
-            await waitForNotDisplayed(driver, hiddenSelector, aaTimeout);
+            await waitForNotDisplayed(hiddenSelector, aaTimeout);
           }
           return true;
         } catch (e) {}

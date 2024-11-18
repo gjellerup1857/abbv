@@ -55,10 +55,8 @@ export default () => {
   });
 
   it("allowlists the page forever", async function () {
-    const { driver } = global;
-
     // open the block-hide page
-    await openNewTab(driver, blockHideUrl);
+    await openNewTab(blockHideUrl);
 
     // trigger allowlisting with expiration
     const allowlisted = await sendExtCommand({
@@ -73,7 +71,7 @@ export default () => {
     await driver.navigate().refresh();
 
     // verify that the page is allowlisted
-    await checkBlockHidePage(driver, { expectAllowlisted: true });
+    await checkBlockHidePage(true);
 
     // check filter metadata
     const debugInfo = await sendExtMessage({ command: "getDebugInfo" });
@@ -81,10 +79,8 @@ export default () => {
   });
 
   it("allowlists the page with expiration", async function () {
-    const { driver } = global;
-
     // open the block-hide page
-    await openNewTab(driver, blockHideUrl);
+    await openNewTab(blockHideUrl);
 
     // trigger allowlisting with expiration
     const expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 30; // 30 days
@@ -103,7 +99,7 @@ export default () => {
     await driver.navigate().refresh();
 
     // verify that the page is allowlisted
-    await checkBlockHidePage(driver, { expectAllowlisted: true });
+    await checkBlockHidePage(true);
 
     // check filter metadata
     const debugInfo = await sendExtMessage({ command: "getDebugInfo" });

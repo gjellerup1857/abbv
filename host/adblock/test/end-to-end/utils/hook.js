@@ -26,7 +26,7 @@ export function getOptionsHandle() {
   return optionsHandle;
 }
 
-async function cleanupOpenTabs(driver) {
+async function cleanupOpenTabs() {
   for (const handle of await driver.getAllWindowHandles()) {
     await driver.switchTo().window(handle);
 
@@ -41,15 +41,15 @@ async function cleanupOpenTabs(driver) {
   }
 }
 
-export async function beforeEachTasks(driver, extOrigin) {
+export async function beforeEachTasks() {
   // If the options page handle is not valid anymore, then restore it
   try {
     await driver.switchTo().window(optionsHandle);
   } catch (e) {
-    await openNewTab(driver, `${extOrigin}/options.html`);
+    await openNewTab(`${extension.origin}/options.html`);
     optionsHandle = await driver.getWindowHandle();
   }
 
-  await cleanupOpenTabs(driver);
+  await cleanupOpenTabs();
   await driver.switchTo().window(optionsHandle);
 }
