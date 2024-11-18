@@ -28,6 +28,7 @@
 /* global autoReloadingPage:true */
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
+// ☝🏽 — put in init
 // Handle incoming clicks from content scripts on getadblock.com
 try {
   if (parseUri.parseSearch(window.location.search).aadisabled === "true") {
@@ -37,6 +38,7 @@ try {
   // do nothing
 }
 
+// ❌
 function setDataCollectionOptionsVisibility(visibility) {
   if (visibility) {
     $(".data-collection-option-container").show(200);
@@ -48,8 +50,9 @@ function setDataCollectionOptionsVisibility(visibility) {
 // Check or uncheck each loaded DOM option checkbox according to the
 // user's saved settings.
 const initialize = async function init() {
+  // ✅
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
-
+  // ✅
   setDataCollectionOptionsVisibility(!Prefs.data_collection_opt_out);
 
   // if the user is currently subscribed to AA

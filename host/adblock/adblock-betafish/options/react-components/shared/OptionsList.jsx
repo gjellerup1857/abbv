@@ -1,16 +1,15 @@
 import { Checkbox, Icon, Link, ToggleSwitch } from "@eyeo/ext-ui-components";
 import { translate } from "./utils";
 
-const changeHandler = () => console.log("change is possible");
-
 const OptionItem = ({
   name,
+  onChange,
   textKey,
   extraInfo,
   helpLink,
   additionalInfoLink,
   subOptions,
-  checkFn,
+  isChecked,
   isSubOption = false,
   selector: Selector = Checkbox,
 }) => {
@@ -26,7 +25,7 @@ const OptionItem = ({
       <div className={outerDivClasses}>
         <div className={innerDivClasses}>
           {/* The Toggle and Checkbox APIs need to be aligned */}
-          <Selector id={name} name={name} onChange={changeHandler} checked={checkFn(name)} />
+          <Selector id={name} name={name} onChange={onChange} checked={isChecked(name)} />
           <label className="ml-4" for={name}>
             {translate(textKey)}
           </label>
@@ -56,7 +55,7 @@ const OptionItem = ({
         {subOptions && (
           <ul>
             {subOptions.map((option) => (
-              <OptionItem isSubOption selector={ToggleSwitch} {...option} checkFn={checkFn} />
+              <OptionItem isSubOption selector={ToggleSwitch} {...option} isChecked={isChecked} />
             ))}
           </ul>
         )}
@@ -65,26 +64,12 @@ const OptionItem = ({
   );
 };
 
-export const OptionsList = ({ items, data }) => {
-  console.log('👾', data);
-
-  const dataOptOutKey = 'data_collection_opt_out';
-  const dataCollectionSubKeys = ['data_collection_v2', 'send_ad_wall_messages', 'onpageMessages'];
-
-  const isChecked = (name) => {
-    if (dataOptOutKey && dataCollectionSubKeys.includes(name)) {
-      return false;
-    }
-
-    return data[name];
-  };
-
+export const OptionsList = ({ items, isChecked }) => {
   return (
     <>
-      <h1>{translate("generaloptions2")}</h1>
       <ul>
         {items.map((item) => (
-          <OptionItem {...item} checkFn={isChecked} />
+          <OptionItem {...item} isChecked={isChecked} />
         ))}
       </ul>
     </>

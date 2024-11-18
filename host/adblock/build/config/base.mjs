@@ -88,7 +88,7 @@ export default {
       {
         dest: "options/react-options.js",
         src: ["adblock-betafish/options/react-components/main.jsx"],
-      }
+      },
     ],
   },
   mapping: {

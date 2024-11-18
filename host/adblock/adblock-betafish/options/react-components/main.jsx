@@ -26,8 +26,8 @@ const fetchData = async () => {
 };
 
 const initializeApp = async () => {
-  const data = await fetchData();
-  checkAndAddApp(data);
+  const optionsData = await fetchData();
+  checkAndAddApp({ optionsData });
 };
 
 (async () => await initializeApp())();
