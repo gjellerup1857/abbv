@@ -17,15 +17,15 @@
 
 import { beforeEachTasks } from "../utils/hook.js";
 import dataCollection from "./data-collection.js";
-import smoke from "./smoke.js";
-import uninstall from "./uninstall.js";
-import optionsPageAA from "./options-page-aa.js";
-import optionsPageFL from "./options-page-fl.js";
-import getPremium from "./get-premium.js";
-import popupAllowlisting from "./popup-allowlisting.js";
-import popupPageOpensSettings from "./popup-page-opens-options.js";
-import optionsPagePremiumFreeUser from "./options-page-premium-free-user.js";
-import popupPagePremiumFreeUser from "./popup-page-premium-free-user.js";
+import extension from "./smoke/extension.js";
+import adFiltering from "./smoke/ad-filtering.js";
+import uninstall from "./smoke/uninstall.js";
+import optionsPageAA from "./options-page/acceptable-ads.js";
+import optionsPageFL from "./options-page/filter-lists.js";
+import getPremium from "./premium/get-premium.js";
+import popupPage from "./popup-page.js";
+import freeUserOptions from "./premium/free-user-options.js";
+import freeUserPopup from "./premium/free-user-popup.js";
 import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 import bypassAPI from "./public-api/bypass-api.js";
@@ -36,17 +36,20 @@ export default () => {
   });
 
   describe("Test server", testServer);
-  describe("Smoke Tests - Main", smoke);
-  describe("Data collection", dataCollection);
+
+  describe("Smoke Tests - Main", function () {
+    describe("Extension", extension);
+    describe("Ad Filtering", adFiltering);
+  });
+
+  describe("Popup Page", popupPage);
+
   describe("Options Page", function () {
     describe("Acceptable Ads", optionsPageAA);
     describe("Filter Lists", optionsPageFL);
   });
 
-  describe("Popup Page", function () {
-    popupPageOpensSettings();
-    describe("Allowlisting and disallowlisting", popupAllowlisting);
-  });
+  describe("Data collection", dataCollection);
 
   describe("Public API", function () {
     describe("One click allowlisting", oneClickAllowlisting);
@@ -54,11 +57,10 @@ export default () => {
   });
 
   describe("Premium", function () {
-    describe("Free user - Options page", optionsPagePremiumFreeUser);
-    describe("Free user - Popup page", popupPagePremiumFreeUser);
+    describe("Free user - Popup", freeUserPopup);
+    describe("Free user - Options", freeUserOptions);
+    describe("Premium user", getPremium);
   });
-
-  describe("Premium Tests", getPremium);
 
   // Needs to be the last suite to run because the extension gets uninstalled
   describe("Smoke Tests - Uninstall", uninstall);

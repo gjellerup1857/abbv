@@ -25,9 +25,9 @@ import {
   getTabId,
   randomIntFromInterval,
   waitForNotDisplayed,
-} from "../utils/driver.js";
-import { initOptionsGeneralTab, initPopupPage, sendExtMessage } from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
+} from "../../utils/driver.js";
+import { initOptionsGeneralTab, initPopupPage, sendExtMessage } from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 
 const { By } = webdriver;
 

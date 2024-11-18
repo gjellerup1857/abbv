@@ -23,7 +23,7 @@ import {
   openNewTab,
   isCheckboxEnabled,
   waitForNotDisplayed,
-} from "../utils/driver.js";
+} from "../../utils/driver.js";
 import {
   addFiltersToAdBlock,
   blockHideUrl,
@@ -33,8 +33,8 @@ import {
   initOptionsFiltersTab,
   clickFilterlist,
   setAADefaultState,
-} from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
+} from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 
 const { By } = webdriver;
 

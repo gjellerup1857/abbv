@@ -23,16 +23,16 @@ import {
   getDisplayedElement,
   findUrl,
   waitForNotDisplayed,
-} from "../utils/driver.js";
+} from "../../utils/driver.js";
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   getSubscriptionInfo,
   clickFilterlist,
   checkSubscribedInfo,
-} from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
-import { getDefaultFilterLists, languageFilterLists } from "../utils/dataset.js";
+} from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
+import { getDefaultFilterLists, languageFilterLists } from "../../utils/dataset.js";
 
 const { By } = webdriver;
 

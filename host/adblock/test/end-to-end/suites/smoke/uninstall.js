@@ -17,9 +17,9 @@
 
 import { expect } from "expect";
 
-import { findUrl } from "../utils/driver.js";
-import { getUserIdFromPage } from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
+import { findUrl } from "../../utils/driver.js";
+import { getUserIdFromPage } from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 
 export default () => {
   it("uninstalls the extension", async function () {

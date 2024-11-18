@@ -17,9 +17,13 @@
 
 import { expect } from "expect";
 
-import { isCheckboxEnabled, getDisplayedElement } from "../utils/driver.js";
-import { initOptionsGeneralTab, initOptionsFiltersTab, setAADefaultState } from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
+import { isCheckboxEnabled, getDisplayedElement } from "../../utils/driver.js";
+import {
+  initOptionsGeneralTab,
+  initOptionsFiltersTab,
+  setAADefaultState,
+} from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 
 export default () => {
   after(async function () {

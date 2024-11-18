@@ -3,7 +3,7 @@
 import { expect } from "expect";
 import webdriver from "selenium-webdriver";
 
-import { getOptionsHandle } from "../utils/hook.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 import {
   getUserIdFromStorage,
   initOptionsPremiumTab,
@@ -12,8 +12,12 @@ import {
   initOptionsBackupSyncTab,
   initOptionsPremiumFlTab,
   checkPremiumPageHeader,
-} from "../utils/page.js";
-import { getDisplayedElement, clickAndCloseNewTab, clickAndNavigateBack } from "../utils/driver.js";
+} from "../../utils/page.js";
+import {
+  getDisplayedElement,
+  clickAndCloseNewTab,
+  clickAndNavigateBack,
+} from "../../utils/driver.js";
 
 export default () => {
   before(async function () {

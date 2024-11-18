@@ -2,9 +2,9 @@
 /* eslint-disable import/extensions */
 import { expect } from "expect";
 
-import { getOptionsHandle } from "../utils/hook.js";
-import { getUserIdFromStorage, initPopupPage } from "../utils/page.js";
-import { getDisplayedElement, getTabId, openNewTab, findUrl } from "../utils/driver.js";
+import { getOptionsHandle } from "../../utils/hook.js";
+import { getUserIdFromStorage, initPopupPage } from "../../utils/page.js";
+import { getDisplayedElement, getTabId, openNewTab, findUrl } from "../../utils/driver.js";
 
 export default () => {
   const premiumFeatures = [

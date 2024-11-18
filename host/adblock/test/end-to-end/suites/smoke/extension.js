@@ -16,10 +16,8 @@
  */
 
 import { expect } from "expect";
-import webdriver from "selenium-webdriver";
 
-import adFiltering from "./ad-filtering.js";
-import { findUrl, openNewTab, isCheckboxEnabled } from "../utils/driver.js";
+import { findUrl, openNewTab, isCheckboxEnabled } from "../../utils/driver.js";
 import {
   initOptionsFiltersTab,
   installUrl,
@@ -28,9 +26,9 @@ import {
   clickFilterlist,
   reloadExtension,
   getTotalCountFromPopup,
-} from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
-import { getDefaultFilterLists } from "../utils/dataset.js";
+} from "../../utils/page.js";
+import { getOptionsHandle } from "../../utils/hook.js";
+import { getDefaultFilterLists } from "../../utils/dataset.js";
 
 export default () => {
   it("opens the install url", async function () {
@@ -173,6 +171,4 @@ export default () => {
       expect(text).toMatch(/(updated|Subscribed)/);
     }
   });
-
-  describe("Ad Filtering", adFiltering);
 };
