@@ -65,6 +65,8 @@ async function blockSomeItems() {
 
 export default () => {
   it("keeps settings after upgrade", async function () {
+    const customFilter = "/testfiles/blocking/partial-path/";
+
     await blockSomeItems();
     const totalCount = await getTotalCountFromPopup();
     expect(totalCount).toBeGreaterThan(0);
@@ -125,10 +127,14 @@ export default () => {
 
     // Add custom filter
     await initOptionsCustomizeTab(getOptionsHandle());
-    await setCustomFilters(["/testfiles/blocking/partial-path/"], true);
+    await setCustomFilters([customFilter], true);
 
     // upgrade extension
+    const prevExtVersion = extension.version;
     await upgradeExtension();
+
+    // check the extension version has changed
+    expect(extension.version).not.toEqual(prevExtVersion);
 
     // check total count
     expect(await getTotalCountFromPopup()).toEqual(totalCount);
@@ -190,8 +196,8 @@ export default () => {
 
     // check if custom filters are still there and can be changed
     await initOptionsCustomizeTab(getOptionsHandle());
-    expect(await getCustomFilters()).toContain("/testfiles/blocking/partial-path/");
+    expect(await getCustomFilters()).toContain(customFilter);
     await setCustomFilters([]);
-    expect(await getCustomFilters()).not.toContain("/testfiles/blocking/partial-path/");
+    expect(await getCustomFilters()).not.toContain(customFilter);
   });
 };

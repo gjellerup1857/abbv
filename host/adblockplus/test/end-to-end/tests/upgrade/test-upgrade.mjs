@@ -81,6 +81,7 @@ export default () => {
       const generalPage = new GeneralPage(browser);
       const popup = new PopupPage(browser);
       const testPage = new TestPage(browser);
+      const customFilter = "/testfiles/blocking/partial-path/";
 
       // block and hide ads on a page
       await blockSomeItems();
@@ -129,22 +130,17 @@ export default () => {
       // add custom filter
       await switchToABPOptionsTab();
       await advancedPage.init();
-      await advancedPage.typeTextToAddCustomFilterListInput(
-        "/testfiles/blocking/partial-path/"
-      );
+      await advancedPage.typeTextToAddCustomFilterListInput(customFilter);
       await advancedPage.clickAddCustomFilterListButton();
-      expect(
-        await advancedPage.verifyTextPresentInCustomFLTable(
-          "/testfiles/blocking/partial-path/"
-        )
-      ).to.be.true;
+      expect(await advancedPage.verifyTextPresentInCustomFLTable(customFilter))
+        .to.be.true;
 
       // upgrade extension
       await upgradeExtension();
       const { extVersion } = await waitForExtension();
 
-      // eslint-disable-next-line no-console
-      console.log(`Extension upgraded from ${prevExtVersion} to ${extVersion}`);
+      // check the extension version has changed
+      expect(extVersion).to.not.equal(prevExtVersion);
 
       // check total ads blocked count and if total count
       // is still increasing
@@ -152,8 +148,24 @@ export default () => {
       await blockSomeItems();
       expect(await getTotalCount()).to.be.greaterThan(totalCount);
 
+      // Sometimes the options page may be "frozen" at this point.
+      // Waiting for some description is a workaround to make sure the next
+      // additional tracking checks have meaningful elements
+      await waitForAssertion(
+        async () => {
+          await switchToABPOptionsTab({ refresh: true });
+          await generalPage.init();
+          expect(
+            await generalPage.getBlockAdditionalTrackingDescriptionText()
+          ).to.contain("Protect your privacy");
+        },
+        {
+          timeout: 5000,
+          timeoutMsg: "Unexpected Block Additional Tracking description"
+        }
+      );
+
       // check if additional tracking is enabled & disable it
-      await generalPage.init();
       expect(await generalPage.isBlockAdditionalTrackingCheckboxSelected()).to
         .be.true;
       await generalPage.clickBlockAdditionalTrackingCheckbox();
@@ -264,23 +276,18 @@ export default () => {
         "/testfiles/blocking/another-custom-filter/"
       );
       await advancedPage.clickAddCustomFilterListButton();
+      // Workaround for "Timed out receiving message from renderer: 10.000"
+      await browser.pause(2000);
       // check if custom filter is still there
-      expect(
-        await advancedPage.verifyTextPresentInCustomFLTable(
-          "/testfiles/blocking/partial-path/"
-        )
-      ).to.be.true;
+      expect(await advancedPage.verifyTextPresentInCustomFLTable(customFilter))
+        .to.be.true;
       // check that removal works
-      await advancedPage.clickCustomFilterListsCheckboxByText(
-        "/testfiles/blocking/partial-path/"
-      );
+      await advancedPage.clickCustomFilterListsCheckboxByText(customFilter);
       await advancedPage.clickDeleteCustomFLButton();
       await waitForAssertion(
         async () => {
           expect(
-            await advancedPage.verifyTextPresentInCustomFLTable(
-              "/testfiles/blocking/partial-path/"
-            )
+            await advancedPage.verifyTextPresentInCustomFLTable(customFilter)
           ).to.be.false;
         },
         {

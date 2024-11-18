@@ -27,7 +27,7 @@ import {
   screenshotsBasePath,
 } from "./constants.js";
 import { reloadExtension } from "../utils/page.js";
-import { sleep } from "@eyeo/test-utils";
+import { sleep, changeExtensionVersion } from "@eyeo/test-utils";
 
 /**
  * Extracts the extension from the release folder based on the browser name
@@ -69,6 +69,9 @@ export async function upgradeExtension() {
   const buildsDirPath = path.join(process.cwd(), "dist", "release");
   const unpackedDirPath = path.join(process.cwd(), "dist", "live", "adblock-upgrade-unpacked");
   await extractExtension(buildsDirPath, unpackedDirPath);
+
+  // Change the extension version to check the upgrade mechanism works
+  await changeExtensionVersion(unpackedDirPath);
 
   // reload the extension
   await reloadExtension();

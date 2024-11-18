@@ -20,7 +20,12 @@ import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
-import { findProjectRoot, sleep, testPagesPort } from "@eyeo/test-utils";
+import {
+  findProjectRoot,
+  sleep,
+  testPagesPort,
+  changeExtensionVersion
+} from "@eyeo/test-utils";
 import { reloadExtension } from "../helpers.js";
 
 /**
@@ -160,6 +165,9 @@ export async function upgradeExtension() {
 
   const unpackedDirPath = path.join(liveBuildsDirPath, "ext-unpacked");
   await extractExtension(releasePath, unpackedDirPath);
+
+  // Change the extension version to check the upgrade mechanism works
+  await changeExtensionVersion(unpackedDirPath);
 
   // reload the extension after upgrading
   await reloadExtension();
