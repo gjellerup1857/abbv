@@ -177,6 +177,10 @@ const countCache = (function countCache() {
 })();
 countCache.init();
 
+const isWhitelistFilter = function (text) {
+  return /^@@/.test(text);
+};
+
 // Add a new custom filter entry.
 // Inputs: filter:string - line of text to add to custom filters.
 //         origin:string - the source or trigger for the filter list entry
@@ -187,7 +191,15 @@ const addCustomFilter = async function (filterText, origin) {
     if (response) {
       return response;
     }
-    await ewe.filters.add([filterText], createFilterMetaData(origin));
+
+    const metadata = createFilterMetaData(origin);
+    if (isWhitelistFilter(filterText) && origin === "wizard") {
+      const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
+      metadata.expiresAt = Date.now() + autoExtendMs;
+      metadata.autoExtendMs = autoExtendMs;
+    }
+
+    await ewe.filters.add([filterText], metadata);
     await ewe.filters.enable([filterText]);
     if (isSelectorFilter(filterText)) {
       countCache.addCustomFilterCount(filterText);
@@ -201,10 +213,6 @@ const addCustomFilter = async function (filterText, origin) {
 };
 
 // UNWHITELISTING
-
-const isWhitelistFilter = function (text) {
-  return /^@@/.test(text);
-};
 
 // Look for a custom filter that would whitelist the 'url' parameter
 // and if any exist, remove the first one.
