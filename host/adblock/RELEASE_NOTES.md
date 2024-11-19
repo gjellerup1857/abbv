@@ -1,5 +1,7 @@
 # Unreleased
 
+- Removed "Always allow ads on this site" from kebab menu (EXT-595)
+
 # 6.11.1 - 2024-11-18
 
 This release contains only minor updates and under-the-hood changes.
