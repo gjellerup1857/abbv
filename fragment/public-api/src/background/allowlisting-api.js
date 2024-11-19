@@ -1,4 +1,6 @@
 // Read the extension name and version from manifest.json
+import { allowlistingTriggerEvent, apiFrameUrl } from "../shared/constants.js";
+
 const { short_name: extName, version: extVersion } =
   browser.runtime.getManifest();
 
@@ -27,4 +29,18 @@ export async function handleAllowlisting({ allowlistingOptions, sender }) {
   // Randomly pick one of the two responses
   const randomIndex = Math.floor(Math.random() * responses.length);
   return responses[randomIndex];
+}
+
+/**
+ * Initializes the API
+ *
+ * @param {any} port A reference to the port object
+ * @param {Function} addTrustedMessageTypes Function to add the trusted message types
+ */
+export function start({ port, addTrustedMessageTypes }) {
+  port.on(allowlistingTriggerEvent, async (message, sender) =>
+    handleAllowlisting({ allowlistingOptions: message, sender }),
+  );
+
+  addTrustedMessageTypes(apiFrameUrl, [allowlistingTriggerEvent]);
 }

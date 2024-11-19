@@ -20,9 +20,15 @@
 export const apiFrameUrl = "https://example.com";
 
 // Event name for triggering the allowlist of the current tab url
-export const allowlistingTriggerEvent = "public-api.allowlist-website";
+export const allowlistingTriggerEvent = "public-api.allowlist-website.request";
 // Event name for replying to the allowlisting action
-export const allowlistingResponseEvent = "public-api.website-allowlisted";
+export const allowlistingResponseEvent =
+  "public-api.allowlist-website.response";
+
+// Event name for triggering the allowlist of the current tab url
+export const statusTriggerEvent = "public-api.status.request";
+// Event name for replying to the allowlisting action
+export const statusResponseEvent = "public-api.status.response";
 
 // Milliseconds in a day
 export const MS_IN_DAY = 1000 * 60 * 60 * 24;

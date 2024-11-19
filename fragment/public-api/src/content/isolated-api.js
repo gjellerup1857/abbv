@@ -20,64 +20,33 @@ import browser from "webextension-polyfill";
 import {
   allowlistingResponseEvent,
   allowlistingTriggerEvent,
+  statusTriggerEvent,
+  statusResponseEvent,
 } from "../shared/constants.js";
 import { isValidAllowlistingCommand } from "../shared/helpers.js";
 
 let throttled = false;
 const { short_name: extName } = browser.runtime.getManifest();
 
-const extAllowlistingTriggerEvent = `${extName}.${allowlistingTriggerEvent}`;
-const extAllowlistingResponseEvent = `${extName}.${allowlistingResponseEvent}`;
-
-/**
- * Sends an allowlisting command to the background script, if the background script doesn't reply in
- * timoutMS then this will return and error response
- *
- * @param allowlistingCommand The command to be passed to the background script
- * @param timeoutMs How long should it wait for a reply
- * @returns {Promise<{reason: string, success: boolean, extName: string}>} The result from the background script
- * or a timeout error
- */
-async function sendAllowlistCommand(allowlistingCommand) {
-  const { options, timeout } = allowlistingCommand;
-
-  const messagePromise = browser.runtime.sendMessage({
-    type: allowlistingTriggerEvent,
-    options,
-  });
-
-  const timeoutPromise = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error("timeout_error")), timeout),
-  );
-
-  // Timeout if no response from the background script is received in time
-  try {
-    return await Promise.race([messagePromise, timeoutPromise]);
-  } catch (error) {
-    return {
-      extName,
-      success: false,
-      reason: error.message,
-    };
-  }
-}
+const extAllowlistingTriggerEvent = `${allowlistingTriggerEvent}.${extName}`;
+const extAllowlistingResponseEvent = `${allowlistingResponseEvent}.${extName}`;
+const extStatusTriggerEvent = `${statusTriggerEvent}.${extName}`;
+const extStatusResponseEvent = `${statusResponseEvent}.${extName}`;
 
 /**
  * Sends a response to the main world by dispatching an event to the DOM.
  *
  * @param response The response to be sent.
  */
-function sendResponseToMainWorld(response) {
-  let options = { detail: response };
+function sendResponseToMainWorld(eventType, detail) {
+  let options = { detail };
   if (typeof cloneInto === "function") {
     // Firefox requires content scripts to clone objects
     // that are passed to the document
     options = cloneInto(options, document.defaultView);
   }
 
-  document.dispatchEvent(
-    new CustomEvent(extAllowlistingResponseEvent, options),
-  );
+  document.dispatchEvent(new CustomEvent(eventType, options));
 }
 
 /**
@@ -91,11 +60,14 @@ function sendResponseToMainWorld(response) {
  */
 async function allowlistWebsiteListener(allowlistingCommand) {
   console.log(
-    "Received allowlist command from page script",
+    "Received allowlist command in isolated world command from main world",
     allowlistingCommand,
   );
+
+  const { requestId } = allowlistingCommand;
+  const responseEventType = `${extAllowlistingResponseEvent}.${requestId}`;
   if (!isValidAllowlistingCommand(allowlistingCommand)) {
-    sendResponseToMainWorld({
+    sendResponseToMainWorld(responseEventType, {
       extName,
       success: false,
       reason: "invalid_command",
@@ -104,22 +76,59 @@ async function allowlistWebsiteListener(allowlistingCommand) {
     return;
   }
 
-  if (throttled) {
-    return;
-  }
+  const { options } = allowlistingCommand;
 
-  throttled = true;
-  const response = await sendAllowlistCommand(allowlistingCommand);
-  console.log("received response from extension in content script", response);
-  sendResponseToMainWorld(response);
-  throttled = false;
+  const response = await browser.runtime.sendMessage({
+    type: allowlistingTriggerEvent,
+    options,
+  });
+
+  console.log("received response from extension in isolated world", response);
+  sendResponseToMainWorld(responseEventType, response);
 }
 
+async function getStatus(statusCommand) {
+  console.log(
+    "Received status command in isolated world command from main world",
+    statusCommand,
+  );
+
+  const { requestId } = statusCommand;
+  const responseEventType = `${extStatusResponseEvent}.${requestId}`;
+
+  const response = await browser.runtime.sendMessage({
+    type: statusTriggerEvent,
+  });
+
+  console.log("received response from extension in isolated world", response);
+  sendResponseToMainWorld(responseEventType, response);
+}
+
+/**
+ * Signals to the Main world script that the content script was initialized
+ * by adding a hidden div into the page.
+ */
+function sendReadySignal() {
+  const html = document.documentElement;
+  html.dataset[extName.replace(/\s+/g, "")] = "true";
+  console.log("Isolated world script is ready");
+}
+
+/**
+ * Starts the initialization of the Isolated world API
+ */
 function start() {
   document.addEventListener(extAllowlistingTriggerEvent, (ev) => {
     const { detail } = ev;
     return allowlistWebsiteListener(detail);
   });
+
+  document.addEventListener(extStatusTriggerEvent, (ev) => {
+    const { detail } = ev;
+    return getStatus(detail);
+  });
+
+  sendReadySignal();
 }
 
 start();

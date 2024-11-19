@@ -1,3 +1,5 @@
+import { apiFrameUrl, statusTriggerEvent } from "../shared/constants.js";
+
 // Read the extension name and version from manifest.json
 const { short_name: extName, version: extVersion } =
   browser.runtime.getManifest();
@@ -63,4 +65,32 @@ export async function getExtensionStatus({
   };
 
   return { payload, extensionInfo };
+}
+
+/**
+ * Initializes the API
+ *
+ * @param {any} port A reference to the port object
+ * @param {Function} addTrustedMessageTypes Function to add the trusted message types
+ * @param {any} ewe The filter engine.
+ * @param {Function} isPremiumActive Function to retrieve the premium status
+ * @param {Function} getEncodedLicense Function to retrieve the encoded license
+ */
+export function start({
+  port,
+  addTrustedMessageTypes,
+  ewe,
+  isPremiumActive,
+  getEncodedLicense,
+}) {
+  port.on(statusTriggerEvent, async (message, sender) =>
+    getExtensionStatus({
+      tabId: sender.tab.id,
+      ewe,
+      isPremiumActive,
+      getEncodedLicense,
+    }),
+  );
+
+  addTrustedMessageTypes(apiFrameUrl, [statusTriggerEvent]);
 }

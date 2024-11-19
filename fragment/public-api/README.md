@@ -26,5 +26,4 @@ For `.ts` files we have unit tests that can be run via
 
 ### End-to-end testing
 
-End-to-end test are out of scope of this fragment because of the need for browser and
-a host extension to execute such tests.
+TBD
