@@ -200,17 +200,6 @@ const addCustomFilter = async function (filterText, origin) {
   }
 };
 
-// Creates a custom filter entry that allowlists a given domain
-// Inputs: pageUrl:string - url of the page
-//         origin:string - the source or trigger for the filter list entry
-// Returns: null if successful, otherwise an exception
-const createDomainAllowlistFilter = async function (pageUrl, origin) {
-  const theURL = new URL(pageUrl);
-  const host = theURL.hostname.replace(/^www\./, "");
-  const filter = `@@||${host}/*^$document`;
-  return addCustomFilter(filter, origin);
-};
-
 // UNWHITELISTING
 
 const isWhitelistFilter = function (text) {
@@ -754,7 +743,6 @@ Object.assign(self, {
   getUserFilters,
   updateFilterLists,
   checkUpdateProgress,
-  createDomainAllowlistFilter,
   getDebugInfo,
   openTab,
   saveDomainPauses,

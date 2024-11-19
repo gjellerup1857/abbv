@@ -22,24 +22,6 @@
 import { closePopup, PAGE_INFO_KEY, sendMessageWithNoResponse } from "../utils.js";
 
 const eventHandlers = {
-  async pauseAlways() {
-    sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "allowlist_domain_clicked" });
-
-    if (!this.pageInfo.url) {
-      return;
-    }
-
-    const pageUrl = new URL(this.pageInfo.url);
-    const { href } = pageUrl;
-    await browser.runtime.sendMessage({
-      command: "createDomainAllowlistFilter",
-      url: href,
-      origin: "popup",
-    });
-    await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
-    browser.tabs.reload();
-    closePopup();
-  },
   async openAllowListWizard() {
     sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "whitelist_domain_clicked" });
     await browser.runtime.sendMessage({ command: "showWhitelist", tabId: this.pageInfo.id });
