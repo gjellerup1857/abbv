@@ -564,6 +564,7 @@ const configureChildElements = function (parentNodeArg, adsAllowedArg) {
       .sendMessage({
         command: "createAllowlistFilterForYoutubeChannelName",
         channelName: parentNode.dataset.parsedChannelName,
+        origin: "youtube",
       })
       .then(() => {
         browser.runtime.sendMessage({ command: "getAllAdsAllowedUserFilters" }).then((response) => {
