@@ -51,14 +51,8 @@ const adblockIsPaused = function (newValue) {
 
   if (newValue === true) {
     chromeStorageSetHelper(pausedKey, true, () => {
-      const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
-      const metadata = {
-        ...createFilterMetaData(),
-        expiresAt: Date.now() + autoExtendMs,
-        autoExtendMs,
-      };
-      ewe.filters.add([pausedFilterText1], metadata);
-      ewe.filters.add([pausedFilterText2], metadata);
+      ewe.filters.add([pausedFilterText1]);
+      ewe.filters.add([pausedFilterText2]);
     });
   } else {
     ewe.filters.remove([pausedFilterText1]);
