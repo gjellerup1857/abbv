@@ -119,7 +119,7 @@ describe("test popup allowlisting and disallowlisting pages", function () {
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
     const adblockedCountUrl =
-      "adblockinc.gitlab.io/QA-team/adblocking/" +
+      "eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/" +
       "adblocked-count/adblocked-count-testpage.html";
     await browser.newWindow(`https://${adblockedCountUrl}`);
     await popupPage.switchToTab("Ad blocked count testpage");

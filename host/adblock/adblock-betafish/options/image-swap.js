@@ -258,7 +258,7 @@ if (info.application === "gecko") {
 
   const freeUserSetup = function () {
     $("#get-it-now-image-swap").on("click", MABPayment.userClickedPremiumCTA);
-    $("input.invisible-overlay").prop("hidden", true);
+    $("input.invisible-overlay").addClass("hidden");
     $(".channel-box > a[id^=get-it-now]").closest("li").addClass("locked");
     $(".channel-box").first().closest("li").addClass("selected");
     updateChannelBoxes();
@@ -354,7 +354,7 @@ if (info.application === "gecko") {
   };
 
   const paidUserSetup = function () {
-    $("input.invisible-overlay").removeAttr("hidden");
+    $("input.invisible-overlay").removeClass("hidden");
     $(".channel-box > a[id^=get-it-now]").prop("hidden", true);
     $(".channel-box").removeClass("locked");
 

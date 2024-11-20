@@ -85,6 +85,10 @@ export default {
       //   dest: "button/react-popup.js",
       //   src: ["adblock-betafish/button/react-components/main.jsx"],
       // },
+      {
+        dest: "options/react-options.js",
+        src: ["adblock-betafish/options/react-components/main.jsx"],
+      },
     ],
   },
   mapping: {
@@ -624,11 +628,10 @@ export default {
         package: "@eyeo/webext-ad-filtering-solution",
         src: "dist/ewe-content.js",
       },
-      // TODO (ui-components): Uncomment this when you want to integrate ui-components
-      // {
-      //   dest: "ui-components-styles.css",
-      //   src: "node_modules/@eyeo/ext-ui-components/dist/styles.css",
-      // },
+      {
+        dest: "ui-components-styles.css",
+        src: "../../node_modules/@eyeo/ext-ui-components/dist/styles.css",
+      },
     ],
   },
   translations: {

@@ -27,7 +27,7 @@ describe("Public API", function () {
   });
 
   afterEach(async function () {
-    await removeFilter("@@||adblockinc.gitlab.io^$document");
+    await removeFilter("@@||eyeo.gitlab.io^$document");
   });
 
   describe("Test one-click allowlisting", oneClickAllowlisting);

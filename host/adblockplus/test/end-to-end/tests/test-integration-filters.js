@@ -60,7 +60,7 @@ describe("test custom filters as part of the integration tests", function () {
     ];
     await advancedPage.addCustomFiltersOneByOne(filtersToAdd);
     const customFiltersTestPage =
-      "https://adblockinc.gitlab.io/QA-team/adbl" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
@@ -119,7 +119,7 @@ describe("test custom filters as part of the integration tests", function () {
     await advancedPage.addCustomFiltersOneByOne(filtersToAdd);
     await advancedPage.clickCustomFilterListsFirstItemToggle();
     const customFiltersTestPage =
-      "https://adblockinc.gitlab.io/QA-team/adbl" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();
@@ -173,7 +173,7 @@ describe("test custom filters as part of the integration tests", function () {
     await browser.keys("Enter");
     await advancedPage.verifyTextPresentInCustomFLTable(text);
     const customFiltersTestPage =
-      "https://adblockinc.gitlab.io/QA-team/adbl" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adbl" +
       "ocking/custom-filters/custom-filters-testpage.html";
     await browser.newWindow(customFiltersTestPage);
     await browser.refresh();

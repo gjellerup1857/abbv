@@ -943,18 +943,6 @@ input[type="button"]:focus {
   box-shadow: none;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
-  height: 1.3em;
-  width: 1.3em;
-  vertical-align: middle;
-  margin: 0px 0.4em 0.3em 0px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  -webkit-appearance: none;
-  transition: box-shadow 200ms;
-  -webkit-transition: box-shadow 200ms;
-}
-
 input[type="radio"] {
   -webkit-border-radius: 100%;
   border-radius: 100%;
@@ -987,12 +975,6 @@ input[type="radio"]:checked::before {
   background: rgba(0, 0, 0, 0.7);
   border-radius: 100%;
   content: "";
-}
-
-input[type="checkbox"]:checked::before {
-  color: rgba(0, 0, 0, 0.7);
-  content: "\2713";
-  margin-left: 20%;
 }
 
 input:disabled {

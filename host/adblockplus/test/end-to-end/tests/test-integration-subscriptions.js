@@ -47,7 +47,7 @@ describe("test subscriptions as part of the integration tests", function () {
     if (process.env.MANIFEST_VERSION === "3") this.skip();
 
     await browser.url(
-      "https://adblockinc.gitlab.io/QA-team/adblocking" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking" +
         "/subscriptions/subscriptions-testpage.html"
     );
     const testPages = new TestPages(browser);
@@ -82,7 +82,7 @@ describe("test subscriptions as part of the integration tests", function () {
       ).includes("ABP test subscription")
     ).to.be.true;
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking" +
         "/subscriptions/subscriptions-testpage.html"
     );
     await browser.refresh();
@@ -102,7 +102,7 @@ describe("test subscriptions as part of the integration tests", function () {
     await advancedPage.clickEasyListFLStatusToggle();
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.false;
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
         "ing-hiding/blocking-hiding-testpage.html"
     );
     if (isFirefox()) {
@@ -133,7 +133,7 @@ describe("test subscriptions as part of the integration tests", function () {
     await advancedPage.clickEasyListFLStatusToggle();
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
         "ing-hiding/blocking-hiding-testpage.html"
     );
     await browser.refresh();
@@ -175,7 +175,7 @@ describe("test subscriptions as part of the integration tests", function () {
     await advancedPage.clickEasyListFLTrashButton();
     expect(await advancedPage.isEasyListFLDisplayed()).to.be.false;
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
         "ing-hiding/blocking-hiding-testpage.html"
     );
     await browser.refresh();
@@ -206,7 +206,7 @@ describe("test subscriptions as part of the integration tests", function () {
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
     expect(await advancedPage.isEasyListFLUpdatingDone()).to.be.true;
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking/block" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
         "ing-hiding/blocking-hiding-testpage.html"
     );
     await browser.refresh();

@@ -34,7 +34,7 @@ const { By, Key } = webdriver;
 
 export const installUrl = "getadblock.com/en/installed";
 export const blockHideUrl =
-  "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
+  "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
 
 export async function initPopupPage(tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";

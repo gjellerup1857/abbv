@@ -45,7 +45,8 @@
   </section>
 </section>
 <!-- End: Premium Sync CTA -->
-<div class="option-page-box">
+<div id="react-options" class="flex justify-center"></div>
+<div id="jq-options" class="option-page-box">
   <div class="option-page-content">
     <h1 i18n="generaloptions2" class="page-title"></h1>
 
@@ -58,7 +59,7 @@
       <li class="checkbox-indentation">
         <div class="add-space-between section-padding bottom-line">
           <div>
-            <span class="checkbox md-stack">
+            <span class="checkbox md-stack -mt-1.5">
               <input type="checkbox" class="feature" id="acceptable_ads" />
               <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
               <i
@@ -109,7 +110,7 @@
 
       <li class="section-padding checkbox-indentation">
         <div class="section-padding">
-          <span class="checkbox md-stack">
+          <span class="checkbox md-stack -mt-1.5">
             <input type="checkbox" class="feature" id="enable_youtube_channel_whitelist" />
             <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
             <i
@@ -145,7 +146,10 @@
               href="https://helpcenter.getadblock.com/hc/en-us/articles/9738502154131-Can-I-use-AdBlock-and-still-allow-ads-on-my-favorite-YouTube-channels"
               target="_blank"
             >
-              <i class="material-icons md-18" role="img" i18n-aria-label="learn_more_without_period"
+              <i
+                class="material-icons md-18 hover:text-[--help-icon-color-hovered]"
+                role="img"
+                i18n-aria-label="learn_more_without_period"
                 >live_help</i
               >
             </a>
@@ -156,7 +160,7 @@
       <li class="section-padding checkbox-indentation">
         <div class="section-padding add-space-between">
           <div>
-            <span class="checkbox md-stack">
+            <span class="checkbox md-stack -mt-1.5">
               <input type="checkbox" class="feature" id="enable_twitch_channel_allowlist" />
               <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
               <i
@@ -187,7 +191,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="prefs__shouldShowBlockElementMenu" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -201,7 +205,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="prefs__show_statsinicon" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -215,7 +219,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="enable_display_menu_stats" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -229,7 +233,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="prefs__show_devtools_panel" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -243,7 +247,7 @@
       </li>
 
       <li id="main_opt_out" class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="prefs__data_collection_opt_out" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -260,7 +264,7 @@
         class="add-space-between checkbox-indentation section-padding data-collection-option-container"
       >
         <div>
-          <span class="checkbox md-stack">
+          <span class="checkbox md-stack -mt-1.5">
             <input type="checkbox" class="feature" id="enable_data_collection_v2" />
             <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
             <i
@@ -287,7 +291,7 @@
         class="add-space-between checkbox-indentation section-padding data-collection-option-container"
       >
         <div>
-          <span class="checkbox md-stack">
+          <span class="checkbox md-stack -mt-1.5">
             <input type="checkbox" class="feature" id="prefs__send_ad_wall_messages" />
             <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
             <i
@@ -311,7 +315,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation data-collection-option-container">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="enable_onpageMessages" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -325,7 +329,7 @@
       </li>
 
       <li class="section-padding checkbox-indentation">
-        <span class="checkbox md-stack">
+        <span class="checkbox md-stack -mt-1.5">
           <input type="checkbox" class="feature" id="enable_show_advanced_options" />
           <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
           <i
@@ -340,7 +344,7 @@
 
       <li class="section-padding advanced light-grey-text">
         <div class="checkbox-indentation forDebug">
-          <span class="checkbox md-stack">
+          <span class="checkbox md-stack -mt-1.5">
             <input type="checkbox" class="feature" id="enable_debug_logging" />
             <i class="unchecked material-icons" role="img" aria-hidden="true">lens</i>
             <i
@@ -360,3 +364,4 @@
     <div class="translation_credits italic do-not-display"></div>
   </div>
 </div>
+<script src="options/react-options.js" type="module"></script>

@@ -113,7 +113,7 @@
     "@adblockinc/rules": "gitlab:eyeo/extensions/rules#4b0b6c202dd712d826d6d53e6f728cb8b49ba52e",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.17.1",
+    "@eyeo/webext-ad-filtering-solution": "1.17.2",
     "@sentry/browser": "8.2.1",
     "@sentry/cli": "2.37.0",
     "argparse": "1.0.10",

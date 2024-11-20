@@ -1,6 +1,7 @@
 # Unreleased
 
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)
+- Updated webext-ad-filtering-solution to 1.17.2
 
 # 6.11.1 - 2024-11-18
 
