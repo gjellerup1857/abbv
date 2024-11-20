@@ -29,7 +29,7 @@ async function cleanCustomFilter(filters) {
   return filters.filter(
     (f) =>
       !(
-        (f.metadata && f.metadata.origin === "popup") ||
+        (f.metadata && ["popup", "youtube", "web", "wizard"].includes(f.metadata.origin)) ||
         f.text === pausedFilterText.pausedFilterText1 ||
         f.text === pausedFilterText.pausedFilterText2
       ),
