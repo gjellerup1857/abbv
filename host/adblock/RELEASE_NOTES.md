@@ -1,5 +1,6 @@
 # Unreleased
 
+- Refactored the telemetry fetch processing
 - Updated webext-ad-filtering-solution to 1.17.2
 
 # 6.11.1 - 2024-11-18
