@@ -110,8 +110,18 @@ port.on("filters.add", (message, sender) => {
  * @returns {object[]}
  */
 port.on("filters.get", async (message, sender) => {
-  let filters = await ewe.filters.getUserFilters();
-  return filters.map(toPlainFilter);
+  const filters = await ewe.filters.getUserFilters();
+  const parsedFilters = filters.map(toPlainFilter);
+
+  if (message.includeMetadata) {
+    const promises = filters.map((filter) => ewe.filters.getMetadata(filter.text));
+    const filtersMetadata = await Promise.all(promises);
+    for (let i = 0; i < filtersMetadata.length; i++) {
+      parsedFilters[i].metadata = filtersMetadata[i];
+    }
+  }
+
+  return parsedFilters;
 });
 
 /**
