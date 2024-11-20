@@ -140,7 +140,8 @@ class IOFilterTable extends IOElement {
     browser.runtime
       .sendMessage({
         type: "filters.importRaw",
-        text: filters.join("\n")
+        text: filters.join("\n"),
+        origin: "options-advanced"
       })
       .then(([errors, filterTexts]) => {
         if (!errors.length) {

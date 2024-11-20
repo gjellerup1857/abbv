@@ -1291,7 +1291,8 @@ function addAllowlistedDomain() {
     );
     sendMessageHandleErrors({
       type: "filters.add",
-      text: "@@||" + host.toLowerCase() + "^$document"
+      text: "@@||" + host.toLowerCase() + "^$document",
+      origin: "options-allowlist-websites"
     });
     domain.value = "";
     $("#allowlisting-add-button").disabled = true;

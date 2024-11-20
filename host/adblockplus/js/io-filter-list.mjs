@@ -451,7 +451,8 @@ function replaceFilter(filter, currentTarget) {
     .sendMessage({
       type: "filters.replace",
       new: text,
-      old
+      old,
+      origin: "options-advanced"
     })
     .then((errors) => {
       if (errors.length) {

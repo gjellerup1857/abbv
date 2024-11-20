@@ -230,10 +230,12 @@ export function start() {
    */
   port.on("filters.importRaw", async (message, sender) => {
     let [filterTexts, errors] = filtersValidate(message.text);
+    const metadata = { created: Date.now() };
+    if (message.origin) metadata.origin = origin;
 
     if (errors.length == 0) {
       try {
-        await ewe.filters.add(filterTexts);
+        await ewe.filters.add(filterTexts, metadata);
       } catch (error) {
         errors.push(error);
       }

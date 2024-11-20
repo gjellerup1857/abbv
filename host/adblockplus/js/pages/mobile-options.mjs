@@ -231,7 +231,8 @@ import "../../src/mobile-options/ui/mobile-options.css";
       browser.runtime
         .sendMessage({
           type: toggle.checked ? "filters.remove" : "filters.add",
-          text: allowlistFilter
+          text: allowlistFilter,
+          origin: "mobile-options"
         })
         .then((errors) => {
           if (errors.length < 1) return;
