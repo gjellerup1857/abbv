@@ -22,23 +22,30 @@
 
 let originalCustomFilters = [];
 
-async function cleanCustomFilter(filters) {
-  const pausedFilterText = await send("getPausedFilterText");
-
-  // filter global pause and domain pause white-list items
-  return filters.filter(
-    (filter) =>
-      !(
-        (filter.metadata &&
-          ["popup", "youtube", "web", "wizard"].includes(filter.metadata.origin)) ||
-        filter.text === pausedFilterText.pausedFilterText1 ||
-        filter.text === pausedFilterText.pausedFilterText2
-      ),
-  );
+async function cleanCustomFilter(filtersArg) {
+  let filters = filtersArg;
+  // Remove the global pause white-list item if adblock is paused
+  const isPaused = await send("adblockIsPaused");
+  if (isPaused) {
+    const pausedFilterText = await send("getPausedFilterText");
+    filters = filters.filter(
+      (element) =>
+        !(
+          element.text === pausedFilterText.pausedFilterText1 ||
+          element.text === pausedFilterText.pausedFilterText2
+        ),
+    );
+  }
+  // Remove the domain pause white-list items
+  const domainPauses = await send("adblockIsDomainPaused");
+  for (const aDomain in domainPauses) {
+    filters = filters.filter((element) => element.text !== `@@${aDomain}$document`);
+  }
+  return filters;
 }
 
 async function showCustomRules() {
-  const userFilters = await FiltersProxy.getUserFilters({ includeMetadata: true });
+  const userFilters = await FiltersProxy.getUserFilters();
   if (userFilters && userFilters.length) {
     originalCustomFilters = await cleanCustomFilter(userFilters);
     originalCustomFilters = originalCustomFilters.map((filter) => filter.text);
