@@ -35,7 +35,7 @@ describe("test DC filterlist blocking for premium users", function () {
   it("should block distraction control content", async function () {
     await enablePremiumByMockServer();
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/" +
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/" +
         "adblocking/DC-filters/DC-filters-testpage.html"
     );
     const testPages = new TestPages(browser);

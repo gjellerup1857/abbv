@@ -90,7 +90,7 @@ export default () => {
 
   it("displays total ad block count", async function () {
     const url =
-      "https://adblockinc.gitlab.io/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const maxAdsBlocked = 15;
 
     const waitForAdsBlockedToBeInRange = async (min, max) => {

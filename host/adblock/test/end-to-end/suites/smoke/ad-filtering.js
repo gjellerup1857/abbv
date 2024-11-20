@@ -111,8 +111,9 @@ export default () => {
   });
 
   it("uses snippets to block ads", async function () {
-    const filter = "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
-    const url = "https://adblockinc.gitlab.io/QA-team/adblocking/snippets/snippets-testpage.html";
+    const filter = "eyeo.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
+    const url =
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets/snippets-testpage.html";
 
     const websiteHandle = await openNewTab(url);
     const snippetElem = await getDisplayedElement("#snippet-filter");
@@ -127,7 +128,7 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    const filters = ["@@adblockinc.gitlab.io$document", "/pop_ads.js"];
+    const filters = ["@@eyeo.gitlab.io$document", "/pop_ads.js"];
 
     await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters(filters);

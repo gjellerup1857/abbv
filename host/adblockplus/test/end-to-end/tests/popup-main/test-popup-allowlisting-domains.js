@@ -93,7 +93,7 @@ module.exports = function () {
         "class"
       );
     attributesOfAllowlistingTableItems.forEach(async (element) => {
-      expect(element).to.equal("adblockinc.gitlab.io");
+      expect(element).to.equal("eyeo.gitlab.io");
     });
     await testPage.switchToTab("Blocking and hiding");
     await popupPage.init(popupUrl, tabId);

@@ -35,7 +35,7 @@ describe("test abp DOM injection for premium user", function () {
   before(async function () {
     await beforeSequence();
     await browser.newWindow(
-      "https://adblockinc.gitlab.io/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html"
+      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html"
     );
     await switchToABPOptionsTab();
     appVersion = await browser.executeScript(

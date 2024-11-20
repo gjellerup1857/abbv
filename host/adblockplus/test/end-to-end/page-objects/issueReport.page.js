@@ -201,7 +201,7 @@ class IssueReportPage extends BasePage {
   }
 
   async switchToIssueReportTab() {
-    await this.switchToTab("Issue report for adblockinc.gitlab.io", 90000);
+    await this.switchToTab("Issue report for eyeo.gitlab.io", 90000);
   }
 }
 

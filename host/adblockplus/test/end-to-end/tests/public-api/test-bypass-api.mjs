@@ -83,7 +83,7 @@ export default function () {
     await testPages.checkPage({ expectAllowlisted: false });
 
     // Allowlist the page
-    await addFilter("@@||adblockinc.gitlab.io^$document");
+    await addFilter("@@||eyeo.gitlab.io^$document");
 
     // Check that the page was allowlisted
     await testPages.checkPage({ expectAllowlisted: true });

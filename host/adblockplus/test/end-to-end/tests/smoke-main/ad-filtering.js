@@ -141,7 +141,7 @@ module.exports = function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "adblockinc.gitlab.io#$#hide-if-contains 'should be hidden' p[id]"
+      "eyeo.gitlab.io#$#hide-if-contains 'should be hidden' p[id]"
     );
     await advancedPage.clickAddCustomFilterListButton();
     await browser.newWindow(testData.snippetsPageUrl);
@@ -161,7 +161,7 @@ module.exports = function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
     await allowistedWebsitesPage.setAllowlistingTextboxValue(
-      "https://adblockinc.gitlab.io/"
+      "https://eyeo.gitlab.io/"
     );
     expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
     await allowistedWebsitesPage.clickAddWebsiteButton();
@@ -173,9 +173,7 @@ module.exports = function () {
 
     await switchToABPOptionsTab();
 
-    await allowistedWebsitesPage.removeAllowlistedDomain(
-      "adblockinc.gitlab.io"
-    );
+    await allowistedWebsitesPage.removeAllowlistedDomain("eyeo.gitlab.io");
     const attributesOfAllowlistingTableItems =
       await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
         "class"

@@ -33,7 +33,7 @@ export default () => {
   });
 
   afterEach(async function () {
-    await removeFilter("@@||adblockinc.gitlab.io^$document");
+    await removeFilter("@@||eyeo.gitlab.io^$document");
   });
 
   it("returns adblocking is active extension info", async function () {
@@ -67,7 +67,7 @@ export default () => {
     await checkBlockHidePage(false);
 
     // Allowlist the page
-    await addFilter("@@||adblockinc.gitlab.io^$document");
+    await addFilter("@@||eyeo.gitlab.io^$document");
 
     // Check that the page was allowlisted
     await checkBlockHidePage(true);

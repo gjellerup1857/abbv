@@ -9,7 +9,7 @@ import {
 } from "../../utils/page.js";
 import { openNewTab } from "../../utils/driver.js";
 
-const filterText = "@@||adblockinc.gitlab.io^$document";
+const filterText = "@@||eyeo.gitlab.io^$document";
 
 /**
  * Validates the filter metadata.

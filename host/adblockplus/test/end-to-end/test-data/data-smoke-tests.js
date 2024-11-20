@@ -19,7 +19,7 @@
 
 module.exports = {
   allowlistingUrl:
-    "https://adblockinc.gitlab.io/QA-team/adblocking/" +
+    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/" +
     "blocking-hiding/blocking-hiding-testpage.html",
   an_chromium: "adblockpluschrome",
   an_firefox: "adbockplusfirefox",
@@ -27,7 +27,7 @@ module.exports = {
   ap_edge: "edge",
   ap_firefox: "firefox",
   blockHideUrl:
-    "https://adblockinc.gitlab.io/QA-team/adblocking/blocking" +
+    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/blocking" +
     "-hiding/blocking-hiding-testpage.html",
   p_chromium: "chromium",
   p_firefox: "gecko",
@@ -42,6 +42,6 @@ module.exports = {
   regexMajorBrowserVersionFF: /(?<=rv:)\d+/,
   regexManifestVersion: /(?<="version": ").*?(?=")/,
   snippetsPageUrl:
-    "https://adblockinc.gitlab.io/QA-team/adblocking/snippets" +
+    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets" +
     "/snippets-testpage.html"
 };
