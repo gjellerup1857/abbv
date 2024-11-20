@@ -27,11 +27,12 @@ async function cleanCustomFilter(filters) {
 
   // filter global pause and domain pause white-list items
   return filters.filter(
-    (f) =>
+    (filter) =>
       !(
-        (f.metadata && ["popup", "youtube", "web", "wizard"].includes(f.metadata.origin)) ||
-        f.text === pausedFilterText.pausedFilterText1 ||
-        f.text === pausedFilterText.pausedFilterText2
+        (filter.metadata &&
+          ["popup", "youtube", "web", "wizard"].includes(filter.metadata.origin)) ||
+        filter.text === pausedFilterText.pausedFilterText1 ||
+        filter.text === pausedFilterText.pausedFilterText2
       ),
   );
 }
