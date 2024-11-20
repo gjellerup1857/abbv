@@ -1,6 +1,5 @@
-import { Link } from '@components';
+import { Link, linkKinds } from '@components';
 import { getArgsFromJSDoc } from '@/docs/helpers.js';
-
 
 export default {
   title: 'Components/Link',
@@ -13,8 +12,21 @@ export default {
 
 export const AllVariants = {
   render: (args) => (
-    <div className="grid grid-cols-1 items-center gap-6">
-      <Link {...args}>Click Here</Link>
+    <div className="flex items-center gap-6">
+      {
+        linkKinds.map((el) => (
+          <Link {...args} kind={ el } key={ el }>
+            Click Here
+          </Link>
+        ))
+      }
+      <Link
+        kind="filled"
+        colorOverrides={["bg-purple-500", "text-white", "hover:bg-purple-600"]}
+        {...args}
+      >
+        Click Here
+      </Link>
     </div>
   ),
 };
