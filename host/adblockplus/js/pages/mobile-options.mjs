@@ -232,7 +232,7 @@ import "../../src/mobile-options/ui/mobile-options.css";
         .sendMessage({
           type: toggle.checked ? "filters.remove" : "filters.add",
           text: allowlistFilter,
-          origin: "mobile-options"
+          origin: "options-mobile"
         })
         .then((errors) => {
           if (errors.length < 1) return;

@@ -193,7 +193,7 @@ const addCustomFilter = async function (filterText, origin) {
     }
 
     const metadata = createFilterMetaData(origin);
-    if (isWhitelistFilter(filterText) && ["wizard", "youtube"].includes(origin)) {
+    if (isWhitelistFilter(filterText) && ["wizard", "youtube", "popup"].includes(origin)) {
       const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
       metadata.expiresAt = Date.now() + autoExtendMs;
       metadata.autoExtendMs = autoExtendMs;
