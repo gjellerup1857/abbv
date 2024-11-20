@@ -231,7 +231,7 @@ export function start() {
   port.on("filters.importRaw", async (message, sender) => {
     let [filterTexts, errors] = filtersValidate(message.text);
     const metadata = { created: Date.now() };
-    if (message.origin) metadata.origin = origin;
+    if (message.origin) metadata.origin = message.origin;
 
     if (errors.length == 0) {
       try {
