@@ -20,7 +20,7 @@
    getUserFilters, Prefs, abpPrefPropertyNames,
    adblockIsDomainPaused, adblockIsPaused,
    pausedFilterText1, pausedFilterText2,
-   isWhitelistFilter */
+   isAllowlistFilter */
 
 /** @module SyncService */
 
@@ -304,7 +304,7 @@ const SyncService = (function getSyncService() {
   }
 
   const isDomainPauseFilter = function (filterText) {
-    if (isWhitelistFilter(filterText)) {
+    if (isAllowlistFilter(filterText)) {
       const domains = adblockIsDomainPaused();
       for (const domain in domains) {
         if (`@@${domain}$document` === filterText) {
@@ -317,7 +317,7 @@ const SyncService = (function getSyncService() {
 
   const isPauseFilter = function (filterText) {
     return (
-      isWhitelistFilter(filterText) &&
+      isAllowlistFilter(filterText) &&
       (pausedFilterText1 === filterText || pausedFilterText2 === filterText)
     );
   };

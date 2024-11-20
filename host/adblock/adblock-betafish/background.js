@@ -177,7 +177,7 @@ const countCache = (function countCache() {
 })();
 countCache.init();
 
-const isWhitelistFilter = function (text) {
+const isAllowlistFilter = function (text) {
   return /^@@/.test(text);
 };
 
@@ -193,7 +193,7 @@ const addCustomFilter = async function (filterText, origin) {
     }
 
     const metadata = createFilterMetaData(origin);
-    if (isWhitelistFilter(filterText) && ["wizard", "youtube", "popup"].includes(origin)) {
+    if (isAllowlistFilter(filterText) && ["wizard", "youtube", "popup"].includes(origin)) {
       const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
       metadata.expiresAt = Date.now() + autoExtendMs;
       metadata.autoExtendMs = autoExtendMs;
@@ -239,7 +239,7 @@ const tryToUnwhitelist = async function (pageUrl, tabId) {
       await ewe.filters.remove([`${text}|~${finalUrl}`]);
       return true;
     }
-    if (isWhitelistFilter(text) && (await ewe.filters.getAllowingFilters(tabId)).includes(text)) {
+    if (isAllowlistFilter(text) && (await ewe.filters.getAllowingFilters(tabId)).includes(text)) {
       await ewe.filters.remove([text]);
       return true;
     }
@@ -767,7 +767,7 @@ Object.assign(self, {
   removeCustomFilterForHost,
   reloadTab,
   isSelectorFilter,
-  isWhitelistFilter,
+  isAllowlistFilter,
   isSelectorExcludeFilter,
   pausedFilterText1,
   pausedFilterText2,

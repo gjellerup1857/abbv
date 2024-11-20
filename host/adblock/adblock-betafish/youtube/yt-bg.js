@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, addCustomFilter, getUserFilters, isWhitelistFilter */
+/* global browser, addCustomFilter, getUserFilters, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { settings, getSettings } from "~/prefs/background/settings";
@@ -57,7 +57,7 @@ const createWhitelistFilterForYoutubeChannel = function (url, origin) {
 };
 
 const removeAllowlistFilterForYoutubeChannel = function (text) {
-  if (isWhitelistFilter(text)) {
+  if (isAllowlistFilter(text)) {
     ewe.filters.remove([text]);
   }
 };
@@ -165,7 +165,7 @@ const getAllAdsAllowedUserFilters = async function () {
   const adsAllowedUserFilters = [];
   for (let inx = 0; inx < userFilters.length; inx++) {
     const filter = userFilters[inx];
-    if (isWhitelistFilter(filter.text) && filter.text && filter.text.includes("youtube.com")) {
+    if (isAllowlistFilter(filter.text) && filter.text && filter.text.includes("youtube.com")) {
       adsAllowedUserFilters.push(filter.text);
     }
   }
