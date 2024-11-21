@@ -73,7 +73,7 @@ async function migrateToSmartAllowlisting(): Promise<void> {
 
   ServerMessages.recordGeneralMessage("migrated_popup_allowlists", null, {
     allowlistsLeftCount,
-    fromGFCCount: fromGfcCount,
+    fromGfcCount,
     transitionedCount,
   });
 }
