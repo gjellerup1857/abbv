@@ -19,7 +19,7 @@
 /* global browser, updateButtonUIAndContextMenus, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
-
+import { FilterOrigin } from "../../../src/filters/shared";
 import { createFilterMetaData } from "../../utilities/background/bg-functions";
 import { Prefs } from "~/alias/prefs";
 import { initialize } from "~/alias/subscriptionInit";
@@ -135,7 +135,7 @@ const adblockIsDomainPaused = function (
   activeTab,
   newValue,
   sessionOnly = false,
-  origin = "popup",
+  origin = FilterOrigin.popup,
 ) {
   // get stored domain pauses
   let storedDomainPauses = sessionStorageGet(domainPausedKey);

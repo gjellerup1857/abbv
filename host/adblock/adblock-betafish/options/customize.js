@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, settings,
    syncErrorCode, translate, checkForSyncError, isSelectorFilter, activateTab, License,
-   MABPayment, DOMPurify, initializeProxies, FiltersProxy, send, sendTypeMessage  */
+   MABPayment, DOMPurify, initializeProxies, FiltersProxy, send, sendTypeMessage, FilterOrigin  */
 
 let originalCustomFilters = [];
 
@@ -211,7 +211,7 @@ $(async () => {
     }
 
     if (newFiltersToAdd.length) {
-      const errors = await FiltersProxy.add(newFiltersToAdd.join("\n"), "customize");
+      const errors = await FiltersProxy.add(newFiltersToAdd.join("\n"), FilterOrigin.customize);
       if (errors) {
         const { filter, reason, type } = errors;
         // if multiple errors are returned, only show the first one.

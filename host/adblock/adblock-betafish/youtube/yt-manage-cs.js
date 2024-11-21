@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, DOMPurify, translate */
+/* global browser, DOMPurify, translate, FilterOrigin */
 
 /*
     This content script, when injected into tab that is on YouTube, it will:
@@ -564,7 +564,7 @@ const configureChildElements = function (parentNodeArg, adsAllowedArg) {
       .sendMessage({
         command: "createAllowlistFilterForYoutubeChannelName",
         channelName: parentNode.dataset.parsedChannelName,
-        origin: "youtube",
+        origin: FilterOrigin.youtube,
       })
       .then(() => {
         browser.runtime.sendMessage({ command: "getAllAdsAllowedUserFilters" }).then((response) => {

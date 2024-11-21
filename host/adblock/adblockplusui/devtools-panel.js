@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */ /* eslint-disable */
+
+/* For ESLint: List any global identifiers used in this file below */
+ /* global FilterOrigin */
+
 (function () {
   "use strict";
   function __rest(s, e) {
@@ -379,7 +383,7 @@
         await browser.runtime.sendMessage({
           type: "filters." + action,
           text: filter.text,
-          origin: "devtools",
+          origin: FilterOrigin.devtools,
         });
         callback(filter);
       },

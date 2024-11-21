@@ -17,7 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, translate, bindEnterClickToDefault, mayOpenDialogUi:true,
-   setLangAndDirAttributes, loadWizardResources, parseUri */
+   setLangAndDirAttributes, loadWizardResources, parseUri, FilterOrigin */
 
 // Global lock so we can't open more than once on a tab.
 if (typeof window.mayOpenDialogUi === "undefined") {
@@ -265,7 +265,7 @@ function topOpenWhitelistUI(options) {
           command: "addCustomFilter",
           filterTextToAdd: filter,
           addCustomFilterRandomName: options.addCustomFilterRandomName,
-          origin: "wizard",
+          origin: FilterOrigin.wizard,
         })
         .then(() => {
           if ($dialog.find("#adblock-reload-page").is(":checked")) {

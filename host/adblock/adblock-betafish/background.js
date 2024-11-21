@@ -58,6 +58,7 @@ import ServerMessages from "~/servermessages";
 import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
 import * as prefs from "./prefs/background";
+import { FilterOrigin } from "../src/filters/shared";
 
 import {
   createFilterMetaData,
@@ -193,7 +194,10 @@ const addCustomFilter = async function (filterText, origin) {
     }
 
     const metadata = createFilterMetaData(origin);
-    if (isAllowlistFilter(filterText) && ["wizard", "youtube", "popup"].includes(origin)) {
+    if (
+      isAllowlistFilter(filterText) &&
+      [FilterOrigin.wizard, FilterOrigin.youtube, FilterOrigin.popup].includes(origin)
+    ) {
       const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
       metadata.expiresAt = Date.now() + autoExtendMs;
       metadata.autoExtendMs = autoExtendMs;

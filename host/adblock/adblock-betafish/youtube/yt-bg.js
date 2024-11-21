@@ -95,7 +95,10 @@ const injectManagedContentScript = async function (details, historyUpdated) {
   } else if (diff > 100) {
     // check if the timestamp difference is more than 100 ms
     lastInjectedTimestamp = details.timeStamp;
-    await injectScript("purify.min.js", tabId);
+    await Promise.all([
+      injectScript("globals-front.js", tabId),
+      injectScript("purify.min.js", tabId),
+    ]);
     await injectScript("adblock-yt-manage-cs.js", tabId);
     void browser.tabs.sendMessage(tabId, { command: "addYouTubeOnPageIcons", historyUpdated });
   }

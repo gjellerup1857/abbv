@@ -70,6 +70,7 @@ const emitPageBroadcast = (function emitBroadcast() {
       allFrames: false,
       include: [
         "jquery-3.5.1.min.js",
+        "globals-front.js",
         "adblock-uiscripts-load_wizard_resources.js",
         "adblock-uiscripts-top_open_whitelist_ui.js",
       ],
