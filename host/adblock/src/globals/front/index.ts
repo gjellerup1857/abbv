@@ -16,7 +16,7 @@
  */
 
 import * as messaging from "../../core/messaging/front";
-import { FilterOrigin } from "../../filters/shared";
+import * as filters from "../../filters/shared";
 
 /**
  * Initializes functionality for exposing modules as globals
@@ -26,8 +26,7 @@ function start(): void {
     return;
   }
 
-  self.modulesAsGlobal = { messaging };
-  (self as any).FilterOrigin = FilterOrigin;
+  self.modulesAsGlobal = { messaging, filters };
 }
 
 start();

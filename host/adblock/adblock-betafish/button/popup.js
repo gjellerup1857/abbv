@@ -16,8 +16,8 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, translate, storageGet, localizePage, storageSet, FilterOrigin,
-  selected, selectedOnce, showHelpSetupPage, setLangAndDirAttributes */
+/* global browser, translate, storageGet, localizePage, storageSet,
+   selected, selectedOnce, showHelpSetupPage, setLangAndDirAttributes */
 
 let errorOccurred = false;
 
@@ -525,7 +525,7 @@ const start = async function () {
       await browser.runtime.sendMessage({
         command: "createWhitelistFilterForYoutubeChannel",
         url: pageInfo.url.href,
-        origin: FilterOrigin.popup,
+        origin: modulesAsGlobal.filters.FilterOrigin.popup,
       });
       browser.tabs.reload();
       closePopup();
@@ -541,7 +541,7 @@ const start = async function () {
       await browser.runtime.sendMessage({
         command: "createAllowlistFilterForTwitchChannel",
         url: pageInfo.url.href,
-        origin: FilterOrigin.popup,
+        origin: modulesAsGlobal.filters.FilterOrigin.popup,
       });
       browser.tabs.reload();
       closePopup();
