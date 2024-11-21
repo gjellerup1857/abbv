@@ -379,6 +379,7 @@
         await browser.runtime.sendMessage({
           type: "filters." + action,
           text: filter.text,
+          origin: "devtools",
         });
         callback(filter);
       },

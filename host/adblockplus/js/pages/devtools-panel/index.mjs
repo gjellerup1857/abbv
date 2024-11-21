@@ -83,7 +83,8 @@ function createActionButton(action, stringId, filter, callback) {
     async () => {
       await browser.runtime.sendMessage({
         type: "filters." + action,
-        text: filter.text
+        text: filter.text,
+        origin: "devtools"
       });
 
       callback(filter);

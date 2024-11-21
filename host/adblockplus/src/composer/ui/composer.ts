@@ -43,7 +43,8 @@ function addFilters(reload = false): void {
   void browser.runtime
     .sendMessage({
       type: "filters.importRaw",
-      text: textarea.value
+      text: textarea.value,
+      origin: "composer"
     })
     .then(([errors]) => {
       if (errors.length > 0) {
