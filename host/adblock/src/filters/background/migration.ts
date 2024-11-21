@@ -21,7 +21,7 @@ import { FilterOrigin } from "../shared";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
 
-export async function migrateToSmartAllowlisting(): Promise<void> {
+async function migrateToSmartAllowlisting(): Promise<void> {
   const localesEnabled = ["en", "de", "en-GB"]; // TODO: get this from ab testing
   const userLocale = browser.i18n.getUILanguage();
 
@@ -76,4 +76,20 @@ export async function migrateToSmartAllowlisting(): Promise<void> {
     fromGFCCount: fromGfcCount,
     transitionedCount,
   });
+}
+
+/**
+ * Initializes the migration module
+ */
+export async function start(): Promise<void> {
+  if (Prefs.get("popup_to_smart_allowlist")) {
+    return;
+  }
+
+  try {
+    await migrateToSmartAllowlisting();
+    await Prefs.set("popup_to_smart_allowlist", true);
+  } catch (error) {
+    console.error("Failed to migrate to smart allowlisting", error);
+  }
 }

@@ -29,73 +29,57 @@ interface FiltersGetAllowingFiltersOptions {
   types?: string[];
 }
 
-/**
- * Filter interface
- */
-interface Filter {
-  /**
-   * A filter rule that specifies what content to block or to allow.
-   * Used to identify a filter.
-   */
-  text: string;
-  /**
-   * Indicates whether this filter would be applied. Filters are enabled by default.
-   * For comment filters returned value is null.
-   */
-  enabled: boolean | null;
-  /**
-   * Indicates that this filter is not subject to an internal optimization.
-   * Filters that are considered slow should be avoided. Only URLFilters can be slow.
-   */
-  slow: boolean;
-  /**
-   * The filter type
-   */
-  type: string;
-  /**
-   * True when the filter applies to third-party, false to first-party, null otherwise.
-   */
-  thirdParty: boolean | null;
-  /**
-   * CSS selector for the HTML elements that will be hidden.
-   */
-  selector: string | null;
-  /**
-   * Content Security Policy to be injected.
-   */
-  csp: string | null;
-  /**
-   * For element hiding emulation filters, true if the filter will remove
-   * elements from the DOM rather hiding them.
-   */
-  remove?: boolean;
-  /**
-   * For element hiding emulation filters. These are the key-value pairs for
-   * the css properties to apply to the matched element.
-   */
-  css?: Object;
-}
-
-interface FilterMetadata {
-  /**
-   * Origin of the filter
-   */
-  origin?: string;
-  /**
-   * Time when the filter was created
-   */
-  created?: number;
-  /**
-   * Time when the filter expires
-   */
-  expiresAt?: number;
-  /**
-   * Time in milliseconds to extend the filter expiration
-   */
-  autoExtendMs?: number;
-}
-
 declare module "@eyeo/webext-ad-filtering-solution" {
+  /**
+   * Extra data associated with a filter.
+   *
+   * The SDK doesn't specify the type allowed for metadata entries.
+   */
+  type FilterMetadata = Record<string, any>;
+
+  /**
+   * Represents a single filter rule and its state.
+   */
+  interface Filter {
+    /**
+     * A {@link https://help.eyeo.com/adblockplus/how-to-write-filters|filter}
+     * rule that specifies what content to block or to allow.
+     * Used to identify a filter.
+     */
+    text: string;
+    /**
+     * Indicates whether this filter would be applied. Filters are enabled by
+     * default. For comment filters returned value is null.
+     */
+    enabled: boolean | null;
+    /**
+     * For element hiding emulation filters, true if the filter will remove elements from the DOM rather hiding them.
+     */
+    remove?: boolean;
+    /**
+     * Indicates that this filter is not subject to an internal optimization.
+     * Filters that are considered slow should be avoided.
+     * Only URLFilters can be slow.
+     */
+    slow: boolean;
+    /**
+     * The filter {@link https://gitlab.com/eyeo/adblockplus/abc/adblockpluscore/-/jobs/artifacts/0.6.0/file/build/docs/module-filterClasses.Filter.html?job=docs#type|type}
+     */
+    type: string;
+    /**
+     * True when the filter applies to third-party, false to first-party,
+     * null otherwise.
+     */
+    thirdParty: boolean | null;
+    /**
+     * CSS selector for the HTML elements that will be hidden.
+     */
+    selector: string | null;
+    /**
+     * Content Security Policy to be injected.
+     */
+    csp: string | null;
+  }
   declare namespace filters {
     /**
      * Returns the allowing filters that will be effective when the given
@@ -119,7 +103,7 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      *
      * @returns filter metadata
      */
-    const getMetadata: (text: string) => Promise<FilterMetadata | null>;
+    const getMetadata: (text: string) => Promise<?FilterMetadata>;
 
     /**
      * Returns an array of user filter objects.

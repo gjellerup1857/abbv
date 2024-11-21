@@ -46,6 +46,7 @@ import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startUpdateCampaign } from "../../update-campaign/background";
 import { start as startPages } from "../../core/pages/background";
 import { start as startGlobals } from "../../globals/background";
+import { start as startFiltersMigration } from "../../filters/background/";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -80,6 +81,7 @@ async function bootstrap(): Promise<void> {
     startInfoInjector();
     startUpdateCampaign();
     startGlobals();
+    startFiltersMigration();
   } catch (error) {
     reportError(error as Error);
   }
