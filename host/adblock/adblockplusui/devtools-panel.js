@@ -378,7 +378,7 @@
       "click",
       async () => {
         await browser.runtime.sendMessage({
-          type: "filters." + action,
+          type: action === "add" ? "filters.add" : "filters.remove",
           text: filter.text,
           origin: modulesAsGlobal.filters.FilterOrigin.devtools,
         });
