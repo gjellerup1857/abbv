@@ -28,16 +28,14 @@
     "webextension-polyfill": "0.8.0"
   },
   "devDependencies": {
+    "@babel/core": "7.26.0",
+    "@babel/preset-env": "7.26.0",
+    "@babel/preset-typescript": "7.26.0",
     "@types/jest": "29.5.12",
-    "@types/webextension-polyfill": "0.8.0"
-  },
-  "//": "dependencies",
-  "//": {
-    "@eyeo/polyfills": "*",
     "@types/webextension-polyfill": "0.8.0",
-    "typescript": "5.6.3"
+    "babel-jest": "29.7.0",
+    "jest": "29.7.0"
   },
-  "//": "devDependencies",
   "//": {
     "eslint": "8.34.0",
     "eslint-config-prettier": "9.1.0",
