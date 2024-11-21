@@ -17,7 +17,6 @@
 
 import * as browser from "webextension-polyfill";
 
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getStoredCommandIds } from "./command-library";
 import { CommandName, CommandVersion } from "./command-library.types";
 import {
@@ -34,9 +33,7 @@ import {
   type UserData,
   eventStorageKey
 } from "./data-collection.types";
-import { getPremiumState } from "../../premium/background";
-import { getInstallationId } from "../../id/background";
-import { info } from "../../info/background";
+import { context } from "../context";
 
 /**
  * Takes a number, turns it into a string, and pads it if necessary to create
@@ -80,11 +77,19 @@ function getLocalTimeStamp(): string {
  */
 async function getBaseAttributes(): Promise<BaseAttributes> {
   return {
-    app_name: info.baseName,
-    browser_name: info.application,
+    app_name: context.getAppName(),
+    browser_name: context.getBrowserName(),
     os: (await browser.runtime.getPlatformInfo()).os,
     language_tag: browser.i18n.getUILanguage(),
+<<<<<<< HEAD
     app_version: info.addonVersion,
+||||||| parent of 16dc7676 (Most problems got solved, typing for webext-ad-filtering-solution)
+    app_version: info.addonVersion,
+    command_library_version: commandLibraryVersion,
+=======
+    app_version: context.getAppVersion(),
+    command_library_version: commandLibraryVersion,
+>>>>>>> 16dc7676 (Most problems got solved, typing for webext-ad-filtering-solution)
     install_type: (await browser.management.getSelf()).installType
   };
 }
@@ -106,10 +111,10 @@ async function getEventData(
 ): Promise<EventData> {
   return {
     type: DataType.event,
-    device_id: await getInstallationId(),
+    device_id: await context.getId(),
     action: name,
     platform: PlatformType.web,
-    app_version: info.addonVersion,
+    app_version: context.getAppVersion(),
     user_time: getLocalTimeStamp(),
     attributes: {
       ...(await getBaseAttributes()),
@@ -126,14 +131,14 @@ async function getEventData(
  * @returns An object containing device data
  */
 async function getDeviceData(): Promise<DeviceData> {
-  await Prefs.untilLoaded;
+  await context.untilPreferencesLoaded();
   return {
     type: DataType.device,
-    device_id: await getInstallationId(),
+    device_id: await context.getId(),
     attributes: {
       ...(await getBaseAttributes()),
       blocked_total: 0, // We're not sending block count to protect user privacy
-      license_status: getPremiumState().isActive
+      license_status: context.isLicenseValid()
         ? LicenseState.active
         : LicenseState.inactive
     }
@@ -192,10 +197,10 @@ function getIpmData(): IpmData {
  * @returns An object containing the payload
  */
 export async function getPayload(): Promise<PayloadData> {
-  await Prefs.untilLoaded;
+  await context.untilPreferencesLoaded();
   const user = await getUserData();
   const device = await getDeviceData();
-  const events = Prefs.get(eventStorageKey);
+  const events = context.getPreference(eventStorageKey);
   const ipm = getIpmData();
   return { user, device, events, ipm };
 }
@@ -204,8 +209,8 @@ export async function getPayload(): Promise<PayloadData> {
  * Clears all recorded user events.
  */
 export async function clearEvents(): Promise<void> {
-  await Prefs.untilLoaded;
-  void Prefs.set(eventStorageKey, []);
+  await context.untilPreferencesLoaded();
+  void context.setPreference(eventStorageKey, []);
 }
 
 /**
@@ -225,14 +230,14 @@ export async function storeEvent(
   commandVersion: number,
   name: string
 ): Promise<void> {
-  await Prefs.untilLoaded;
+  await context.untilPreferencesLoaded();
   const eventData = await getEventData(
     ipmId,
     commandName,
     commandVersion,
     name
   );
-  const eventStorage = Prefs.get(eventStorageKey) as EventData[];
+  const eventStorage = context.getPreference(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
-  void Prefs.set(eventStorageKey, eventStorage);
+  void context.setPreference(eventStorageKey, eventStorage);
 }

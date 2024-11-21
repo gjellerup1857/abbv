@@ -16,9 +16,10 @@
  */
 
 import * as eventRecording from "./event-recording";
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { CommandName, type Command } from "./command-library.types";
 import { checkLanguage } from "./language-check";
+import * as browser from "webextension-polyfill";
+import { context } from "../context";
 
 const ipmId = "__ipm_id__";
 const oldIpmId = "__old_ipm__";
@@ -46,7 +47,7 @@ const mockCommandStorage: Record<string, Command> = {
 describe("language-check", () => {
   beforeEach(() => {
     jest.spyOn(eventRecording, "recordEvent").mockImplementation();
-    jest.spyOn(Prefs, "get").mockReturnValue(mockCommandStorage);
+    jest.spyOn(context, "getPreference").mockReturnValue(mockCommandStorage);
   });
 
   describe("checkLanguage", () => {

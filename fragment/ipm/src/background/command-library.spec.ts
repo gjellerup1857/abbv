@@ -15,20 +15,20 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import {
   commandStorageKey,
   getStoredCommandIds,
   isCommandExpired
 } from "./command-library";
 import { CommandName } from "./command-library.types";
+import { context } from "../context";
 
 describe("command-library", () => {
   describe("getStoredCommandIds", () => {
     let prefsObj: Record<string, any>;
 
     beforeEach(() => {
-      const prefsGetMock = jest.spyOn(Prefs, "get");
+      const prefsGetMock = jest.spyOn(context, "getPreference");
       prefsGetMock.mockImplementation((key) => prefsObj[key]);
     });
 

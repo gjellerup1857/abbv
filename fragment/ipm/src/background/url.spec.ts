@@ -15,8 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { createSafeOriginUrl } from "./url";
+import { context } from "../context";
 
 describe("url", () => {
   describe("createSafeOriginUrl", () => {
@@ -24,7 +24,7 @@ describe("url", () => {
     const safeOrigins = [defaultOrigin, "https://origin2.com"];
 
     beforeEach(() => {
-      jest.spyOn(Prefs, "get").mockImplementation((preference) => {
+      jest.spyOn(context, "getPreference").mockImplementation((preference) => {
         switch (preference) {
           case "ipm_default_origin":
             return defaultOrigin;

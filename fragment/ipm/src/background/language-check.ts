@@ -16,10 +16,10 @@
  */
 
 import browser from "webextension-polyfill";
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { commandStorageKey } from "./command-library";
 import { recordEvent } from "./event-recording";
 import { type Command } from "./command-library.types";
+import { context } from "../context";
 
 /**
  * Runs a check to see whether the current user language still matches the
@@ -29,8 +29,8 @@ import { type Command } from "./command-library.types";
  * @param ipmId The ID of the IPM command to run the check for
  */
 export async function checkLanguage(ipmId: string): Promise<void> {
-  await Prefs.untilLoaded;
-  const commandStorage = Prefs.get(commandStorageKey);
+  await context.untilPreferencesLoaded();
+  const commandStorage = context.getPreference(commandStorageKey);
   if (!(ipmId in commandStorage)) {
     return;
   }
