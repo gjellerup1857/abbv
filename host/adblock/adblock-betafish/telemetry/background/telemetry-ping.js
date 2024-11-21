@@ -84,7 +84,7 @@ class Telemetry extends TelemetryBase {
       }
       logger.debug("retry ping success");
       telemetryNotifier.emit("ping.complete");
-      resolve(pingData);
+      resolve();
     } catch (e) {
       logger.error("Error during retry ping");
       logger.error("Retry ping server URL:", Prefs.get(backupPingURLPref));
@@ -96,6 +96,7 @@ class Telemetry extends TelemetryBase {
   sendPingData(pingData) {
     return new Promise(async (resolve, reject) => {
       if (Prefs.get("data_collection_opt_out")) {
+        resolve();
         return;
       }
 
@@ -122,7 +123,7 @@ class Telemetry extends TelemetryBase {
       }
       logger.debug("ping success");
       telemetryNotifier.emit("ping.complete");
-      resolve(pingData);
+      resolve();
     });
   }
 
@@ -149,7 +150,8 @@ class Telemetry extends TelemetryBase {
       const info = await browser.management.getSelf();
       pingData.it = info.installType.charAt(0);
     }
-    return this.sendPingData(pingData);
+    void this.sendPingData(pingData);
+    return pingData;
   }
 }
 

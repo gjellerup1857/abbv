@@ -49,7 +49,6 @@ function setDataCollectionOptionsVisibility(visibility) {
 // user's saved settings.
 const initialize = async function init() {
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
-
   setDataCollectionOptionsVisibility(!Prefs.data_collection_opt_out);
 
   // if the user is currently subscribed to AA

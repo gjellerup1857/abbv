@@ -1,5 +1,6 @@
 # Unreleased
 
+- Refactored the telemetry fetch processing
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)
 - Updated webext-ad-filtering-solution to 1.17.2
 

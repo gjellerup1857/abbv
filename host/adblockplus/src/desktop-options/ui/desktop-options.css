@@ -309,7 +309,6 @@ html[dir="rtl"] .side-controls.wrap > * {
 
 .icon::before {
   display: block;
-  border: 0.2rem solid transparent;
   background-repeat: no-repeat;
   content: "";
 }
@@ -1428,10 +1427,6 @@ section.recommended-features li {
 
 section.recommended-features .description-container {
   margin: 0 0.5rem;
-}
-
-section.recommended-features li button {
-  margin-top: -2px;
 }
 
 section.recommended-features h3 {

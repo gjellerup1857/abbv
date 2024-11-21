@@ -196,7 +196,7 @@ const start = async function () {
     name: info.addonName,
     version: info.addonVersion,
     featureFlags: {
-      debugCdp: false,
+      debugCdp: true,
       inlineCss: false,
     },
   };

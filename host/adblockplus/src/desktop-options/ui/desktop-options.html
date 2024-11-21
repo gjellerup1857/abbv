@@ -21,8 +21,7 @@
     <meta charset="utf-8" />
     <title data-i18n="options_page_document_title"></title>
     <link rel="icon" type="image/png" href="icons/abp-32.png" />
-    <!-- TODO (ui-components): uncomment the line below when you want to integrate ui-components and React -->
-    <!-- <link rel="stylesheet" href="ui-components-styles.css" /> -->
+    <link rel="stylesheet" href="ui-components-styles.css" />
     <script src="polyfill.js"></script>
     <script defer src="desktop-options.js"></script>
   </head>
@@ -136,7 +135,6 @@
         >
       </div>
     </aside>
-    <div id="react-sections"></div>
     <main>
       <!-- General tab content -->
       <div
@@ -149,6 +147,7 @@
           <h1 data-i18n="options_tab_general"></h1>
           <p data-i18n="options_general_description"></p>
         </header>
+        <div id="general-features-section"></div>
         <section class="recommended-features template-container">
           <div>
             <header class="premium list-header">
@@ -289,7 +288,10 @@
             ></p>
           </header>
           <div id="blocking-languages">
-            <ul id="blocking-languages-table" class="table list bottom-control">
+            <ul
+              id="blocking-languages-table"
+              class="table list bottom-control w-full"
+            >
               <template>
                 <span>
                   <span data-display></span>
@@ -389,7 +391,7 @@
               disabled
             ></button>
           </form>
-          <ul id="allowlisting-table" class="table list">
+          <ul id="allowlisting-table" class="table list w-full">
             <template>
               <span data-display></span>
               <button
@@ -495,7 +497,7 @@
             <h3 class="col5"></h3>
             <h3 class="col5"></h3>
           </div>
-          <ul class="table cols" id="all-filter-lists-table">
+          <ul class="table cols w-full" id="all-filter-lists-table">
             <template>
               <div class="col5">
                 <io-toggle
@@ -659,7 +661,7 @@
         </header>
         <section class="cols">
           <h2 data-i18n="options_support_title"></h2>
-          <ul>
+          <ul class="list-disc">
             <li id="help-center" data-i18n="options_help_center"></li>
             <li id="report-bug" data-i18n="options_report_bug"></li>
             <li id="visit-forum" data-i18n="options_report_forum"></li>
@@ -834,7 +836,6 @@
       </button>
     </div>
 
-    <!-- TODO (ui-components): uncomment the line below when you want to integrate ui-components and React -->
-    <!-- <script src="react-desktop-options.js"></script> -->
+    <script src="react-desktop-options.js"></script>
   </body>
 </html>

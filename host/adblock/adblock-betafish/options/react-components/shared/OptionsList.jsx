@@ -1,15 +1,15 @@
 import { Checkbox, Icon, Link, ToggleSwitch } from "@eyeo/ext-ui-components";
 import { translate } from "./utils";
 
-const changeHandler = () => console.log("change is possible");
-
 const OptionItem = ({
   name,
+  onChange,
   textKey,
   extraInfo,
   helpLink,
   additionalInfoLink,
   subOptions,
+  isChecked,
   isSubOption = false,
   selector: Selector = Checkbox,
 }) => {
@@ -25,7 +25,7 @@ const OptionItem = ({
       <div className={outerDivClasses}>
         <div className={innerDivClasses}>
           {/* The Toggle and Checkbox APIs need to be aligned */}
-          <Selector id={name} name={name} onChange={changeHandler} />
+          <Selector id={name} name={name} onChange={onChange} checked={isChecked(name)} />
           <label className="ml-4" for={name}>
             {translate(textKey)}
           </label>
@@ -55,7 +55,7 @@ const OptionItem = ({
         {subOptions && (
           <ul>
             {subOptions.map((option) => (
-              <OptionItem isSubOption selector={ToggleSwitch} {...option} />
+              <OptionItem isSubOption selector={ToggleSwitch} {...option} isChecked={isChecked} />
             ))}
           </ul>
         )}
@@ -64,13 +64,12 @@ const OptionItem = ({
   );
 };
 
-export const OptionsList = ({ items }) => {
+export const OptionsList = ({ items, isChecked }) => {
   return (
     <>
-      <h1>{translate("generaloptions2")}</h1>
       <ul>
         {items.map((item) => (
-          <OptionItem {...item} />
+          <OptionItem {...item} isChecked={isChecked} />
         ))}
       </ul>
     </>
