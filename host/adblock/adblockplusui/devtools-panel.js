@@ -16,7 +16,7 @@
  */ /* eslint-disable */
 
 /* For ESLint: List any global identifiers used in this file below */
- /* global FilterOrigin */
+/* global FilterOrigin */
 
 (function () {
   "use strict";
