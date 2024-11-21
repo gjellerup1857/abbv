@@ -59,6 +59,7 @@ import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
 import * as prefs from "./prefs/background";
 import { FilterOrigin } from "../src/filters/shared";
+import { migrateToSmartAllowlisting } from "../src/filters/background";
 
 import {
   createFilterMetaData,
@@ -641,6 +642,10 @@ browser.runtime.onInstalled.addListener(async (details) => {
   }
   // Update version in browser.storage.local.
   void browser.storage.local.set({ [versionStorageKey]: browser.runtime.getManifest().version });
+
+  if (details.reason === "update") {
+    await migrateToSmartAllowlisting();
+  }
 });
 
 const openTab = function (url) {
