@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global ClickWatcher, ElementChain, translate, browser, DOMPurify, FilterOrigin */
+/* global ClickWatcher, ElementChain, translate, browser, DOMPurify */
 
 // Requires clickwatcher.js and elementchain.js and jQuery
 
@@ -337,7 +337,7 @@ BlacklistUi.prototype.buildPage2 = function buildPage2() {
           command: "addCustomFilter",
           filterTextToAdd: filter,
           addCustomFilterRandomName: that.addCustomFilterRandomName,
-          origin: FilterOrigin.wizard,
+          origin: modulesAsGlobal.filters.FilterOrigin.wizard,
         })
         .then((response) => {
           if (!response) {

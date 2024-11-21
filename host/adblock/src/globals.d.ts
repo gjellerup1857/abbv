@@ -26,4 +26,5 @@
  */
 declare namespace modulesAsGlobal {
   const messaging;
+  const filters;
 }
