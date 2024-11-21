@@ -24,7 +24,7 @@ import {
   isValidDomainList,
   isValidDate
 } from "./param-validator";
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { context } from "../context";
 
 describe("param-validator", () => {
   describe("isNumeric", () => {
@@ -120,9 +120,9 @@ describe("param-validator", () => {
     });
 
     it("returns true if the url is a an 'IPM safe' url", async () => {
-      const prefsGetMock = jest.spyOn(Prefs, "get");
+      const prefsGetMock = jest.spyOn(context, "getPreference");
       prefsGetMock.mockReturnValue("https://adblock.org");
-      const ipmSafeOrigin = Prefs.get("ipm_safe_origin");
+      const ipmSafeOrigin = context.getPreference("ipm_safe_origin");
 
       expect(isSafeUrl(`${ipmSafeOrigin}/en/welcome`)).toBe(true);
       expect(isSafeUrl(`${ipmSafeOrigin}/fr/foo/bar`)).toBe(true);
@@ -133,7 +133,7 @@ describe("param-validator", () => {
     });
 
     it("returns false if the url is not an 'IPM safe' url", () => {
-      const prefsGetMock = jest.spyOn(Prefs, "get");
+      const prefsGetMock = jest.spyOn(context, "getPreference");
       prefsGetMock.mockReturnValue("https://adblock.org");
 
       expect(isSafeUrl(`https://welcome.adblock.org`)).toBe(false);

@@ -16,10 +16,10 @@
  */
 
 import { sendPing } from "./telemetry";
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
-import { type Info } from "./../../info/shared";
+import { context } from "../context";
 
-jest.mock("../../info/background", (): { info: Info } => {
+// Is any ok here?
+jest.mock("../../info/background", (): { info: any } => {
   return {
     info: {
       baseName: "adblockplus",
@@ -77,7 +77,7 @@ describe("telemetry", () => {
 
   describe("sendPing", () => {
     it("fetches IPM data when Prefs.data_collection_opt_out is false", async () => {
-      await Prefs.set("data_collection_opt_out", false);
+      await context.setPreference("data_collection_opt_out", false);
       await sendPing();
       expect(global.fetch).toHaveBeenCalledWith(
         "https://example.com",
@@ -86,7 +86,7 @@ describe("telemetry", () => {
     });
 
     it("does not fetch IPM data when Prefs.data_collection_opt_out is true", async () => {
-      await Prefs.set("data_collection_opt_out", true);
+      await context.setPreference("data_collection_opt_out", true);
       await sendPing();
       expect(global.fetch).toHaveBeenCalledTimes(0);
     });

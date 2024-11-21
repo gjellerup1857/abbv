@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isDomainList } from "../../core/url/shared";
+import { isDomainList } from "../url";
 import { type Command } from "./command-library.types";
 import { isValidLicenseState } from "./license";
 import {

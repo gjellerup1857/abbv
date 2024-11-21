@@ -28,9 +28,9 @@ import {
   type DeleteCommand,
   type DeleteParams
 } from "./delete-commands.types";
-import * as logger from "../../logger/background";
 import { validateParams } from "./param-validator";
 import type { ParamDefinitionList } from "./param-validator.types";
+import { context } from "../context";
 
 /**
  * List of delete-commands parameter definitions
@@ -56,7 +56,7 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
     return true;
   }
 
-  logger.error(
+  context.logError(
     "[delete-commands]: Invalid parameteres received:",
     validationErrors.join(" ")
   );

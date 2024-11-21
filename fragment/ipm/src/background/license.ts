@@ -15,9 +15,9 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPremiumState } from "../../premium/background";
 import { type LicenseStateBehavior } from "./command-library.types";
 import { LicenseState } from "./data-collection.types";
+import { context } from "../context";
 
 /**
  * The default license state for the license_state_list command parameter.
@@ -55,7 +55,7 @@ export async function doesLicenseStateMatch(
   }
 
   const licenseStates = behavior.licenseStateList.split(",");
-  const { isActive } = getPremiumState();
+  const isActive = context.isLicenseValid(); // getPremiumState();
 
   for (const licenseState of licenseStates) {
     if (licenseState === LicenseState.inactive && !isActive) {

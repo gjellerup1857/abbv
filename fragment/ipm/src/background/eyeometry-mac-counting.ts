@@ -17,11 +17,10 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { Prefs } from "../../../adblockpluschrome/lib/prefs";
-import { error as logError } from "../../logger/background";
+import { context } from "../context";
 
 async function applyOptOut(): Promise<void> {
-  const isOptedOut = Prefs.get("data_collection_opt_out");
+  const isOptedOut = context.getPreference("data_collection_opt_out");
 
   await ewe.telemetry.setOptOut(
     typeof isOptedOut === "boolean" ? isOptedOut : true
@@ -29,10 +28,10 @@ async function applyOptOut(): Promise<void> {
 }
 
 async function initOptOut(): Promise<void> {
-  await Prefs.untilLoaded;
+  await context.untilPreferencesLoaded();
 
   await applyOptOut();
-  Prefs.on("data_collection_opt_out", applyOptOut);
+  context.onPreferenceChanged("data_collection_opt_out", applyOptOut);
 }
 
 /**
@@ -42,7 +41,7 @@ export async function initialize(): Promise<void> {
   try {
     await initOptOut();
   } catch (error) {
-    logError(
+    context.logError(
       "Eyeometry-based MAC counting initialization failed with error: ",
       error
     );
