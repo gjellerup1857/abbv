@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# This script imports the history of the Adblock repo. Specifically, it imports:
-# - The "next" branch, which is merged into the appropriate part of the monorepo
-# - All tags, which are prefixed with "adblock-". This includes tags which are
-#   not merged into the "next" branch.
+# This script imports the history of different git repo into the monorepo.
+# Specifically, it imports:
+#
+# - The main branch, which is merged into the appropriate part of the monorepo
+#   (configurable in case the source calls its main branch something else).
+# - All tags, which are prefixed with the source project's name. Example:
+#   "adblock-". This includes tags which are not merged into the main branch.
 #
 # To make local development and testing easier, this script does not push
 # anything.
@@ -17,7 +20,7 @@ set -eu
 print_help()
 {
 cat << EOL
-Script for importing the git history from another repo into this one.
+Script for importing the git history from another upstream repo into this one.
 
 Usage:
   $(basename ${0}) --upstream <value> --project <value> --source-branch <value>
@@ -29,8 +32,7 @@ Options:
                    Example: git@gitlab.com:adblockinc/ext/adblockplus/adblockplus.git
 
   --project        Name to refer to the subproject being merged in. Used as the
-                   name for it's CI child pipeline, and the prefix for any
-                   imported git tags.
+                   prefix for any imported git tags, and in new commit messages.
                    Example: adblockplus
 
   --source-branch  The branch from the upstream repo to merge into the monorepo.
@@ -119,25 +121,25 @@ MONOREPO=$PWD
 TEMPDIR=$(mktemp -d)
 CHECKOUT="$TEMPDIR/upstream-extension"
 
-# Do a full checkout of the Adblock repo to a temp location. This means we only
+# Do a full checkout of the upstream repo to a temp location. This means we only
 # pull once.
 
 git clone --bare "$UPSTREAM" "$CHECKOUT"
 
-# Get the upstream repo's Next branch, and merge it into the right part of the monorepo
+# Get the upstream repo's main branch, and merge it into the right part of the monorepo
 
 git fetch "$CHECKOUT" "refs/heads/$SOURCE_BRANCH"
 git checkout -B "$PROJECT-$SOURCE_BRANCH" FETCH_HEAD
 
 mkdir -p "$TARGET_PATH"
 
-shopt -s dotglob
+shopt -s dotglob # This makes * also match dotfiles.
 git mv -k * "$TARGET_PATH/"
 
 git commit -m "refactor: Move $PROJECT to its new home for importing into the monorepo"
 git checkout -B "$TARGET_BRANCH" "$REMOTE/$TARGET_BRANCH"
 
-git merge --allow-unrelated-histories --no-commit "$PROJECT-$SOURCE_BRANCH"
+git merge --allow-unrelated-histories -m "feat: Merge $PROJECT into the Monorepo" "$PROJECT-$SOURCE_BRANCH"
 
 # Go get all the tags
 
