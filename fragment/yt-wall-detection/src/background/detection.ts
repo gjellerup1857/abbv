@@ -70,7 +70,7 @@ const processYouTubeWallMessage = async (
   message: AdWallMessage,
   sender: MessageSender,
 ): Promise<void> => {
-  if (typeof sender.page?.id === "undefined") {
+  if (typeof sender.page?.id === "undefined" || typeof sender.page?.url === "undefined") {
     return;
   }
   const { sendAdWallEvents = noop } = parameters;
@@ -89,14 +89,13 @@ const processYouTubeWallMessage = async (
   sendAdWallEvents(youTubeWallDetected, message.userLoggedIn ? "1" : "0", "0");
 
   if (sender?.page) {
-    const allowList = true;
-    const onlyForThisSession = true;
-    parameters.allowlistTab(
-      { url: sender.page.url, id: sender.page.id },
-      allowList,
-      onlyForThisSession,
-      "auto",
-    );
+    const senderURL = new URL(sender.page.url);
+    const ruleText = `@@||${senderURL.hostname}$document`;
+    const metadata = {
+      expiresByTabId: sender.page?.id,
+      origin: "auto",
+    };
+    await parameters.ewe.filters.add(ruleText, metadata);
     if (message.currentPlaybackTime > 5) {
       const currentURL = new URL(sender.page.url);
       currentURL.searchParams.set(
