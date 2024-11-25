@@ -195,6 +195,9 @@ const start = async function () {
     bundledSubscriptionsPath: "/data/rules/abp",
     name: info.addonName,
     version: info.addonVersion,
+    experiments: {
+      url: "https://easylist-downloads.adblockplus.org/ab-testing/experiments.json",
+    },
     featureFlags: {
       debugCdp: true,
       inlineCss: false,
