@@ -279,7 +279,7 @@ comp:MV2:firefox:oldest:
   extends: .docker
   script:
     - docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile .
-    - docker run --cpus=2 --shm-size=2g -t -e MANIFEST_VERSION -e BROWSER -e SUITE end-to-end
+    - docker run --cpus=2 --shm-size=2g -t -e MANIFEST_VERSION -e BROWSER end-to-end
   after_script:
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
     - docker cp $IMAGE_ID:/extensions/host/adblockplus/test/end-to-end/screenshots host/adblockplus 2> /dev/null
@@ -290,8 +290,6 @@ comp:MV2:firefox:oldest:
     expire_in: 1 mo
   rules:
     - !reference [.always, rules]
-  variables:
-    SUITE: filterlists
 
 end-to-end:MV2:firefox:
   extends: .end-to-end

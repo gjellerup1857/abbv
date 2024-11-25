@@ -32,14 +32,14 @@ module.exports = function () {
   let popupUrl;
 
   before(function () {
-    ({ globalOrigin, popupUrl } = this.test.parent.parent);
+    ({ globalOrigin, popupUrl } = global);
   });
 
   it("displays total ad block count", async function () {
     const url =
       "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const popupPage = new PopupPage(browser);
-    const maxAdsBlocked = 15;
+    const maxAdsBlocked = 18;
 
     await browser.newWindow(url);
     await popupPage.init(popupUrl);

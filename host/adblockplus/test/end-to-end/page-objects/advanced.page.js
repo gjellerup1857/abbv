@@ -597,7 +597,7 @@ class AdvancedPage extends BasePage {
   }
 
   async clickEasyListFLStatusToggle() {
-    await (await this.easyListFLStatusToggle).click();
+    await this.waitForEnabledThenClick(this.easyListFLStatusToggle);
   }
 
   async clickEasyListFLTrashButton() {
@@ -1184,7 +1184,7 @@ class AdvancedPage extends BasePage {
   }
 
   async typeTextToAddCustomFilterListInput(text, noClearValue = false) {
-    await (await this.addCustomFilterListInput).click();
+    await this.waitForEnabledThenClick(this.addCustomFilterListInput);
     if (noClearValue) {
       await (await this.addCustomFilterListInput).click();
       for (let i = 0; i < 75; i++) {

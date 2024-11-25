@@ -25,7 +25,7 @@ module.exports = function () {
   let popupUrl;
 
   before(function () {
-    popupUrl = this.test.parent.parent.popupUrl;
+    ({ popupUrl } = global);
   });
 
   it("should open settings page", async function () {
@@ -37,6 +37,9 @@ module.exports = function () {
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl);
     await popupPage.clickOptionsButton();
+    await popupPage.switchToTab(/options\.html/);
+    await browser.refresh();
+    await switchToABPOptionsTab();
     expect(await doesTabExist("Adblock Plus Options")).to.be.true;
   });
 };

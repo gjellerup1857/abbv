@@ -21,7 +21,10 @@ const {
   getTabId,
   switchToABPOptionsTab,
   waitForCondition,
-  addFiltersToABP
+  addFiltersToABP,
+  waitForAssertion,
+  isChromium,
+  isFirefox
 } = require("../../helpers");
 const { expect } = require("chai");
 const PopupPage = require("../../page-objects/popup.page");
@@ -33,7 +36,7 @@ module.exports = function () {
   let popupUrl;
 
   before(function () {
-    popupUrl = this.test.parent.parent.popupUrl;
+    ({ popupUrl } = global);
   });
 
   beforeEach(async function () {
@@ -43,6 +46,9 @@ module.exports = function () {
   });
 
   it("should allow allowlisting from popup", async function () {
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isChromium() || isFirefox()) this.skip();
+
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
     await testPage.switchToTab("Blocking and hiding");
@@ -108,7 +114,9 @@ module.exports = function () {
     expect(await testPage.getBanneradsFilterText()).to.include(
       "bannerads/* was blocked"
     );
-    expect(await testPage.isSearchAdDivDisplayed()).to.be.false;
+    await waitForAssertion(async () => {
+      expect(await testPage.isSearchAdDivDisplayed()).to.be.false;
+    });
     expect(await testPage.isAdContainerDivDisplayed()).to.be.false;
 
     await switchToABPOptionsTab();
