@@ -79,7 +79,7 @@ build:
   extends: .build
   script:
     # Create .env file from CI variables
-    - echo "CDP_AGGREGATE_URL=\"$ADBLOCKPLUS_CDP_AGGREGATE_URL\"" >> host/adblockplus/.env
+    - echo "CDP_PUBLIC_KEY_URL=\"$ADBLOCKPLUS_CDP_PUBLIC_KEY_URL\"" >> host/adblockplus/.env
     - echo "CDP_BEARER=\"$ADBLOCKPLUS_CDP_BEARER\"" >> host/adblockplus/.env
     - echo "CDP_PING_URL=\"$ADBLOCKPLUS_CDP_PING_URL\"" >> host/adblockplus/.env
     - echo "EYEOMETRY_BEARER=\"$ADBLOCKPLUS_EYEOMETRY_BEARER\"" >> host/adblockplus/.env
