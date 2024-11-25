@@ -1,5 +1,9 @@
 # Unreleased
 
+# 6.12.0 - 2024-11-25
+
+This release contains mostly under-the-hood changes.
+
 - Refactored the telemetry fetch processing
 - Updated webext-ad-filtering-solution to 1.19.0
 - Add the "console log test" split experiment. This is to verify the integration
