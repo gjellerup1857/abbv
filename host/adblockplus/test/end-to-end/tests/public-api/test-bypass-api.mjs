@@ -22,7 +22,8 @@ import {
   reloadExtension,
   waitForNewWindow,
   addFiltersToABP,
-  isEdge
+  isEdge,
+  isFirefox
 } from "../../helpers.js";
 import testData from "../../test-data/data-smoke-tests.js";
 import TestPages from "../../page-objects/testPages.page.js";
@@ -34,13 +35,13 @@ export default function () {
 
   before(async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
-    if (isEdge()) {
-      this.skip();
-    }
+    if (isEdge()) this.skip();
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isFirefox()) this.skip();
 
     await updateExtPrefAPIKey("bypass_authorizedKeys");
     await reloadExtension();
-    ({ extVersion } = this.test.parent.parent);
+    ({ extVersion } = global);
 
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282

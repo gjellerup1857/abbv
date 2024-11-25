@@ -169,6 +169,8 @@ const emitPageBroadcast = (function emitBroadcast() {
 })();
 
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
+  const consoleTestFlag = await ewe.experiments.getFlag("console_test");
+
   if (info && info.menuItemId) {
     const { menuItemId } = info;
     switch (menuItemId) {
@@ -189,6 +191,23 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       case "domain_pause_adblock":
         ServerMessages.recordGeneralMessage("cm_domain_pause_clicked");
+
+        // This is a dry-run experiment with no actual behaviour difference to
+        // ensure that the split experiment mechanism divides users as expected.
+        // See EXT-612.
+        /* eslint-disable-next-line no-console */
+        console.log("Split experiment control value of 'cm_domain_pause_clicked' sent.");
+        if (consoleTestFlag === "group-a") {
+          ServerMessages.recordGeneralMessage("cm_domain_pause_clicked_split_experiment_group_a");
+          /* eslint-disable-next-line no-console */
+          console.log("Group A: sent 'cm_domain_pause_clicked_split_experiment_group_a'");
+        }
+        if (consoleTestFlag === "group-b") {
+          ServerMessages.recordGeneralMessage("cm_domain_pause_clicked_split_experiment_group_b");
+          /* eslint-disable-next-line no-console */
+          console.log("Group B: sent 'cm_domain_pause_clicked_split_experiment_group_b'");
+        }
+
         adblockIsDomainPaused({ url: tab.url, id: tab.id }, true, false, "context");
         updateButtonUIAndContextMenus(tab);
         break;

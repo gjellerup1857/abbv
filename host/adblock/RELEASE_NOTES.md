@@ -2,7 +2,9 @@
 
 - Refactored the telemetry fetch processing
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)
-- Updated webext-ad-filtering-solution to 1.17.2
+- Updated webext-ad-filtering-solution to 1.19.0
+- Add the "console log test" split experiment. This is to verify the integration
+  of our new split experiments framework. (EXT-612)
 
 # 6.11.1 - 2024-11-18
 

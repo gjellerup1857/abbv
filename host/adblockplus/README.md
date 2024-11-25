@@ -165,23 +165,17 @@ To run the end-to-end tests locally:
 
 ```sh
 npm run build:release -- --scope=adblockplus
-npm run test:end-to-end -- --scope=adblockplus -- {chromium|edge|firefox} {2|3} [{all|filterlists|smoke}]
+npm run test:end-to-end -- --scope=adblockplus -- {chromium|edge|firefox} {2|3}
 ```
 
 By default browsers run headless. Setting the environment variable
 `FORCE_HEADFUL=true` will trigger a headful run instead.
 
-By default webDriverIO in Firefox is opening every tab or window as a new tab.
-More details can be found in this
-[link](https://gitlab.com/eyeo/extensions/extensions/-/merge_requests/206).
+Mocha [command line options](https://mochajs.org/#command-line-usage) are
+supported. Example:
 
-If you only want to execute a single test file, you can replace the values of
-properties in [suites.js](./test/end-to-end/suites.js) to an array containing
-only the [path](./test/end-to-end/tests) to the test(s) you want to run.
-Example:
-
-```js
-all: ["./tests/test-options-page-dialog-links.js"],
+```sh
+MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run --workspace host/adblockplus test:end-to-end-local -- --grep "Smoke"
 ```
 
 Screenshots for failing tests are stored in `host/adblockplus/test/end-to-end/screenshots`.
@@ -193,7 +187,14 @@ Prerequisites: Docker
 ```sh
 npm run build:release -- --scope=adblockplus
 docker build -t end-to-end -f host/adblockplus/test/end-to-end/Dockerfile .
-docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} -e SUITE={all|filterlists|smoke} end-to-end
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} end-to-end
+```
+
+To use mocha command line options the `--entrypoint` parameter needs to be set.
+Example:
+
+```sh
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run -w host/adblockplus test:end-to-end-local -- --grep "Smoke"
 ```
 
 To access the screenshots for failing tests run the following command, which

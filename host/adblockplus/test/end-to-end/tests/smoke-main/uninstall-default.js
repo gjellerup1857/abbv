@@ -23,10 +23,6 @@ const { uninstallExtension, isEdge } = require("../../helpers");
 const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url");
 
 module.exports = function () {
-  before(function () {
-    this.test.parent.parent.lastTest = true;
-  });
-
   it("uninstalls the extension with default settings", async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
     if (isEdge()) this.skip();

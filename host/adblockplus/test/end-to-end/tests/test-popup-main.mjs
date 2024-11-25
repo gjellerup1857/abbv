@@ -15,19 +15,10 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import optionsPageOpen from "./popup-main/test-popup-open-options-page.js";
+import popupAllowlisting from "./popup-main/test-popup-allowlisting-domains.js";
 
-const { beforeSequence } = require("../helpers.js");
-const optionsPageOpen = require("./popup-main/test-popup-open-options-page.js");
-const popupAllowlisting = require("./popup-main/test-popup-allowlisting-domains.js");
-
-describe("Popup Tests - Main", function () {
-  before(async function () {
-    const { origin, popupUrl } = await beforeSequence();
-    this.test.parent.globalOrigin = origin;
-    this.test.parent.popupUrl = popupUrl;
-  });
-
+export default () => {
   describe("Test that clicking on the gear button", optionsPageOpen);
   describe("Test popup allowlisting and disallowlisting", popupAllowlisting);
-});
+};

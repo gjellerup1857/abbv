@@ -235,7 +235,31 @@ export default function createWdioPolyfill(
     }
 
     async isDisplayed() {
-      return this.element.isDisplayed();
+      // the element is undefined, therefore not displayed
+      if (!this.element) return false;
+
+      let isDisplayed;
+      try {
+        isDisplayed = await this.element.isDisplayed();
+      } catch (err) {
+        if (err.name === "StaleElementReferenceError") {
+          // stale element not found in the current frame, therefore not displayed
+          return false;
+        }
+        throw err;
+      }
+
+      return isDisplayed;
+    }
+
+    async isExisting() {
+      try {
+        // If the element can return any text it means it exists
+        await this.element.getText();
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
 
     async isEnabled() {
@@ -261,6 +285,19 @@ export default function createWdioPolyfill(
 
     async clearValue() {
       return this.element.clear();
+    }
+
+    async getCSSProperty(cssProperty, pseudoElement) {
+      return driver.executeScript(
+        (elem, cssProp, pseudoElem) => {
+          return window
+            .getComputedStyle(elem, pseudoElem)
+            .getPropertyValue(cssProp);
+        },
+        this.element,
+        cssProperty,
+        pseudoElement
+      );
     }
 
     /**

@@ -177,17 +177,17 @@ export async function start() {
       url: "https://easylist-downloads.adblockplus.org/ab-testing/experiments.json"
     },
     featureFlags: {
-      debugCdp: true,
+      cdpPhase3: true,
       inlineCss: false
     }
   };
 
   let cdp = {
     pingUrl: webpackDotenvPlugin.CDP_PING_URL,
-    aggregateUrl: webpackDotenvPlugin.CDP_AGGREGATE_URL,
+    publicKeyUrl: webpackDotenvPlugin.CDP_PUBLIC_KEY_URL,
     bearer: webpackDotenvPlugin.CDP_BEARER
   };
-  if (cdp.pingUrl && cdp.aggregateUrl && cdp.bearer) addonInfo.cdp = cdp;
+  if (cdp.pingUrl && cdp.publicKeyUrl && cdp.bearer) addonInfo.cdp = cdp;
 
   let telemetry = {
     url: webpackDotenvPlugin.EYEOMETRY_URL,
