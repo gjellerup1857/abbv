@@ -18,50 +18,6 @@
 import { sendPing } from "./telemetry";
 import { context } from "../context";
 
-// Is any ok here?
-jest.mock("../../info/background", (): { info: any } => {
-  return {
-    info: {
-      baseName: "adblockplus",
-      platform: "gecko",
-      platformVersion: "34.0",
-      application: "firefox",
-      applicationVersion: "34.0",
-      addonName: "adblockplusfirefox",
-      addonVersion: "2.6.7"
-    }
-  };
-});
-
-jest.mock("../../../adblockpluschrome/lib/prefs", () => {
-  const prefsData: Record<string, any> = {
-    ipm_commands: {},
-    ipm_server_url: "https://example.com",
-    data_collection_opt_out: false,
-    premium_license: {
-      lv: 1,
-      status: "expired",
-      encodedData: "foo",
-      signature: "bar"
-    }
-  };
-
-  return {
-    Prefs: {
-      ...prefsData,
-      notifications: {
-        getIgnoredCategories: jest.fn()
-      },
-      get: (key: string) => {
-        return prefsData[key];
-      },
-      set: (key: string, value: any) => {
-        prefsData[key] = value;
-      }
-    }
-  };
-});
-
 describe("telemetry", () => {
   beforeEach(() => {
     jest.spyOn(global, "fetch").mockImplementation(
@@ -73,6 +29,21 @@ describe("telemetry", () => {
         });
       }) as jest.Mock
     );
+
+    // Prepare the context
+    context.getAppName = () => { return "adblockplus"; };
+    context.getBrowserName = () => { return "firefox"; };
+    context.getAppVersion = () => { return "2.6.7"; };
+
+    context.setPreference("ipm_commands", {});
+    context.setPreference("ipm_server_url", "https://example.com");
+    context.setPreference("data_collection_opt_out", false);
+    context.setPreference("premium_license", {
+      lv: 1,
+      status: "expired",
+      encodedData: "foo",
+      signature: "bar"
+    });
   });
 
   describe("sendPing", () => {
