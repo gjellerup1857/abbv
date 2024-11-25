@@ -114,7 +114,7 @@ class BasePage {
   async waitForEnabledThenClick(element, timeoutMs = 3000) {
     await (await element).waitForClickable({ timeout: timeoutMs });
     await browser.pause(700);
-    return (await element).click();
+    await (await element).click();
   }
 
   async waitForSelectedNoError(element, reverse = false, timeoutMs = 5000) {

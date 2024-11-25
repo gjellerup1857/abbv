@@ -15,29 +15,29 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const {
-  beforeSequence,
-  globalRetriesNumber,
+import {
   enablePremiumByMockServer,
   enablePremiumByUI,
-  getTabId
-} = require("../helpers");
-const { expect } = require("chai");
-const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
-const PopupPage = require("../page-objects/popup.page");
-const TestPages = require("../page-objects/testPages.page");
+  getTabId,
+  isFirefox
+} from "../helpers.js";
+import PremiumHeaderChunk from "../page-objects/premiumHeader.chunk.js";
+import PopupPage from "../page-objects/popup.page.js";
+import TestPages from "../page-objects/testPages.page.js";
+
 let popupUrl;
 
-describe("test unlock premium", function () {
-  this.retries(globalRetriesNumber);
-
+export default () => {
   before(async function () {
-    ({ popupUrl } = await beforeSequence());
+    ({ popupUrl } = global);
   });
 
   it("should be able to activate premium", async function () {
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isFirefox()) this.skip();
+
     await enablePremiumByUI();
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
@@ -142,4 +142,4 @@ describe("test unlock premium", function () {
     );
     expect(actualFilterValues).to.deep.equal(expectedFilterValues);
   });
-});
+};

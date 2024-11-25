@@ -15,24 +15,22 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const { beforeSequence } = require("../helpers");
-const { expect } = require("chai");
-const AdvancedPage = require("../page-objects/advanced.page");
-const {
-  defaultFilterLists
-} = require("../test-data/data-built-in-filter-lists");
-let flNames;
+import AdvancedPage from "../page-objects/advanced.page.js";
+import { defaultFilterLists } from "../test-data/data-built-in-filter-lists.js";
 
-// eslint-disable-next-line max-len
-describe("test built in filter list dropdown - default filter lists", function () {
+export default () => {
+  let flNames;
+
   before(async function () {
-    await beforeSequence();
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickAddBuiltinFilterListButton();
-    flNames = await advancedPage.getBuiltInFilterListsItemsNames();
+    flNames = [];
+    for (const p of await advancedPage.getBuiltInFilterListsItemsNames()) {
+      flNames.push(await p);
+    }
   });
 
   defaultFilterLists.forEach(async (dataSet) => {
@@ -51,4 +49,4 @@ describe("test built in filter list dropdown - default filter lists", function (
       }
     });
   });
-});
+};

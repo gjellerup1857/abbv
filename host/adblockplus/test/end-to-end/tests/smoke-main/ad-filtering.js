@@ -21,7 +21,8 @@ const {
   switchToABPOptionsTab,
   waitForNewWindow,
   waitForAssertion,
-  addFiltersToABP
+  addFiltersToABP,
+  afterSequence
 } = require("../../helpers");
 const { expect } = require("chai");
 const AdvancedPage = require("../../page-objects/advanced.page");
@@ -36,7 +37,7 @@ async function getTestpagesFilters() {
   await browser.waitUntil(() => generalPage.isElementDisplayed("pre"));
 
   const filters = [];
-  for await (const filter of $$("pre")) {
+  for (const filter of await $$("pre")) {
     filters.push(await filter.getText());
   }
 
@@ -65,6 +66,8 @@ module.exports = function () {
   let aaCheckboxSelected;
 
   before(async function () {
+    await afterSequence();
+
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
 
@@ -79,6 +82,8 @@ module.exports = function () {
   });
 
   after(async function () {
+    await afterSequence();
+
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
 

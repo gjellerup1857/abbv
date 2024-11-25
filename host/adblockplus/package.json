@@ -32,7 +32,7 @@
     "test": "npm run $ test.unit",
     "test:end-to-end": "npm run $ test.end-to-end",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.mjs",
-    "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && node runTests.mjs --suite"
+    "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && node runTests.mjs"
   },
   "$": {
     "build": {
@@ -84,15 +84,15 @@
       },
       "end-to-end": {
         "chromium": {
-          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi",
-          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chromium npm run test:end-to-end-local ${3:-filterlists}; fi"
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=chromium npm run test:end-to-end-local; fi",
+          "mv3": "if [[ -z \"$1\" || \"$1\" == \"chromium\" && \"$2\" != \"2\" ]]; then MANIFEST_VERSION=3 BROWSER=chromium npm run test:end-to-end-local; fi"
         },
         "firefox": {
-          "mv2": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=firefox npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=firefox npm run test:end-to-end-local; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"firefox\" && \"$2\" == \"3\" ]]; then echo \"Firefox tests are not supported with extension in Manifest v3 \"; exit 1; fi"
         },
         "edge": {
-          "mv2": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=edge npm run test:end-to-end-local ${3:-filterlists}; fi",
+          "mv2": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" != \"3\" ]]; then MANIFEST_VERSION=2 BROWSER=edge npm run test:end-to-end-local; fi",
           "mv3": "if [[ -z \"$1\" || \"$1\" == \"edge\" && \"$2\" == \"3\" ]]; then echo \"Edge tests are not supported with extension in Manifest v3 \"; exit 1; fi"
         },
         "chrome": "if [[ -z \"$1\" || \"$1\" == \"chrome\" ]]; then echo \"Tests are not possible to be run in Chrome in AdBlock Plus. Did you mean Chromium?\"; exit 1; fi"
@@ -110,10 +110,10 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#4b0b6c202dd712d826d6d53e6f728cb8b49ba52e",
+    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#ed9d690b095ad1bf060816342fb3ecc41c9293c1",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.17.2",
+    "@eyeo/webext-ad-filtering-solution": "1.19.0",
     "@sentry/browser": "8.2.1",
     "@sentry/cli": "2.37.0",
     "argparse": "1.0.10",

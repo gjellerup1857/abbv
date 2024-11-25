@@ -15,30 +15,18 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const {
-  afterSequence,
-  beforeSequence,
+import {
   switchToABPOptionsTab,
-  isFirefox
-} = require("../helpers");
-const { expect } = require("chai");
-const AdvancedPage = require("../page-objects/advanced.page");
-const GeneralPage = require("../page-objects/general.page");
-let lastTest = false;
+  isFirefox,
+  isChromium,
+  waitForAssertion
+} from "../helpers.js";
+import AdvancedPage from "../page-objects/advanced.page.js";
+import GeneralPage from "../page-objects/general.page.js";
 
-describe("test advanced tab - filter lists", function () {
-  before(async function () {
-    await beforeSequence();
-  });
-
-  afterEach(async function () {
-    if (lastTest == false) {
-      await afterSequence();
-    }
-  });
-
+export default () => {
   it("should display default state", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -182,6 +170,9 @@ describe("test advanced tab - filter lists", function () {
   });
 
   it("should add a built-in filter list", async function () {
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isChromium() || isFirefox()) this.skip();
+
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickAddBuiltinFilterListButton();
@@ -199,6 +190,8 @@ describe("test advanced tab - filter lists", function () {
 
   it("should add a filter list via URL", async function () {
     if (process.env.MANIFEST_VERSION === "3") this.skip();
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isFirefox()) this.skip();
 
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -234,6 +227,9 @@ describe("test advanced tab - filter lists", function () {
   });
 
   it("should display disabled filters error", async function () {
+    // https://eyeo.atlassian.net/browse/EXT-608
+    if (isChromium() || isFirefox()) this.skip();
+
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
@@ -241,8 +237,10 @@ describe("test advanced tab - filter lists", function () {
       isFirefox()
     );
     await advancedPage.clickAddCustomFilterListButton();
-    await advancedPage.clickCustomFilterListsFirstItemToggle();
-    expect(await advancedPage.isAbpFiltersFLErrorIconDisplayed()).to.be.true;
+    await waitForAssertion(async () => {
+      await advancedPage.clickCustomFilterListsFirstItemToggle();
+      expect(await advancedPage.isAbpFiltersFLErrorIconDisplayed()).to.be.true;
+    });
     await advancedPage.clickAbpFiltersFLErrorIcon();
     expect(await advancedPage.getFilterListErrorTooltipText()).to.equal(
       "There are one or more issues with this filter list:" +
@@ -250,7 +248,6 @@ describe("test advanced tab - filter lists", function () {
         "Enable them"
     );
     await advancedPage.clickEnableThemButton();
-    lastTest = true;
     expect(await advancedPage.isFilterListErrorTooltipDisplayed(true)).to.be
       .true;
     expect(await advancedPage.isAbpTestFilterErrorIconDisplayed(true)).to.be
@@ -258,4 +255,4 @@ describe("test advanced tab - filter lists", function () {
     expect(await advancedPage.isCustomFilterListsFirstItemToggleSelected()).to
       .be.true;
   });
-});
+};

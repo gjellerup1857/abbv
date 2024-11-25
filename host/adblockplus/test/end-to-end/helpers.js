@@ -208,6 +208,7 @@ async function enablePremiumByUI() {
   await premiumPage.clickPremiumCheckoutButton();
   const premiumCheckoutPage = new PremiumCheckoutPage(browser);
   await premiumCheckoutPage.init();
+  await browser.pause(2000); // the first checkout page may take some time to be ready
   await premiumCheckoutPage.typeTextToEmailField(
     "test_automation" +
       randomIntFromInterval(1000000, 9999999).toString() +
@@ -217,6 +218,7 @@ async function enablePremiumByUI() {
     await premiumCheckoutPage.typeTextToZIPField("10001");
   } catch (e) {} // Depending on the location, the ZIP may be required or not
   await premiumCheckoutPage.clickContinueButton();
+  await browser.pause(2000); // the second checkout page may take some time to be ready
   await premiumCheckoutPage.typeTextToCardNumberField("4242424242424242");
   await premiumCheckoutPage.typeTextToCardExpiryField("0528");
   await premiumCheckoutPage.typeTextToCardCvcField("295");
@@ -225,6 +227,7 @@ async function enablePremiumByUI() {
 
   // Real premium takes a while to be enabled
   const timeout = 80000;
+  await switchToABPOptionsTab({ refresh: true });
   await browser.waitUntil(
     async () => {
       try {
@@ -597,6 +600,10 @@ function isBrowser(browserName) {
   return browser.capabilities.browserName.toLowerCase().includes(browserName);
 }
 
+function isChromium() {
+  return isChrome();
+}
+
 function isChrome() {
   return isBrowser("chrome");
 }
@@ -743,6 +750,7 @@ module.exports = {
   waitForNewWindow,
   waitForAssertion,
   isChrome,
+  isChromium,
   isFirefox,
   isEdge,
   uninstallExtension,

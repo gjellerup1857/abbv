@@ -82,4 +82,4 @@ const closeDataTabInterval = setInterval(() => {
       });
     }
   });
-}, 2000);
+}, 3000);

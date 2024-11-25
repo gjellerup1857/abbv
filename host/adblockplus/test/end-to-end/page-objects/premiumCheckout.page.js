@@ -98,10 +98,14 @@ class PremiumCheckoutPage extends BasePage {
 
   async typeTextToCardNumberField(text) {
     await this.waitForEnabledThenClick(this.cardNumberTextField, 20000);
+    // first click sometimes doesn't work
+    await this.waitForEnabledThenClick(this.cardNumberTextField, 20000);
     await browser.keys(text);
   }
 
   async typeTextToEmailField(text) {
+    await this.waitForEnabledThenClick(this.emailTextField, 10000);
+    // first click sometimes doesn't work
     await this.waitForEnabledThenClick(this.emailTextField, 10000);
     await browser.keys(text);
   }
