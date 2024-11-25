@@ -8,16 +8,15 @@
  * https://jestjs.io/docs/configuration
  */
 module.exports = {
-    collectCoverage: true,
-    coverageDirectory: "coverage",
-    coverageReporters: ["json", "html", "text"],
-    moduleNameMapper: {
-        "^~/(.*)$": "<rootDir>/src/$1"
-    },
-    resetMocks: true,
-    restoreMocks: true,
-    // setupFiles: ["jest-webextension-mock", "./mocks/js/jest-polyfill.js"],
-    setupFiles: ["jest-webextension-mock"],
-    // testEnvironment: "./mocks/js/jest-jsdom.mjs",
-    testMatch: ["**/*.spec.ts"]
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageReporters: ["json", "html", "text"],
+  moduleNameMapper: {
+    "^~/(.*)$": "<rootDir>/src/$1"
+  },
+  resetMocks: true,
+  restoreMocks: true,
+  setupFiles: ["jest-webextension-mock", "./mocks/js/jest-polyfill.js"],
+  testEnvironment: "./mocks/js/jest-jsdom.mjs",
+  testMatch: ["**/*.spec.ts"]
 };
