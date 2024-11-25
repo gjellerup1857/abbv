@@ -82,14 +82,18 @@ async function migrateToSmartAllowlisting(): Promise<void> {
  * Initializes the migration module
  */
 export async function start(): Promise<void> {
-  if (Prefs.get("popup_to_smart_allowlist")) {
+  await Prefs.untilLoaded;
+  const prefsKey = "migration_popup_to_smart_allowlist_complete";
+
+  if (Prefs.get(prefsKey)) {
     return;
   }
 
   try {
     await migrateToSmartAllowlisting();
-    await Prefs.set("popup_to_smart_allowlist", true);
+    await Prefs.set(prefsKey, true);
   } catch (error) {
+    await Prefs.set(prefsKey, false);
     console.error("Failed to migrate to smart allowlisting", error);
   }
 }
