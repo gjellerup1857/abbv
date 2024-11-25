@@ -1,5 +1,7 @@
 # Unreleased
 
+- Updated webext-ad-filtering-solution to 1.19.0
+
 # 4.9.3 - 2024-11-19
 
 This release fixes a severe performance bug that can occur when visiting certain
