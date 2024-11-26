@@ -37,7 +37,11 @@
     * Checkbox styling
     */
     input[type="checkbox"] {
-      @apply rounded;
+      @apply rounded border-theme-link-color;
+    }
+
+    input[type="checkbox"]:not(:checked, :hover, :focus) {
+      @apply bg-transparent;
     }
 
     /**
