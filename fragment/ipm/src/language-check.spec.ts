@@ -19,7 +19,7 @@ import * as eventRecording from "./event-recording";
 import { CommandName, type Command } from "./command-library.types";
 import { checkLanguage } from "./language-check";
 import * as browser from "webextension-polyfill";
-import { context } from "../context";
+import { context } from "./context";
 
 const ipmId = "__ipm_id__";
 const oldIpmId = "__old_ipm__";

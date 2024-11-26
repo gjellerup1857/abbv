@@ -31,7 +31,7 @@ import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
 import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 import { checkLanguage } from "./language-check";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * A list of known commands.

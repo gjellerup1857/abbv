@@ -19,7 +19,7 @@ import browser from "webextension-polyfill";
 import { commandStorageKey } from "./command-library";
 import { recordEvent } from "./event-recording";
 import { type Command } from "./command-library.types";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * Runs a check to see whether the current user language still matches the

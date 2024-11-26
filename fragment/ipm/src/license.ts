@@ -17,7 +17,7 @@
 
 import { type LicenseStateBehavior } from "./command-library.types";
 import { LicenseState } from "./data-collection.types";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * The default license state for the license_state_list command parameter.

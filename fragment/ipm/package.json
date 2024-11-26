@@ -5,8 +5,8 @@
   "private": true,
   "typesVersions": {
     "*": {
-      "background": [
-        "./dist/background/index.d.ts"
+      "*": [
+        "./dist/index.d.ts"
       ]
     }
   },
@@ -14,7 +14,7 @@
     "./dist/"
   ],
   "exports": {
-    "./background": "./dist/background/index.js"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc --project tsconfig.json",
