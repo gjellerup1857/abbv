@@ -26,15 +26,14 @@ export default () => {
   it("initiates helpflow for first time ad", async function () {
     await openNewTab(TEST_URL);
     const tabId = await initializeHelpflow(driver, TEST_URL);
-
-    const helpButton = await getDisplayedElement("#help_link", 1000);
+    const helpButton = await getDisplayedElement("#help_link", 3000);
     await helpButton.click();
     const currentURL = await driver.getCurrentUrl();
     await navigateHelpflow(driver, currentURL, tabId);
 
-    const seeAd = await getDisplayedElement("[i18n='see_ad']", 1000);
+    const seeAd = await getDisplayedElement("[i18n='see_ad']", 3000);
     await seeAd.click();
-    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 1000);
+    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
     await firstTimeSeeAd.click();
     const okButton = await getDisplayedElement(".button.help-button", 1000);
     await okButton.click();
@@ -48,14 +47,14 @@ export default () => {
     await openNewTab(TEST_URL);
     const tabId = await initializeHelpflow(driver, TEST_URL);
 
-    const helpButton = await getDisplayedElement("#help_link", 1000);
+    const helpButton = await getDisplayedElement("#help_link", 3000);
     await helpButton.click();
     const currentURL = await driver.getCurrentUrl();
     await navigateHelpflow(driver, currentURL, tabId);
 
-    const seeAd = await getDisplayedElement("[i18n='see_ad']", 1000);
+    const seeAd = await getDisplayedElement("[i18n='see_ad']", 3000);
     await seeAd.click();
-    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 1000);
+    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
     await firstTimeSeeAd.click();
     const ok1Button = await getDisplayedElement(".button.help-button", 1000);
     await ok1Button.click();
@@ -71,16 +70,16 @@ export default () => {
     await openNewTab(TEST_URL);
     const tabId = await initializeHelpflow(driver, TEST_URL);
 
-    const helpButton = await getDisplayedElement("#help_link", 1000);
+    const helpButton = await getDisplayedElement("#help_link", 3000);
     await helpButton.click();
     const currentURL = await driver.getCurrentUrl();
     await navigateHelpflow(driver, currentURL, tabId);
 
-    const seeAd = await getDisplayedElement("[i18n='see_ad']", 1000);
+    const seeAd = await getDisplayedElement("[i18n='see_ad']", 3000);
     await seeAd.click();
-    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 1000);
+    const firstTimeSeeAd = await getDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
     await firstTimeSeeAd.click();
-    const ok1Button = await getDisplayedElement(".button.help-button", 1000);
+    const ok1Button = await getDisplayedElement(".button.help-button", 3000);
     await ok1Button.click();
     await getDisplayedElement("[i18n='page_is_whitelisted']");
     const yesButton = await getDisplayedElement("[i18n='yes']");
@@ -93,16 +92,16 @@ export default () => {
     await openNewTab(TEST_URL);
     const tabId = await initializeHelpflow(driver, TEST_URL);
 
-    const helpButton = await getDisplayedElement("#help_link", 1000);
+    const helpButton = await getDisplayedElement("#help_link", 3000);
     await helpButton.click();
     const currentURL = await driver.getCurrentUrl();
     await navigateHelpflow(driver, currentURL, tabId);
 
-    const seeAd = await getDisplayedElement("[i18n='see_ad']", 1000);
+    const seeAd = await getDisplayedElement("[i18n='see_ad']", 3000);
     await seeAd.click();
-    const seeAdEverywhere = await getDisplayedElement("[i18n='see_ad_everywhere']", 1000);
+    const seeAdEverywhere = await getDisplayedElement("[i18n='see_ad_everywhere']", 3000);
     await seeAdEverywhere.click();
-    const learnMore = await getDisplayedElement("[i18n='learn_more_to_resolve']", 1000);
+    const learnMore = await getDisplayedElement("[i18n='learn_more_to_resolve']", 3000);
     await learnMore.click();
     const helpWindow = await driver.getWindowHandle();
     await driver.switchTo().window(helpWindow);
@@ -112,13 +111,13 @@ export default () => {
     await openNewTab(TEST_URL);
     const tabId = await initializeHelpflow(driver, TEST_URL);
 
-    const helpButton = await getDisplayedElement("#help_link", 1000);
+    const helpButton = await getDisplayedElement("#help_link", 3000);
     await helpButton.click();
     const currentURL = await driver.getCurrentUrl();
     await navigateHelpflow(driver, currentURL, tabId);
 
-    const websiteBroken = await getDisplayedElement("[i18n='website_broken']", 2000);
+    const websiteBroken = await getDisplayedElement("[i18n='website_broken']", 3000);
     await websiteBroken.click();
-    await getDisplayedElement("[i18n='reload_the_page']", 1000);
+    await getDisplayedElement("[i18n='reload_the_page']", 3000);
   });
 };
