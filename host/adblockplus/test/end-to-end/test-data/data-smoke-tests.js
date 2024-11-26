@@ -27,6 +27,7 @@ module.exports = {
   allowlistingFilter: "@@||localhost^$document",
   customBlockingFilters: [
     "/pop_ads.js", // no longer exists in EasyList
+    "/bannerads/blocking-filter.js", // Sometimes needed
     "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
     "localhost##.AdContainer" // Needed to override EasyList's "@@://localhost:$generichide"
   ],
