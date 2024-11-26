@@ -1,5 +1,9 @@
 # Unreleased
 
+# 6.12.0 - 2024-11-25
+
+This release contains mostly under-the-hood changes.
+
 - Refactored the telemetry fetch processing
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)
 - Updated webext-ad-filtering-solution to 1.19.0

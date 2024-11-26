@@ -87,7 +87,15 @@ export default () => {
       await popupPage.init(popupUrl, tabId);
       await popupPage.clickBlockCookieConsentPopupsToggle();
     }
-    await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
+    try {
+      await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
+    } catch (e) {
+      // The Cookie consent toggle might not be selected
+      if (await popupPage.isBlockCookieConsentPopupsToggleSelected()) {
+        await popupPage.clickBlockCookieConsentPopupsToggle();
+      }
+      await popupPage.clickCookieConsentPopupsPopupOkGotItButton();
+    }
     expect(await popupPage.isBlockCookieConsentPopupsToggleSelected()).to.be
       .true;
     await browser.newWindow("http://localhost:3005/dc-filters.html");
