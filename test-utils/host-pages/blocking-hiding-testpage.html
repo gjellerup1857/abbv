@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="./scripts/pop_ads.js" defer></script>
+  <script src="./scripts/bannerads/blocking-filter.js" defer></script>
+
+  <title>Blocking and hiding</title>
+</head>
+<body id="body" class="wallpaper">
+  <div class="title">
+    <div>Blocking and hiding testpage</div>
+  </div>
+
+  <a href="../adblocking-testpages.html" class="back-arrow">&#8592; back</a>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-wrapper">
+        <div class="card-title">Blocking filters</div>
+        <div class="card-description">Filters used (easylist): /pop_ads.js and /bannerads/*</div>
+        <div id="popads-blocking-filter" class="filter-visible">pop_ads.js was blocked</div>
+        <div id="bannerads-blocking-filter" class="filter-visible">bannerads/* was blocked</div>
+      </div>
+    </div>
+
+      <div class="card">
+        <div class="card-wrapper">
+          <div class="card-title">Hiding filters</div>
+          <div class="card-description">Filters used (easylist):###search-ad and ##.AdContainer</div>
+          <div id="search-ad" class="filter-blocked">search-ad id hiding filter should hide this</div>
+          <div id="AdContainer" class="filter-blocked AdContainer">AdContainer class hiding filter should hide this</div>
+          <div class="filter-visible">If there are no failures above, then the element hiding filters were applied successfully.</div>
+        </div>
+      </div>
+  </div>
+
+</body>
+</html>

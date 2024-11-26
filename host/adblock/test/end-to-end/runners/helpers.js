@@ -172,7 +172,7 @@ export async function getExtensionInfo() {
     }
   });
 
-  if (!info.origin) {
+  if (!info || !info.origin) {
     throw new Error("Origin was not found");
   }
 

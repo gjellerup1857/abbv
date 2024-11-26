@@ -15,18 +15,14 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { removeFilter, isChromium } from "../../helpers.js";
+import { removeFilter } from "../../helpers.js";
 import oneClickAllowlisting from "./test-one-click-allowlisting.mjs";
 import bypassAPI from "./test-bypass-api.mjs";
+import testData from "../../test-data/data-smoke-tests.js";
 
 export default () => {
-  before(function () {
-    // https://eyeo.atlassian.net/browse/EXT-608
-    if (isChromium()) this.skip();
-  });
-
   afterEach(async function () {
-    await removeFilter("@@||eyeo.gitlab.io^$document");
+    await removeFilter(testData.allowlistingFilter);
   });
 
   describe("Test one-click allowlisting", oneClickAllowlisting);

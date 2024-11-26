@@ -81,8 +81,9 @@ export async function sendExtCommand({
   const timestamp = Date.now();
   const data = `${domain},${timestamp}`;
   const signature = await encryptMessage(data);
+  const timeout = 5000;
 
-  return browser.executeAsync(
+  const eventDetail = await browser.executeAsync(
     (params, callback) => {
       const event = new CustomEvent(params.triggerEventName, {
         detail: {
@@ -101,8 +102,8 @@ export async function sendExtCommand({
       // dispatch the event, will be intercepted by the content-script
       document.dispatchEvent(event);
 
-      // if the event is not received in 5 seconds, consider it failed
-      setTimeout(() => callback(null), 5000);
+      // if the event is not received after the timeout, consider it failed
+      setTimeout(() => callback(null), params.timeout);
     },
     {
       domain,
@@ -110,7 +111,16 @@ export async function sendExtCommand({
       timestamp,
       options,
       triggerEventName,
-      responseEventName
+      responseEventName,
+      timeout
     }
   );
+
+  if (eventDetail === null) {
+    console.warn(
+      `Waiting for ${triggerEventName} event timed out after ${timeout}ms`
+    );
+  }
+
+  return eventDetail;
 }

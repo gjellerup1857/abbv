@@ -512,37 +512,38 @@ async function waitForExtension() {
       for (const handle of await browser.getWindowHandles()) {
         await browser.switchToWindow(handle);
 
-        ({ origin, optionsUrl, popupUrl, extVersion } =
-          await browser.executeAsync(async (callback) => {
-            if (
-              typeof browser !== "undefined" &&
-              browser.management !== "undefined"
-            ) {
-              const info = await browser.management.getSelf();
-              const manifest = await browser.runtime.getManifest();
-              const popupPath = manifest.applications?.gecko
-                ? await browser.action.getPopup({})
-                : manifest.manifest_version == "3"
-                  ? `${location.origin}/${manifest.action.default_popup}`
-                  : `${location.origin}/${manifest.browser_action.default_popup}`;
+        const extensionInfo = await browser.executeAsync(async (callback) => {
+          if (
+            typeof browser !== "undefined" &&
+            browser.management !== "undefined"
+          ) {
+            const info = await browser.management.getSelf();
+            const manifest = await browser.runtime.getManifest();
+            const popupPath = manifest.applications?.gecko
+              ? await browser.action.getPopup({})
+              : manifest.manifest_version == "3"
+                ? `${location.origin}/${manifest.action.default_popup}`
+                : `${location.origin}/${manifest.browser_action.default_popup}`;
 
-              callback(
-                info.optionsUrl
-                  ? {
-                      origin: location.origin,
-                      optionsUrl: info.optionsUrl,
-                      popupUrl: popupPath,
-                      extVersion: info.version
-                    }
-                  : {}
-              );
-            } else {
-              callback({});
-            }
-          }));
-        if (origin) {
-          return true;
-        }
+            callback(
+              info.optionsUrl
+                ? {
+                    origin: location.origin,
+                    optionsUrl: info.optionsUrl,
+                    popupUrl: popupPath,
+                    extVersion: info.version
+                  }
+                : {}
+            );
+          } else {
+            callback({});
+          }
+        });
+
+        if (!extensionInfo) return false;
+
+        ({ origin, optionsUrl, popupUrl, extVersion } = extensionInfo);
+        if (origin) return true;
       }
     },
     { timeout, timeoutMsg: `Options page not found after ${timeout}ms` }
