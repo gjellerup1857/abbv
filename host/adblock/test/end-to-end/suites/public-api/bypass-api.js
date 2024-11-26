@@ -23,6 +23,7 @@ import {
   blockHideUrl,
   checkBlockHidePage,
   reloadExtension,
+  allowlistingFilter,
 } from "../../utils/page.js";
 import { openNewTab } from "../../utils/driver.js";
 
@@ -33,7 +34,7 @@ export default () => {
   });
 
   afterEach(async function () {
-    await removeFilter("@@||eyeo.gitlab.io^$document");
+    await removeFilter(allowlistingFilter);
   });
 
   it("returns adblocking is active extension info", async function () {
@@ -67,7 +68,7 @@ export default () => {
     await checkBlockHidePage(false);
 
     // Allowlist the page
-    await addFilter("@@||eyeo.gitlab.io^$document");
+    await addFilter(allowlistingFilter);
 
     // Check that the page was allowlisted
     await checkBlockHidePage(true);

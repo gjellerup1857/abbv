@@ -16,7 +16,12 @@
  */
 
 import { expect } from "chai";
-import { reloadExtension, waitForNewWindow, isEdge } from "../../helpers.js";
+import {
+  reloadExtension,
+  waitForNewWindow,
+  isEdge,
+  waitForAssertion
+} from "../../helpers.js";
 import { updateExtPrefAPIKey, sendExtCommand } from "./shared/helpers.mjs";
 import testData from "../../test-data/data-smoke-tests.js";
 import TestPages from "../../page-objects/testPages.page.js";
@@ -37,17 +42,21 @@ export default function () {
     // open the block-hide page
     await waitForNewWindow(blockHideUrl);
 
-    // trigger allowlisting with expiration
-    const allowlistedEvent = await sendExtCommand({
-      triggerEventName: "domain_allowlisting_request",
-      responseEventName: "domain_allowlisting_success"
-    });
+    // If the test "allowlists websites" ran previously, this needs to be
+    // retried, including refreshing of the page
+    await waitForAssertion(
+      async () => {
+        // trigger allowlisting with expiration
+        const allowlistedEvent = await sendExtCommand({
+          triggerEventName: "domain_allowlisting_request",
+          responseEventName: "domain_allowlisting_success"
+        });
 
-    // verify that the page received the allowlisting successfully event
-    expect(allowlistedEvent).to.not.be.null;
-
-    // refresh the page to ensure the allowlisting is applied
-    await browser.refresh();
+        // verify that the page received the allowlisting successfully event
+        expect(allowlistedEvent).to.not.be.null;
+      },
+      { timeout: 10000, refresh: true }
+    );
 
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);
@@ -69,9 +78,6 @@ export default function () {
 
     // verify that the page received the allowlisting successfully event
     expect(allowlistedEvent).to.not.be.null;
-
-    // refresh the page to ensure the allowlisting is applied
-    await browser.refresh();
 
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);

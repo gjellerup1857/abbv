@@ -38,11 +38,11 @@ export const Checkbox = ({
     'transition', 'duration-200', 'ease-in-out',
 
     // Colors
-    'bg-transparent',
+    'bg-theme-secondary',
     'checked:bg-theme-link-color', 'checked:hover:bg-theme-link-color',
     'checked:focus:bg-theme-link-color',
   ];
-  const invalidStyles = invalid ? ['border-error'] : ['border-theme-link-color'];
+  const invalidStyles = invalid ? ['border-error'] : ['border-theme-secondary'];
   const className = [
     ...defaultStyles,
     ...invalidStyles,

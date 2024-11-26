@@ -20,7 +20,6 @@
 const {
   switchToABPOptionsTab,
   waitForNewWindow,
-  waitForAssertion,
   addFiltersToABP,
   afterSequence
 } = require("../../helpers");
@@ -76,9 +75,8 @@ module.exports = function () {
   });
 
   beforeEach(async function () {
-    // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP("/pop_ads.js");
+    await addFiltersToABP(testData.customBlockingFilters.join("\n"));
   });
 
   after(async function () {
@@ -166,7 +164,7 @@ module.exports = function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
     await allowistedWebsitesPage.setAllowlistingTextboxValue(
-      "https://eyeo.gitlab.io/"
+      "http://localhost/"
     );
     expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
     await allowistedWebsitesPage.clickAddWebsiteButton();
@@ -178,7 +176,7 @@ module.exports = function () {
 
     await switchToABPOptionsTab();
 
-    await allowistedWebsitesPage.removeAllowlistedDomain("eyeo.gitlab.io");
+    await allowistedWebsitesPage.removeAllowlistedDomain("localhost");
     const attributesOfAllowlistingTableItems =
       await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
         "class"
@@ -187,23 +185,9 @@ module.exports = function () {
       expect(element).to.equal("empty-placeholder");
     });
 
-    await waitForNewWindow(testData.allowlistingUrl);
+    await waitForNewWindow(testData.blockHideUrl);
 
-    const timeout = 5000;
-    await waitForAssertion(
-      async () => {
-        expect(await testPages.getPopadsFilterText()).to.include(
-          "pop_ads.js was blocked"
-        );
-        expect(await testPages.getBanneradsFilterText()).to.include(
-          "bannerads/* was blocked"
-        );
-      },
-      {
-        timeout,
-        timeoutMsg: "pop_ads.js or bannerads/* was not blocked"
-      }
-    );
+    await testPages.checkPage({ expectAllowlisted: false });
     expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
   });

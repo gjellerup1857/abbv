@@ -35,6 +35,17 @@
       background: var(--theme-link-color);
       color: var(--black);
     }
+
+    /* TODO: When redesign undertaken, remove specificity overwrite hacks   */
+    /* Theme color applies too dark in this case */
+    input[type="checkbox"]:not(:checked) {
+      @apply bg-theme-accent-light border-theme-accent-light;
+    }
+
+    /* Overwrite for old case */
+    .checkbox.md-stack input[type="checkbox"]:not(:checked) {
+      @apply bg-transparent;
+    }
   }
 
   [data-extension='adblock'][data-theme='solarized'],

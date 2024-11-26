@@ -22,13 +22,12 @@ import {
   reloadExtension,
   waitForNewWindow,
   addFiltersToABP,
-  isEdge,
-  isFirefox
+  isEdge
 } from "../../helpers.js";
 import testData from "../../test-data/data-smoke-tests.js";
 import TestPages from "../../page-objects/testPages.page.js";
 
-const { blockHideUrl } = testData;
+const { blockHideUrl, allowlistingFilter, customBlockingFilters } = testData;
 
 export default function () {
   let extVersion;
@@ -36,16 +35,13 @@ export default function () {
   before(async function () {
     // https://eyeo.atlassian.net/browse/EXT-153
     if (isEdge()) this.skip();
-    // https://eyeo.atlassian.net/browse/EXT-608
-    if (isFirefox()) this.skip();
 
     await updateExtPrefAPIKey("bypass_authorizedKeys");
     await reloadExtension();
     ({ extVersion } = global);
 
-    // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP("/pop_ads.js");
+    await addFiltersToABP(customBlockingFilters.join("\n"));
   });
 
   it("returns adblocking is active extension info", async function () {
@@ -84,7 +80,7 @@ export default function () {
     await testPages.checkPage({ expectAllowlisted: false });
 
     // Allowlist the page
-    await addFilter("@@||eyeo.gitlab.io^$document");
+    await addFilter(allowlistingFilter);
 
     // Check that the page was allowlisted
     await testPages.checkPage({ expectAllowlisted: true });

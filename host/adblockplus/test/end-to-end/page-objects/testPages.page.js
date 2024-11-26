@@ -288,6 +288,8 @@ class TestPages extends BasePage {
     const timeout = 15000;
     await waitForAssertion(
       async () => {
+        await browser.refresh();
+
         expect(await this.getPopadsFilterText()).to.include(expectedPopadsText);
         expect(await this.getBanneradsFilterText()).to.include(
           expectedBanneradsText

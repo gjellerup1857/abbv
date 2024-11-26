@@ -33,8 +33,8 @@ import { getOptionsHandle, setOptionsHandle } from "./hook.js";
 const { By, Key } = webdriver;
 
 export const installUrl = "getadblock.com/en/installed";
-export const blockHideUrl =
-  "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/blocking-hiding/blocking-hiding-testpage.html";
+export const blockHideUrl = "http://localhost:3005/blocking-hiding-testpage.html";
+export const allowlistingFilter = "@@||localhost^$document";
 
 export async function initPopupPage(tabId) {
   const tabIdParam = tabId ? `?tabId=${tabId}` : "";

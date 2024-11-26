@@ -16,11 +16,6 @@
  */
 
 /**
- * The version of the Command Library built into this extension.
- */
-export const commandLibraryVersion = 1;
-
-/**
  * The maximum number of commands that the extension can process when
  * handling a IPM server response.
  */

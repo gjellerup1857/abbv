@@ -18,17 +18,19 @@
 "use strict";
 
 module.exports = {
-  allowlistingUrl:
-    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/" +
-    "blocking-hiding/blocking-hiding-testpage.html",
   an_chromium: "adblockpluschrome",
   an_firefox: "adbockplusfirefox",
   ap_chrome: "chrome",
   ap_edge: "edge",
   ap_firefox: "firefox",
-  blockHideUrl:
-    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/blocking" +
-    "-hiding/blocking-hiding-testpage.html",
+  blockHideUrl: "http://localhost:3005/blocking-hiding-testpage.html",
+  allowlistingFilter: "@@||localhost^$document",
+  customBlockingFilters: [
+    "/pop_ads.js", // no longer exists in EasyList
+    "/bannerads/blocking-filter.js", // Sometimes needed
+    "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
+    "localhost##.AdContainer" // Needed to override EasyList's "@@://localhost:$generichide"
+  ],
   p_chromium: "chromium",
   p_firefox: "gecko",
   regex_an: /(?<=an=).+?(?=&)/,

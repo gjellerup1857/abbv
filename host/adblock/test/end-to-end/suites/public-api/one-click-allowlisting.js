@@ -6,10 +6,9 @@ import {
   reloadExtension,
   removeFilter,
   sendExtMessage,
+  allowlistingFilter,
 } from "../../utils/page.js";
 import { openNewTab } from "../../utils/driver.js";
-
-const filterText = "@@||eyeo.gitlab.io^$document";
 
 /**
  * Validates the filter metadata.
@@ -36,7 +35,7 @@ function validateFilterMetadata(debugInfo, expiresAt = null) {
     expect.arrayContaining([
       expect.objectContaining({
         metaData: expectedMetadata,
-        text: filterText,
+        text: allowlistingFilter,
       }),
     ]),
   );
@@ -51,7 +50,7 @@ export default () => {
   });
 
   afterEach(async function () {
-    await removeFilter(filterText);
+    await removeFilter(allowlistingFilter);
   });
 
   it("allowlists the page forever", async function () {

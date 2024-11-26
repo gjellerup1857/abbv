@@ -1,12 +1,5 @@
 FROM registry.gitlab.com/eyeo/docker/get-browser-binary:node18
 
-# WebdriverIO can't handle Edge installation on Debian. Running
-# get-browser-binary tests as a workaround to install Edge and msedgedriver
-RUN git clone https://gitlab.com/eyeo/developer-experience/get-browser-binary.git; \
-  cd get-browser-binary; \
-  npm install; \
-  npm test -- --grep "edge.*latest.*runs";
-
 # Doing early `npm install` to cache those files on further image builds If this
 # fails saying that the package-lock.json is out of sync, it could mean that a
 # new package.json was added which isn't copied here.
