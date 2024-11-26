@@ -15,7 +15,8 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sendPing } from "../../../ipm/background/telemetry";
+import { sendPing } from "@eyeo/ipm";
+
 import { port } from "~/core/messaging/background";
 import { Prefs } from "../../../../adblockpluschrome/lib/prefs";
 

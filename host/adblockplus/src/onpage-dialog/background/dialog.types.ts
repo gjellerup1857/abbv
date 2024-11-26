@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type LicenseStateBehavior } from "../../ipm/background";
+import { type LicenseStateBehavior } from "@eyeo/ipm";
 import { type DialogContent } from "../shared";
 import { type Timing } from "./timing.types";
 
