@@ -21,61 +21,70 @@ import { FilterOrigin } from "../shared";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
 
-async function migrateToSmartAllowlisting(): Promise<void> {
+async function migrateToSmartAllowlisting(): Promise<boolean> {
   const localesEnabled = ["en", "de", "en-GB"]; // TODO: get this from ab testing
   const userLocale = browser.i18n.getUILanguage();
 
   if (!localesEnabled.includes(userLocale)) {
-    return;
+    return false;
   }
 
-  const origins: string[] = [FilterOrigin.popup, FilterOrigin.youtube, FilterOrigin.wizard];
+  const origins: string[] = [FilterOrigin.popup, FilterOrigin.wizard];
+  const minDate = new Date(2020, 10, 11); // 11th November 2020
+  const maxDate = new Date(2023, 11, 1); // 1st December 2023
 
   const filters = await ewe.filters.getUserFilters();
-  const minDate = new Date(2020, 10, 11); // 11th November 2020
-  const maxDate = new Date(2021, 10, 11); // TODO: replace it with actual date
-  let transitionedCount = 0;
-  let fromGfcCount = 0;
-  let allowlistsLeftCount = 0;
+  const documentAllowLists = filters.filter(
+    (filter) => filter.text.startsWith("@@") && filter.text.includes("document"),
+  );
+  const documentAllowListsWithMetadata = await Promise.all(
+    documentAllowLists.map(async (filter) => {
+      const metadata = await ewe.filters.getMetadata(filter.text);
+      return { ...filter, metadata };
+    }),
+  );
 
-  for (const filter of filters) {
-    const isDocumentAllowlist = filter.text.startsWith("@@") && filter.text.includes("document");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const metadata = await ewe.filters.getMetadata(filter.text);
-    const isSmartAllowlist = metadata && metadata.autoExtendMs && metadata.expiresAt;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const hasAffectedOrigin = metadata && metadata.origin && origins.includes(metadata.origin);
-    const isFrom1CA = metadata && metadata.origin === FilterOrigin.web;
-    const isDuringGFCPeriod =
-      metadata &&
-      metadata.created &&
-      minDate.getTime() <= metadata.created &&
-      metadata.created <= maxDate.getTime();
+  const allowlistsFromGfc = documentAllowListsWithMetadata.filter(
+    ({ metadata }) =>
+      metadata?.origin === FilterOrigin.web &&
+      metadata?.created &&
+      metadata.created >= minDate.getTime() &&
+      metadata.created <= maxDate.getTime(),
+  );
 
-    if (isDocumentAllowlist && !isSmartAllowlist && !hasAffectedOrigin) {
-      allowlistsLeftCount += 1;
-    }
+  const existingSmartAllowlists = documentAllowListsWithMetadata.filter(
+    ({ metadata }) => metadata?.autoExtendMs && metadata?.expiresAt,
+  );
 
-    if (isDocumentAllowlist && isFrom1CA && isDuringGFCPeriod) {
-      fromGfcCount += 1;
-    }
+  const allowlistsToTransition = documentAllowListsWithMetadata.filter(
+    ({ metadata }) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      !metadata?.autoExtendMs && !metadata?.expiresAt && origins.includes(metadata?.origin),
+  );
 
-    // transition to smart allowlist
-    if (isDocumentAllowlist && !isSmartAllowlist && hasAffectedOrigin) {
-      const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
-      metadata.expiresAt = Date.now() + autoExtendMs;
-      metadata.autoExtendMs = autoExtendMs;
-      await ewe.filters.setMetadata(filter.text, metadata);
-
-      transitionedCount += 1;
-    }
-  }
+  // transition to smart allowlisting
+  const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
+  await Promise.all(
+    allowlistsToTransition.map(async ({ text: filterText, metadata }) => {
+      await ewe.filters.setMetadata(filterText, {
+        ...metadata,
+        autoExtendMs,
+        expiresAt: Date.now() + autoExtendMs,
+      });
+    }),
+  );
 
   ServerMessages.recordGeneralMessage("migrated_popup_allowlists", null, {
-    allowlistsLeftCount,
-    fromGfcCount,
-    transitionedCount,
+    transitionedCount: allowlistsToTransition.length,
+    fromGfcCount: allowlistsFromGfc.length,
+    allowlistsLeftCount:
+      documentAllowListsWithMetadata.length -
+      allowlistsToTransition.length -
+      allowlistsFromGfc.length -
+      existingSmartAllowlists.length,
   });
+
+  return true;
 }
 
 /**

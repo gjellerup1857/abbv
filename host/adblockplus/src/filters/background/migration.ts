@@ -20,31 +20,45 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { FilterOrigin } from "../shared";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
-async function migrateToSmartAllowlisting(): Promise<void> {
+async function migrateToSmartAllowlisting(): Promise<boolean> {
   const localesEnabled = ["en", "de", "en-GB"]; // TODO: get this from ab testing
   const userLocale = browser.i18n.getUILanguage();
 
   if (!localesEnabled.includes(userLocale)) {
-    return;
+    return false;
   }
 
   const filters = await ewe.filters.getUserFilters();
+  const documentAllowLists = filters.filter(
+    (filter) => filter.text.startsWith("@@") && filter.text.includes("document")
+  );
+  const documentAllowListsWithMetadata = await Promise.all(
+    documentAllowLists.map(async (filter) => {
+      const metadata = await ewe.filters.getMetadata(filter.text);
+      return { ...filter, metadata };
+    })
+  );
 
-  for (const filter of filters) {
-    const isDocumentAllowlist =
-      filter.text.startsWith("@@") && filter.text.includes("document");
-    const metadata = await ewe.filters.getMetadata(filter.text);
-    const isSmartAllowlist = metadata?.autoExtendMs && metadata?.expiresAt;
-    const hasAffectedOrigin = metadata?.origin === FilterOrigin.popup;
+  const allowlistsToTransition = documentAllowListsWithMetadata.filter(
+    ({ metadata }) =>
+      !metadata?.autoExtendMs &&
+      !metadata?.expiresAt &&
+      metadata?.origin === FilterOrigin.popup
+  );
 
-    // transition to smart allowlist
-    if (isDocumentAllowlist && !isSmartAllowlist && hasAffectedOrigin) {
-      const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
-      metadata.expiresAt = Date.now() + autoExtendMs;
-      metadata.autoExtendMs = autoExtendMs;
-      await ewe.filters.setMetadata(filter.text, metadata);
-    }
-  }
+  // transition to smart allowlisting
+  const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
+  await Promise.all(
+    allowlistsToTransition.map(async ({ text: filterText, metadata }) => {
+      await ewe.filters.setMetadata(filterText, {
+        ...metadata,
+        autoExtendMs,
+        expiresAt: Date.now() + autoExtendMs
+      });
+    })
+  );
+
+  return true;
 }
 
 /**
@@ -62,6 +76,7 @@ export async function start(): Promise<void> {
     await migrateToSmartAllowlisting();
     await Prefs.set(prefsKey, true);
   } catch (error) {
+    await Prefs.set(prefsKey, false);
     console.error("Failed to migrate to smart allowlisting", error);
   }
 }
