@@ -364,6 +364,20 @@ declare module "@eyeo/webext-ad-filtering-solution" {
     const remove: (texts: string | string[]) => Promise<void>;
   }
 
+  declare namespace experiments {
+    /**
+     * Returns the assignments for the user
+     */
+    const getAssignments: () => Promise<Record<string, string>>;
+
+    /**
+     * Returns the value of the flag
+     */
+    const getFlag: (
+      flag: string
+    ) => Promise<boolean | string | number | strings[] | null>;
+  }
+
   declare namespace notifications {
     /**
      * Returns the list of ignored notification categories

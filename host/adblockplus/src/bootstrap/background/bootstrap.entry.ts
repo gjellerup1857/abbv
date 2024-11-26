@@ -81,7 +81,7 @@ async function bootstrap(): Promise<void> {
     startInfoInjector();
     startUpdateCampaign();
     startGlobals();
-    startFiltersMigration();
+    void startFiltersMigration();
   } catch (error) {
     reportError(error as Error);
   }
