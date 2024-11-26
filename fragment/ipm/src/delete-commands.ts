@@ -30,7 +30,7 @@ import {
 } from "./delete-commands.types";
 import { validateParams } from "./param-validator";
 import type { ParamDefinitionList } from "./param-validator.types";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * List of delete-commands parameter definitions

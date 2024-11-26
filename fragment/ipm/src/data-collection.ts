@@ -33,7 +33,7 @@ import {
   type UserData,
   eventStorageKey
 } from "./data-collection.types";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * Takes a number, turns it into a string, and pads it if necessary to create

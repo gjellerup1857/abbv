@@ -15,6 +15,39 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { context } from "./context";
+
+/**
+ * Constructs a URL based on the given URL and a trusted origin. If `url` is
+ * relative, the given origin is used. If `url` is absolute, it's origin will
+ * be checked whether it matches the trusted origin.
+ *
+ * @param url The URL to create the safe origin URL from. Can be relative
+ *   or absolute
+ *
+ * @returns An absolute URL with a trusted origin, or `null` if creating a
+ *   safe origin URL was not possible, or if origins did not match.
+ */
+export function createSafeOriginUrl(url: string): string | null {
+  const defaultOrigin: string = context.getPreference("ipm_default_origin");
+  const safeOrigins: string[] = context.getPreference("ipm_safe_origins");
+  let safeOriginUrl: URL;
+
+  try {
+    // If the url is relative, it will use the default origin
+    safeOriginUrl = new URL(url, defaultOrigin);
+  } catch (ex) {
+    return null;
+  }
+
+  // Verify that provided URL origin is in the list of trusted origins
+  if (!safeOrigins.includes(safeOriginUrl.origin)) {
+    return null;
+  }
+
+  return safeOriginUrl.href;
+}
+
 /**
  * Parses the domains part of a filter text
  * (e.g. `example.com,~mail.example.com`) into a `Map` object.
@@ -68,32 +101,6 @@ function parseDomains(
   }
 
   return domains;
-}
-
-/**
- * Checks whether the given hostname is an IP address.
- *
- * Unlike `isValidIPv4Address()`, this
- * function only checks whether the hostname _looks like_ an IP address. Use
- * this function with valid, normalized, properly encoded (IDNA) hostnames
- * only.
- *
- * @param hostname An IDNA-encoded hostname.
- *
- * @returns Whether the hostname is an IP address.
- */
-function isIPAddress(hostname: string): boolean {
-  // Does it look like an IPv6 address?
-  if (hostname[0] === "[" && hostname[hostname.length - 1] === "]") {
-    return true;
-  }
-
-  // Note: The first condition helps us avoid the more expensive regular
-  // expression match for most hostnames.
-  return (
-    Number(hostname[hostname.length - 1]) >= 0 &&
-    /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
-  );
 }
 
 /**
@@ -152,84 +159,6 @@ function isValidHostname(hostname: string): boolean {
   if (!/\D/.test(labels[labels.length - 1])) return false;
 
   return true;
-}
-
-/**
- * Yields all suffixes for a domain.
- *
- * For example, given the domain `www.example.com`, this function yields
- * `www.example.com`, `example.com`, and `com`, in that order.
- *
- * If the domain ends with a dot, the dot is ignored.
- *
- * @param domain The domain.
- * @param includeBlank Whether to include the blank suffix at the
- *   end.
- * @returns A generator yielding domain suffixes.
- */
-function* domainSuffixes(
-  domain: string,
-  includeBlank = false
-): Generator<string, void, unknown> {
-  // Since any IP address is already expected to be normalized, there's no need
-  // to validate it.
-  if (isIPAddress(domain)) {
-    yield domain;
-  } else {
-    if (domain[domain.length - 1] === ".") {
-      domain = domain.substring(0, domain.length - 1);
-    }
-
-    while (domain !== "") {
-      yield domain;
-
-      const dotIndex = domain.indexOf(".");
-      domain = dotIndex === -1 ? "" : domain.substr(dotIndex + 1);
-    }
-  }
-
-  if (includeBlank) {
-    yield "";
-  }
-}
-
-/**
- * Checks whether the tab URL is a match to the domain(s) on the command
- * @param url - the tab URL
- * @param domainList - the domains
- * @returns true if the tab URL is a match to the domain(s) on the command
- */
-export function isActiveOnDomain(url: string, domainList?: string): boolean {
-  // If no domains are set the rule matches everywhere
-  if (!domainList) {
-    return true;
-  }
-  const domains = parseDomains(domainList, ",");
-  if (!domains) {
-    return true;
-  }
-
-  const tabURL = new URL(url);
-  let tabDomain = tabURL.hostname;
-  if (tabDomain === null) {
-    tabDomain = "";
-  } else if (tabDomain[tabDomain.length - 1] === ".") {
-    tabDomain = tabDomain.substring(0, tabDomain.length - 1);
-  }
-  // If the document has no host name, match only if the command
-  // isn't restricted to specific domains
-  if (!tabDomain) {
-    return !!domains.get("");
-  }
-
-  for (tabDomain of domainSuffixes(tabDomain)) {
-    const isDomainIncluded = domains.get(tabDomain);
-    if (typeof isDomainIncluded !== "undefined") {
-      return isDomainIncluded;
-    }
-  }
-
-  return !!domains.get("");
 }
 
 /**

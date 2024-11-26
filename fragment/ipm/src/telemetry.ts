@@ -25,7 +25,7 @@ import { executeIPMCommands } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
 // import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
 import { serverUrlKey } from "./telemetry.types";
-import { context } from "../context";
+import { context } from "./context";
 
 /**
  * Processes a response from the IPM server. Will request command execution

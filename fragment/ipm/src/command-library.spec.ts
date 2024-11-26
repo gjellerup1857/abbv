@@ -21,7 +21,7 @@ import {
   isCommandExpired
 } from "./command-library";
 import { CommandName } from "./command-library.types";
-import { context } from "../context";
+import { context } from "./context";
 
 describe("command-library", () => {
   describe("getStoredCommandIds", () => {

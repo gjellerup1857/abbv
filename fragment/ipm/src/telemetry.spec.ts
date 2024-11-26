@@ -16,7 +16,7 @@
  */
 
 import { sendPing } from "./telemetry";
-import { context } from "../context";
+import { context } from "./context";
 
 describe("telemetry", () => {
   beforeEach(() => {

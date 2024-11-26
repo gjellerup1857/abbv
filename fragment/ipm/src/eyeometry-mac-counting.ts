@@ -17,12 +17,14 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { context } from "../context";
+import { context } from "./context";
 
 async function applyOptOut(): Promise<void> {
   const isOptedOut = context.getPreference("data_collection_opt_out");
 
-  await ewe.cdp.setOptOut(typeof isOptedOut === "boolean" ? isOptedOut : true);
+  await ewe.telemetry.setOptOut(
+    typeof isOptedOut === "boolean" ? isOptedOut : true
+  );
 }
 
 async function initOptOut(): Promise<void> {
@@ -33,12 +35,15 @@ async function initOptOut(): Promise<void> {
 }
 
 /**
- * Initializes the CDP.
+ * Initializes the settings for Eyeometry-based client counting.
  */
 export async function initialize(): Promise<void> {
   try {
     await initOptOut();
   } catch (error) {
-    context.logError("CDP initialization failed with error: ", error);
+    context.logError(
+      "Eyeometry-based MAC counting initialization failed with error: ",
+      error
+    );
   }
 }

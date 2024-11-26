@@ -25,7 +25,7 @@ import {
   isValidDate,
   isEmptyOrPositiveNumber
 } from "./param-validator";
-import { context } from "../context";
+import { context } from "./context";
 
 describe("param-validator", () => {
   describe("isNumeric", () => {

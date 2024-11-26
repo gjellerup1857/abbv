@@ -16,7 +16,7 @@
  */
 
 import { createSafeOriginUrl } from "./url";
-import { context } from "../context";
+import { context } from "./context";
 
 describe("url", () => {
   describe("createSafeOriginUrl", () => {

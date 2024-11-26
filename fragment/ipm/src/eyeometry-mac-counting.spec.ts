@@ -17,7 +17,7 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { initialize } from "./eyeometry-mac-counting";
-import { context } from "../context";
+import { context } from "./context";
 
 describe("Eyeometry-based MAC counting", () => {
   beforeEach(() => {
