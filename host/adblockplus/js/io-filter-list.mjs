@@ -16,6 +16,7 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
+import { FilterOrigin } from "~/filters/shared/index.ts";
 import { getErrorMessage } from "./common.mjs";
 import { $ } from "./dom.mjs";
 import { stripTagsUnsafe } from "../src/i18n/index.ts";
@@ -451,7 +452,8 @@ function replaceFilter(filter, currentTarget) {
     .sendMessage({
       type: "filters.replace",
       new: text,
-      old
+      old,
+      origin: FilterOrigin.optionsAdvanced
     })
     .then((errors) => {
       if (errors.length) {

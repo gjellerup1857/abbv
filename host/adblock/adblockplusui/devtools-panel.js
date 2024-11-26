@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */ /* eslint-disable */
+
 (function () {
   "use strict";
   function __rest(s, e) {
@@ -377,8 +378,9 @@
       "click",
       async () => {
         await browser.runtime.sendMessage({
-          type: "filters." + action,
+          type: action === "add" ? "filters.add" : "filters.remove",
           text: filter.text,
+          origin: modulesAsGlobal.filters.FilterOrigin.devtools,
         });
         callback(filter);
       },

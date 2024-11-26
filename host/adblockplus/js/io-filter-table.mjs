@@ -15,6 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { FilterOrigin } from "~/filters/shared/index.ts";
 import { getErrorMessage } from "./common.mjs";
 import IOElement from "./io-element.mjs";
 import IOFilterList from "./io-filter-list.mjs";
@@ -140,7 +141,8 @@ class IOFilterTable extends IOElement {
     browser.runtime
       .sendMessage({
         type: "filters.importRaw",
-        text: filters.join("\n")
+        text: filters.join("\n"),
+        origin: FilterOrigin.optionsAdvanced
       })
       .then(([errors, filterTexts]) => {
         if (!errors.length) {

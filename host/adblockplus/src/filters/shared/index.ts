@@ -15,16 +15,4 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @overview Provides type definitions for modules that are exposed as globals
- * for the purpose of use in standalone JavaScript files
- */
-
-/**
- * Namespace exposing modules as globals to make them accessible to scripts
- * that aren't modules themselves
- */
-declare namespace modulesAsGlobal {
-  const messaging;
-  const filters;
-}
+export * from "./filter.types";

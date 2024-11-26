@@ -23,6 +23,7 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "./servermessages";
 import { createFilterMetaData } from "./utilities/background/bg-functions";
+import { FilterOrigin } from "../src/filters/shared";
 
 const trustedSoftonicDomains = [
   "softonic-ar.com",
@@ -76,7 +77,7 @@ async function onAllowlisting(domain, options) {
   }
 
   const host = getAllowlistingDomain(domain);
-  const metadata = createFilterMetaData("web");
+  const metadata = createFilterMetaData(FilterOrigin.web);
   if (options && options.expiresAt) {
     metadata.expiresAt = options.expiresAt;
   }
@@ -99,7 +100,7 @@ async function removeWebAllowlistingFilters() {
     }),
   );
   const webAllowlistingFilters = allowlistingFiltersWithMetadata
-    .filter(({ metadata }) => metadata && metadata.origin === "web")
+    .filter(({ metadata }) => metadata && metadata.origin === FilterOrigin.web)
     .map(({ filter }) => filter);
   return ewe.filters.remove(webAllowlistingFilters.map((filter) => filter.text));
 }

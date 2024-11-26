@@ -15,18 +15,11 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as messaging from "../../core/messaging/front";
-import * as filters from "../../filters/shared";
-
-/**
- * Initializes functionality for exposing modules as globals
- */
-function start(): void {
-  if (self.modulesAsGlobal) {
-    return;
-  }
-
-  self.modulesAsGlobal = { messaging, filters };
+export enum FilterOrigin {
+  popup = "popup",
+  web = "web",
+  devtools = "devtools",
+  wizard = "wizard",
+  youtube = "youtube",
+  customize = "customize",
 }
-
-start();
