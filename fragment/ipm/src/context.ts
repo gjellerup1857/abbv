@@ -4,10 +4,10 @@ const prefs: { [key: string]: any } = {};
 
 export const context: Context = {
   // Prefs
-  untilPreferencesLoaded: async function(): Promise<void> { },
-  getPreference: function(key: string): any { return prefs[key]; },
-  setPreference: async function(key: string, value: any): Promise<void> { prefs[key] = value; },
-  onPreferenceChanged: function(_key: string, _f: () => Promise<void>): void { },
+  untilPreferencesLoaded: async () => { },
+  getPreference: (key) => { return prefs[key]; },
+  setPreference: async (key, value) => { prefs[key] = value; },
+  onPreferenceChanged: (_key, _f) => { },
 
   // Logger
   logDebug: (...args: any[]) => { console.debug(args); },
@@ -17,10 +17,15 @@ export const context: Context = {
   isLicenseValid: () => { return false; },
 
   // User or Installation Id
-  getId: async function(): Promise<string> { return "42"; },
+  getId: async (): Promise<string> => { return "42"; },
 
   // Host information
   getAppName: () => { return "info.baseName"; },
   getBrowserName: () => { return "info.application"; },
-  getAppVersion: () => { return "info.addonVersion"; }
+  getAppVersion: () => { return "info.addonVersion"; },
+
+  // Event Emitter
+  setListener: async (_scheduleName, _f) => { },
+  setRepeatedSchedule: async (_scheduleName, _interval) => { },
+  hasSchedule: (_scheduleName) => { return false; }
 }

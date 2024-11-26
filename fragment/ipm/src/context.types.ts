@@ -20,4 +20,9 @@ export interface Context {
   getAppName: () => string;
   getBrowserName: () => string;
   getAppVersion: () => string;
+
+  // Event Emitter
+  setListener: (scheduleName: string, f: () => void) => Promise<void>,
+  setRepeatedSchedule: (scheduleName: string, interval: number) => Promise<void>,
+  hasSchedule: (scheduleName: string) => boolean
 }
