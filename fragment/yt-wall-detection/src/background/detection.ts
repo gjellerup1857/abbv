@@ -70,13 +70,14 @@ const processYouTubeWallMessage = async (
   message: AdWallMessage,
   sender: MessageSender,
 ): Promise<void> => {
-  if (typeof sender.page?.id === "undefined" || typeof sender.page?.url === "undefined") {
+  const tabId = sender.tab?.id ?? sender.page?.id;
+  const tabURL = sender.tab?.url ?? sender.page?.url;
+  if (typeof tabId === "undefined" || typeof tabURL === "undefined") {
     return;
   }
   const { sendAdWallEvents = noop } = parameters;
-  const filters = await parameters.ewe.filters.getAllowingFilters(
-    sender.page.id,
-  );
+
+  const filters = await parameters.ewe.filters.getAllowingFilters(tabId);
   const isAllowListed = !!filters.length;
   if (isAllowListed) {
     sendAdWallEvents(
@@ -88,27 +89,24 @@ const processYouTubeWallMessage = async (
   }
   sendAdWallEvents(youTubeWallDetected, message.userLoggedIn ? "1" : "0", "0");
 
-  if (sender?.page) {
-    const senderURL = new URL(sender.page.url);
-    const ruleText = `@@||${senderURL.hostname}$document`;
-    const metadata = {
-      expiresByTabId: sender.page?.id,
-      origin: "auto",
-    };
-    await parameters.ewe.filters.add(ruleText, metadata);
-    if (message.currentPlaybackTime > 5) {
-      const currentURL = new URL(sender.page.url);
-      currentURL.searchParams.set(
-        "t",
-        Math.floor(message.currentPlaybackTime).toString(),
-      );
-      currentURL.searchParams.delete("ab_channel");
-      await browser.tabs.update(sender.page.id, { url: currentURL.href });
-    } else {
-      await browser.tabs.reload(sender.page.id);
-    }
-    sendAdWallEvents(youTubeAutoAllowlisted);
+  const senderURL = new URL(tabURL);
+  const ruleText = `@@||${senderURL.hostname}$document`;
+  const metadata = {
+    expiresByTabId: tabId,
+    origin: "auto",
+  };
+  await parameters.ewe.filters.add(ruleText, metadata);
+  if (message.currentPlaybackTime > 5) {
+    senderURL.searchParams.set(
+      "t",
+      Math.floor(message.currentPlaybackTime).toString(),
+    );
+    senderURL.searchParams.delete("ab_channel");
+    await browser.tabs.update(tabId, { url: senderURL.href });
+  } else {
+    await browser.tabs.reload(tabId);
   }
+  sendAdWallEvents(youTubeAutoAllowlisted);
 };
 
 /**

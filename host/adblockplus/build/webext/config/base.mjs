@@ -122,6 +122,11 @@ export default {
       {
         dest: "info-injector.preload.js",
         src: ["src/info-injector/content/index.ts"]
+      },
+      {
+        dest: "yt-wall-detection-auto-allowlist.preload.js",
+        package: "@eyeo/yt-wall-detection",
+        src: "/content"
       }
     ]
   },
