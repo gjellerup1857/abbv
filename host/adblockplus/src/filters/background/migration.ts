@@ -17,23 +17,19 @@
 
 import * as browser from "webextension-polyfill";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { port } from "~/core/messaging/background";
 import { FilterOrigin } from "../shared";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
-async function migrateToSmartAllowlisting(): Promise<boolean> {
-  const expectedAssignment = "historical-popup-allowlists-migration";
-  const assignments = await ewe.experiments.getAssignments();
-  // check if migration is enabled for the user
-  if (!assignments[expectedAssignment]) {
-    return false;
-  }
-
+async function isMigrationActive(): Promise<boolean> {
   const flagName = "allowlist-migration-disabled-locale";
-  const disabledLocales =
-    ((await ewe.experiments.getFlag(flagName)) as string[]) ?? [];
+  const locales = ((await ewe.experiments.getFlag(flagName)) as string[]) ?? [];
   const userLocale = browser.i18n.getUILanguage();
+  return !locales.includes(userLocale);
+}
 
-  if (disabledLocales.includes(userLocale)) {
+async function migrateToSmartAllowlisting(): Promise<boolean> {
+  if (!(await isMigrationActive())) {
     return false;
   }
 
@@ -74,6 +70,10 @@ async function migrateToSmartAllowlisting(): Promise<boolean> {
  * Initializes the migration module
  */
 export async function start(): Promise<void> {
+  port.on("filters.isMigrationActive", async () => {
+    return await isMigrationActive();
+  });
+
   await Prefs.untilLoaded;
   const prefsKey = "migration_popup_to_smart_allowlist_complete";
 

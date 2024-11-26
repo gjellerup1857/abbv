@@ -21,19 +21,15 @@ import { FilterOrigin } from "../shared";
 import { Prefs } from "~/alias/prefs";
 import ServerMessages from "~/servermessages";
 
-async function migrateToSmartAllowlisting(): Promise<boolean> {
-  const expectedAssignment = "historical-popup-allowlists-migration";
-  const assignments = await ewe.experiments.getAssignments();
-  // check if migration is enabled for the user
-  if (!assignments[expectedAssignment]) {
-    return false;
-  }
-
+async function isMigrationActive(): Promise<boolean> {
   const flagName = "allowlist-migration-disabled-locale";
-  const disabledLocales = ((await ewe.experiments.getFlag(flagName)) as string[]) || [];
+  const locales = ((await ewe.experiments.getFlag(flagName)) as string[]) ?? [];
   const userLocale = browser.i18n.getUILanguage();
+  return !locales.includes(userLocale);
+}
 
-  if (disabledLocales.includes(userLocale)) {
+async function migrateToSmartAllowlisting(): Promise<boolean> {
+  if (!(await isMigrationActive())) {
     return false;
   }
 
