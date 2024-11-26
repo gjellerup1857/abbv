@@ -15,7 +15,7 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { error as logError } from "../../logger/background";
+import { error as logError, debug as logDebug } from "../../logger/background";
 
 import { start as startContentFiltering } from "../../../adblockpluschrome/lib/contentFiltering.js";
 import { start as startDebug } from "../../../adblockpluschrome/lib/debug.js";
@@ -50,6 +50,9 @@ import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { port, addTrustedMessageTypes } from "~/core/messaging/background";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { getAuthPayload, hasActiveLicense } from "~/premium/background";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { getInstallationId } from "~/id/background";
+import { info } from "~/info/background";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -63,7 +66,22 @@ async function bootstrap(): Promise<void> {
     startTabSessionStorage();
     startDevTools();
     startDebug();
-    void startIPM().catch(reportAndLogError);
+    void startIPM({
+      untilPreferencesLoaded: async function() { return Prefs.untilLoaded; },
+      getPreference: (key) => { return Prefs.get(key); },
+      setPreference: async function(key, value) { Prefs.set(key, value); },
+      onPreferenceChanged: (key, f) => { Prefs.on(key, f); },
+      logDebug: (...args) => { logDebug(args); },
+      logError: (...args) => { logError(args); },
+      isLicenseValid: () => {
+        // TODO: How was this checked before?
+        return false;
+      },
+      getId: async function() { return getInstallationId() },
+      getAppName: () => { return info.baseName; },
+      getBrowserName: () => { return info.application; },
+      getAppVersion: () => { return info.addonVersion; }
+    }).catch(reportAndLogError);
     startReadyState();
     startFilterConfiguration();
     startStats();

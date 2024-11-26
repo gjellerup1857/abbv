@@ -1,6 +1,8 @@
+import { Context } from "./context.types";
+
 const prefs: { [key: string]: any } = {};
 
-export const context = {
+export const context: Context = {
   // Prefs
   untilPreferencesLoaded: async function(): Promise<void> { },
   getPreference: function(key: string): any { return prefs[key]; },
