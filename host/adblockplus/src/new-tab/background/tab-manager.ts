@@ -17,6 +17,7 @@
 
 import * as browser from "webextension-polyfill";
 import {
+  checkLanguage,
   CommandEventType,
   CommandName,
   createSafeOriginUrl,
@@ -26,7 +27,7 @@ import {
   getCommand,
   isCommandExpired,
   recordEvent
-} from "../../ipm/background";
+} from "@eyeo/ipm";
 import * as logger from "../../logger/background";
 import {
   CreationMethod,
@@ -41,7 +42,6 @@ import {
   CreationSuccess,
   CreationRejection
 } from "./tab-manager.types";
-import { checkLanguage } from "~/ipm/background/language-check";
 
 /**
  * Maps IPM IDs to the listeners that have been attached by them.
