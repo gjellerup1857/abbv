@@ -32,6 +32,7 @@ import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 import { checkLanguage } from "./language-check";
 import { context } from "./context";
+import { Context } from "./context.types";
 
 /**
  * A list of known commands.
@@ -425,7 +426,8 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
 /**
  * Initializes command library
  */
-export async function start(): Promise<void> {
+export async function start(ctx: Context): Promise<void> {
+  Object.assign(context, ctx);
   await context.untilPreferencesLoaded();
 
   setDeleteCommandHandler(handleDeleteCommand);
