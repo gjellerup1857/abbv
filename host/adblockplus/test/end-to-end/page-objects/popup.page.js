@@ -196,7 +196,9 @@ class PopupPage extends BasePage {
   }
 
   async clickCookieConsentPopupsPopupOkGotItButton() {
-    await (await this.cookieConsentPopupsPopupOkGotItButton).click();
+    await this.waitForEnabledThenClick(
+      this.cookieConsentPopupsPopupOkGotItButton
+    );
   }
 
   async clickLinkInNotificationMessage() {
