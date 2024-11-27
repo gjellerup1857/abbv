@@ -39,7 +39,7 @@ async function migrateToSmartAllowlisting(): Promise<boolean> {
 
   const filters = await ewe.filters.getUserFilters();
   const documentAllowLists = filters.filter(
-    (filter) => filter.text.startsWith("@@") && filter.text.includes("document"),
+    (filter) => filter.type === "allowing" && filter.text.includes("document"),
   );
   const documentAllowListsWithMetadata = await Promise.all(
     documentAllowLists.map(async (filter) => {
