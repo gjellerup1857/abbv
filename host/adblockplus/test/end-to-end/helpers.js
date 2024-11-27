@@ -439,7 +439,7 @@ async function waitForAssertion(
   expectFn,
   {
     timeout = 5000,
-    timeoutMsg = "Timed out",
+    timeoutMsg = "waitForAssertion timed out",
     interval = 500,
     refresh = true
   } = {}
