@@ -18,7 +18,7 @@
 import {
   type LicenseStateBehavior,
   type Command
-} from "@eyeo/ipm";
+} from "@eyeo/ipm/background";
 
 /**
  * The method to use for creating the new tab.

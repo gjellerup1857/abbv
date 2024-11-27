@@ -24,7 +24,7 @@ import {
   startTelemetry,
   initializeCDP,
   initializeEyeometryMACCounting
-} from "@eyeo/ipm";
+} from "@eyeo/ipm/background";
 import * as premium from "../../src/premium/background/index.ts";
 import { startOptionLinkListener } from "../../src/options/background";
 import { info } from "../../src/info/background";
