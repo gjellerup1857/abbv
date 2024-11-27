@@ -23,14 +23,8 @@ module.exports = {
   ap_chrome: "chrome",
   ap_edge: "edge",
   ap_firefox: "firefox",
-  blockHideUrl: "http://localhost:3005/blocking-hiding-testpage.html",
-  allowlistingFilter: "@@||localhost^$document",
-  customBlockingFilters: [
-    "/pop_ads.js", // no longer exists in EasyList
-    "/bannerads/blocking-filter.js", // Sometimes needed
-    "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
-    "localhost##.AdContainer" // Needed to override EasyList's "@@://localhost:$generichide"
-  ],
+  blockHideUrl: "http://testpages.eyeo.com:3005/easylist-filters.html",
+  allowlistingFilter: "@@||testpages.eyeo.com^$document",
   p_chromium: "chromium",
   p_firefox: "gecko",
   regex_an: /(?<=an=).+?(?=&)/,
@@ -43,8 +37,6 @@ module.exports = {
   regexMajorBrowserVersion: /(?<=browserVersion":").*?(?=\.)/,
   regexMajorBrowserVersionFF: /(?<=rv:)\d+/,
   regexManifestVersion: /(?<="version": ").*?(?=")/,
-  snippetsPageUrl:
-    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets" +
-    "/snippets-testpage.html",
+  snippetsPageUrl: "http://testpages.eyeo.com:3005/snippet-filters.html",
   uninstallUrl: "https://adblockplus.org/en/uninstalled"
 };

@@ -94,53 +94,22 @@ export default () => {
     }
     expect(await popupPage.isBlockCookieConsentPopupsToggleSelected()).to.be
       .true;
-    await browser.newWindow("http://localhost:3005/dc-filters.html");
+    await browser.newWindow("http://testpages.eyeo.com:3005/dc-filters.html");
     const testPages = new TestPages(browser);
-    await testPages.switchToTab("DC filters");
+    await testPages.switchToTab("Distraction Control Filters");
 
     const expectedFilterValues = {
-      pushNotificationsHidingFilterDisplayed: false,
-      pushNotificationsBlockingFilterDisplayed: false,
-      autoplayVideosHidingFilterDisplayed: false,
-      autoplayVideosBlockingFilterDisplayed: false,
-      surveysHidingFilterDisplayed: false,
-      surveysBlockingFilterDisplayed: false,
-      newsletterPopupsHidingFilterDisplayed: false,
-      newsletterPopupsBlockingFilterDisplayed: false
+      dcElementIdFilter: false,
+      dcScriptIdFilter: false,
+      controlElementFilter: true
     };
     const actualFilterValues = Object.fromEntries(
       await Promise.all([
+        ["dcElementIdFilter", await testPages.isDcElementIdFilterDisplayed()],
+        ["dcScriptIdFilter", await testPages.isDcScriptIdFilterDisplayed()],
         [
-          "pushNotificationsHidingFilterDisplayed",
-          await testPages.isPushNotificationsHidingFilterIdDisplayed()
-        ],
-        [
-          "pushNotificationsBlockingFilterDisplayed",
-          await testPages.isPushNotificationsBlockingFilterIdDisplayed()
-        ],
-        [
-          "autoplayVideosHidingFilterDisplayed",
-          await testPages.isAutoplayVideosHidingFilterIdDisplayed()
-        ],
-        [
-          "autoplayVideosBlockingFilterDisplayed",
-          await testPages.isAutoplayVideosBlockingFilterIdDisplayed()
-        ],
-        [
-          "surveysHidingFilterDisplayed",
-          await testPages.isSurveysHidingFilterIdDisplayed()
-        ],
-        [
-          "surveysBlockingFilterDisplayed",
-          await testPages.isSurveysBlockingFilterIdDisplayed()
-        ],
-        [
-          "newsletterPopupsHidingFilterDisplayed",
-          await testPages.isNewsletterPopupsHidingFilterIdDisplayed()
-        ],
-        [
-          "newsletterPopupsBlockingFilterDisplayed",
-          await testPages.isNewsletterPopupsBlockingFilterIdDisplayed()
+          "controlElementFilter",
+          await testPages.isControlElementFilterDisplayed()
         ]
       ])
     );

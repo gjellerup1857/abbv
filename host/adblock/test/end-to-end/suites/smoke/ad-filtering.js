@@ -29,13 +29,13 @@ import {
   blockHideUrl,
   aaTestPageUrl,
   checkBlockHidePage,
+  snippetTestPageUrl,
   initOptionsCustomizeTab,
   setCustomFilters,
   initOptionsFiltersTab,
   clickFilterlist,
   setAADefaultState,
   allowlistingFilter,
-  customBlockingFilters,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 
@@ -103,52 +103,41 @@ export default () => {
   });
 
   it("blocks and hides ads", async function () {
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock(customBlockingFilters.join("\n"));
-
     await openNewTab(blockHideUrl);
     await checkBlockHidePage(false);
   });
 
   it("uses snippets to block ads", async function () {
-    const filter = "eyeo.gitlab.io#$#hide-if-contains 'should be hidden' p[id]";
-    const url =
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets/snippets-testpage.html";
+    const filter = "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]";
 
-    const websiteHandle = await openNewTab(url);
+    await openNewTab(snippetTestPageUrl);
     const snippetElem = await getDisplayedElement("#snippet-filter");
-    expect(await snippetElem.getText()).toEqual("This should be hidden by a snippet");
+    expect(await snippetElem.getText()).toEqual("Snippet filter not applied");
 
     await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters([filter]);
-
-    await driver.switchTo().window(websiteHandle);
+    await openNewTab(snippetTestPageUrl);
     await driver.navigate().refresh();
     await waitForNotDisplayed("#snippet-filter", 2000);
+    await getDisplayedElement("#control-element");
   });
 
   it("allowlists websites", async function () {
-    const allFilters = [...customBlockingFilters, allowlistingFilter];
+    const allFilters = [allowlistingFilter];
 
     await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters(allFilters);
-
     const websiteHandle = await openNewTab(blockHideUrl);
     await checkBlockHidePage(true);
-
     await initOptionsCustomizeTab(getOptionsHandle());
-    // This filter no longer exists in easylist
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await setCustomFilters(customBlockingFilters);
-
+    await setCustomFilters([]);
     await driver.switchTo().window(websiteHandle);
     await checkBlockHidePage(false);
-    await waitForNotDisplayed("#snippet-filter");
   });
 
   it("displays acceptable ads", async function () {
-    const visibleSelector = "#abptest2";
-    const hiddenSelector = "#abptest";
+    const visibleSelector = "#control-element";
+    const hiddenSelector = "#test-aa";
     const aaFLButtonId = "adblockFilterList_0";
     const { expectAAEnabled } = browserDetails;
 

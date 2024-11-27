@@ -17,11 +17,7 @@
 
 "use strict";
 
-const {
-  getTabId,
-  switchToABPOptionsTab,
-  addFiltersToABP
-} = require("../../helpers");
+const { getTabId, switchToABPOptionsTab } = require("../../helpers");
 const { expect } = require("chai");
 const PopupPage = require("../../page-objects/popup.page");
 const TestPages = require("../../page-objects/testPages.page");
@@ -35,17 +31,12 @@ module.exports = function () {
     ({ popupUrl } = global);
   });
 
-  beforeEach(async function () {
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP(testData.customBlockingFilters.join("\n"));
-  });
-
   it("should allow allowlisting from popup", async function () {
     const testPages = new TestPages(browser);
 
     await browser.newWindow(testData.blockHideUrl);
-    await testPages.switchToTab("Blocking and hiding");
-    const tabId = await getTabId({ title: "Blocking and hiding" });
+    await testPages.switchToTab("EasyList Filters");
+    const tabId = await getTabId({ title: "EasyList Filters" });
     await testPages.checkPage({ expectAllowlisted: false });
 
     const popupPage = new PopupPage(browser);
@@ -55,7 +46,7 @@ module.exports = function () {
     await popupPage.clickRefreshButton();
 
     await switchToABPOptionsTab({ switchToFrame: false });
-    await testPages.switchToTab("Blocking and hiding");
+    await testPages.switchToTab("EasyList Filters");
     await testPages.checkPage({ expectAllowlisted: true });
 
     await switchToABPOptionsTab();
@@ -68,12 +59,12 @@ module.exports = function () {
     attributesOfAllowlistingTableItems.forEach(async (element) => {
       expect(element).to.equal("localhost");
     });
-    await testPages.switchToTab("Blocking and hiding");
+    await testPages.switchToTab("EasyList Filters");
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisDomainToggle();
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     await popupPage.clickRefreshButton();
-    await testPages.switchToTab("Blocking and hiding");
+    await testPages.switchToTab("EasyList Filters");
     await testPages.checkPage({ expectAllowlisted: false });
 
     await switchToABPOptionsTab();

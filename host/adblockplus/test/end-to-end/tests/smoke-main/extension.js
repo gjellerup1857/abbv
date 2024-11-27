@@ -36,8 +36,7 @@ module.exports = function () {
   });
 
   it("displays total ad block count", async function () {
-    const url =
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
+    const url = "http://testpages.eyeo.com:3005/easylist-filters.html";
     const popupPage = new PopupPage(browser);
     const maxAdsBlocked = 18;
 
