@@ -183,6 +183,15 @@ class BasePage {
       }
     );
   }
+
+  async clearValue(selector) {
+    await browser.executeScript(
+      (text) => {
+        document.querySelector(text).value = "";
+      },
+      [selector]
+    );
+  }
 }
 
 module.exports = BasePage;

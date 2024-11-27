@@ -988,7 +988,11 @@ class AdvancedPage extends BasePage {
   }
 
   async isListeFREasyListFLDisplayed() {
-    return await this.waitForDisplayedNoError(this.listeFREasyListFL);
+    return await this.waitForDisplayedNoError(
+      this.listeFREasyListFL,
+      false,
+      1000
+    );
   }
 
   async isListeFREasyListFLStatusToggleSelected(
@@ -1170,29 +1174,19 @@ class AdvancedPage extends BasePage {
     await this.switchToTab(/subscriptions/);
   }
 
-  async typeTextToFilterListUrlInput(text, noClearValue = false) {
+  async typeTextToFilterListUrlInput(text) {
+    // filterListUrlInput
+    await this.clearValue("#import-list-url");
+
     await (await this.filterListUrlInput).click();
-    if (noClearValue) {
-      await (await this.filterListUrlInput).click();
-      for (let i = 0; i < 75; i++) {
-        await browser.keys("Backspace");
-      }
-    } else {
-      await (await this.filterListUrlInput).clearValue();
-    }
     await browser.keys(text);
   }
 
-  async typeTextToAddCustomFilterListInput(text, noClearValue = false) {
+  async typeTextToAddCustomFilterListInput(text) {
+    // addCustomFilterListInput
+    await this.clearValue("io-filter-search > input");
+
     await this.waitForEnabledThenClick(this.addCustomFilterListInput);
-    if (noClearValue) {
-      await (await this.addCustomFilterListInput).click();
-      for (let i = 0; i < 75; i++) {
-        await browser.keys("Backspace");
-      }
-    } else {
-      await (await this.addCustomFilterListInput).clearValue();
-    }
     await browser.keys(text);
   }
 
