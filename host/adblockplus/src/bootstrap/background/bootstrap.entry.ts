@@ -53,6 +53,7 @@ import { getAuthPayload, hasActiveLicense } from "~/premium/background";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import { getInstallationId } from "~/id/background";
 import { info } from "~/info/background";
+import { getPremiumState } from "~/premium/background";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -74,8 +75,8 @@ async function bootstrap(): Promise<void> {
       logDebug: (...args) => { logDebug(args); },
       logError: (...args) => { logError(args); },
       isLicenseValid: () => {
-        // TODO: How was this checked before?
-        return false;
+        const { isActive } = getPremiumState();
+        return isActive;
       },
       getId: async function() { return getInstallationId(); },
       getAppName: () => { return info.baseName; },
