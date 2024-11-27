@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "Você desabilitou o bloqueio de anúncios nesses sites e, portanto, verá anúncios neles."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "Você não tem sites na sua lista de permitidos."
   },

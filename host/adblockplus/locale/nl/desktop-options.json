@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "U heeft de functie voor het blokkeren van advertenties op deze websites uitgeschakeld en zult daarom advertenties zien op deze pagina's."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "U hebt geen websites op uw toelatingslijst."
   },

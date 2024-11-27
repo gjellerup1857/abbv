@@ -32,6 +32,9 @@
   "options_allowlist_description": {
     "message": "Αφού απενεργοποιήσατε τον αποκλεισμό διαφημίσεων σε αυτές τις ιστοσελίδες, θα βλέπετε διαφημίσεις σε αυτές τις σελίδες."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "Δεν περιλαμβάνετε καμία ιστοσελίδα στη λίστα επιτρεπομένων σας."
   },

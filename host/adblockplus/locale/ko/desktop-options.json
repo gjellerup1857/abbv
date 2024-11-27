@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "이러한 웹사이트의 광고 차단 기능을 끄셨기 때문에 광고가 표시될 것입니다."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "허용 목록에 웹사이트가 없습니다."
   },

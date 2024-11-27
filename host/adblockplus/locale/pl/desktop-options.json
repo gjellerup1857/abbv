@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "Blokowanie reklam na tych stronach zostało wyłączone i dlatego zobaczysz na nich reklamy."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "Nie masz żadnych stron na swojej liście dozwolonych."
   },

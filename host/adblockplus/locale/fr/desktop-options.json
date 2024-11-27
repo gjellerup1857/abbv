@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "Vous avez désactivé le blocage des publicités sur ces sites web et, par conséquent, des publicités s’afficheront sur ces sites."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "Vous n’avez aucun site web dans votre liste de sites autorisés."
   },

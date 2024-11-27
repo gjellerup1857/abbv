@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "您已关闭这些网站上的广告拦截功能，因此将在这些网站上看到广告。"
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "您的允许列表中没有任何网站。"
   },

@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "Hai disattivato il blocco degli annunci su questi siti quindi vedrai gli annunci."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+  },
   "options_allowlist_empty_1": {
     "message": "Non hai siti accettati."
   },
