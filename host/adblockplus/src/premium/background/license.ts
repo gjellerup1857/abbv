@@ -236,7 +236,7 @@ export function getPremiumState(): PremiumState {
  *
  * @returns whether an active Premium license exists
  */
-function hasActiveLicense(): boolean {
+export function hasActiveLicense(): boolean {
   const license = Prefs.get("premium_license") as License;
   return license.status === "active";
 }

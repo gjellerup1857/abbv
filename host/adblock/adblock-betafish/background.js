@@ -21,7 +21,8 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import * as info from "info";
-import { start as startYtWallDection } from "@eyeo/yt-wall-detection/background";
+import { start as startYtWallDetection } from "@eyeo/yt-wall-detection/background";
+import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { Prefs } from "./alias/prefs";
 
 import { getCustomFilterMetaData, getDebugInfo } from "./debug/background";
@@ -705,7 +706,7 @@ initialize
     await startCdpOptOutListener();
     revalidateAllowlistingStates();
     prefs.migrateUserData();
-    startYtWallDection({
+    startYtWallDetection({
       allowlistTab: adblockIsDomainPaused,
       addTrustedMessageTypes: ext.addTrustedMessageTypes,
       ewe,
@@ -713,6 +714,13 @@ initialize
       port,
       prefs: Prefs,
       sendAdWallEvents: ServerMessages.recordAdWallMessage,
+    });
+    startPublicAPI({
+      ewe,
+      port,
+      addTrustedMessageTypes: ext.addTrustedMessageTypes,
+      isPremiumActive: License.isActiveLicense,
+      getEncodedLicense: License.getBypassPayload,
     });
     addAllowlistingListeners();
     await startFiltersMigration();

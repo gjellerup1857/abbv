@@ -221,7 +221,7 @@ export const License = (function getLicense() {
   /**
    * Provides payload to verify authenticity of Premium license data
    *
-   * @returns {string} Encoded signed Premium license data
+   * @returns {string|null} Encoded signed Premium license data
    */
   const getBypassPayload = function () {
     if (!License.isActiveLicense()) {
