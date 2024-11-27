@@ -23,7 +23,7 @@
 // } from "../../core/scheduled-event-emitter/background";
 import { executeIPMCommands } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
-import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
+import { EventEmitter, intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
 import { context } from "./context";
 
 /**
@@ -101,12 +101,12 @@ export async function sendPing(): Promise<void> {
  *
  * Will schedule pings.
  */
-export async function start(): Promise<void> {
-  void context.setListener(scheduleName, () => {
+export async function start(eventEmitter: EventEmitter): Promise<void> {
+  void eventEmitter.setListener(scheduleName, () => {
     void sendPing();
   });
 
-  if (!context.hasSchedule(scheduleName)) {
+  if (!eventEmitter.hasSchedule(scheduleName)) {
     await context.untilPreferencesLoaded();
     const intervalTime = context.getPreference(intervalKey);
     if (typeof intervalTime !== "number") {
@@ -114,6 +114,6 @@ export async function start(): Promise<void> {
     }
 
     void sendPing();
-    void context.setRepeatedSchedule(scheduleName, intervalTime);
+    void eventEmitter.setRepeatedSchedule(scheduleName, intervalTime);
   }
 }

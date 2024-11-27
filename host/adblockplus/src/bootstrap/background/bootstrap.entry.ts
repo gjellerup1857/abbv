@@ -55,8 +55,6 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { getAuthPayload, hasActiveLicense } from "~/premium/background";
 import { getInstallationId } from "~/id/background";
 import { info } from "~/info/background";
-import { hasSchedule, ScheduleType, setListener, setSchedule } from "~/core/scheduled-event-emitter/background";
-import { resolveTripleslashReference } from "typescript";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -85,11 +83,6 @@ async function bootstrap(): Promise<void> {
       getAppName: () => { return info.baseName; },
       getBrowserName: () => { return info.application; },
       getAppVersion: () => { return info.addonVersion; },
-      setListener: async (scheduleName, f) => { setListener(scheduleName, f); },
-      hasSchedule: (scheduleName: string) => { return hasSchedule(scheduleName); },
-      setOneShotSchedule: (scheduleName: string, interval: number) => {
-        return setSchedule(scheduleName, interval, ScheduleType.interval);
-      }
     }).catch(reportAndLogError);
     startReadyState();
     startFilterConfiguration();
