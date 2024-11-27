@@ -26,7 +26,7 @@ import {
   setCommandActor,
   validateParams,
   type Content
-} from "@eyeo/ipm";
+} from "@eyeo/ipm/background";
 import * as logger from "../../../logger/background";
 import {
   CreationMethod,
