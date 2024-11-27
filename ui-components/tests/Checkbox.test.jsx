@@ -44,7 +44,7 @@ describe("Components / Checkbox", () => {
     expect(checkbox).toHaveClass('border-error');
   });
 
-  it('renders an `checkbox` with id when passed', () => {
+  it('renders an `checkbox` id when passed', () => {
     const id = 'terms-and-conditions';
     renderCheckbox({ id });
     expect(checkbox).toHaveAttribute('id', id);
