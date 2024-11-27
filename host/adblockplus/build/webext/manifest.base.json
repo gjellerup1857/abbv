@@ -74,6 +74,12 @@
         "https://welcome.adblockplus.org/*/installed?*"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "all_frames": true,
+      "js": ["public-api.preload.js"],
+      "matches": ["https://ext-bridge.eyeo.com/"],
+      "run_at": "document_start"
     }
   ],
   "name": "__MSG_name_releasebuild__",

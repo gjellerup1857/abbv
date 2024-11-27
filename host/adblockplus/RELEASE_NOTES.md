@@ -1,6 +1,7 @@
 # Unreleased
 
 - Updated webext-ad-filtering-solution to 1.19.0
+- Added skeleton for public API inside custom iframe. The API is currently inactive (EXT-567)
 
 # 4.9.3 - 2024-11-19
 

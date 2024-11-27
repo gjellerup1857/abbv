@@ -5,7 +5,9 @@
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
-.idea
+
+**/.idea
+**/dist
 
 node_modules
 .nx
