@@ -30,7 +30,7 @@ export enum DataType {
   /**
    * The event data type.
    */
-  event = "event"
+  event = "event",
 }
 
 /**
@@ -85,7 +85,7 @@ interface EventAttributes extends BaseAttributes {
  * An enum containing all known types of Platforms.
  */
 export enum PlatformType {
-  web = "web"
+  web = "web",
 }
 
 /**
@@ -125,7 +125,7 @@ export interface EventData {
  */
 export enum LicenseState {
   active = "premium",
-  inactive = "free"
+  inactive = "free",
 }
 
 /**
@@ -162,7 +162,7 @@ export interface DeviceData {
  * An enum containing all known Platform statuses.
  */
 export enum PlatformStatus {
-  true = "true"
+  true = "true",
 }
 
 /**

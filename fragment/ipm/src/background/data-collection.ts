@@ -31,7 +31,7 @@ import {
   PlatformStatus,
   PlatformType,
   type UserData,
-  eventStorageKey
+  eventStorageKey,
 } from "./data-collection.types";
 import { context } from "./context";
 
@@ -66,7 +66,7 @@ function getLocalTimeStamp(): string {
     ":",
     leftPad(date.getMinutes()),
     ":",
-    leftPad(date.getSeconds())
+    leftPad(date.getSeconds()),
   ].join("");
 }
 
@@ -81,16 +81,8 @@ async function getBaseAttributes(): Promise<BaseAttributes> {
     browser_name: context.getBrowserName(),
     os: (await browser.runtime.getPlatformInfo()).os,
     language_tag: browser.i18n.getUILanguage(),
-<<<<<<< HEAD
-    app_version: info.addonVersion,
-||||||| parent of 16dc7676 (Most problems got solved, typing for webext-ad-filtering-solution)
-    app_version: info.addonVersion,
-    command_library_version: commandLibraryVersion,
-=======
     app_version: context.getAppVersion(),
-    command_library_version: commandLibraryVersion,
->>>>>>> 16dc7676 (Most problems got solved, typing for webext-ad-filtering-solution)
-    install_type: (await browser.management.getSelf()).installType
+    install_type: (await browser.management.getSelf()).installType,
   };
 }
 
@@ -107,7 +99,7 @@ async function getEventData(
   ipmId: string,
   commandName: string,
   commandVersion: number,
-  name: string
+  name: string,
 ): Promise<EventData> {
   return {
     type: DataType.event,
@@ -120,8 +112,8 @@ async function getEventData(
       ...(await getBaseAttributes()),
       ipm_id: ipmId,
       command_name: commandName,
-      command_version: commandVersion
-    }
+      command_version: commandVersion,
+    },
   };
 }
 
@@ -140,8 +132,8 @@ async function getDeviceData(): Promise<DeviceData> {
       blocked_total: 0, // We're not sending block count to protect user privacy
       license_status: context.isLicenseValid()
         ? LicenseState.active
-        : LicenseState.inactive
-    }
+        : LicenseState.inactive,
+    },
   };
 }
 
@@ -154,7 +146,7 @@ async function getUserData(): Promise<UserData> {
   return {
     type: DataType.customer,
     platforms: [{ platform: PlatformType.web, active: PlatformStatus.true }],
-    attributes: await getBaseAttributes()
+    attributes: await getBaseAttributes(),
   };
 }
 
@@ -167,7 +159,7 @@ export function getSupportedCommandsData(): IpmCapability[] {
   const commandNames = Object.values(CommandName);
   const supportedCommandsData = commandNames.map((name) => ({
     name,
-    version: CommandVersion[name]
+    version: CommandVersion[name],
   }));
 
   return supportedCommandsData;
@@ -184,10 +176,10 @@ function getIpmData(): IpmData {
     capabilities: [
       {
         name: "multi_ipm_response",
-        version: 1
+        version: 1,
       },
-      ...getSupportedCommandsData()
-    ]
+      ...getSupportedCommandsData(),
+    ],
   };
 }
 
@@ -228,14 +220,14 @@ export async function storeEvent(
   ipmId: string,
   commandName: string,
   commandVersion: number,
-  name: string
+  name: string,
 ): Promise<void> {
   await context.untilPreferencesLoaded();
   const eventData = await getEventData(
     ipmId,
     commandName,
     commandVersion,
-    name
+    name,
   );
   const eventStorage = context.getPreference(eventStorageKey) as EventData[];
   eventStorage.push(eventData);

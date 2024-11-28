@@ -306,7 +306,7 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * @param allowlistingCallback - User defined function that will be called
      */
     const setAllowlistingCallback: (
-      allowlistingCallback: AllowlistingCallback
+      allowlistingCallback: AllowlistingCallback,
     ) => void;
 
     /**
@@ -330,7 +330,7 @@ declare module "@eyeo/webext-ad-filtering-solution" {
       /**
        * Options for retrieving filters
        */
-      options?: FiltersGetAllowingFiltersOptions
+      options?: FiltersGetAllowingFiltersOptions,
     ) => Promise<string[]>;
     /**
      * Returns an extra data associated with a filter

@@ -32,7 +32,10 @@ export const serverUrlKey = "ipm_server_url";
  * This is a temporary solution to dependency injection.
  */
 export interface EventEmitter {
-  setListener: (scheduleName: string, f: () => void) => Promise<void>,
-  setRepeatedSchedule: (scheduleName: string, interval: number) => Promise<void>,
-  hasSchedule: (scheduleName: string) => boolean
+  setListener: (scheduleName: string, f: () => void) => Promise<void>;
+  setRepeatedSchedule: (
+    scheduleName: string,
+    interval: number,
+  ) => Promise<void>;
+  hasSchedule: (scheduleName: string) => boolean;
 }

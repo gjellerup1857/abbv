@@ -36,7 +36,7 @@ describe("event-recording", () => {
         ipmId,
         command,
         commandVersion,
-        eventName
+        eventName,
       );
     });
   });
@@ -53,7 +53,7 @@ describe("event-recording", () => {
         "__no_ipm__",
         "__no_command__",
         0,
-        eventName
+        eventName,
       );
     });
   });

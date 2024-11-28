@@ -30,7 +30,7 @@ const mockCommandStorage: Record<string, Command> = {
     version: 1,
     command_name: CommandName.createTab,
     ipm_id: ipmId,
-    expiry: ""
+    expiry: "",
   },
   [ipmId]: {
     version: 1,
@@ -39,9 +39,9 @@ const mockCommandStorage: Record<string, Command> = {
     expiry: "",
     attributes: {
       language,
-      received: 0
-    }
-  }
+      received: 0,
+    },
+  },
 };
 
 describe("language-check", () => {
@@ -75,7 +75,7 @@ describe("language-check", () => {
       expect(eventRecording.recordEvent).toHaveBeenCalledWith(
         ipmId,
         CommandName.createOnPageDialog,
-        "language_skew"
+        "language_skew",
       );
     });
   });

@@ -22,7 +22,7 @@ import {
   isSafeUrl,
   isValidLicenseStateList,
   isValidDomainList,
-  isValidDate
+  isValidDate,
 } from "./param-validator";
 import { context } from "./context";
 
@@ -93,7 +93,7 @@ describe("param-validator", () => {
 
       expect(isValidLicenseStateList(`${active},${inactive}`)).toBe(true);
       expect(isValidLicenseStateList(`${active},${active},${inactive}`)).toBe(
-        true
+        true,
       );
       expect(isValidLicenseStateList(`${inactive}`)).toBe(true);
     });
@@ -128,7 +128,7 @@ describe("param-validator", () => {
       expect(isSafeUrl(`${ipmSafeOrigin}/fr/foo/bar`)).toBe(true);
       expect(isSafeUrl(`${ipmSafeOrigin}`)).toBe(true);
       expect(isSafeUrl(`${ipmSafeOrigin}?tracking=isBad&not=cool#indeed`)).toBe(
-        true
+        true,
       );
     });
 

@@ -31,7 +31,7 @@ export const defaultLicenseState = LicenseState.inactive;
  * @returns whether the parameter is a LicenseState
  */
 export function isValidLicenseState(
-  candidate: unknown
+  candidate: unknown,
 ): candidate is LicenseState {
   return (
     typeof candidate === "string" &&
@@ -48,7 +48,7 @@ export function isValidLicenseState(
  *   command
  */
 export async function doesLicenseStateMatch(
-  behavior: LicenseStateBehavior
+  behavior: LicenseStateBehavior,
 ): Promise<boolean> {
   if (!behavior.licenseStateList) {
     return true;

@@ -28,7 +28,7 @@ import { storeEvent } from "./data-collection";
 export function recordEvent(
   ipmId: string,
   command: CommandName,
-  name: string
+  name: string,
 ): void {
   void storeEvent(ipmId, command, CommandVersion[command], name);
 }

@@ -48,7 +48,7 @@ export type CommandHandler = (ipmId: string) => Promise<void>;
 export enum CommandName {
   createOnPageDialog = "create_on_page_dialog",
   createTab = "create_tab",
-  deleteCommands = "delete_commands"
+  deleteCommands = "delete_commands",
 }
 
 /**
@@ -57,7 +57,7 @@ export enum CommandName {
 export const CommandVersion: Record<CommandName, number> = {
   [CommandName.createOnPageDialog]: 5,
   [CommandName.createTab]: 5,
-  [CommandName.deleteCommands]: 2
+  [CommandName.deleteCommands]: 2,
 };
 
 /**
@@ -144,7 +144,7 @@ export interface CommandActor {
  * General Command events
  */
 export enum CommandEventType {
-  expired = "command_expired"
+  expired = "command_expired",
 }
 
 /**
@@ -152,5 +152,5 @@ export enum CommandEventType {
  */
 export enum DeleteEventType {
   sucess = "deletion_success",
-  error = "deletion_error"
+  error = "deletion_error",
 }

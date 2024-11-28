@@ -15,14 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isDomainList } from "./url";
+import { isDomainList, createSafeOriginUrl } from "./url";
 import { type Command } from "./command-library.types";
 import { isValidLicenseState } from "./license";
 import {
   type ParamDefinitionList,
-  type ParamValidator
+  type ParamValidator,
 } from "./param-validator.types";
-import { createSafeOriginUrl } from "./url";
 
 /**
  * Regular expression for checking if a string has a valid date shape
@@ -54,7 +53,7 @@ export const isNotEmpty: ParamValidator = (param) =>
  * @returns Whether the parameter contains only values of type LicenseState
  */
 export const isValidLicenseStateList: ParamValidator = (
-  param: unknown
+  param: unknown,
 ): boolean => {
   if (!param) {
     return true;
@@ -142,7 +141,7 @@ export const isValidDate: ParamValidator = (param: unknown): boolean => {
  */
 export function validateParams<T>(
   command: Command,
-  paramDefinitions: ParamDefinitionList<T>
+  paramDefinitions: ParamDefinitionList<T>,
 ): string[] {
   return paramDefinitions
     .map((definition) => {

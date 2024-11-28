@@ -60,7 +60,7 @@ export function createSafeOriginUrl(url: string): string | null {
  */
 function parseDomains(
   source: string,
-  separator: string
+  separator: string,
 ): Map<string, boolean> | null {
   let domains;
 
@@ -68,7 +68,7 @@ function parseDomains(
     // Fast track for the common one-domain scenario.
     domains = new Map([
       ["", false],
-      [source, true]
+      [source, true],
     ]);
   } else {
     domains = null;
@@ -177,6 +177,6 @@ export function isDomainList(list: string): boolean {
   }
 
   return Array.from(domains.keys()).every(
-    (domain) => !domain || isValidHostname(domain)
+    (domain) => !domain || isValidHostname(domain),
   );
 }
