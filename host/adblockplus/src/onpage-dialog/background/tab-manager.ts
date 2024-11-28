@@ -581,5 +581,6 @@ export async function start(): Promise<void> {
 
   // Handle commands
   pageEmitter.on("loaded", handlePageLoadedEvent);
+  /* eslint-disable @typescript-eslint/no-misused-promises */
   setDialogCommandHandler(handleDialogCommand);
 }
