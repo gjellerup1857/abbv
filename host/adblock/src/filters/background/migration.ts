@@ -48,7 +48,11 @@ async function migrateToSmartAllowlisting(): Promise<boolean> {
     }),
   );
 
-  const allowlistsFromGfc = documentAllowListsWithMetadata.filter(
+  const nonSmartAllowlists = documentAllowListsWithMetadata.filter(
+    ({ metadata }) => !metadata?.autoExtendMs && !metadata?.expiresAt,
+  );
+
+  const allowlistsFromGfc = nonSmartAllowlists.filter(
     ({ metadata }) =>
       metadata?.origin === FilterOrigin.web &&
       metadata?.created &&
@@ -56,11 +60,7 @@ async function migrateToSmartAllowlisting(): Promise<boolean> {
       metadata.created <= maxDate.getTime(),
   );
 
-  const existingSmartAllowlists = documentAllowListsWithMetadata.filter(
-    ({ metadata }) => metadata?.autoExtendMs && metadata?.expiresAt,
-  );
-
-  const allowlistsToTransition = documentAllowListsWithMetadata.filter(
+  const allowlistsToTransition = nonSmartAllowlists.filter(
     ({ metadata }) =>
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       !metadata?.autoExtendMs && !metadata?.expiresAt && origins.includes(metadata?.origin),
@@ -82,10 +82,7 @@ async function migrateToSmartAllowlisting(): Promise<boolean> {
     transitionedCount: allowlistsToTransition.length,
     fromGfcCount: allowlistsFromGfc.length,
     allowlistsLeftCount:
-      documentAllowListsWithMetadata.length -
-      allowlistsToTransition.length -
-      allowlistsFromGfc.length -
-      existingSmartAllowlists.length,
+      nonSmartAllowlists.length - allowlistsToTransition.length - allowlistsFromGfc.length,
   });
 
   return true;
