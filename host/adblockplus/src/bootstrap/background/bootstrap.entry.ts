@@ -68,20 +68,40 @@ async function bootstrap(): Promise<void> {
     startDevTools();
     startDebug();
     void startIPM({
-      untilPreferencesLoaded: async function() { return Prefs.untilLoaded; },
-      getPreference: (key) => { return Prefs.get(key); },
-      setPreference: async function(key, value) { Prefs.set(key, value); },
-      onPreferenceChanged: (key, f) => { Prefs.on(key, f); },
-      logDebug: (...args) => { logDebug(args); },
-      logError: (...args) => { logError(args); },
-      isLicenseValid: () => {
+      async untilPreferencesLoaded() {
+        return await Prefs.untilLoaded;
+      },
+      getPreference(key) {
+        return Prefs.get(key);
+      },
+      async setPreference(key, value) {
+        return await Prefs.set(key, value);
+      },
+      onPreferenceChanged(key, f) {
+        Prefs.on(key, f);
+      },
+      logDebug(...args) {
+        logDebug(args);
+      },
+      logError(...args) {
+        logError(args);
+      },
+      async isLicenseValid() {
         const { isActive } = getPremiumState();
         return isActive;
       },
-      getId: async function() { return getInstallationId(); },
-      getAppName: () => { return info.baseName; },
-      getBrowserName: () => { return info.application; },
-      getAppVersion: () => { return info.addonVersion; },
+      async getId() {
+        return await getInstallationId();
+      },
+      getAppName() {
+        return info.baseName;
+      },
+      getBrowserName() {
+        return info.application;
+      },
+      getAppVersion() {
+        return info.addonVersion;
+      }
     }).catch(reportAndLogError);
     startReadyState();
     startFilterConfiguration();
