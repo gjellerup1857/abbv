@@ -36,7 +36,7 @@
     "message": "これらのウェブサイトの広告ブロックが無効になっているため、該当するウェブサイトでは広告が表示されます。"
   },
   "options_allowlist_description_7_days": {
-    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+    "message": "過去7日間にアクセスしていないウェブサイトまたはページは、許可リストから自動的に削除されます。"
   },
   "options_allowlist_empty_1": {
     "message": "許可リストにはウェブサイトが含まれていません。"

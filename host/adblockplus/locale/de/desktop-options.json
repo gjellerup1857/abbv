@@ -36,7 +36,7 @@
     "message": "Du hast die Werbeblockierung auf diesen Websites deaktiviert und wirst deshalb Werbung darauf angezeigt bekommen."
   },
   "options_allowlist_description_7_days": {
-    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+    "message": "Websites oder Seiten, die du in den letzten 7 Tagen nicht besucht hast, werden automatisch aus deiner Allowlist entfernt."
   },
   "options_allowlist_empty_1": {
     "message": "Es sind keine Websites auf deiner Allowlist vorhanden."

@@ -36,7 +36,7 @@
     "message": "Вы отключили блокировку рекламы на этих вебсайтах и, соответственно, будете видеть на них рекламу."
   },
   "options_allowlist_description_7_days": {
-    "message": "Websites or pages you have not visited in the last 7 days are automatically removed from your allowlist."
+    "message": "Веб-сайты или страницы, которые вы не посещали в течение последних 7 дней, автоматически удаляются из вашего разрешенного списка."
   },
   "options_allowlist_empty_1": {
     "message": "В вашем списке разрешений нет никаких вебсайтов."
