@@ -25,14 +25,14 @@ import {
   CommandVersion,
   type Content,
   DeleteEventType,
-  maximumProcessableCommands
+  maximumProcessableCommands,
 } from "./command-library.types";
 import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
 import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 import { checkLanguage } from "./language-check";
 import { context } from "./context";
-import { Context } from "./context.types";
+import { type Context } from "./context.types";
 
 /**
  * A list of known commands.
@@ -81,7 +81,7 @@ function isCommand(candidate: unknown): candidate is Command {
  * @returns whether candidate is a map of commands
  */
 export function isCommandMap(
-  candidate: unknown
+  candidate: unknown,
 ): candidate is Record<string, Command> {
   return (
     typeof candidate === "object" &&
@@ -99,7 +99,7 @@ export function isCommandMap(
  */
 export function setCommandActor(
   commandName: CommandName,
-  actor: CommandActor
+  actor: CommandActor,
 ): void {
   actorByCommandName.set(commandName, actor);
   retryExecuteCommands(commandName);
@@ -267,7 +267,7 @@ function storeCommands(commands: Command[]): void {
  */
 export function executeIPMCommands(
   commands: unknown[],
-  isInitialization: boolean = false
+  isInitialization: boolean = false,
 ): void {
   const actorByExecutableCommand = new Map<Command, CommandActor>();
 
@@ -286,16 +286,18 @@ export function executeIPMCommands(
     if (!knownCommandsList.includes(command.command_name)) {
       context.logError(
         "[ipm]: Unknown command name received:",
-        command.command_name
+        command.command_name,
       );
       continue;
     }
 
     if (command.version !== CommandVersion[command.command_name]) {
       context.logError(
-        `[ipm]: Command version mismatch for command "${command.command_name
-        }". Requested version was ${command.version}, version present is ${CommandVersion[command.command_name]
-        }`
+        `[ipm]: Command version mismatch for command "${
+          command.command_name
+        }". Requested version was ${command.version}, version present is ${
+          CommandVersion[command.command_name]
+        }`,
       );
       continue;
     }
@@ -305,7 +307,7 @@ export function executeIPMCommands(
       recordEvent(
         command.ipm_id,
         command.command_name,
-        CommandEventType.expired
+        CommandEventType.expired,
       );
 
       // cleanup commands that have expired from local storage
@@ -332,7 +334,7 @@ export function executeIPMCommands(
     if (!("attributes" in command)) {
       command.attributes = {
         received: Date.now(),
-        language: browser.i18n.getUILanguage()
+        language: browser.i18n.getUILanguage(),
       };
     }
 
@@ -362,7 +364,7 @@ export function executeIPMCommands(
  */
 function registerDeleteEvent(
   ipmId: string,
-  name: CommandEventType | DeleteEventType
+  name: CommandEventType | DeleteEventType,
 ): void {
   recordEvent(ipmId, CommandName.deleteCommands, name);
 }
@@ -411,14 +413,14 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
       success = false;
       context.logError(
         "[delete-commands]: Error trying to delete command with ID ",
-        commandId
+        commandId,
       );
     }
   }
 
   registerDeleteEvent(
     ipmId,
-    success ? DeleteEventType.sucess : DeleteEventType.error
+    success ? DeleteEventType.sucess : DeleteEventType.error,
   );
   dismissCommand(ipmId);
 }

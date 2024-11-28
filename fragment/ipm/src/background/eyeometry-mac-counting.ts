@@ -23,7 +23,7 @@ async function applyOptOut(): Promise<void> {
   const isOptedOut = context.getPreference("data_collection_opt_out");
 
   await ewe.telemetry.setOptOut(
-    typeof isOptedOut === "boolean" ? isOptedOut : true
+    typeof isOptedOut === "boolean" ? isOptedOut : true,
   );
 }
 
@@ -43,7 +43,7 @@ export async function initialize(): Promise<void> {
   } catch (error) {
     context.logError(
       "Eyeometry-based MAC counting initialization failed with error: ",
-      error
+      error,
     );
   }
 }

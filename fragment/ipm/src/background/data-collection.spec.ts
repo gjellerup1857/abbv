@@ -39,16 +39,16 @@ describe("data-collection", () => {
     it("should return a list of commands data objects when the extension supports IPM commands", () => {
       mockCommandLibraryTypes.CommandName = {
         commandTypeA: "command_type_A",
-        commandTypeB: "command_type_B"
+        commandTypeB: "command_type_B",
       };
       mockCommandLibraryTypes.CommandVersion = {
         command_type_A: 1,
-        command_type_B: 2
+        command_type_B: 2,
       };
 
       expect(getSupportedCommandsData()).toStrictEqual([
         { name: "command_type_A", version: 1 },
-        { name: "command_type_B", version: 2 }
+        { name: "command_type_B", version: 2 },
       ]);
     });
   });

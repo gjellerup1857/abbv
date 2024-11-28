@@ -20,13 +20,13 @@ import {
   type Command,
   type CommandHandler,
   CommandName,
-  type Content
+  type Content,
 } from "./command-library.types";
 import {
   deleteAllKey,
   type DeleteBehavior,
   type DeleteCommand,
-  type DeleteParams
+  type DeleteParams,
 } from "./delete-commands.types";
 import { validateParams } from "./param-validator";
 import type { ParamDefinitionList } from "./param-validator.types";
@@ -39,8 +39,8 @@ const paramDefinitionList: ParamDefinitionList<DeleteParams> = [
   {
     name: "commands",
     validate: (param): boolean =>
-      typeof param === "string" && param.trim() !== ""
-  }
+      typeof param === "string" && param.trim() !== "",
+  },
 ];
 
 /**
@@ -58,7 +58,7 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
 
   context.logError(
     "[delete-commands]: Invalid parameteres received:",
-    validationErrors.join(" ")
+    validationErrors.join(" "),
   );
   return false;
 }
@@ -70,7 +70,7 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
  * @returns whether given candidate is delete-commands behavior
  */
 export function isDeleteBehavior(
-  candidate: unknown
+  candidate: unknown,
 ): candidate is DeleteBehavior {
   return (
     candidate !== null &&
@@ -126,6 +126,6 @@ export function setDeleteCommandHandler(handler: CommandHandler): void {
     getBehavior,
     getContent,
     handleCommand: handler,
-    isValidCommand: isDeleteCommand
+    isValidCommand: isDeleteCommand,
   });
 }

@@ -19,30 +19,36 @@ import { sendPing } from "./telemetry";
 import { context } from "./context";
 
 describe("telemetry", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.spyOn(global, "fetch").mockImplementation(
       jest.fn(async () => {
         return await Promise.resolve({
           ok: true,
           text: async () => "",
-          json: async () => ({})
+          json: async () => ({}),
         });
-      }) as jest.Mock
+      }) as jest.Mock,
     );
 
     // Prepare the context
-    context.getAppName = () => { return "adblockplus"; };
-    context.getBrowserName = () => { return "firefox"; };
-    context.getAppVersion = () => { return "2.6.7"; };
+    context.getAppName = () => {
+      return "adblockplus";
+    };
+    context.getBrowserName = () => {
+      return "firefox";
+    };
+    context.getAppVersion = () => {
+      return "2.6.7";
+    };
 
-    context.setPreference("ipm_commands", {});
-    context.setPreference("ipm_server_url", "https://example.com");
-    context.setPreference("data_collection_opt_out", false);
-    context.setPreference("premium_license", {
+    await context.setPreference("ipm_commands", {});
+    await context.setPreference("ipm_server_url", "https://example.com");
+    await context.setPreference("data_collection_opt_out", false);
+    await context.setPreference("premium_license", {
       lv: 1,
       status: "expired",
       encodedData: "foo",
-      signature: "bar"
+      signature: "bar",
     });
   });
 
@@ -52,7 +58,7 @@ describe("telemetry", () => {
       await sendPing();
       expect(global.fetch).toHaveBeenCalledWith(
         "https://example.com",
-        expect.anything()
+        expect.anything(),
       );
     });
 

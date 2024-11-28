@@ -15,32 +15,50 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Context } from "./context.types";
+import { type Context } from "./context.types";
 
 /**
  * Temporary preferences store, just for testing purposes
  */
-const prefs: { [key: string]: any } = {};
+const prefs: Record<string, any> = {};
 
 export const context: Context = {
   // Prefs
-  untilPreferencesLoaded: async () => { },
-  getPreference: (key) => { return prefs[key]; },
-  setPreference: async (key, value) => { prefs[key] = value; },
-  onPreferenceChanged: (_key, _f) => { },
+  untilPreferencesLoaded: async () => {},
+  getPreference: (key) => {
+    return prefs[key];
+  },
+  setPreference: async (key, value) => {
+    prefs[key] = value;
+  },
+  onPreferenceChanged: (_key, _f) => {},
 
   // Logger
-  logDebug: (...args: any[]) => { console.debug(args); },
-  logError: (...args: any[]) => { console.error(args); },
+  logDebug: (...args: any[]) => {
+    console.debug(args);
+  },
+  logError: (...args: any[]) => {
+    console.error(args);
+  },
 
   // Licenses and Premium
-  isLicenseValid: () => { return false; },
+  isLicenseValid: () => {
+    return false;
+  },
 
   // User or Installation Id
-  getId: async (): Promise<string> => { return "42"; },
+  getId: async (): Promise<string> => {
+    return "42";
+  },
 
   // Host information
-  getAppName: () => { return "info.baseName"; },
-  getBrowserName: () => { return "info.application"; },
-  getAppVersion: () => { return "info.addonVersion"; },
-}
+  getAppName: () => {
+    return "info.baseName";
+  },
+  getBrowserName: () => {
+    return "info.application";
+  },
+  getAppVersion: () => {
+    return "info.addonVersion";
+  },
+};

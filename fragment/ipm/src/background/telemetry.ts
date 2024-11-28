@@ -23,7 +23,12 @@
 // } from "../../core/scheduled-event-emitter/background";
 import { executeIPMCommands } from "./command-library";
 import { getPayload, clearEvents } from "./data-collection";
-import { EventEmitter, intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
+import {
+  type EventEmitter,
+  intervalKey,
+  serverUrlKey,
+  scheduleName,
+} from "./telemetry.types";
 import { context } from "./context";
 
 /**
@@ -35,7 +40,7 @@ import { context } from "./context";
 async function processResponse(response: Response): Promise<void> {
   if (!response.ok) {
     context.logError(
-      `[Telemetry]: Bad response status from IPM server: ${response.status}`
+      `[Telemetry]: Bad response status from IPM server: ${response.status}`,
     );
     return;
   }
@@ -88,7 +93,7 @@ export async function sendPing(): Promise<void> {
     method: "POST",
     cache: "no-cache",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   })
     .then(processResponse)
     .catch((error) => {

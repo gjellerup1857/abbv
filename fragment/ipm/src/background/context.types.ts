@@ -21,7 +21,6 @@
  * by hosting extensions.
  */
 export interface Context {
-
   // Preferences
   untilPreferencesLoaded: () => Promise<void>;
   getPreference: (key: string) => any;
