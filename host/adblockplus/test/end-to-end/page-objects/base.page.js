@@ -192,6 +192,15 @@ class BasePage {
       [selector]
     );
   }
+
+  async scriptClick(selector) {
+    await browser.executeScript(
+      (text) => {
+        document.querySelector(text).click();
+      },
+      [selector]
+    );
+  }
 }
 
 module.exports = BasePage;
