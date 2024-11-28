@@ -103,8 +103,8 @@ export async function start(): Promise<void> {
   }
 
   try {
-    await migrateToSmartAllowlisting();
-    await Prefs.set(prefsKey, true);
+    const migrated = await migrateToSmartAllowlisting();
+    await Prefs.set(prefsKey, migrated);
   } catch (error) {
     await Prefs.set(prefsKey, false);
     console.error("Failed to migrate to smart allowlisting", error);
