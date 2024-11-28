@@ -49,7 +49,9 @@ class PremiumPage extends BasePage {
   }
 
   async clickGetPremiumMonthlyButton() {
-    await this.waitForEnabledThenClick(this.getPremiumMonthlyButton);
+    await this.getPremiumMonthlyButton.waitForClickable();
+    // A regular click throws ElementClickInterceptedError on Firefox
+    await this.scriptClick("a[data-plan='monthly']");
   }
 
   async clickGetStartedWithABPPremiumButton() {

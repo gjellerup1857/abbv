@@ -193,16 +193,21 @@ async function enablePremiumByMockServer() {
 async function enablePremiumByUI() {
   const premiumHeaderChunk = new PremiumHeaderChunk(browser);
   await premiumHeaderChunk.clickUpgradeButton();
-  await premiumHeaderChunk.switchToTab(/accounts.adblockplus.org\/en\/premium/);
-  let currentUrl = await premiumHeaderChunk.getCurrentUrl();
-  if (!currentUrl.includes("accounts")) {
-    await premiumHeaderChunk.switchToTab(
-      /accounts.adblockplus.org\/en\/premium/
-    );
-    await browser.pause(1000);
-    currentUrl = await premiumHeaderChunk.getCurrentUrl();
-  }
-  await browser.url(currentUrl + "&testmode");
+
+  let currentUrl;
+  await browser.waitUntil(
+    async () => {
+      await premiumHeaderChunk.switchToTab(
+        /accounts.adblockplus.org\/en\/premium/
+      );
+      currentUrl = await premiumHeaderChunk.getCurrentUrl();
+      return currentUrl.includes("accounts");
+    },
+    { interval: 1000, timeoutMsg: "Couldn't switch to accounts premium URL" }
+  );
+  const getPremiumTestModeUrl = `${currentUrl}&testmode`;
+
+  await browser.url(getPremiumTestModeUrl);
   const premiumPage = new PremiumPage(browser);
   await premiumPage.clickGetPremiumMonthlyButton();
   await premiumPage.clickPremiumCheckoutButton();
@@ -217,6 +222,7 @@ async function enablePremiumByUI() {
   try {
     await premiumCheckoutPage.typeTextToZIPField("10001");
   } catch (e) {} // Depending on the location, the ZIP may be required or not
+
   await premiumCheckoutPage.clickContinueButton();
   await browser.pause(2000); // the second checkout page may take some time to be ready
   await premiumCheckoutPage.typeTextToCardNumberField("4242424242424242");
