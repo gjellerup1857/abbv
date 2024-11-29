@@ -23,7 +23,11 @@ import ServerMessages from "~/servermessages";
 
 async function isMigrationActive(): Promise<boolean> {
   const flagName = "allowlist-migration-disabled-locale";
-  const locales = ((await ewe.experiments.getFlag(flagName)) as string[]) ?? [];
+  const locales = await ewe.experiments.getFlag(flagName);
+  if (!Array.isArray(locales)) {
+    return false;
+  }
+
   const userLocale = browser.i18n.getUILanguage();
   return !locales.includes(userLocale);
 }
