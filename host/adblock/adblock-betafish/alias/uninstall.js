@@ -29,9 +29,13 @@ import { getUserId } from "../id/background/index";
 import { getWebAllowlistingFilterCount } from "../telemetry/background/custom-rule";
 import { License } from "../picreplacement/check";
 
+function booleanToURLBoolean(value) {
+  return value ? "1" : "0";
+}
+
 async function getPremiumStatus() {
   const hasActiveLicense = License.isActiveLicense();
-  return hasActiveLicense ? "premium" : "free";
+  return booleanToURLBoolean(hasActiveLicense);
 }
 
 async function isAcceptableAdsActive() {
@@ -41,10 +45,10 @@ async function isAcceptableAdsActive() {
 
   for (const subscription of subs) {
     if ((subscription.url === privacyUrl || subscription.url === aaUrl) && subscription.enabled) {
-      return true;
+      return booleanToURLBoolean(true);
     }
   }
-  return false;
+  return booleanToURLBoolean(false);
 }
 
 export async function setUninstallURL() {
