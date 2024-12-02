@@ -31,7 +31,7 @@ export default () => {
       t: expect.any(Number),
       wafc: "0",
       p_s: expect.any(String),
-      aa_a: expect.any(Boolean),
+      aa_a: expect.any(String),
     };
 
     await initOptionsGeneralTab(getOptionsHandle());
@@ -51,6 +51,7 @@ export default () => {
     actualParams.aa_a = actualParams.aa_a;
 
     expect(actualParams).toEqual(expect.objectContaining(expectedParams));
-    expect(actualParams.p_s).toEqual(["premium", "free"]);
+    expect(["true", "false"].includes(actualParams.aa_a)).toEqual(true);
+    expect(["premium", "free"].includes(actualParams.p_s)).toEqual(true);
   });
 };
