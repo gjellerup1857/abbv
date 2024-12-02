@@ -33,10 +33,17 @@ import {
   initOptionsFiltersTab,
   clickFilterlist,
   setAADefaultState,
+  allowlistingFilter,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 
 const { By } = webdriver;
+
+const customFilters = [
+  "/pop_ads.js", // no longer exists in EasyList
+  "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
+  "localhost##.AdContainer", // Needed to override EasyList's "@@://localhost:$generichide"
+];
 
 export default () => {
   after(async function () {
@@ -102,9 +109,8 @@ export default () => {
   });
 
   it("blocks and hides ads", async function () {
-    // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock("/pop_ads.js");
+    await addFiltersToAdBlock(customFilters.join("\n"));
 
     await openNewTab(blockHideUrl);
     await checkBlockHidePage(false);
@@ -128,10 +134,10 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    const filters = ["@@eyeo.gitlab.io$document", "/pop_ads.js"];
+    const allFilters = [...customFilters, allowlistingFilter];
 
     await initOptionsCustomizeTab(getOptionsHandle());
-    await setCustomFilters(filters);
+    await setCustomFilters(allFilters);
 
     const websiteHandle = await openNewTab(blockHideUrl);
     await checkBlockHidePage(true);
@@ -139,7 +145,7 @@ export default () => {
     await initOptionsCustomizeTab(getOptionsHandle());
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await setCustomFilters(["/pop_ads.js"]);
+    await setCustomFilters(customFilters);
 
     await driver.switchTo().window(websiteHandle);
     await checkBlockHidePage(false);

@@ -26,6 +26,7 @@ import { type Dialog } from "./dialog.types";
 import { type Stats } from "./stats.types";
 import { Timing, type TimingConfiguration } from "./timing.types";
 import { isActiveOnDomain } from "../../../src/core/url/shared";
+import { FilterOrigin } from "../../../src/filters/shared";
 
 /**
  * Key for on-page dialog timing configurations storage
@@ -59,7 +60,7 @@ async function getAllowlistingTime(tabId: number): Promise<number | null> {
       continue;
     }
 
-    if (metadata.origin !== "web") {
+    if (metadata.origin !== FilterOrigin.web) {
       continue;
     }
 

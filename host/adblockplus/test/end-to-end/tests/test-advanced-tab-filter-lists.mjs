@@ -15,30 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const {
-  afterSequence,
-  beforeSequence,
-  switchToABPOptionsTab,
-  isFirefox
-} = require("../helpers");
-const { expect } = require("chai");
-const AdvancedPage = require("../page-objects/advanced.page");
-const GeneralPage = require("../page-objects/general.page");
-let lastTest = false;
+import { switchToABPOptionsTab, waitForAssertion } from "../helpers.js";
+import AdvancedPage from "../page-objects/advanced.page.js";
+import GeneralPage from "../page-objects/general.page.js";
 
-describe("test advanced tab - filter lists", function () {
-  before(async function () {
-    await beforeSequence();
-  });
-
-  afterEach(async function () {
-    if (lastTest == false) {
-      await afterSequence();
-    }
-  });
-
+export default () => {
   it("should display default state", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -187,26 +170,40 @@ describe("test advanced tab - filter lists", function () {
     await advancedPage.clickAddBuiltinFilterListButton();
     expect(await advancedPage.isFilterListsDropdownDisplayed()).to.be.true;
     await advancedPage.clickListeFREasyListFL();
+
     expect(await advancedPage.isFilterListsDropdownDisplayed(true)).to.be.true;
-    expect(await advancedPage.isListeFREasyListFLDisplayed()).to.be.true;
+    await waitForAssertion(
+      async () => {
+        expect(await advancedPage.isListeFREasyListFLDisplayed()).to.be.true;
+      },
+      { refresh: false, timeoutMsg: "isListeFREasyListFLDisplayed timed out" }
+    );
     expect(await advancedPage.isListeFREasyListFLStatusToggleSelected()).to.be
       .true;
+
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
-    expect(await generalPage.isListeFRPlusEasylistLanguageTableItemDisplayed())
-      .to.be.true;
+    await waitForAssertion(
+      async () => {
+        expect(
+          await generalPage.isListeFRPlusEasylistLanguageTableItemDisplayed()
+        ).to.be.true;
+      },
+      {
+        refresh: false,
+        timeoutMsg: "isListeFRPlusEasylistLanguageTableItemDisplayed timed out"
+      }
+    );
   });
 
   it("should add a filter list via URL", async function () {
-    if (process.env.MANIFEST_VERSION === "3") this.skip();
-
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickAddNewFilterListButton();
     expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
+
     await advancedPage.typeTextToFilterListUrlInput(
-      "https://test-filterlist.txt",
-      isFirefox()
+      "https://test-filterlist.txt"
     );
     await advancedPage.clickAddAFilterListButton();
     expect(await advancedPage.isAddNewFilterListDialogDisplayed(true)).to.be
@@ -217,16 +214,12 @@ describe("test advanced tab - filter lists", function () {
   });
 
   it("should display an error for invalid filter list via URL", async function () {
-    if (process.env.MANIFEST_VERSION === "3") this.skip();
-
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.clickAddNewFilterListButton();
     expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
-    await advancedPage.typeTextToFilterListUrlInput(
-      "test-filterlist.txt",
-      isFirefox()
-    );
+
+    await advancedPage.typeTextToFilterListUrlInput("test-filterlist.txt");
     await advancedPage.clickAddAFilterListButton();
     expect(await advancedPage.isUrlErrorMessageDisplayed()).to.be.true;
     await advancedPage.clickCancelAddingFLButton();
@@ -234,23 +227,37 @@ describe("test advanced tab - filter lists", function () {
   });
 
   it("should display disabled filters error", async function () {
+    const errorFilter = "expres.cz##.barMan";
     const advancedPage = new AdvancedPage(browser);
+
     await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "expres.cz##.barMan",
-      isFirefox()
-    );
+    await advancedPage.typeTextToAddCustomFilterListInput(errorFilter);
     await advancedPage.clickAddCustomFilterListButton();
-    await advancedPage.clickCustomFilterListsFirstItemToggle();
-    expect(await advancedPage.isAbpFiltersFLErrorIconDisplayed()).to.be.true;
-    await advancedPage.clickAbpFiltersFLErrorIcon();
-    expect(await advancedPage.getFilterListErrorTooltipText()).to.equal(
-      "There are one or more issues with this filter list:" +
-        "Some filters in this filter list are disabled.\n" +
-        "Enable them"
+    await browser.waitUntil(async () => {
+      const firstItem = await advancedPage.customFilterListsNthItemText(1);
+      return (await firstItem.getText()) === errorFilter;
+    });
+    await waitForAssertion(
+      async () => {
+        await advancedPage.clickCustomFilterListsFirstItemToggle();
+        expect(await advancedPage.isAbpFiltersFLErrorIconDisplayed()).to.be
+          .true;
+      },
+      { refresh: false }
     );
+
+    await advancedPage.clickAbpFiltersFLErrorIcon();
+    await waitForAssertion(
+      async () => {
+        expect(await advancedPage.getFilterListErrorTooltipText()).to.equal(
+          "There are one or more issues with this filter list:" +
+            "Some filters in this filter list are disabled.\nEnable them"
+        );
+      },
+      { refresh: false }
+    );
+
     await advancedPage.clickEnableThemButton();
-    lastTest = true;
     expect(await advancedPage.isFilterListErrorTooltipDisplayed(true)).to.be
       .true;
     expect(await advancedPage.isAbpTestFilterErrorIconDisplayed(true)).to.be
@@ -258,4 +265,4 @@ describe("test advanced tab - filter lists", function () {
     expect(await advancedPage.isCustomFilterListsFirstItemToggleSelected()).to
       .be.true;
   });
-});
+};

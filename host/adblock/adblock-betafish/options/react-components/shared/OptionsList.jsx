@@ -25,7 +25,7 @@ const OptionItem = ({
       <div className={outerDivClasses}>
         <div className={innerDivClasses}>
           {/* The Toggle and Checkbox APIs need to be aligned */}
-          <Selector id={name} name={name} onChange={onChange} checked={isChecked(name)} />
+          <Selector id={name} onChange={onChange} checked={isChecked(name)} />
           <label className="ml-4" for={name}>
             {translate(textKey)}
           </label>

@@ -15,21 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { beforeSequence, removeFilter } from "../../helpers.js";
+import { removeFilter } from "../../helpers.js";
 import oneClickAllowlisting from "./test-one-click-allowlisting.mjs";
 import bypassAPI from "./test-bypass-api.mjs";
+import testData from "../../test-data/data-smoke-tests.js";
 
-describe("Public API", function () {
-  before(async function () {
-    const { origin, extVersion } = await beforeSequence();
-    this.test.parent.globalOrigin = origin;
-    this.test.parent.extVersion = extVersion;
-  });
-
+export default () => {
   afterEach(async function () {
-    await removeFilter("@@||eyeo.gitlab.io^$document");
+    await removeFilter(testData.allowlistingFilter);
   });
 
   describe("Test one-click allowlisting", oneClickAllowlisting);
   describe("Test Bypass API", bypassAPI);
-});
+};

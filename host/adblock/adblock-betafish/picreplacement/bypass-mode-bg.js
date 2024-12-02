@@ -21,6 +21,7 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import * as info from "info";
 import { log } from "../utilities/background/index";
+import { FilterOrigin } from "../../src/filters/shared";
 import { License } from "./check";
 
 /**
@@ -187,7 +188,7 @@ async function getAllowlistState(sender) {
       const metadata = await ewe.filters.getMetadata(filter);
       const { origin } = metadata || {};
 
-      if (origin === "web") {
+      if (origin === FilterOrigin.web) {
         source = "1ca";
         break;
       } else {

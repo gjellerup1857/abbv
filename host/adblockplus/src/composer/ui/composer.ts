@@ -24,6 +24,7 @@
 
 import "./composer.css";
 import * as messaging from "~/core/messaging/front";
+import { FilterOrigin } from "~/filters/shared";
 import { closeCurrentTab } from "../../polyfills/ui";
 import { getErrorMessage } from "../../../js/common.mjs";
 import { initI18n, stripTagsUnsafe } from "../../i18n";
@@ -43,7 +44,8 @@ function addFilters(reload = false): void {
   void browser.runtime
     .sendMessage({
       type: "filters.importRaw",
-      text: textarea.value
+      text: textarea.value,
+      origin: FilterOrigin.composer
     })
     .then(([errors]) => {
       if (errors.length > 0) {

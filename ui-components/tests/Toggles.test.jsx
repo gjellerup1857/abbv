@@ -7,7 +7,7 @@ const clickFn = vi.fn();
 let toggle;
 const defaultProps = {
   onChange: clickFn,
-  name: 'toggle-one'
+  id: 'toggle-one'
 };
 
 const renderToggleSwitch = (propsToSet = {}) => {
@@ -36,9 +36,9 @@ describe('ToggleSwitch in default configuration', () => {
   });
 
   it('renders an toggle switch with id when passed', () => {
-    const name = 'toggle-two';
-    renderToggleSwitch({ name });
-    expect(toggle).toHaveAttribute('id', name);
+    const id = 'toggle-two';
+    renderToggleSwitch({ id });
+    expect(toggle).toHaveAttribute('id', id);
   });
 
   it('responds to click events', () => {

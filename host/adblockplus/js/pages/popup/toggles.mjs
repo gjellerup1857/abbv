@@ -17,6 +17,7 @@
 
 import { $ } from "../../dom.mjs";
 import { isTabAllowlisted } from "./utils.mjs";
+import { FilterOrigin } from "~/filters/shared";
 
 // remember initial state to better toggle content
 let toggleChecked;
@@ -62,7 +63,7 @@ function setupToggles(tab) {
     document.body.classList.toggle("refresh", toggleChecked !== checked);
     browser.runtime.sendMessage({
       type: checked ? "filters.unallowlist" : "filters.allowlist",
-      origin: "popup",
+      origin: FilterOrigin.popup,
       tab
     });
   });
@@ -71,7 +72,7 @@ function setupToggles(tab) {
     document.body.classList.toggle("refresh");
     browser.runtime.sendMessage({
       type: page.checked ? "filters.unallowlist" : "filters.allowlist",
-      origin: "popup",
+      origin: FilterOrigin.popup,
       singlePage: true,
       tab
     });

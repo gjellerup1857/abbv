@@ -19,12 +19,13 @@ import * as info from "info";
 import * as browser from "webextension-polyfill";
 
 import { getStoredCommandIds } from "./command-library";
-import { commandLibraryVersion } from "./command-library.types";
+import { CommandName, CommandVersion } from "./command-library.types";
 import {
   BaseAttributes,
   DataType,
   DeviceData,
   EventData,
+  IpmCapability,
   IpmData,
   eventStorageKey,
   LicenseState,
@@ -82,7 +83,6 @@ async function getBaseAttributes(): Promise<BaseAttributes> {
     os: (await browser.runtime.getPlatformInfo()).os,
     language_tag: browser.i18n.getUILanguage(),
     app_version: info.addonVersion,
-    command_library_version: commandLibraryVersion,
     install_type: (await browser.management.getSelf()).installType,
   };
 }
@@ -150,6 +150,21 @@ async function getUserData(): Promise<UserData> {
 }
 
 /**
+ * Gets commands data supported by the extension to send to the IPM server
+ *
+ * @returns a list of objects containing the supported commands data
+ */
+export function getSupportedCommandsData(): IpmCapability[] {
+  const commandNames = Object.values(CommandName);
+  const supportedCommandsData = commandNames.map((name) => ({
+    name,
+    version: CommandVersion[name],
+  }));
+
+  return supportedCommandsData;
+}
+
+/**
  * Gets IPM data in the extension that will be consumed by the IPM server.
  *
  * @returns an object containing the IPM data
@@ -162,6 +177,7 @@ function getIpmData(): IpmData {
         name: "multi_ipm_response",
         version: 1,
       },
+      ...getSupportedCommandsData(),
     ],
   };
 }

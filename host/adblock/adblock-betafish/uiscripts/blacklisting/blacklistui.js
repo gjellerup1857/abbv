@@ -337,7 +337,7 @@ BlacklistUi.prototype.buildPage2 = function buildPage2() {
           command: "addCustomFilter",
           filterTextToAdd: filter,
           addCustomFilterRandomName: that.addCustomFilterRandomName,
-          origin: "wizard",
+          origin: modulesAsGlobal.filters.FilterOrigin.wizard,
         })
         .then((response) => {
           if (!response) {

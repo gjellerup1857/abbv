@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, addCustomFilter, getUserFilters, isWhitelistFilter */
+/* global browser, addCustomFilter, getUserFilters, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { settings, getSettings } from "~/prefs/background/settings";
@@ -57,7 +57,7 @@ const createWhitelistFilterForYoutubeChannel = function (url, origin) {
 };
 
 const removeAllowlistFilterForYoutubeChannel = function (text) {
-  if (isWhitelistFilter(text)) {
+  if (isAllowlistFilter(text)) {
     ewe.filters.remove([text]);
   }
 };
@@ -95,7 +95,10 @@ const injectManagedContentScript = async function (details, historyUpdated) {
   } else if (diff > 100) {
     // check if the timestamp difference is more than 100 ms
     lastInjectedTimestamp = details.timeStamp;
-    await injectScript("purify.min.js", tabId);
+    await Promise.all([
+      injectScript("globals-front.js", tabId),
+      injectScript("purify.min.js", tabId),
+    ]);
     await injectScript("adblock-yt-manage-cs.js", tabId);
     void browser.tabs.sendMessage(tabId, { command: "addYouTubeOnPageIcons", historyUpdated });
   }
@@ -165,7 +168,7 @@ const getAllAdsAllowedUserFilters = async function () {
   const adsAllowedUserFilters = [];
   for (let inx = 0; inx < userFilters.length; inx++) {
     const filter = userFilters[inx];
-    if (isWhitelistFilter(filter.text) && filter.text && filter.text.includes("youtube.com")) {
+    if (isAllowlistFilter(filter.text) && filter.text && filter.text.includes("youtube.com")) {
       adsAllowedUserFilters.push(filter.text);
     }
   }

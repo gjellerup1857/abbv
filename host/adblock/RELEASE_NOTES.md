@@ -1,7 +1,18 @@
 # Unreleased
 
+- Removed "Always allow ads on this site" from kebab menu (EXT-595)
+- Added skeleton for public API inside custom iframe; the API is currently inactive (EXT-567)
+- Remove the "console log test" split experiment. (EXT-612)
+- Updated webext-ad-filtering-solution to 1.20.0
+
+# 6.12.0 - 2024-11-25
+
+This release contains mostly under-the-hood changes.
+
 - Refactored the telemetry fetch processing
-- Updated webext-ad-filtering-solution to 1.17.2
+- Updated webext-ad-filtering-solution to 1.19.0
+- Add the "console log test" split experiment. This is to verify the integration
+  of our new split experiments framework. (EXT-612)
 
 # 6.11.1 - 2024-11-18
 

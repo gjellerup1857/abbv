@@ -4,17 +4,17 @@ import { useState } from "react";
 /**
  * Toggle Switches/Buttons allow users to enable or disable a setting, subscribe to a filter list.
  *
- * @param {Object} props - The props for the Toggle Switch component.
+ * @param {Object} props - The props for the Toggle Switch component
  * @param {Boolean} [props.checked=false] - The initial state of the checked box
- * @param {string} props.name - Name of label element that contains the Toggle Switch
- * @param {Function} props.onChange - The function to call when the Toggle Switch is clicked.
- * @returns {JSX.Element} The Toggle Switch component.
+ * @param {string} props.id - ID of checkbox underlying Toggle Switch
+ * @param {Function} props.onChange - The function to call when the Toggle Switch is clicked
+ * @returns {JSX.Element} The Toggle Switch component
  */
 
 export const ToggleSwitch = ({
-  checked = false,
-  name,
+  id,
   onChange,
+  checked = false,
 }) => {
   const [isChecked, setIsChecked] = useState(checked);
 
@@ -35,9 +35,9 @@ export const ToggleSwitch = ({
   const hiddenButSelectable = 'opacity-0 absolute';
 
   return (
-    <label htmlFor={ name } className="cursor-pointer flex items-center">
+    <label htmlFor={ id } className="cursor-pointer flex items-center">
       <div className={wrapperStyles} >
-        <input type="checkbox" id={ name } onChange={ onChangeHandler }  defaultChecked={ isChecked } className={ hiddenButSelectable } />
+        <input type="checkbox" id={ id } onChange={ onChangeHandler }  defaultChecked={ isChecked } className={ hiddenButSelectable } />
         <div className={toggleButtonStyles} />
       </div>
     </label>
@@ -46,6 +46,6 @@ export const ToggleSwitch = ({
 
 ToggleSwitch.propTypes = {
   checked: PropTypes.bool,
-  name: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };

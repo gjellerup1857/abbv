@@ -58,10 +58,6 @@ export interface BaseAttributes {
    */
   app_version: string;
   /**
-   * The version of the Command Library that this extension is running.
-   */
-  command_library_version: number;
-  /**
    * String describing how the add-on was installed.
    */
   install_type: string;
@@ -208,7 +204,7 @@ interface IpmCommand {
 /*
  * Attributes related to a specific IPM capability in the extension
  */
-interface IpmCapability {
+export interface IpmCapability {
   name: string;
   version: number;
 }

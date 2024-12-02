@@ -15,32 +15,13 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const {
-  afterSequence,
-  beforeSequence,
-  globalRetriesNumber
-} = require("../helpers");
-const { expect } = require("chai");
-const GeneralPage = require("../page-objects/general.page");
-const AdvancedPage = require("../page-objects/advanced.page");
-const AcceptableAdsDialogChunk = require("../page-objects/acceptableAdsDialog.chunk");
-let lastTest = false;
+import GeneralPage from "../page-objects/general.page.js";
+import AdvancedPage from "../page-objects/advanced.page.js";
+import AcceptableAdsDialogChunk from "../page-objects/acceptableAdsDialog.chunk.js";
 
-describe("test options page general tab acceptable ads", function () {
-  this.retries(globalRetriesNumber);
-
-  before(async function () {
-    await beforeSequence();
-  });
-
-  afterEach(async function () {
-    if (lastTest == false) {
-      await afterSequence();
-    }
-  });
-
+export default () => {
   it("should display AA default state", async function () {
     const generalPage = new GeneralPage(browser);
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.be.true;
@@ -95,11 +76,10 @@ describe("test options page general tab acceptable ads", function () {
       .be.false;
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
-    lastTest = true;
     expect(
       await advancedPage.isAllowNonintrusiveAdvertisingWithoutTrackingFLDisplayed()
     ).to.be.false;
     expect(await advancedPage.isAllowNonintrusiveAdvertisingFLDisplayed()).to.be
       .false;
   });
-});
+};

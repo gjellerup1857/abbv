@@ -16,6 +16,7 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
+import { FilterOrigin } from "~/filters/shared/index.ts";
 import { convertDoclinks, getDoclink, getErrorMessage } from "../common.mjs";
 import { initI18n } from "../../src/i18n/index.ts";
 
@@ -231,7 +232,8 @@ import "../../src/mobile-options/ui/mobile-options.css";
       browser.runtime
         .sendMessage({
           type: toggle.checked ? "filters.remove" : "filters.add",
-          text: allowlistFilter
+          text: allowlistFilter,
+          origin: FilterOrigin.optionsMobile
         })
         .then((errors) => {
           if (errors.length < 1) return;

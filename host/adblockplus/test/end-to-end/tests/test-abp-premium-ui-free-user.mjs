@@ -15,27 +15,17 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-"use strict";
+import { expect } from "chai";
 
-const {
-  beforeSequence,
-  getTabId,
-  switchToABPOptionsTab
-} = require("../helpers");
-const { expect } = require("chai");
-const AdvancedPage = require("../page-objects/advanced.page");
-const AllowlistedWebsitesPage = require("../page-objects/allowlistedWebsites.page");
-const GeneralPage = require("../page-objects/general.page");
-const HelpPage = require("../page-objects/help.page");
-const PopupPage = require("../page-objects/popup.page");
-const PremiumHeaderChunk = require("../page-objects/premiumHeader.chunk");
-let popupUrl;
+import { getTabId, switchToABPOptionsTab } from "../helpers.js";
+import AdvancedPage from "../page-objects/advanced.page.js";
+import AllowlistedWebsitesPage from "../page-objects/allowlistedWebsites.page.js";
+import GeneralPage from "../page-objects/general.page.js";
+import HelpPage from "../page-objects/help.page.js";
+import PopupPage from "../page-objects/popup.page.js";
+import PremiumHeaderChunk from "../page-objects/premiumHeader.chunk.js";
 
-describe("test abp premium ui - free user", function () {
-  before(async function () {
-    ({ popupUrl } = await beforeSequence());
-  });
-
+export default () => {
   it("should display correct UI for a free user", async function () {
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;
@@ -68,7 +58,7 @@ describe("test abp premium ui - free user", function () {
     await advancedPage.switchToTab("Example Domain");
     const tabId = await getTabId({ title: "Example Domain" });
     const popupPage = new PopupPage(browser);
-    await popupPage.init(popupUrl, tabId);
+    await popupPage.init(global.popupUrl, tabId);
     expect(await popupPage.isUpgradeButtonDisplayed()).to.be.true;
     expect(await popupPage.isBlockCookieConsentPopupsTitleDisplayed()).to.be
       .true;
@@ -84,4 +74,4 @@ describe("test abp premium ui - free user", function () {
     await browser.closeWindow();
     await switchToABPOptionsTab();
   });
-});
+};

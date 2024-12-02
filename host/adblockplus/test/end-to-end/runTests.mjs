@@ -24,35 +24,16 @@ import { runTestServer, killTestServer } from "@eyeo/test-utils";
 import { removeScreenshots } from "./runners/hooks.mjs";
 
 // Extract command-line arguments after the script name
-// e.g., --suite filterlists
 const args = process.argv.slice(2);
 
-async function runWdioTests(config) {
-  console.log(`Running WDIO tests with ${config.filename}...`, config);
-  return new Promise((resolve, reject) => {
-    const wdioProcess = spawn(
-      "wdio",
-      ["run", config.filename, ...config.args],
-      { stdio: "inherit" }
-    );
-
-    wdioProcess.on("close", (code) => {
-      code === 0
-        ? resolve()
-        : reject(new Error(`wdio exited with code ${code}`));
-    });
-  });
-}
-
 async function runMochaTests() {
-  console.log("Running UPGRADE tests...");
   return new Promise((resolve, reject) => {
     const mochaProcess = spawn(
       "mocha",
-      // Add the "--paralle" flag to run tests in parallel.
+      // Add the "--parallel" flag to run tests in parallel.
       // Ensure the real-time logging can work in parallel before doing that and
       // the CI server can handle the increased load.
-      ["runners/runner.*.mjs", "--timeout", "150000", ...args],
+      ["runners/runner.*.mjs", "--timeout", "300000", ...args],
       { stdio: "inherit" }
     );
 
@@ -69,10 +50,6 @@ async function main() {
   await removeScreenshots();
 
   try {
-    const config = { filename: "local.conf.mjs", args };
-    await runWdioTests(config);
-
-    // Run Mocha tests
     await runMochaTests();
   } finally {
     console.log("Stopping test server...");

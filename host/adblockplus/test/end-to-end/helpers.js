@@ -193,21 +193,27 @@ async function enablePremiumByMockServer() {
 async function enablePremiumByUI() {
   const premiumHeaderChunk = new PremiumHeaderChunk(browser);
   await premiumHeaderChunk.clickUpgradeButton();
-  await premiumHeaderChunk.switchToTab(/accounts.adblockplus.org\/en\/premium/);
-  let currentUrl = await premiumHeaderChunk.getCurrentUrl();
-  if (!currentUrl.includes("accounts")) {
-    await premiumHeaderChunk.switchToTab(
-      /accounts.adblockplus.org\/en\/premium/
-    );
-    await browser.pause(1000);
-    currentUrl = await premiumHeaderChunk.getCurrentUrl();
-  }
-  await browser.url(currentUrl + "&testmode");
+
+  let currentUrl;
+  await browser.waitUntil(
+    async () => {
+      await premiumHeaderChunk.switchToTab(
+        /accounts.adblockplus.org\/en\/premium/
+      );
+      currentUrl = await premiumHeaderChunk.getCurrentUrl();
+      return currentUrl.includes("accounts");
+    },
+    { interval: 1000, timeoutMsg: "Couldn't switch to accounts premium URL" }
+  );
+  const getPremiumTestModeUrl = `${currentUrl}&testmode`;
+
+  await browser.url(getPremiumTestModeUrl);
   const premiumPage = new PremiumPage(browser);
   await premiumPage.clickGetPremiumMonthlyButton();
   await premiumPage.clickPremiumCheckoutButton();
   const premiumCheckoutPage = new PremiumCheckoutPage(browser);
   await premiumCheckoutPage.init();
+  await browser.pause(2000); // the first checkout page may take some time to be ready
   await premiumCheckoutPage.typeTextToEmailField(
     "test_automation" +
       randomIntFromInterval(1000000, 9999999).toString() +
@@ -216,7 +222,9 @@ async function enablePremiumByUI() {
   try {
     await premiumCheckoutPage.typeTextToZIPField("10001");
   } catch (e) {} // Depending on the location, the ZIP may be required or not
+
   await premiumCheckoutPage.clickContinueButton();
+  await browser.pause(2000); // the second checkout page may take some time to be ready
   await premiumCheckoutPage.typeTextToCardNumberField("4242424242424242");
   await premiumCheckoutPage.typeTextToCardExpiryField("0528");
   await premiumCheckoutPage.typeTextToCardCvcField("295");
@@ -225,6 +233,7 @@ async function enablePremiumByUI() {
 
   // Real premium takes a while to be enabled
   const timeout = 80000;
+  await switchToABPOptionsTab({ refresh: true });
   await browser.waitUntil(
     async () => {
       try {
@@ -436,7 +445,7 @@ async function waitForAssertion(
   expectFn,
   {
     timeout = 5000,
-    timeoutMsg = "Timed out",
+    timeoutMsg = "waitForAssertion timed out",
     interval = 500,
     refresh = true
   } = {}
@@ -509,37 +518,38 @@ async function waitForExtension() {
       for (const handle of await browser.getWindowHandles()) {
         await browser.switchToWindow(handle);
 
-        ({ origin, optionsUrl, popupUrl, extVersion } =
-          await browser.executeAsync(async (callback) => {
-            if (
-              typeof browser !== "undefined" &&
-              browser.management !== "undefined"
-            ) {
-              const info = await browser.management.getSelf();
-              const manifest = await browser.runtime.getManifest();
-              const popupPath = manifest.applications?.gecko
-                ? await browser.action.getPopup({})
-                : manifest.manifest_version == "3"
-                  ? `${location.origin}/${manifest.action.default_popup}`
-                  : `${location.origin}/${manifest.browser_action.default_popup}`;
+        const extensionInfo = await browser.executeAsync(async (callback) => {
+          if (
+            typeof browser !== "undefined" &&
+            browser.management !== "undefined"
+          ) {
+            const info = await browser.management.getSelf();
+            const manifest = await browser.runtime.getManifest();
+            const popupPath = manifest.applications?.gecko
+              ? await browser.action.getPopup({})
+              : manifest.manifest_version == "3"
+                ? `${location.origin}/${manifest.action.default_popup}`
+                : `${location.origin}/${manifest.browser_action.default_popup}`;
 
-              callback(
-                info.optionsUrl
-                  ? {
-                      origin: location.origin,
-                      optionsUrl: info.optionsUrl,
-                      popupUrl: popupPath,
-                      extVersion: info.version
-                    }
-                  : {}
-              );
-            } else {
-              callback({});
-            }
-          }));
-        if (origin) {
-          return true;
-        }
+            callback(
+              info.optionsUrl
+                ? {
+                    origin: location.origin,
+                    optionsUrl: info.optionsUrl,
+                    popupUrl: popupPath,
+                    extVersion: info.version
+                  }
+                : {}
+            );
+          } else {
+            callback({});
+          }
+        });
+
+        if (!extensionInfo) return false;
+
+        ({ origin, optionsUrl, popupUrl, extVersion } = extensionInfo);
+        if (origin) return true;
       }
     },
     { timeout, timeoutMsg: `Options page not found after ${timeout}ms` }
@@ -595,6 +605,10 @@ async function getTabId({ title, urlPattern }) {
 
 function isBrowser(browserName) {
   return browser.capabilities.browserName.toLowerCase().includes(browserName);
+}
+
+function isChromium() {
+  return isChrome();
 }
 
 function isChrome() {
@@ -743,6 +757,7 @@ module.exports = {
   waitForNewWindow,
   waitForAssertion,
   isChrome,
+  isChromium,
   isFirefox,
   isEdge,
   uninstallExtension,

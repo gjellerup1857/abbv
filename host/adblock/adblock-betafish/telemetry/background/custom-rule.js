@@ -17,6 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global ewe */
+import { FilterOrigin } from "../../../src/filters/shared";
 
 const allowListingFiltersRegex = new RegExp(/^allowing$/);
 const allFilterTypesRegex = new RegExp(/.*/);
@@ -70,7 +71,10 @@ async function getFilterCountForOrigin(filters, origin) {
  */
 export async function getWebAllowlistingFilterCount() {
   // count the filters that originated in the web
-  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), "web");
+  return getFilterCountForOrigin(
+    await getFiltersByType(allowListingFiltersRegex),
+    FilterOrigin.web,
+  );
 }
 
 /**
@@ -81,7 +85,10 @@ export async function getWebAllowlistingFilterCount() {
  */
 export async function getPopupAllowlistingFilterCount() {
   // count the filters that originated from the popup menu
-  return getFilterCountForOrigin(await getFiltersByType(allowListingFiltersRegex), "popup");
+  return getFilterCountForOrigin(
+    await getFiltersByType(allowListingFiltersRegex),
+    FilterOrigin.popup,
+  );
 }
 
 /**
@@ -92,7 +99,10 @@ export async function getPopupAllowlistingFilterCount() {
  */
 export async function getCustomizedFilterCount() {
   // count the filters that originated from the customize tab
-  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), "customize");
+  return getFilterCountForOrigin(
+    await getFiltersByType(allFilterTypesRegex),
+    FilterOrigin.customize,
+  );
 }
 
 /**
@@ -103,7 +113,7 @@ export async function getCustomizedFilterCount() {
  */
 export async function getWizardFilterCount() {
   // count the filters that originated from either of the wizards
-  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), "wizard");
+  return getFilterCountForOrigin(await getFiltersByType(allFilterTypesRegex), FilterOrigin.wizard);
 }
 
 /**

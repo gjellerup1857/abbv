@@ -17,7 +17,7 @@
 
 export default {
   basename: "adblock",
-  version: "6.11.1",
+  version: "6.12.0",
   webpack: {
     bundles: [
       {
@@ -78,6 +78,11 @@ export default {
       {
         dest: "yt-wall-detection-auto-allowlist.preload.js",
         package: "@eyeo/yt-wall-detection",
+        src: "/content",
+      },
+      {
+        dest: "public-api.preload.js",
+        package: "@eyeo-fragments/public-api",
         src: "/content",
       },
       // TODO (ui-components): Uncomment this when you want to integrate ui-components

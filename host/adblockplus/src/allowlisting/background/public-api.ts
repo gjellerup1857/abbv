@@ -21,6 +21,7 @@ import { allowlist } from "../../../adblockpluschrome/lib/allowlisting";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import * as premium from "../../premium/background";
 import { type AllowlistOptions } from "./public-api.types";
+import { FilterOrigin } from "~/filters/shared";
 
 const trustedSoftonicDomains = [
   "softonic-ar.com",
@@ -81,7 +82,7 @@ async function onAllowlisting(
 
   await allowlist({
     hostname: getAllowlistingDomain(domain),
-    origin: "web",
+    origin: FilterOrigin.web,
     expiresAt: options?.expiresAt
   });
 }
@@ -102,7 +103,7 @@ async function removeWebAllowlistingFilters(): Promise<void> {
   );
 
   const webAllowlistingFilters = allowlistingFiltersWithMetadata
-    .filter(({ metadata }) => metadata && metadata.origin === "web")
+    .filter(({ metadata }) => metadata && metadata.origin === FilterOrigin.web)
     .map(({ filter }) => filter);
 
   await ewe.filters.remove(webAllowlistingFilters.map((filter) => filter.text));

@@ -95,6 +95,7 @@ const processYouTubeWallMessage = async (
     expiresByTabId: tabId,
     origin: "auto",
   };
+  console.log('adding allow list rule', ruleText, metadata)
   await parameters.ewe.filters.add(ruleText, metadata);
   if (message.currentPlaybackTime > 5) {
     senderURL.searchParams.set(

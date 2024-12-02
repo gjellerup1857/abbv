@@ -27,6 +27,7 @@ import { type Stats } from "./stats.types";
 import { Timing, type TimingConfiguration } from "./timing.types";
 import { type Tabs } from "webextension-polyfill";
 import { isActiveOnDomain } from "../../core/url/shared";
+import { FilterOrigin } from "~/filters/shared";
 
 /**
  * Key for on-page dialog timing configurations storage
@@ -59,7 +60,7 @@ async function getAllowlistingTime(tabId: number): Promise<number | null> {
       continue;
     }
 
-    if (metadata.origin !== "web") {
+    if (metadata.origin !== FilterOrigin.web) {
       continue;
     }
 

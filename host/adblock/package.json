@@ -133,10 +133,11 @@
     "npm": "9"
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#4b0b6c202dd712d826d6d53e6f728cb8b49ba52e",
+    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#1b5da71c910beefb20c3ecd1b2b222005a912076",
+    "@eyeo-fragments/public-api": "*",
     "@eyeo/ext-ui-components": "*",
     "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.17.2",
+    "@eyeo/webext-ad-filtering-solution": "file:../../../webext-ad-filtering-solution/",
     "@eyeo/yt-wall-detection": "*",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",

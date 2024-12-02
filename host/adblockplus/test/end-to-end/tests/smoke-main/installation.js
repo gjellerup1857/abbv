@@ -24,7 +24,7 @@ const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url")
 module.exports = function () {
   it("opens the install url", async function () {
     // installedUrl is assigned to test context in the before hook
-    const { installedUrl } = this.test.parent.parent;
+    const { installedUrl } = global;
     if (installedUrl.includes("first-run")) {
       console.warn(`ABP installation opened first run page: ${installedUrl}`);
       this.skip();

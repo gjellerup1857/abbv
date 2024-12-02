@@ -85,7 +85,9 @@ export async function getDisplayedElement(cssSelector, timeout = 500, forceRefre
         try {
           elem = await driver.findElement(By.css(cssSelector));
           return await elem.isDisplayed();
-        } catch (e) {}
+        } catch (e) {
+          return false;
+        }
       },
       timeout,
       `Element "${cssSelector}" was not displayed after ${timeout}ms`,
@@ -165,6 +167,10 @@ export function isCheckboxEnabled(inputId) {
 
 export async function waitAndClickOnElement(selector, timeout = 1000) {
   const elem = await getDisplayedElement(selector, timeout, false);
+  // scroll into view
+  await driver.executeScript("arguments[0].scrollIntoView();", elem);
+  // make sure the element is interactable
+  await driver.wait(async () => elem.isEnabled(), 500);
   await elem.click();
 }
 
@@ -186,9 +192,7 @@ export async function clickAndCloseNewTab(selector, expectedURL) {
   const currentWindowHandle = await driver.getWindowHandle();
   const initialWindowHandles = await driver.getAllWindowHandles();
 
-  const elem = await getDisplayedElement(selector);
-  await elem.click();
-
+  await waitAndClickOnElement(selector);
   await driver.wait(
     async () => {
       const currentWindowHandles = await driver.getAllWindowHandles();

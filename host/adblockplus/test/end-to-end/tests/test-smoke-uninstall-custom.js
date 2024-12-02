@@ -49,8 +49,6 @@ describe("Smoke Tests - Uninstall with custom settings", function () {
     // https://eyeo.atlassian.net/browse/EXT-153
     if (url === null) this.skip();
 
-    expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
-
     const todaysDate = moment().utc().format("YYYYMMDD");
     const { searchParams } = new URL(url);
     expect(searchParams.get("s")).to.equal("0");

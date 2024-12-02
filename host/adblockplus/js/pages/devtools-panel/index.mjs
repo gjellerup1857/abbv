@@ -16,6 +16,7 @@
  */
 
 import * as messaging from "~/core/messaging/front/index.ts";
+import { FilterOrigin } from "~/filters/shared/index.ts";
 import { initI18n, setElementText } from "../../../src/i18n/index.ts";
 import records from "./records.mjs";
 
@@ -83,7 +84,8 @@ function createActionButton(action, stringId, filter, callback) {
     async () => {
       await browser.runtime.sendMessage({
         type: "filters." + action,
-        text: filter.text
+        text: filter.text,
+        origin: FilterOrigin.devtools
       });
 
       callback(filter);

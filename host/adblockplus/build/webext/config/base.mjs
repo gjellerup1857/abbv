@@ -127,6 +127,11 @@ export default {
         dest: "yt-wall-detection-auto-allowlist.preload.js",
         package: "@eyeo/yt-wall-detection",
         src: "/content"
+      },
+      {
+        dest: "public-api.preload.js",
+        package: "@eyeo-fragments/public-api",
+        src: ["/content"]
       }
     ]
   },

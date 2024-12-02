@@ -25,6 +25,7 @@ import {
   loadLanguageNames
 } from "./titles.mjs";
 import * as messaging from "~/core/messaging/front/index.ts";
+import { FilterOrigin } from "~/filters/shared/index.ts";
 import * as premiumSubscriptions from "../../../src/premium-subscriptions/ui/index.ts";
 import { premiumTypes } from "../../../src/premium-subscriptions/shared/index.ts";
 import {
@@ -1291,7 +1292,8 @@ function addAllowlistedDomain() {
     );
     sendMessageHandleErrors({
       type: "filters.add",
-      text: "@@||" + host.toLowerCase() + "^$document"
+      text: "@@||" + host.toLowerCase() + "^$document",
+      origin: FilterOrigin.optionsAllowlistedWebsites
     });
     domain.value = "";
     $("#allowlisting-add-button").disabled = true;
