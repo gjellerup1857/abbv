@@ -22,6 +22,7 @@ import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { Prefs } from "./prefs.js";
 import { isDataCorrupted } from "./subscriptionInit.js";
 import { info } from "../../src/info/background";
+import { getPremiumState } from "../../src/premium/background";
 
 const abbreviations = [
   ["an", "addonName"],
@@ -34,7 +35,9 @@ const abbreviations = [
   ["p", "platform"],
   ["pv", "platformVersion"],
   ["s", "subscriptions"],
-  ["wafc", "webAllowlistingFilterCount"]
+  ["wafc", "webAllowlistingFilterCount"],
+  ["p_s", "premiumStatus"],
+  ["aa_a", "acceptableAddsActive"]
 ];
 
 /**
@@ -114,9 +117,11 @@ export async function setUninstallURL() {
   let aaSubscriptions = new Set([ewe.subscriptions.ACCEPTABLE_ADS_URL]);
   let adsSubscriptions = getAdsSubscriptions();
   let isAcceptableAdsActive = await isAnySubscriptionActive(aaSubscriptions);
+  params.acceptableAddsActive = isAcceptableAdsActive;
   let isAdBlockingActive = await isAnySubscriptionActive(adsSubscriptions);
   params.subscriptions = (isAcceptableAdsActive << 1) | isAdBlockingActive;
-
+  let premiumState = await getPremiumState();
+  params.premiumStatus = premiumState.isActive;
   params.webAllowlistingFilterCount = await getWebAllowlistingFilterCount();
 
   for (let [abbreviation, key] of abbreviations)
