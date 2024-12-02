@@ -7,6 +7,7 @@
 - This release contains mostly only minor updates and under-the-hood changes.
 - Updated webext-ad-filtering-solution to 1.20.0
 - Added skeleton for public API inside custom iframe. The API is currently inactive (EXT-567)
+- Pass premium_status and aa_active in uninstall link in ABP (EXT-430)
 
 # 4.9.3 - 2024-11-19
 
