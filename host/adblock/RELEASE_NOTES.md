@@ -2,6 +2,7 @@
 
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)
 - Added skeleton for public API inside custom iframe; the API is currently inactive (EXT-567)
+- Remove the "console log test" split experiment. (EXT-612)
 
 # 6.12.0 - 2024-11-25
 
