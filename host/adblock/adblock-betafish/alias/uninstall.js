@@ -84,8 +84,8 @@ export async function setUninstallURL() {
         url = `${url}&lt=${lastUpdateTime}`;
         url += `&wafc=${await getWebAllowlistingFilterCount()}`;
         // CDP data
-        url += `&p_s=${await getPremiumStatus()}`;
-        url += `&aa_a=${await isAcceptableAdsActive()}`;
+        url += `&ps=${await getPremiumStatus()}`;
+        url += `&aa=${await isAcceptableAdsActive()}`;
         browser.runtime.setUninstallURL(url);
       };
       // start an interval timer that will update the Uninstall URL every 2
