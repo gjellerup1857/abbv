@@ -117,11 +117,11 @@ export async function setUninstallURL() {
   let aaSubscriptions = new Set([ewe.subscriptions.ACCEPTABLE_ADS_URL]);
   let adsSubscriptions = getAdsSubscriptions();
   let isAcceptableAdsActive = await isAnySubscriptionActive(aaSubscriptions);
-  params.acceptableAddsActive = isAcceptableAdsActive;
+  params.acceptableAddsActive = isAcceptableAdsActive ? 1 : 0;
   let isAdBlockingActive = await isAnySubscriptionActive(adsSubscriptions);
   params.subscriptions = (isAcceptableAdsActive << 1) | isAdBlockingActive;
   let premiumState = await getPremiumState();
-  params.premiumStatus = premiumState.isActive;
+  params.premiumStatus = premiumState.isActive ? 1 : 0;
   params.webAllowlistingFilterCount = await getWebAllowlistingFilterCount();
 
   for (let [abbreviation, key] of abbreviations)
