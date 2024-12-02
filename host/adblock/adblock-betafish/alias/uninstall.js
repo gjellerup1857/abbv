@@ -21,10 +21,32 @@
 /** @module uninstall */
 /** similar to adblockpluschrome\lib\uninstall.js */
 
+import * as ewe from "@eyeo/webext-ad-filtering-solution";
+
 import { Prefs } from "./prefs";
 import SubscriptionAdapter from "../subscriptionadapter";
 import { getUserId } from "../id/background/index";
 import { getWebAllowlistingFilterCount } from "../telemetry/background/custom-rule";
+import { License } from "../picreplacement/check";
+
+async function getPremiumStatus() {
+  const hasActiveLicense = License.isActiveLicense();
+  return (hasActiveLicense ? "premium" : "free");
+}
+
+async function isAcceptableAdsActive() {
+  const subs = await ewe.subscriptions.getSubscriptions();
+  const privacyUrl = ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL;
+  const aaUrl = ewe.subscriptions.ACCEPTABLE_ADS_URL;
+
+  for (const subscription of subs) {
+    if ((subscription.url === privacyUrl || subscription.url === aaUrl) &&
+        subscription.enabled) {
+        return true;
+    }
+  }
+  return false;
+}
 
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
@@ -58,6 +80,9 @@ export async function setUninstallURL() {
         const lastUpdateTime = await getLastUpdateTime();
         url = `${url}&lt=${lastUpdateTime}`;
         url += `&wafc=${await getWebAllowlistingFilterCount()}`;
+        // CDP data
+        url += `&premium_status=${await getPremiumStatus()}`;
+        url += `&aa_active=${await isAcceptableAdsActive()}`
         browser.runtime.setUninstallURL(url);
       };
       // start an interval timer that will update the Uninstall URL every 2
