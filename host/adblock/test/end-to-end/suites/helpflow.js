@@ -20,11 +20,15 @@ async function clickHelpIcon() {
   const newUrl = `${currentURL}&tabId=${tabId}`;
   await driver.navigate().to(newUrl);
   // Ensure the right helpflow UI has effectively loaded
-  await getDisplayedElement(seeAdSelector);
+  await getDisplayedElement(seeAdSelector, 3000);
 }
 
 export default () => {
   it("initiates helpflow for first time ad", async function () {
+    // Capture the timestamp before page reload
+    const timestampBeforeReload = await driver.executeScript(() => {
+      return Date.now();
+    });
     await clickHelpIcon();
 
     await waitAndClickOnElement(seeAdSelector, 3000);
@@ -32,6 +36,13 @@ export default () => {
     await waitAndClickOnElement(".button.help-button", 1000);
     await waitAndClickOnElement("[i18n='updating_filter_lists']");
     await waitAndClickOnElement("[i18n='reload_the_page']");
+    await driver.sleep(3000);
+    // verify that filterlists are updated
+    const timestampAfterReload = await driver.executeScript(() => {
+      return Date.now();
+    });
+    // Verify that the timestamp after reload is greater than the timestamp before reload
+    expect(timestampAfterReload).toBeGreaterThan(timestampBeforeReload);
   });
 
   it("initiates helpflow for first time ad on allowlisted site", async function () {
@@ -76,9 +87,20 @@ export default () => {
   });
 
   it("initiates helpflow for website is broken", async function () {
+    // Capture the timestamp before page reload
+    const timestampBeforeReload = await driver.executeScript(() => {
+      return Date.now();
+    });
     await clickHelpIcon();
 
     await waitAndClickOnElement("[i18n='website_broken']", 5000);
-    await getDisplayedElement("[i18n='reload_the_page']", 3000);
+    await waitAndClickOnElement("[i18n='reload_the_page']", 3000);
+    await driver.sleep(3000);
+    // verify that filterlists are updated
+    const timestampAfterReload = await driver.executeScript(() => {
+      return Date.now();
+    });
+    // Verify that the timestamp after reload is greater than the timestamp before reload
+    expect(timestampAfterReload).toBeGreaterThan(timestampBeforeReload);
   });
 };
