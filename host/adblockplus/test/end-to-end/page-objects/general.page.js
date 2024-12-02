@@ -18,6 +18,7 @@
 "use strict";
 
 const BasePage = require("./base.page");
+const testData = require("../test-data/data-smoke-tests");
 
 class GeneralPage extends BasePage {
   constructor(browser) {
@@ -677,7 +678,7 @@ class GeneralPage extends BasePage {
   }
 
   async switchToUninstalledTab(timeout = 8000) {
-    await this.switchToTab("Adblock Plus has been uninstalled", timeout);
+    await this.switchToTab(testData.uninstallUrl, timeout);
   }
 }
 

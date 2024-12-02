@@ -45,5 +45,6 @@ module.exports = {
   regexManifestVersion: /(?<="version": ").*?(?=")/,
   snippetsPageUrl:
     "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets" +
-    "/snippets-testpage.html"
+    "/snippets-testpage.html",
+  uninstallUrl: "https://adblockplus.org/en/uninstalled"
 };

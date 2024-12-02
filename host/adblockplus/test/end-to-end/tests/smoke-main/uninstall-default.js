@@ -17,8 +17,6 @@
 
 "use strict";
 
-const { expect } = require("chai");
-
 const { uninstallExtension, isEdge } = require("../../helpers");
 const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url");
 
@@ -37,7 +35,6 @@ module.exports = function () {
     // https://eyeo.atlassian.net/browse/EXT-153
     if (url === null) this.skip();
 
-    expect(url).to.have.string("https://adblockplus.org/en/uninstalled");
     await checkInstallUninstallUrl(url, appVersion);
   });
 };
