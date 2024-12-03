@@ -20,10 +20,17 @@ const getRandomId = (name) => {
 
 const generateKinds = (args) => {
   return (
-    <div className="flex items-center gap-x-2 fill-theme-link-color">
-      <ToggleSwitch { ...args } name={getRandomId("notcheckeddefault")}  />
-      <ToggleSwitch { ...args } name={getRandomId("checked")} checked={true} />
-    </div>
+    <>
+      <div className="flex items-center gap-x-2 fill-theme-link-color">
+        <ToggleSwitch { ...args } name={getRandomId("notcheckeddefault")}  />
+        <ToggleSwitch { ...args } name={getRandomId("checked")} checked={true} />
+      </div>
+      <div className="flex items-center gap-x-4 fill-theme-link-color ml-2.5 mt-4">
+        <ToggleSwitch { ...args } kind='inline' name={getRandomId("notcheckeddefault")}  />
+        <ToggleSwitch { ...args } kind='inline' name={getRandomId("checked")} checked={true} />
+      </div>
+    </>
+
   )
 };
 
