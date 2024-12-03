@@ -34,6 +34,7 @@ function booleanToURLBoolean(value) {
 }
 
 async function getPremiumStatus() {
+  await License.ready();
   const hasActiveLicense = License.isActiveLicense();
   return booleanToURLBoolean(hasActiveLicense);
 }
