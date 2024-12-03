@@ -60,10 +60,16 @@ stages:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     # Run automatically on release and main branch
-    - if: $CI_COMMIT_BRANCH == "adblockplus-release" || $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "adblockplus-release" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/
     # Run manually on all other branches
     - when: manual
       allow_failure: true
+
+.release-tag:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/'
+      when: on_success
+    - when: never
 
 ################################################################################
 # Build
@@ -96,7 +102,6 @@ build:
       - host/adblockplus/dist/release/adblockplus-*.tar.gz
       - host/adblockplus/dist/release/adblockplus-chrome-*-mv2.zip
       - host/adblockplus/dist/release/adblockplus-chrome-*-mv3.zip
-      - host/adblockplus/dist/release/adblockplus-chromedevelopment-*-mv3.zip
       - host/adblockplus/dist/release/adblockplus-firefox-*-mv2.xpi
 
 buildfromsource:
@@ -316,10 +321,9 @@ end-to-end:MV3:chromium:
 create_release:
   stage: release
   image: gitlab/glab
+  needs: ["build"]
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/'
-      when: on_success
-    - when: never
+    - !reference [.release-tag, rules]
   script:
     - apk add nodejs
     - version=${CI_COMMIT_TAG/adblockplus-/""}
@@ -331,9 +335,7 @@ upload_sourcemaps:
   stage: release
   needs: ["build"]
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^(adblockplus)-v?\d+(\.\d+)*$/'
-      when: on_success
-    - when: never
+    - !reference [.release-tag, rules]
   script:
     - npm i
     - cd host/adblockplus
