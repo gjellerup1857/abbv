@@ -39,16 +39,8 @@ async function getPremiumStatus() {
 }
 
 async function isAcceptableAdsActive() {
-  const subs = await ewe.subscriptions.getSubscriptions();
-  const privacyUrl = ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL;
-  const aaUrl = ewe.subscriptions.ACCEPTABLE_ADS_URL;
-
-  for (const subscription of subs) {
-    if ((subscription.url === privacyUrl || subscription.url === aaUrl) && subscription.enabled) {
-      return booleanToURLBoolean(true);
-    }
-  }
-  return booleanToURLBoolean(false);
+  const isActive = await ewe.subscriptions.hasAcceptableAdsEnabled();
+  return booleanToURLBoolean(isActive);
 }
 
 export async function setUninstallURL() {
