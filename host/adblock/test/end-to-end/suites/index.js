@@ -35,7 +35,7 @@ export default () => {
     await beforeEachTasks();
   });
 
-  describe("Test server", testServer);
+  describe("Test Server", testServer);
 
   describe("Smoke Tests - Main", function () {
     describe("Extension", extension);

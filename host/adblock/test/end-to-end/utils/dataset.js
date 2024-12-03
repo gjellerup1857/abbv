@@ -215,3 +215,8 @@ export const premiumFilterLists = [
   { inputId: "distraction-control", text: "Distraction Control" },
   { inputId: "cookies-premium", text: "Cookie Consent Cutter" },
 ];
+
+export const premiumPopupToggleItems = [
+  { name: "cookies-premium", action: "confirmCookie" },
+  { name: "distraction-control", action: "confirmDistractions" },
+];

@@ -16,7 +16,7 @@
  */
 
 import { expect } from "expect";
-import webdriver from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 
 import {
   getDisplayedElement,
@@ -27,6 +27,7 @@ import {
 import {
   addFiltersToAdBlock,
   blockHideUrl,
+  aaTestPageUrl,
   checkBlockHidePage,
   initOptionsCustomizeTab,
   setCustomFilters,
@@ -34,16 +35,9 @@ import {
   clickFilterlist,
   setAADefaultState,
   allowlistingFilter,
+  customBlockingFilters,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
-
-const { By } = webdriver;
-
-const customFilters = [
-  "/pop_ads.js", // no longer exists in EasyList
-  "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
-  "localhost##.AdContainer", // Needed to override EasyList's "@@://localhost:$generichide"
-];
 
 export default () => {
   after(async function () {
@@ -110,7 +104,7 @@ export default () => {
 
   it("blocks and hides ads", async function () {
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock(customFilters.join("\n"));
+    await addFiltersToAdBlock(customBlockingFilters.join("\n"));
 
     await openNewTab(blockHideUrl);
     await checkBlockHidePage(false);
@@ -134,7 +128,7 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    const allFilters = [...customFilters, allowlistingFilter];
+    const allFilters = [...customBlockingFilters, allowlistingFilter];
 
     await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters(allFilters);
@@ -145,7 +139,7 @@ export default () => {
     await initOptionsCustomizeTab(getOptionsHandle());
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await setCustomFilters(customFilters);
+    await setCustomFilters(customBlockingFilters);
 
     await driver.switchTo().window(websiteHandle);
     await checkBlockHidePage(false);
@@ -153,22 +147,21 @@ export default () => {
   });
 
   it("displays acceptable ads", async function () {
-    const aaUrl = "http://testpages.adblockplus.org:3005/aa.html";
     const visibleSelector = "#abptest2";
     const hiddenSelector = "#abptest";
-    const aaTimeout = 500;
     const aaFLButtonId = "adblockFilterList_0";
+    const { expectAAEnabled } = browserDetails;
 
     await initOptionsFiltersTab(getOptionsHandle());
     await driver.wait(
       // https://eyeo.atlassian.net/browse/EXT-446
       async () => {
-        return (await isCheckboxEnabled(aaFLButtonId)) === browserDetails.expectAAEnabled;
+        return (await isCheckboxEnabled(aaFLButtonId)) === expectAAEnabled;
       },
       2000,
-      `Acceptable Ads is not in the default state. Expected state: ${browserDetails.expectAAEnabled}`,
+      `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
     );
-    const websiteHandle = await openNewTab(aaUrl);
+    const websiteHandle = await openNewTab(aaTestPageUrl);
     if (browserDetails.expectAAEnabled) {
       await getDisplayedElement(hiddenSelector);
     } else {
@@ -177,23 +170,23 @@ export default () => {
     await getDisplayedElement(visibleSelector);
 
     await initOptionsFiltersTab(getOptionsHandle());
-    await clickFilterlist("acceptable_ads", aaFLButtonId, !browserDetails.expectAAEnabled);
+    await clickFilterlist("acceptable_ads", aaFLButtonId, !expectAAEnabled);
     await driver.switchTo().window(websiteHandle);
     await driver.wait(
       async () => {
         await driver.navigate().refresh();
         try {
-          await getDisplayedElement(visibleSelector, aaTimeout);
-          if (!browserDetails.expectAAEnabled) {
-            await getDisplayedElement(hiddenSelector, aaTimeout);
+          await getDisplayedElement(visibleSelector);
+          if (!expectAAEnabled) {
+            await getDisplayedElement(hiddenSelector);
           } else {
-            await waitForNotDisplayed(hiddenSelector, aaTimeout);
+            await waitForNotDisplayed(hiddenSelector, 500);
           }
           return true;
         } catch (e) {}
       },
       8000,
-      "The AA element is still in unexpected state in 8000 ms",
+      "The AA element is still in unexpected state after 8000 ms",
     );
   });
 };

@@ -85,7 +85,7 @@ Mocha [command line options](https://mochajs.org/#command-line-usage) are
 supported. Example:
 
 ```sh
-MANIFEST_VERSION={2|3} BROWSER={chromium|firefox|edge} npm run --workspace host/adblock test:end-to-end-local -- --grep "Smoke"
+BROWSER={chromium|firefox|edge} MANIFEST_VERSION={2|3} npm run --workspace host/adblock test:end-to-end-local -- --grep "Smoke"
 ```
 
 Screenshots for failing tests are stored in `host/adblock/test/end-to-end/screenshots`.
@@ -102,7 +102,7 @@ To use mocha command line options the `--entrypoint` parameter needs to be set.
 Example:
 
 ```sh
-docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run test:end-to-end-local -- --grep "Smoke"
+docker run --cpus=2 --shm-size=2g -it -e BROWSER={chromium|firefox|edge} -e MANIFEST_VERSION={2|3} --entrypoint npm end-to-end run -w host/adblock test:end-to-end-local -- --grep "Smoke"
 ```
 
 To access the screenshots for failing tests run the following command, which

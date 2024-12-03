@@ -8,14 +8,18 @@ import { removeScreenshots } from "./runners/helpers.js";
 // e.g., --suite filterlists
 const args = process.argv.slice(2);
 
+// Global timeout for test cases. Test cases expected to take longer time to run
+// use `this.timeout()` to set an individual higher timeout.
+const globalTimeout = 30000;
+
 async function runMochaTests() {
   return new Promise((resolve, reject) => {
     const mochaProcess = spawn(
       "mocha",
-      // Add the "--paralle" flag to run tests in parallel.
+      // Add the "--parallel" flag to run tests in parallel.
       // Ensure the real-time logging can work in parallel before doing that and
       // the CI server can handle the increased load.
-      ["test/end-to-end/runners/runner.*.js", "--timeout", "150000", ...args],
+      ["test/end-to-end/runners/runner.*.js", "--timeout", globalTimeout, ...args],
       { stdio: "inherit" },
     );
 

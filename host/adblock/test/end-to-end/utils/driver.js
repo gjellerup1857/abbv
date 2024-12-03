@@ -15,9 +15,8 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import webdriver from "selenium-webdriver";
-
-const { By } = webdriver;
+import { By } from "selenium-webdriver";
+import { expect } from "expect";
 
 export async function findUrl(expectedUrl, timeout = 5000) {
   let url;
@@ -75,19 +74,23 @@ export async function getTabId(optionsHandle) {
   return tabId;
 }
 
-// The forceRefresh parameter is a temporary workaround, to be removed when fixing
+// The forceRefresh property is a temporary workaround, to be removed when fixing
 // https://eyeo.atlassian.net/browse/EXT-335
-export async function getDisplayedElement(cssSelector, timeout = 500, forceRefresh = true) {
+export async function getDisplayedElement(
+  cssSelector,
+  { timeout = 500, forceRefresh = true, checkDisplayed = true } = {},
+) {
   let elem;
   const findElement = async () => {
     await driver.wait(
       async () => {
         try {
           elem = await driver.findElement(By.css(cssSelector));
-          return await elem.isDisplayed();
-        } catch (e) {
-          return false;
-        }
+          if (checkDisplayed) {
+            return await elem.isDisplayed();
+          }
+          return true;
+        } catch (e) {}
       },
       timeout,
       `Element "${cssSelector}" was not displayed after ${timeout}ms`,
@@ -124,7 +127,7 @@ export function waitForNotDisplayed(cssText, timeout = 1000) {
   return driver.wait(
     async () => {
       try {
-        await getDisplayedElement(cssText, 500, false);
+        await getDisplayedElement(cssText, { timeout: 500, forceRefresh: false });
         return false;
       } catch (err) {
         if (err.name === "TimeoutError") {
@@ -165,19 +168,53 @@ export function isCheckboxEnabled(inputId) {
   return waitForNotNullAttribute(inputId, "checked");
 }
 
-export async function waitAndClickOnElement(selector, timeout = 1000) {
-  const elem = await getDisplayedElement(selector, timeout, false);
-  // scroll into view
-  await driver.executeScript("arguments[0].scrollIntoView();", elem);
-  // make sure the element is interactable
-  await driver.wait(async () => elem.isEnabled(), 500);
-  await elem.click();
+export async function clickOnDisplayedElement(
+  cssSelector,
+  { timeout = 500, scrollIntoView = false, checkDisplayed = true, checkAttribute = null } = {},
+) {
+  const bigTimeout = timeout * 2;
+
+  let elem;
+  await driver.wait(
+    async () => {
+      try {
+        elem = await getDisplayedElement(cssSelector, {
+          timeout,
+          forceRefresh: false,
+          checkDisplayed,
+        });
+        if (scrollIntoView) {
+          await driver.executeScript("arguments[0].scrollIntoView();", elem);
+        }
+        if (checkAttribute) {
+          const { name, value } = checkAttribute;
+          expect(await elem.getAttribute(name)).toEqual(value);
+        }
+        // make sure the element is interactable
+        await elem.isEnabled();
+
+        await elem.click();
+        return true;
+      } catch (err) {
+        // Other element would receive the click
+        if (err.name === "ElementClickInterceptedError") {
+          console.warn(err.message);
+          return false;
+        }
+
+        throw err;
+      }
+    },
+    bigTimeout,
+    `Element ${cssSelector} couldn't be clicked`,
+  );
+
+  return elem;
 }
 
 export async function clickAndNavigateBack(selector, expectedURL) {
   const currentURL = await driver.getCurrentUrl();
-  const elem = await getDisplayedElement(selector);
-  await elem.click();
+  await clickOnDisplayedElement(selector);
 
   const newURL = await driver.getCurrentUrl();
   if (newURL !== expectedURL) {
@@ -192,7 +229,7 @@ export async function clickAndCloseNewTab(selector, expectedURL) {
   const currentWindowHandle = await driver.getWindowHandle();
   const initialWindowHandles = await driver.getAllWindowHandles();
 
-  await waitAndClickOnElement(selector);
+  await clickOnDisplayedElement(selector, { timeout: 1000, scrollIntoView: true });
   await driver.wait(
     async () => {
       const currentWindowHandles = await driver.getAllWindowHandles();
@@ -225,4 +262,11 @@ export async function clickAndCloseNewTab(selector, expectedURL) {
   // Close the new tab and switch back to the original window
   await driver.close();
   await driver.switchTo().window(currentWindowHandle);
+}
+
+export async function scrollToBottom() {
+  await driver.executeScript(() => {
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+  await driver.sleep(500); // Sometimes the scrolling is not done when the element is searched for
 }
