@@ -30,6 +30,8 @@ const abbreviations = [
   ["apv", "applicationVersion"],
   ["av", "addonVersion"],
   ["c", "corrupted"],
+  ["er", "experimentsRevision"],
+  ["ev", "experimentsVariants"],
   ["fv", "firstVersion"],
   ["ndc", "notificationDownloadCount"],
   ["p", "platform"],
@@ -74,6 +76,44 @@ function getAdsSubscriptions() {
 }
 
 /**
+ * Converts BigInt number to bytes array
+ *
+ * @param {BigInt} bn - Number
+ * @returns {Uint8Array} bytes array
+ */
+function bnToBytes(bn) {
+  const chars = BigInt(bn).toString(8);
+  const buffer = new Uint8Array(chars.length);
+
+  return buffer.map((byte, idx) => {
+    return parseInt(chars.slice(idx, idx + 1), 8);
+  });
+}
+
+/**
+ * Retrieves split experiments assignments as base64-encoded bitmap
+ *
+ * @returns {string} split experiments assignments
+ */
+async function getExperiments() {
+  let variantsBitmap = 0n;
+
+  const experiments = await ewe.experiments.getExperiments();
+  for (const experiment of experiments) {
+    for (const variant of experiment.variants) {
+      variantsBitmap |= variant.assigned ? 1n : 0n;
+      variantsBitmap <<= 1n;
+    }
+  }
+  variantsBitmap >>= 1n;
+
+  const bytes = bnToBytes(variantsBitmap);
+  const base64 = btoa(String.fromCharCode(...bytes));
+
+  return base64;
+}
+
+/**
  * Determines whether any of the given subscriptions are installed and enabled
  *
  * @param {Set} urls
@@ -98,6 +138,8 @@ export async function setUninstallURL() {
   let params = Object.create(info);
 
   params.corrupted = isDataCorrupted() ? "1" : "0";
+  params.experimentsRevision = await ewe.experiments.getRevisionId();
+  params.experimentsVariants = await getExperiments();
   params.firstVersion = ewe.reporting.getFirstVersion();
 
   let notificationDownloadCount = await ewe.notifications.getDownloadCount();
