@@ -99,8 +99,8 @@ async function getExperiments() {
   let variantsBitmap = 0n;
 
   const experiments = await ewe.experiments.getExperiments();
-  for (const experiment of experiments) {
-    for (const variant of experiment.variants) {
+  for (const experiment of [...experiments].reverse()) {
+    for (const variant of [...experiment.variants].reverse()) {
       variantsBitmap |= variant.assigned ? 1n : 0n;
       variantsBitmap <<= 1n;
     }
