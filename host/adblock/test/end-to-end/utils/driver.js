@@ -270,3 +270,13 @@ export async function scrollToBottom() {
   });
   await driver.sleep(500); // Sometimes the scrolling is not done when the element is searched for
 }
+
+export function getFromStorage(storage, key) {
+  return driver.executeAsyncScript(
+    async (params, callback) => {
+      const result = await browser.storage[params.storage].get([params.key]);
+      callback(result[params.key]);
+    },
+    { storage, key },
+  );
+}

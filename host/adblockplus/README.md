@@ -158,6 +158,7 @@ Notes:
 - DNS mapping from `testpages.adblockplus.org` to `127.0.0.1` is used in
   browsers in order to test with locally served pages and AA-related filter
   rules.
+- Eyeometry tests require eyeometry credentials filled in `.env`.
 
 #### Local run
 
