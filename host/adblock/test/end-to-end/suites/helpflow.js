@@ -1,7 +1,17 @@
 import { expect } from "expect";
-import { initPopupPage, addFiltersToAdBlock, blockHideUrl, initOptionsGeneralTab } from "../utils/page.js";
+import {
+  initPopupPage,
+  addFiltersToAdBlock,
+  blockHideUrl,
+  initOptionsGeneralTab,
+} from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
-import { getDisplayedElement, openNewTab, getTabId, waitAndClickOnElement } from "../utils/driver.js";
+import {
+  getDisplayedElement,
+  openNewTab,
+  getTabId,
+  waitAndClickOnElement,
+} from "../utils/driver.js";
 
 const seeAdSelector = "[i18n='see_ad']";
 
