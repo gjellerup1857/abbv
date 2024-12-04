@@ -48,7 +48,12 @@ import { isDialog, isDialogBehavior, isDialogContent } from "./dialog";
 import { type Dialog } from "./dialog.types";
 import { setDialogCommandHandler } from "./middleware";
 import { clearStats, getStats, setStats } from "./stats";
-import { DialogEventType, ShowOnpageDialogResult } from "./tab-manager.types";
+import {
+  coolDownPeriodKey,
+  DialogEventType,
+  lastShownKey,
+  ShowOnpageDialogResult
+} from "./tab-manager.types";
 import {
   shouldBeDismissed,
   shouldBeShown,
@@ -56,6 +61,8 @@ import {
 } from "./timing";
 import { checkLanguage } from "~/ipm/background/language-check";
 import { isTabPage, pageEmitter } from "~/core/pages/background";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
+import { Timing } from "./timing.types";
 
 /**
  * Tab-specific session storage for dialogs
@@ -70,6 +77,49 @@ export const eventEmitter = new EventEmitter();
  * Keys are dialog IDs
  */
 const unassignedDialogs = new Map<string, Dialog>();
+
+/**
+ * Compares two dialogs to see which has the higher priority.
+ *
+ * @param dialogA The first dialog
+ * @param dialogB The second dialog
+ * @returns -1 if dialogA has a higher priority, 1 if dialogB does, 0 if both are equal
+ */
+export function compareDialogsByPriority(
+  dialogA: Dialog,
+  dialogB: Dialog
+): number {
+  if (dialogA.behavior.priority > dialogB.behavior.priority) {
+    return -1;
+  }
+
+  if (dialogA.behavior.priority < dialogB.behavior.priority) {
+    return 1;
+  }
+
+  const lowPriorityFallbackValue = "x";
+  const ipmIdA = (dialogA.ipmId ?? lowPriorityFallbackValue).toUpperCase();
+  const ipmIdB = (dialogB.ipmId ?? lowPriorityFallbackValue).toUpperCase();
+
+  if (ipmIdA < ipmIdB) {
+    return -1;
+  }
+  if (ipmIdA > ipmIdB) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/**
+ * Checks whether the global dialog cool down period is still ongoing.
+ *
+ * @returns true if the cool down period is till ongoing, false if not
+ */
+export async function isCoolDownPeriodOngoing(): Promise<boolean> {
+  await Prefs.untilLoaded;
+  return Prefs.get(lastShownKey) + Prefs.get(coolDownPeriodKey) > Date.now();
+}
 
 /**
  * Removes on-page dialog
@@ -316,7 +366,14 @@ async function handlePageLoadedEvent(page: unknown): Promise<void> {
     return;
   }
 
-  for (const dialog of unassignedDialogs.values()) {
+  // Sort the waiting dialogs by priority.
+  const dialogs = Array.from(unassignedDialogs.values()).sort(
+    compareDialogsByPriority
+  );
+
+  // Finally iterate over list and try until a dialog can be shown, or the
+  // list is empty.
+  for (const dialog of dialogs) {
     // Ignore and dismiss command if license state doesn't match those in the
     // command
     if (!(await doesLicenseStateMatch(dialog.behavior))) {
@@ -407,6 +464,17 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.rejected;
   }
 
+  // Check if the global dialog cool down period is still ongoing.
+  // Dialogs with "immediate" timing (e.g. the local YT dialog) ignore
+  // the cool down.
+  if (
+    dialog.behavior.timing !== Timing.immediate &&
+    (await isCoolDownPeriodOngoing())
+  ) {
+    logger.debug("[onpage-dialog]: Cool down period still ongoing");
+    return ShowOnpageDialogResult.ignored;
+  }
+
   const stats = getStats(dialog.id);
   const shouldDialogBeDismissed = shouldBeDismissed(dialog, stats);
   const shouldDialogBeShown = await shouldBeShown(tab, dialog, stats);
@@ -441,10 +509,12 @@ export async function showOnpageDialog(
     return ShowOnpageDialogResult.ignored;
   }
 
+  const now = Date.now();
   setStats(dialog.id, {
     displayCount: stats.displayCount + 1,
-    lastDisplayTime: Date.now()
+    lastDisplayTime: now
   });
+  await Prefs.set(lastShownKey, now);
 
   await addDialog(tabId);
 

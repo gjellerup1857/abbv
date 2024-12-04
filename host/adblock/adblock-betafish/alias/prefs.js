@@ -235,6 +235,16 @@ defaults.logger_log_level = 3;
 defaults.onpage_dialog_command_stats = {};
 
 /**
+ * The timestamp of the last time we showed a dialog.
+ */
+defaults.onpage_dialog_last_shown = 0;
+
+/**
+ * The minimum amount of time between two dialogs being shown.
+ */
+defaults.onpage_dialog_cool_down = 24 * 60 * 60 * 1000;
+
+/**
  * Map of on-page dialog timing configurations
  *
  * @type {Object}

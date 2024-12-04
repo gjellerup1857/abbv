@@ -22,7 +22,8 @@ import {
   isSafeUrl,
   isValidLicenseStateList,
   isValidDomainList,
-  isValidDate
+  isValidDate,
+  isEmptyOrPositiveNumber
 } from "./param-validator";
 import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
@@ -189,6 +190,33 @@ describe("param-validator", () => {
     });
     it("should return true for valid date", () => {
       expect(isValidDate("1996-01-16")).toBe(true);
+    });
+  });
+
+  describe("isEmptyOrPositiveNumber", () => {
+    it("returns true if passed `undefined`", () => {
+      expect(isEmptyOrPositiveNumber(undefined)).toBe(true);
+    });
+
+    it("returns true if passed a positive number", () => {
+      expect(isEmptyOrPositiveNumber(5)).toBe(true);
+      expect(isEmptyOrPositiveNumber(56465464654654)).toBe(true);
+      expect(isEmptyOrPositiveNumber(Infinity)).toBe(true);
+    });
+
+    it("returns false if passed 0", () => {
+      expect(isEmptyOrPositiveNumber(0)).toBe(false);
+    });
+
+    it("returns false if passed a negative number", () => {
+      expect(isEmptyOrPositiveNumber(-2)).toBe(false);
+      expect(isEmptyOrPositiveNumber(-2456578547)).toBe(false);
+    });
+
+    it("returns false for any non number argument", () => {
+      expect(isEmptyOrPositiveNumber(new Map())).toBe(false);
+      expect(isEmptyOrPositiveNumber([])).toBe(false);
+      expect(isEmptyOrPositiveNumber({})).toBe(false);
     });
   });
 });
