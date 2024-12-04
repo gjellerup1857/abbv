@@ -45,7 +45,15 @@ const openHelp = (pageInfo) => {
   sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "feedback_clicked" });
   if (!pageInfo.disabledSite) {
     // This navigates to the index and starts the help SPA
-    window.location.assign("adblock-button-popup.html?command=showHelp");
+    const currentURL = new URL(window.location.href);
+    currentURL.pathname = "/adblock-button-popup.html";
+    currentURL.search = "?command=showHelp";
+    // Add tabId if it exists
+    const tabId = getTabId();
+    if (tabId) {
+      currentURL.searchParams.set("tabId", tabId);
+    }
+    window.location.href = currentURL.toString();
   } else {
     sendMessageWithNoResponse({ command: "openTab", urlToOpen: "https://help.getadblock.com/" });
   }

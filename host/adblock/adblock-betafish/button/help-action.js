@@ -19,6 +19,15 @@
 /* global pageInfo, transitionTo, logHelpFlowResults, filterUpdateError:true,
   browser, savedData, translate, connectUIPort */
 
+function getCurrentActiveTabId() {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has("tabId")) {
+    return parseInt(searchParams.get("tabId"), 10);
+  }
+  // defaults to the selected tab of the current window.
+  return null;
+}
+
 // Help flow button actions -- called when the associated buttons are clicked
 /* eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars */
 const popupMenuHelpActionMap = {
@@ -113,16 +122,16 @@ const popupMenuHelpActionMap = {
     window.close();
   },
   reloadFinishFlowAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(getCurrentActiveTabId());
     logHelpFlowResults("reloadFinishFlow");
     window.close();
   },
   reloadCheckAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(getCurrentActiveTabId());
     transitionTo("checkedBasics", false);
   },
   reloadCheckDistractionAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(getCurrentActiveTabId());
     transitionTo("checkedDistractionBasics", false);
   },
   stillSeeAdAction() {
@@ -163,7 +172,7 @@ const popupMenuHelpActionMap = {
   unpauseAndReloadAction() {
     if (pageInfo.paused) {
       browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: false }).then(() => {
-        browser.tabs.reload();
+        browser.tabs.reload(getCurrentActiveTabId());
         transitionTo("unpauseAndReload", false);
       });
     } else if (pageInfo.url) {
@@ -174,11 +183,11 @@ const popupMenuHelpActionMap = {
           newValue: false,
         })
         .then(() => {
-          browser.tabs.reload();
+          browser.tabs.reload(getCurrentActiveTabId());
           transitionTo("unpauseAndReload", false);
         });
     } else {
-      browser.tabs.reload();
+      browser.tabs.reload(getCurrentActiveTabId());
       transitionTo("unpauseAndReload", false);
     }
   },
@@ -186,7 +195,7 @@ const popupMenuHelpActionMap = {
   unpauseAndReloadActionDistraction() {
     if (pageInfo.paused) {
       browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: false }).then(() => {
-        browser.tabs.reload();
+        browser.tabs.reload(getCurrentActiveTabId());
         browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
           // eslint-disable-next-line no-global-assign
           pageInfo = info;
@@ -201,7 +210,7 @@ const popupMenuHelpActionMap = {
           newValue: false,
         })
         .then(() => {
-          browser.tabs.reload();
+          browser.tabs.reload(getCurrentActiveTabId());
           browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
             // eslint-disable-next-line no-global-assign
             pageInfo = info;
@@ -209,7 +218,7 @@ const popupMenuHelpActionMap = {
           });
         });
     } else {
-      browser.tabs.reload();
+      browser.tabs.reload(getCurrentActiveTabId());
       browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
         // eslint-disable-next-line no-global-assign
         pageInfo = info;
@@ -229,7 +238,7 @@ const popupMenuHelpActionMap = {
   // Pauses and reloads the page
   reloadStillBrokenAction() {
     browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: true }).then(() => {
-      browser.tabs.reload();
+      browser.tabs.reload(getCurrentActiveTabId());
       transitionTo("reloadStillBroken", false);
     });
   },
@@ -281,7 +290,7 @@ const popupMenuHelpActionMap = {
     browser.runtime.sendMessage({ type: "subscriptions.add", url: savedData.subURL });
   },
   reloadcheckedDistractions() {
-    browser.tabs.reload();
+    browser.tabs.reload(getCurrentActiveTabId());
     transitionTo("checkedDistractions", false);
   },
   distractionsProblemSolvedAction() {
