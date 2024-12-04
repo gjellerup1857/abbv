@@ -36,7 +36,7 @@ const abbreviations = [
   ["pv", "platformVersion"],
   ["s", "subscriptions"],
   ["wafc", "webAllowlistingFilterCount"],
-  ["p_s", "premiumStatus"]
+  ["ps", "premiumStatus"]
 ];
 
 /**

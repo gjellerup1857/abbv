@@ -37,6 +37,6 @@ module.exports = function () {
     if (url === null) this.skip();
 
     await checkInstallUninstallUrl(url, appVersion);
-    expect(url).to.match(/p_s=(0|1)/);
+    expect(url).to.match(/ps=(0|1)/);
   });
 };
