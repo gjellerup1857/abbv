@@ -1,14 +1,21 @@
 import { expect } from "expect";
-import { initPopupPage, addFiltersToAdBlock, blockHideUrl } from "../utils/page.js";
+import { initPopupPage, addFiltersToAdBlock, blockHideUrl, initOptionsGeneralTab } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
-import {
-  getDisplayedElement,
-  openNewTab,
-  getTabId,
-  waitAndClickOnElement,
-} from "../utils/driver.js";
+import { getDisplayedElement, openNewTab, getTabId, waitAndClickOnElement } from "../utils/driver.js";
 
 const seeAdSelector = "[i18n='see_ad']";
+
+async function getLastDownloadTimestamp() {
+  await initOptionsGeneralTab(getOptionsHandle());
+  return driver.executeScript(() =>
+    browser.runtime.sendMessage({ type: "subscriptions.get" }).then((result) => {
+      // Access the first filterlist subscription in the array to get the lastDownload time
+      const firstSubscription = result[0];
+      const lastDownloadTimestamp = firstSubscription.lastDownload;
+      return lastDownloadTimestamp;
+    }),
+  );
+}
 
 async function clickHelpIcon() {
   await openNewTab(blockHideUrl);
@@ -25,24 +32,20 @@ async function clickHelpIcon() {
 
 export default () => {
   it("initiates helpflow for first time ad", async function () {
-    // Capture the timestamp before page reload
-    const timestampBeforeReload = await driver.executeScript(() => {
-      return Date.now();
-    });
+    // Capture the last download timestamp before filterlists are updated
+    const lastDownloadBeforeReload = await getLastDownloadTimestamp();
     await clickHelpIcon();
-
     await waitAndClickOnElement(seeAdSelector, 3000);
     await waitAndClickOnElement("[i18n='first_time_seeing_ad']", 3000);
     await waitAndClickOnElement(".button.help-button", 1000);
     await waitAndClickOnElement("[i18n='updating_filter_lists']");
     await waitAndClickOnElement("[i18n='reload_the_page']");
     await driver.sleep(3000);
-    // verify that filterlists are updated
-    const timestampAfterReload = await driver.executeScript(() => {
-      return Date.now();
-    });
-    // Verify that the timestamp after reload is greater than the timestamp before reload
-    expect(timestampAfterReload).toBeGreaterThan(timestampBeforeReload);
+    await initOptionsGeneralTab(getOptionsHandle());
+    // Capture the last download timestamp after filterlists are updated
+    const lastDownloadAfterReload = await getLastDownloadTimestamp();
+    // Compare the lastDownload timestamps
+    expect(lastDownloadAfterReload).not.toEqual(lastDownloadBeforeReload);
   });
 
   it("initiates helpflow for first time ad on allowlisted site", async function () {
@@ -87,20 +90,16 @@ export default () => {
   });
 
   it("initiates helpflow for website is broken", async function () {
-    // Capture the timestamp before page reload
-    const timestampBeforeReload = await driver.executeScript(() => {
-      return Date.now();
-    });
     await clickHelpIcon();
 
     await waitAndClickOnElement("[i18n='website_broken']", 5000);
     await waitAndClickOnElement("[i18n='reload_the_page']", 3000);
     await driver.sleep(3000);
-    // verify that filterlists are updated
-    const timestampAfterReload = await driver.executeScript(() => {
-      return Date.now();
-    });
-    // Verify that the timestamp after reload is greater than the timestamp before reload
-    expect(timestampAfterReload).toBeGreaterThan(timestampBeforeReload);
+    //check that AdBlock is disabld after page is reloaded
+    await openNewTab(blockHideUrl);
+    const tabId = await getTabId(getOptionsHandle());
+    await initPopupPage(tabId);
+    const pausedMessage = await getDisplayedElement("[id ='hostname']", 3000);
+    expect(await pausedMessage.getText()).toContain("AdBlock is Paused");
   });
 };
