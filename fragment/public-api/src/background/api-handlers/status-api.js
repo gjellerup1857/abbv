@@ -54,14 +54,7 @@ async function getAllowlistStatus({ tabId, ewe }) {
  * @returns {Promise<*>} True if AA is enabled, False otherwise
  */
 async function hasAAEnabled({ ewe }) {
-  const hasAA = await ewe.subscriptions.has(
-    ewe.subscriptions.ACCEPTABLE_ADS_URL,
-  );
-  const hasAAPrivacy = await ewe.subscriptions.has(
-    ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL,
-  );
-
-  return hasAA || hasAAPrivacy;
+  return await ewe.subscriptions.hasAcceptableAdsEnabled();
 }
 
 /**
