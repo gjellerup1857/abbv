@@ -532,22 +532,41 @@ export async function getPopupBlockedAdsTotalCount() {
 }
 
 export async function enableTemporaryPremium() {
-  // activate premium
-  await sendExtMessage({ type: "adblock:activate" });
-
   const currentDate = new Date();
   const options = { year: "numeric", month: "long" };
   const formattedDate = currentDate.toLocaleDateString("en-US", options).toUpperCase();
   const expectedValues = [`SUPPORTER SINCE ${formattedDate}`, "ACTIVE"];
 
-  await initOptionsPremiumTab(getOptionsHandle());
-  const premiumStatus = await getDisplayedElement("#premium_status_msg", {
-    timeout: 4000,
-    forceRefresh: false,
-  });
+  let premiumStatus;
+  // Occasionally the `adblock:activate` message has no effect in the premium
+  // status. In that case the activation flow is retried.
+  await driver.wait(
+    async () => {
+      await sendExtMessage({ type: "adblock:activate" }); // activate premium
+      await initOptionsPremiumTab(getOptionsHandle());
+
+      try {
+        premiumStatus = await getDisplayedElement("#premium_status_msg", {
+          timeout: 4000, // Premium status message may take a while to appear
+          forceRefresh: false,
+        });
+        return true;
+      } catch (err) {
+        if (err.name === "TimeoutError") {
+          console.warn("Temporary premium wasn't activated. Retrying...");
+          return false;
+        }
+
+        throw err;
+      }
+    },
+    10000,
+    "Temporary premium couldn't be activated",
+  );
+
   const premiumStatusText = await premiumStatus.getText();
   if (!expectedValues.includes(premiumStatusText)) {
-    throw new Error(`Premium not activated.`);
+    throw new Error(`Unexpected premium status after activation: ${premiumStatusText}`);
   }
 }
 
