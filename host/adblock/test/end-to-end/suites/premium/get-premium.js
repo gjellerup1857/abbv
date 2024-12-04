@@ -125,33 +125,44 @@ export default () => {
     // Check theme is displayed on popup page
     await getDisplayedElement("#dark_theme");
 
+    const timeout = 1000;
     for (const { name, action } of premiumPopupToggleItems) {
       await clickOnDisplayedElement(`[data-name="${name}"]`, {
+        timeout,
         checkAttribute: { name: "data-is-checked", value: null },
       });
-      await clickOnDisplayedElement(`[data-action="${action}"] > button`, { timeout: 1000 });
 
-      // Refreshing the popup page right after clicking may make the click ineffective
-      await driver.sleep(500);
+      const actionSelector = `[data-action="${action}"] > button`;
+      // A sliding animation of the action button makes polling needed
+      await driver.wait(
+        async () => {
+          try {
+            await clickOnDisplayedElement(actionSelector);
+            // The button may be clicked while it's still animated, making the
+            // click ineffective. That's why the next check is needed
+            await waitForNotDisplayed(actionSelector);
+            return true;
+          } catch (e) {}
+        },
+        2000,
+        `${actionSelector} was still displayed after clicking on it`,
+      );
 
       await initOptionsGeneralTab(getOptionsHandle());
       await initPopupPage(tabId);
     }
 
-    const timeout = 5000;
+    const actualValues = {};
+    const expectedValues = {};
     for (const { name } of premiumPopupToggleItems) {
-      await driver.wait(
-        async () => {
-          const toggleElement = await getDisplayedElement(`[data-name="${name}"]`, {
-            timeout: 1000,
-            forceRefresh: false,
-          });
-          return (await toggleElement.getAttribute("data-is-checked")) === "true";
-        },
+      expectedValues[name] = "true";
+
+      const toggleElement = await getDisplayedElement(`[data-name="${name}"]`, {
         timeout,
-        `${name} element was not checked after ${timeout}ms`,
-      );
+      });
+      actualValues[name] = await toggleElement.getAttribute("data-is-checked");
     }
+    expect(actualValues).toEqual(expectedValues);
 
     const url = "http://localhost:3005/dc-filters.html";
     await openNewTab(url);
