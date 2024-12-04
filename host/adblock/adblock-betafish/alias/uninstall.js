@@ -40,8 +40,24 @@ async function getPremiumStatus() {
 }
 
 async function isAcceptableAdsActive() {
-  const isActive = await ewe.subscriptions.hasAcceptableAdsEnabled();
-  return booleanToURLBoolean(isActive);
+  const subs = await ewe.subscriptions.getSubscriptions();
+  const aa = subs.find(
+    sub => sub.url === ewe.subscriptions.ACCEPTABLE_ADS_URL);
+  const aaPrivacy = subs.find(
+    sub => sub.url === ewe.subscriptions.ACCEPTABLE_ADS_PRIVACY_URL);
+
+  // similar to telemetry ping ""
+  let result;
+  if (!aa && !aaPrivacy) {
+    result = "u"; // Both filter lists unavailable
+  } else if (aa.enabled) {
+    result = "1";
+  } else if (aaPrivacy.enabled) {
+    result = "2";
+  } else if (!aa.enabled && !aaPrivacy.enabled) {
+    result = "0"; // Both filter lists unsubscribed
+  }
+  return result;
 }
 
 export async function setUninstallURL() {

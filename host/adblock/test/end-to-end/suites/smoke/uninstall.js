@@ -31,7 +31,7 @@ export default () => {
       t: expect.any(Number),
       wafc: "0",
       ps: expect.any(Number),
-      aa: expect.any(Number),
+      aa: expect.any(String),
     };
 
     await initOptionsGeneralTab(getOptionsHandle());
@@ -48,11 +48,10 @@ export default () => {
     actualParams.lt = parseInt(actualParams.lt, 10);
     actualParams.t = parseInt(actualParams.t, 10);
     actualParams.ps = parseInt(actualParams.ps, 10);
-    actualParams.aa = parseInt(actualParams.aa, 10);
+    actualParams.aa = actualParams.aa;
 
     expect(actualParams).toEqual(expect.objectContaining(expectedParams));
-    const URL_BOOLEANS = [1, 0];
-    expect(URL_BOOLEANS.includes(actualParams.aa)).toEqual(true);
-    expect(URL_BOOLEANS.includes(actualParams.ps)).toEqual(true);
+    expect(["u", "0", "1", "2"].includes(actualParams.aa)).toEqual(true);
+    expect([1, 0].includes(actualParams.ps)).toEqual(true);
   });
 };
