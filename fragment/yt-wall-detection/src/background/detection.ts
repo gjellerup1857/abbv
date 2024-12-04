@@ -70,8 +70,8 @@ const processYouTubeWallMessage = async (
   message: AdWallMessage,
   sender: MessageSender,
 ): Promise<void> => {
-  const tabId = sender.tab?.id ?? sender.page?.id;
-  const tabURL = sender.tab?.url ?? sender.page?.url;
+  const tabId = sender.tab?.id;
+  const tabURL = sender.tab?.url;
   if (typeof tabId === "undefined" || typeof tabURL === "undefined") {
     return;
   }
@@ -90,10 +90,12 @@ const processYouTubeWallMessage = async (
   sendAdWallEvents(youTubeWallDetected, message.userLoggedIn ? "1" : "0", "0");
 
   const senderURL = new URL(tabURL);
-  const ruleText = `@@||${senderURL.hostname}$document`;
+  let host = senderURL.hostname.replace(/^www\./, "");
+  const ruleText = `@@||${host}^$document`;
   const metadata = {
     expiresByTabId: tabId,
-    origin: "auto",
+    origin: "yt-auto",
+    created: Date.now()
   };
   await parameters.ewe.filters.add(ruleText, metadata);
   if (message.currentPlaybackTime > 5) {

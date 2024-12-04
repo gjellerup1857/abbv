@@ -34,7 +34,7 @@
     },
     {
       "all_frames": true,
-      "js": ["yt-wall-detection-auto-allowlist.preload.js"],
+      "js": ["yt-auto-allowlist.preload.js"],
       "matches": ["*://*.youtube.com/*"],
       "run_at": "document_start"
     },
