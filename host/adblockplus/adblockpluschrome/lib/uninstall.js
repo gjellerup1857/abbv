@@ -36,8 +36,7 @@ const abbreviations = [
   ["pv", "platformVersion"],
   ["s", "subscriptions"],
   ["wafc", "webAllowlistingFilterCount"],
-  ["p_s", "premiumStatus"],
-  ["aa_a", "acceptableAddsActive"]
+  ["p_s", "premiumStatus"]
 ];
 
 /**
@@ -117,7 +116,6 @@ export async function setUninstallURL() {
   let aaSubscriptions = new Set([ewe.subscriptions.ACCEPTABLE_ADS_URL]);
   let adsSubscriptions = getAdsSubscriptions();
   let isAcceptableAdsActive = await isAnySubscriptionActive(aaSubscriptions);
-  params.acceptableAddsActive = isAcceptableAdsActive ? 1 : 0;
   let isAdBlockingActive = await isAnySubscriptionActive(adsSubscriptions);
   params.subscriptions = (isAcceptableAdsActive << 1) | isAdBlockingActive;
   let premiumState = await getPremiumState();
