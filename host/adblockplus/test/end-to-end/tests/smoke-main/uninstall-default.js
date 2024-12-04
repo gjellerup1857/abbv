@@ -17,6 +17,7 @@
 
 "use strict";
 
+const { expect } = require("chai");
 const { uninstallExtension, isEdge } = require("../../helpers");
 const checkInstallUninstallUrl = require("./shared/check-install-uninstall-url");
 
@@ -36,5 +37,6 @@ module.exports = function () {
     if (url === null) this.skip();
 
     await checkInstallUninstallUrl(url, appVersion);
+    expect(url).to.match(/\bps=(0|1)\b/);
   });
 };
