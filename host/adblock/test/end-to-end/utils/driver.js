@@ -200,6 +200,9 @@ export async function clickOnDisplayedElement(
         if (err.name === "ElementClickInterceptedError") {
           console.warn(err.message);
           return false;
+        } else if (err.name === "ElementNotInteractableError") {
+          console.warn(`Element ${cssSelector} not interactable`);
+          return false;
         }
 
         throw err;
@@ -229,7 +232,7 @@ export async function clickAndCloseNewTab(selector, expectedURL) {
   const currentWindowHandle = await driver.getWindowHandle();
   const initialWindowHandles = await driver.getAllWindowHandles();
 
-  await clickOnDisplayedElement(selector, { timeout: 1000, scrollIntoView: true });
+  await clickOnDisplayedElement(selector, { timeout: 2000, scrollIntoView: true });
   await driver.wait(
     async () => {
       const currentWindowHandles = await driver.getAllWindowHandles();
