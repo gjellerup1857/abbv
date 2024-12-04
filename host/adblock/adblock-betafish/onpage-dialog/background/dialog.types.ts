@@ -39,6 +39,10 @@ export interface DialogBehavior extends LicenseStateBehavior {
    * List of domains on which the dialog should or should not be shown
    */
   domainList?: string;
+  /**
+   * The priority of the dialog
+   */
+  priority: number;
 }
 
 /**

@@ -85,7 +85,8 @@ function showDialog(tabId: number, tab: Tabs.Tab): void {
     behavior: {
       displayDuration: 0,
       target: Prefs.get("ytWallDetection_dialog_url"),
-      timing: Timing.immediate
+      timing: Timing.immediate,
+      priority: Infinity
     },
     content: {
       body: [browser.i18n.getMessage("ytWallDetection_dialog_body")],
