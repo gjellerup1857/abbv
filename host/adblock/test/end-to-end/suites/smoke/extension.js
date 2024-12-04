@@ -21,11 +21,12 @@ import { findUrl, openNewTab, isCheckboxEnabled } from "../../utils/driver.js";
 import {
   initOptionsFiltersTab,
   installUrl,
-  getUserIdFromPage,
+  getUserIdFromInstallPage,
   getSubscriptionInfo,
   clickFilterlist,
   reloadExtension,
-  getTotalCountFromPopup,
+  adBlockedCountUrl,
+  waitForAdsBlockedToBeInRange,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 import { getDefaultFilterLists } from "../../utils/dataset.js";
@@ -34,7 +35,7 @@ export default () => {
   it("opens the install url", async function () {
     const { url } = await findUrl(installUrl);
 
-    const userId = await getUserIdFromPage(driver);
+    const userId = await getUserIdFromInstallPage();
 
     await driver.switchTo().window(getOptionsHandle());
     const appVersion = await driver.executeScript(() => {
@@ -89,26 +90,9 @@ export default () => {
   });
 
   it("displays total ad block count", async function () {
-    const url =
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
     const maxAdsBlocked = 15;
 
-    const waitForAdsBlockedToBeInRange = async (min, max) => {
-      let adsBlocked;
-      try {
-        await driver.wait(async () => {
-          adsBlocked = await getTotalCountFromPopup();
-          return adsBlocked > min && adsBlocked <= max;
-        });
-      } catch (err) {
-        throw new Error(
-          `Unexpected ads blocked count. Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`,
-        );
-      }
-      return adsBlocked;
-    };
-
-    const websiteHandle = await openNewTab(url);
+    const websiteHandle = await openNewTab(adBlockedCountUrl);
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
 
     await driver.switchTo().window(websiteHandle);
@@ -118,6 +102,8 @@ export default () => {
   });
 
   it("resets settings", async function () {
+    this.timeout(50000); // The options page may take long time to appear after reloading the extension
+
     const enabledFilterLists = getDefaultFilterLists().filter(({ enabled }) => enabled);
 
     const handleDisabledFilterlistsAlert = async () => {
@@ -161,6 +147,10 @@ export default () => {
     await handleDisabledFilterlistsAlert();
     const aaEnabled = await isCheckboxEnabled(lastInputId);
     expect(aaEnabled).toEqual(false);
+
+    // If the extension is reloaded right after AA is disabled,
+    // restoring the default settings may not work with AA
+    await driver.sleep(5000);
 
     // reload the extension to restore the default settings
     await reloadExtension();

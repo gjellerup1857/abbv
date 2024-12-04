@@ -1,3 +1,4 @@
+/* eslint-disable-next-line no-console */
 const changeHandler = (evt) => console.log("change is possible", evt, evt.target.checked);
 
 export const optionsData = [

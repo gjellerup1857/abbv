@@ -738,6 +738,22 @@ async function reloadExtension(suppressUpdatePage = true) {
   await waitForSwitchToABPOptionsTab(optionsUrl, 60000);
 }
 
+/**
+ * Get persistent storage data
+ * @param {string} storage Storage data type ["local", "session"].
+ * @param {string} key Storage key
+ * @returns {*} Storage data
+ */
+function getFromStorage(storage, key) {
+  return browser.executeAsync(
+    async (params, callback) => {
+      const result = await browser.storage[params.storage].get([params.key]);
+      callback(result[params.key]);
+    },
+    { storage, key }
+  );
+}
+
 module.exports = {
   afterSequence,
   beforeSequence,
@@ -765,5 +781,6 @@ module.exports = {
   addFilter,
   removeFilter,
   reloadExtension,
-  updatePrefs
+  updatePrefs,
+  getFromStorage
 };

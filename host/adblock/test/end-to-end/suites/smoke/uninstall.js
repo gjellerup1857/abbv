@@ -18,12 +18,12 @@
 import { expect } from "expect";
 
 import { findUrl } from "../../utils/driver.js";
-import { getUserIdFromPage } from "../../utils/page.js";
+import { getUserIdFromInstallPage, initOptionsGeneralTab } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
-    const userId = await getUserIdFromPage(driver);
+    const userId = await getUserIdFromInstallPage();
     const expectedParams = {
       u: userId,
       bc: expect.any(Number),
@@ -32,10 +32,7 @@ export default () => {
       wafc: "0",
     };
 
-    await driver.switchTo().window(getOptionsHandle());
-    // To be replaced with waiting until testing.getReadyState == "started"
-    // after https://eyeo.atlassian.net/browse/EE-568 gets fixed
-    await driver.sleep(2000);
+    await initOptionsGeneralTab(getOptionsHandle());
 
     await driver.executeScript(() => {
       browser.management.uninstallSelf();

@@ -1,27 +1,26 @@
-import webdriver from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 
-import { findUrl, openNewTab } from "../utils/driver.js";
+import { clickOnDisplayedElement, findUrl, openNewTab } from "../utils/driver.js";
 import {
   addFiltersToAdBlock,
   blockHideUrl,
   checkBlockHidePage,
   setPausedStateFromPopup,
   initPopupPage,
+  customBlockingFilters,
 } from "../utils/page.js";
-
-const { By } = webdriver;
 
 export default () => {
   beforeEach(async function () {
     // This filter no longer exists in easylist
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock("/pop_ads.js");
+    await addFiltersToAdBlock(customBlockingFilters.join("\n"));
   });
 
   it("opens the settings page", async function () {
     // Open the Popup page
     await initPopupPage();
-    const popupWindow = driver.getWindowHandle();
+    const popupWindow = await driver.getWindowHandle();
 
     // Close the existing options page
     await findUrl("options.html");
@@ -29,8 +28,7 @@ export default () => {
 
     // Click on the "gear" button
     await driver.switchTo().window(popupWindow);
-    const gearButton = await driver.findElement(By.id("svg_options"));
-    await gearButton.click();
+    await clickOnDisplayedElement("#svg_options");
 
     // Check that the Options page was opened
     await findUrl("options.html");

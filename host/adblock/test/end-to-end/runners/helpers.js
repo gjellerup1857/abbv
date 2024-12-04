@@ -20,12 +20,7 @@ import path from "path";
 import fs from "fs";
 import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
-import {
-  getBrowserNameArg,
-  getManifestVersionArg,
-  getScreenshotsPath,
-  screenshotsBasePath,
-} from "./constants.js";
+import { getBrowserNameArg, getManifestVersionArg, screenshotsPath } from "./constants.js";
 import { reloadExtension } from "../utils/page.js";
 import { sleep, changeExtensionVersion } from "@eyeo/test-utils";
 
@@ -197,12 +192,11 @@ export async function screenshot(title) {
   const base64Data = data.replace(/^data:image\/png;base64,/, "");
 
   // ensure screenshots directory exists and write the screenshot to a file
-  const screenshotsPath = getScreenshotsPath();
   await fs.promises.mkdir(screenshotsPath, { recursive: true });
   await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
 }
 
-// Removes the screenshots base folder
+// Removes the screenshots folder
 export async function removeScreenshots() {
-  await fs.promises.rm(screenshotsBasePath, { recursive: true, force: true });
+  await fs.promises.rm(screenshotsPath, { recursive: true, force: true });
 }
