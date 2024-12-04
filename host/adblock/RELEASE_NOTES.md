@@ -4,6 +4,7 @@
 - Added skeleton for public API inside custom iframe; the API is currently inactive (EXT-567)
 - Remove the "console log test" split experiment. (EXT-612)
 - Updated webext-ad-filtering-solution to 1.21.0
+- Pass premium status and aa active in uninstall link (EXT-607)
 
 # 6.12.0 - 2024-11-25
 
@@ -13,7 +14,6 @@ This release contains mostly under-the-hood changes.
 - Updated webext-ad-filtering-solution to 1.19.0
 - Add the "console log test" split experiment. This is to verify the integration
   of our new split experiments framework. (EXT-612)
-- Pass premium_status and aa_active in uninstall link (EXT-607)
 
 # 6.11.1 - 2024-11-18
 
