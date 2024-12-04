@@ -90,12 +90,12 @@ const processYouTubeWallMessage = async (
   sendAdWallEvents(youTubeWallDetected, message.userLoggedIn ? "1" : "0", "0");
 
   const senderURL = new URL(tabURL);
-  let host = senderURL.hostname.replace(/^www\./, "");
+  const host = senderURL.hostname.replace(/^www\./, "");
   const ruleText = `@@||${host}^$document`;
   const metadata = {
     expiresByTabId: tabId,
     origin: "yt-auto",
-    created: Date.now()
+    created: Date.now(),
   };
   await parameters.ewe.filters.add(ruleText, metadata);
   if (message.currentPlaybackTime > 5) {
