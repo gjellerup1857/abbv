@@ -36,6 +36,28 @@ import { determineUserLanguage, storageSet, getUserAgentInfo } from "~/utilities
 
 const FiftyFiveMinutes = 3300000;
 
+// Returns a `aa` property which encodes the stats of Acceptable Ads
+// and Acceptable Ads Privacy subscriptions
+export async function getAAStatus() {
+  const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
+  let result;
+  if (subs) {
+    const aa = subs.acceptable_ads;
+    const aaPrivacy = subs.acceptable_ads_privacy;
+
+    if (!aa && !aaPrivacy) {
+      result = "u"; // Both filter lists unavailable
+    } else if (aa.subscribed) {
+      result = "1";
+    } else if (aaPrivacy.subscribed) {
+      result = "2";
+    } else if (!aa.subscribed && !aaPrivacy.subscribed) {
+      result = "0"; // Both filter lists unsubscribed
+    }
+  }
+  return result;
+}
+
 class TelemetryBase {
   constructor(
     totalRequestsStorageKeyArg,
@@ -142,20 +164,9 @@ class TelemetryBase {
     if (browser.runtime.id) {
       data.extid = browser.runtime.id;
     }
-    const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
-    if (subs) {
-      const aa = subs.acceptable_ads;
-      const aaPrivacy = subs.acceptable_ads_privacy;
-
-      if (!aa && !aaPrivacy) {
-        data.aa = "u"; // Both filter lists unavailable
-      } else if (aa.subscribed) {
-        data.aa = "1";
-      } else if (aaPrivacy.subscribed) {
-        data.aa = "2";
-      } else if (!aa.subscribed && !aaPrivacy.subscribed) {
-        data.aa = "0"; // Both filter lists unsubscribed
-      }
+    const aaStatus = await getAAStatus();
+    if (aaStatus) {
+      data.aa = aaStatus;
     }
 
     data.crctotal = 0;
