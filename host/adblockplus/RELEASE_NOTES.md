@@ -1,6 +1,8 @@
 # Unreleased
 
 - Updated webext-ad-filtering-solution to 1.21.0
+- Pass premium status in uninstall link (EXT-430)
+- Updated snippets to 1.7.1
 
 # 4.9.4 - 2024-12-02
 

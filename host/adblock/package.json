@@ -31,8 +31,7 @@
     "prettier-fix": "npm run $ lint-fix.prettier",
     "test": "echo 'No unit test setup yet'",
     "test:end-to-end": "npm run $ test.end-to-end",
-    "test:end-to-end-local": "npm run test:end-to-end:build && node test/end-to-end/runTests.js",
-    "test:end-to-end:build": "node test/end-to-end/helper-extension/build.js"
+    "test:end-to-end-local": "node test/end-to-end/runTests.js"
   },
   "$": {
     "build": {
@@ -136,7 +135,7 @@
     "@adblockinc/rules": "gitlab:eyeo/extensions/rules#1b5da71c910beefb20c3ecd1b2b222005a912076",
     "@eyeo-fragments/public-api": "*",
     "@eyeo/ext-ui-components": "*",
-    "@eyeo/snippets": "1.7.0",
+    "@eyeo/snippets": "1.7.1",
     "@eyeo/webext-ad-filtering-solution": "1.21.0",
     "@eyeo/yt-wall-detection": "*",
     "@rollup/plugin-typescript": "8.3.2",
