@@ -8,6 +8,7 @@
 - Updated webext-ad-filtering-solution to 1.21.0
 - Pass premium status and aa active in uninstall link (EXT-607)
 - Updated snippets to 1.7.1
+- Attached split experiments assignments data to uninstall URL (EXT-541).
 
 # 6.12.0 - 2024-11-25
 
