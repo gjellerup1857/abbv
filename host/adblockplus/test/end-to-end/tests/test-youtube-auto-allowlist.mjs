@@ -20,7 +20,13 @@ import { getTabId } from "../helpers.js";
 
 import PopupPage from "../page-objects/popup.page.js";
 
+let popupUrl;
+
 export default () => {
+  before(async function () {
+    ({ popupUrl } = global);
+  });
+
   it("should auto-allowlist YouTube", async function () {
     await browser.newWindow("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     const popupPage = new PopupPage(browser);
