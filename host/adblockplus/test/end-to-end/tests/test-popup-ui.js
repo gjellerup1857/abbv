@@ -45,8 +45,8 @@ describe("test popup ui", function () {
   it("should display number of ads blocked", async function () {
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
-    const tabId = await getTabId({ title: "Blocking and hiding" });
+    await testPage.switchToTab("EasyList Filters");
+    const tabId = await getTabId({ title: "EasyList Filters" });
     // reload page 2x
     await browser.refresh();
     await browser.refresh();

@@ -67,7 +67,7 @@ Notes:
   repository, the same as the build commands.
 - The browser specified in the command is the browser that tests will be run
   on, not the browser that we specify in build step.
-- DNS mapping from `testpages.adblockplus.org` to `127.0.0.1` is used in
+- DNS mapping from `testpages.eyeo.com` to `127.0.0.1` is used in
   browsers in order to test with locally served pages and AA-related filter
   rules.
 - Eyeometry tests require eyeometry credentials filled in `.env`.

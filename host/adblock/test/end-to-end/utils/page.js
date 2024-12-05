@@ -33,17 +33,12 @@ import { getOptionsHandle, setOptionsHandle } from "./hook.js";
 
 export const installUrl = "https://getadblock.com/en/installed";
 export const premiumUrl = "https://getadblock.com/en/premium";
-export const blockHideUrl = "http://localhost:3005/blocking-hiding-testpage.html";
-export const aaTestPageUrl = "http://testpages.adblockplus.org:3005/aa.html";
-export const adBlockedCountUrl =
-  "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/adblocked-count/adblocked-count-testpage.html";
+export const blockHideUrl = "http://testpages.eyeo.com:3005/easylist-filters.html";
+export const aaTestPageUrl = "http://testpages.eyeo.com:3005/aa-filters.html";
+export const dcTestPageUrl = "http://testpages.eyeo.com:3005/dc-filters.html";
+export const snippetTestPageUrl = "http://testpages.eyeo.com:3005/snippet-filters.html";
 export const localTestPageUrl = "http://localhost:3005/test.html";
-export const allowlistingFilter = "@@||localhost^$document";
-export const customBlockingFilters = [
-  "/pop_ads.js", // no longer exists in EasyList
-  "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
-  "localhost##.AdContainer", // Needed to override EasyList's "@@://localhost:$generichide"
-];
+export const allowlistingFilter = "@@||testpages.eyeo.com^$document";
 
 const optionsPageSleep = 2000;
 
@@ -260,38 +255,37 @@ export async function addFiltersToAdBlock(filters) {
  * @returns {Promise<void>}
  */
 export async function checkBlockHidePage(expectAllowlisted) {
-  let expectedPopadsText = "pop_ads.js was blocked";
-  let expectedBanneradsText = "bannerads/* was blocked";
+  const timeout = 1000;
 
-  if (expectAllowlisted) {
-    expectedPopadsText = "pop_ads.js blocking filter should block this";
-    expectedBanneradsText = "first bannerads/* blocking filter should block this";
-  }
-
+  // we want to wait until the extension starts applying EasyList before continuing with the other checks
   await driver.wait(
     async () => {
-      const popadsElem = await getDisplayedElement("#popads-blocking-filter");
-      const banneradsElem = await getDisplayedElement("#bannerads-blocking-filter");
-
       try {
-        expect(await popadsElem.getText()).toEqual(expectedPopadsText);
-        expect(await banneradsElem.getText()).toEqual(expectedBanneradsText);
+        if (expectAllowlisted) {
+          await getDisplayedElement("#script-id-full-path", { timeout, forceRefresh: false });
+        } else {
+          await waitForNotDisplayed("#script-id-full-path", timeout);
+        }
         return true;
       } catch (e) {
+        // the extension might not be applying EasyList yet, so we need to reload the page
         await driver.navigate().refresh();
       }
     },
-    5000,
+    9000,
     `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`,
   );
 
-  const timeout = 2000;
+  await getDisplayedElement("#control-element", { timeout, forceRefresh: false });
+
   if (expectAllowlisted) {
-    await getDisplayedElement("#search-ad", { timeout });
-    await getDisplayedElement("#AdContainer", { timeout });
+    await getDisplayedElement("#test-element-class", { timeout, forceRefresh: false });
+    await getDisplayedElement("#test-element-id", { timeout, forceRefresh: false });
+    await getDisplayedElement("#script-id-regex", { timeout, forceRefresh: false });
   } else {
-    await waitForNotDisplayed("#search-ad", timeout);
-    await waitForNotDisplayed("#AdContainer", timeout);
+    await waitForNotDisplayed("#test-element-class", timeout);
+    await waitForNotDisplayed("#test-element-id", timeout);
+    await waitForNotDisplayed("#script-id-regex", timeout);
   }
 }
 
@@ -575,7 +569,7 @@ export async function waitForAdsBlockedToBeInRange(min, max) {
     await driver.wait(async () => {
       adsBlocked = await getPopupBlockedAdsTotalCount();
       return adsBlocked > min && adsBlocked <= max;
-    });
+    }, 5000);
   } catch (err) {
     throw new Error(
       `Unexpected ads blocked count. Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`,

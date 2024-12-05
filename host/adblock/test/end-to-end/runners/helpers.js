@@ -112,7 +112,7 @@ export async function startBrowser(extensionPath, retry = 0) {
     let extraArgs;
     if (browserName === "firefox") {
       extraArgs = ["-width=1400", "-height=1000"];
-      // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+      // EXT-497: we need to bind "testpages.eyeo.com" to "localhost"
       // to be able to test with locally hosted page. For FF we use PAC file
       // to set proxy
       const proxy = "http://localhost:3005/proxy-config.pac";
@@ -120,9 +120,9 @@ export async function startBrowser(extensionPath, retry = 0) {
     } else {
       extraArgs = [
         "--window-size=1400,1000",
-        // EXT-497: we need to bind "testpages.adblockplus.org" to "localhost"
+        // EXT-497: we need to bind "testpages.eyeo.com" to "localhost"
         // to be able to test with locally hosted page.
-        "--host-resolver-rules=MAP testpages.adblockplus.org 127.0.0.1",
+        "--host-resolver-rules=MAP testpages.eyeo.com 127.0.0.1",
         "--ignore-certificate-errors",
         "--disable-search-engine-choice-screen",
       ];

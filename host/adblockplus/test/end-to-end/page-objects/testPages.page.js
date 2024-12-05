@@ -28,18 +28,6 @@ class TestPages extends BasePage {
     this.browser = browser;
   }
 
-  get autoplayVideosBlockingFilterId() {
-    return $("#autoplayvideo-blocking-filter");
-  }
-
-  get autoplayVideosHidingFilterId() {
-    return $("#product-video-container");
-  }
-
-  get banneradsFilter() {
-    return $("#bannerads-blocking-filter");
-  }
-
   get customBlockingFilter() {
     return $("#custom-blocking");
   }
@@ -56,10 +44,6 @@ class TestPages extends BasePage {
     return $("#custom-hiding-id");
   }
 
-  get popadsFilter() {
-    return $("#popads-blocking-filter");
-  }
-
   get ecosiaAdPill() {
     return $("//span[@class='ad-pill']");
   }
@@ -68,24 +52,36 @@ class TestPages extends BasePage {
     return $("span*=Ad");
   }
 
+  get dcElementIdFilter() {
+    return $("#element-id-dc");
+  }
+
+  get dcScriptIdFilter() {
+    return $("#script-id-dc");
+  }
+
+  get controlElementFilter() {
+    return $("#control-element");
+  }
+
+  get testElementIdFilter() {
+    return $("#test-element-id");
+  }
+
+  get testElementClassFilter() {
+    return $("#test-element-class");
+  }
+
+  get testScriptIdFilter() {
+    return $("#script-id-full-path");
+  }
+
+  get testRegexScriptIdFilter() {
+    return $("#script-id-regex");
+  }
+
   get hiddenBySnippetText() {
-    return $("p*=This should be hidden by a snippet");
-  }
-
-  get newsletterPopupsBlockingFilterId() {
-    return $("#newsletter-blocking-filter");
-  }
-
-  get newsletterPopupsHidingFilterId() {
-    return $("#newsletterMsg");
-  }
-
-  get pushNotificationsBlockingFilterId() {
-    return $("#pushnotifications-blocking-filter");
-  }
-
-  get pushNotificationsHidingFilterId() {
-    return $("#pushnotifications-hiding-filter");
+    return $("p*=Snippet filter not applied");
   }
 
   get searchAdDiv() {
@@ -116,18 +112,6 @@ class TestPages extends BasePage {
     return $("#subscription-hiding-id");
   }
 
-  get surveysBlockingFilterId() {
-    return $("#survey-blocking-filter");
-  }
-
-  get surveysHidingFilterId() {
-    return $("#survey-feedback-to-left");
-  }
-
-  get AdContainerDiv() {
-    return $("#AdContainer");
-  }
-
   async clickSubscribeLink() {
     await this.waitForEnabledThenClick(this.subscribeLink);
   }
@@ -152,15 +136,6 @@ class TestPages extends BasePage {
     return await (await this.customHidingId).getText();
   }
 
-  async getBanneradsFilterText() {
-    return await (await this.banneradsFilter).getText();
-  }
-
-  async getPopadsFilterText() {
-    await (await this.popadsFilter).waitForEnabled({ timeout: 4000 });
-    return await (await this.popadsFilter).getText();
-  }
-
   async getSearchAdDivText() {
     return await (await this.searchAdDiv).getText();
   }
@@ -180,18 +155,6 @@ class TestPages extends BasePage {
 
   async getSubscriptionHidingIdText() {
     return await (await this.subscriptionHidingId).getText();
-  }
-
-  async getAdContainerDivText() {
-    return await (await this.AdContainerDiv).getText();
-  }
-
-  async isAutoplayVideosBlockingFilterIdDisplayed() {
-    return await (await this.autoplayVideosBlockingFilterId).isDisplayed();
-  }
-
-  async isAutoplayVideosHidingFilterIdDisplayed() {
-    return await (await this.autoplayVideosHidingFilterId).isDisplayed();
   }
 
   async isCookieBannerDisplayed(reverseOption = false) {
@@ -226,24 +189,36 @@ class TestPages extends BasePage {
     );
   }
 
+  async isDcElementIdFilterDisplayed() {
+    return await (await this.dcElementIdFilter).isDisplayed();
+  }
+
+  async isDcScriptIdFilterDisplayed() {
+    return await (await this.dcScriptIdFilter).isDisplayed();
+  }
+
+  async isControlElementFilterDisplayed() {
+    return await (await this.controlElementFilter).isDisplayed();
+  }
+
+  async isTestElementIdFilterDisplayed() {
+    return await (await this.testElementIdFilter).isDisplayed();
+  }
+
+  async isTestElementClassFilterDisplayed() {
+    return await (await this.testElementClassFilter).isDisplayed();
+  }
+
+  async isTestScriptIdFilterDisplayed() {
+    return await (await this.testScriptIdFilter).isDisplayed();
+  }
+
+  async isTestRegexScriptIdFilterDisplayed() {
+    return await (await this.testRegexScriptIdFilter).isDisplayed();
+  }
+
   async isHiddenBySnippetTextDisplayed() {
     return await (await this.hiddenBySnippetText).isDisplayed();
-  }
-
-  async isNewsletterPopupsBlockingFilterIdDisplayed() {
-    return await (await this.newsletterPopupsBlockingFilterId).isDisplayed();
-  }
-
-  async isNewsletterPopupsHidingFilterIdDisplayed() {
-    return await (await this.newsletterPopupsHidingFilterId).isDisplayed();
-  }
-
-  async isPushNotificationsBlockingFilterIdDisplayed() {
-    return await (await this.pushNotificationsBlockingFilterId).isDisplayed();
-  }
-
-  async isPushNotificationsHidingFilterIdDisplayed() {
-    return await (await this.pushNotificationsHidingFilterId).isDisplayed();
   }
 
   async isSearchAdDivDisplayed() {
@@ -258,45 +233,26 @@ class TestPages extends BasePage {
     return await (await this.subscriptionHidingId).isDisplayed();
   }
 
-  async isSurveysBlockingFilterIdDisplayed() {
-    return await (await this.surveysBlockingFilterId).isDisplayed();
-  }
-
-  async isSurveysHidingFilterIdDisplayed() {
-    return await (await this.surveysHidingFilterId).isDisplayed();
-  }
-
   async isSnippetFilterDivDisplayed() {
     return await (await this.snippetFilterDiv).isDisplayed();
   }
 
-  async isAdContainerDivDisplayed() {
-    return await (await this.AdContainerDiv).isDisplayed();
-  }
-
   async checkPage({ expectAllowlisted = false }) {
-    let expectedPopadsText = "pop_ads.js was blocked";
-    let expectedBanneradsText = "bannerads/* was blocked";
-
-    if (expectAllowlisted) {
-      expectedPopadsText = "pop_ads.js blocking filter should block this";
-      // eslint-disable-next-line max-len
-      expectedBanneradsText =
-        "first bannerads/* blocking filter should block this";
-    }
+    expect(await this.isControlElementFilterDisplayed()).to.be.true;
 
     const timeout = 15000;
     await waitForAssertion(
       async () => {
-        await browser.refresh();
-
-        expect(await this.getPopadsFilterText()).to.include(expectedPopadsText);
-        expect(await this.getBanneradsFilterText()).to.include(
-          expectedBanneradsText
+        expect(await this.isTestElementIdFilterDisplayed()).to.equal(
+          expectAllowlisted
         );
-
-        expect(await this.isSearchAdDivDisplayed()).to.equal(expectAllowlisted);
-        expect(await this.isAdContainerDivDisplayed()).to.equal(
+        expect(await this.isTestElementClassFilterDisplayed()).to.equal(
+          expectAllowlisted
+        );
+        expect(await this.isTestScriptIdFilterDisplayed()).to.equal(
+          expectAllowlisted
+        );
+        expect(await this.isTestRegexScriptIdFilterDisplayed()).to.equal(
           expectAllowlisted
         );
       },

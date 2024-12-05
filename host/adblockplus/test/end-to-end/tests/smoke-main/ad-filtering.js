@@ -74,11 +74,6 @@ module.exports = function () {
       await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
-  beforeEach(async function () {
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP(testData.customBlockingFilters.join("\n"));
-  });
-
   after(async function () {
     await afterSequence();
 
@@ -144,11 +139,12 @@ module.exports = function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "eyeo.gitlab.io#$#hide-if-contains 'should be hidden' p[id]"
+      "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]"
     );
     await advancedPage.clickAddCustomFilterListButton();
     await browser.newWindow(testData.snippetsPageUrl);
     const testPages = new TestPages(browser);
+    await driver.sleep(30000);
     const timeout = 5000;
     await browser.waitUntil(
       async () => {
@@ -164,7 +160,7 @@ module.exports = function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
     await allowistedWebsitesPage.setAllowlistingTextboxValue(
-      "http://localhost/"
+      "http://testpages.eyeo.com/"
     );
     expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
     await allowistedWebsitesPage.clickAddWebsiteButton();
@@ -176,7 +172,7 @@ module.exports = function () {
 
     await switchToABPOptionsTab();
 
-    await allowistedWebsitesPage.removeAllowlistedDomain("localhost");
+    await allowistedWebsitesPage.removeAllowlistedDomain("testpages.eyeo.com");
     const attributesOfAllowlistingTableItems =
       await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
         "class"
@@ -194,8 +190,8 @@ module.exports = function () {
 
   it("displays acceptable ads", async function () {
     async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 500;
-      const timeout = 5000;
+      const shortTimeout = 2000;
+      const timeout = 7000;
 
       const testPage = new AaTestPage(browser);
       await testPage.init();

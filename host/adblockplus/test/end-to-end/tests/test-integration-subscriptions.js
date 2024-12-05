@@ -102,8 +102,7 @@ describe("test subscriptions as part of the integration tests", function () {
     await advancedPage.clickEasyListFLStatusToggle();
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.false;
     await browser.newWindow(
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
-        "ing-hiding/blocking-hiding-testpage.html"
+      "http://testpages.eyeo.com:3005/easylist-filters.html"
     );
     if (isFirefox()) {
       await browser.pause(500);
@@ -111,53 +110,28 @@ describe("test subscriptions as part of the integration tests", function () {
     await browser.refresh();
     const testPages = new TestPages(browser);
     if (isFirefox()) {
-      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
-        await testPages.switchToTab("Blocking and hiding");
+      if ((await testPages.getCurrentTitle()) != "EasyList Filters") {
+        await testPages.switchToTab("EasyList Filters");
         await browser.refresh();
       }
     }
-    expect(await testPages.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this"
-    );
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this"
-    );
-    expect(await testPages.getSearchAdDivText()).to.include(
-      "search-ad id hiding filter should hide this"
-    );
-    expect(await testPages.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this"
-    );
+    await testPages.checkPage({ expectAllowlisted: true });
+
     await switchToABPOptionsTab();
     await advancedPage.init();
     await advancedPage.clickEasyListFLStatusToggle();
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
     await browser.newWindow(
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
-        "ing-hiding/blocking-hiding-testpage.html"
+      "http://testpages.eyeo.com:3005/easylist-filters.html"
     );
     await browser.refresh();
     if (isFirefox()) {
-      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
-        await testPages.switchToTab("Blocking and hiding");
+      if ((await testPages.getCurrentTitle()) != "EasyList Filters") {
+        await testPages.switchToTab("EasyList Filters");
         await browser.refresh();
       }
     }
-    try {
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked"
-      );
-    } catch (Exception) {
-      await browser.pause(1000);
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked"
-      );
-    }
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked"
-    );
-    expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPages.isAdContainerDivDisplayed()).to.be.false;
+    await testPages.checkPage({ expectAllowlisted: false });
   });
 
   it("should add/remove subscriptions", async function () {
@@ -175,29 +149,18 @@ describe("test subscriptions as part of the integration tests", function () {
     await advancedPage.clickEasyListFLTrashButton();
     expect(await advancedPage.isEasyListFLDisplayed()).to.be.false;
     await browser.newWindow(
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
-        "ing-hiding/blocking-hiding-testpage.html"
+      "http://testpages.eyeo.com:3005/easylist-filters.html"
     );
     await browser.refresh();
     const testPages = new TestPages(browser);
     if (isFirefox()) {
-      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
-        await testPages.switchToTab("Blocking and hiding");
+      if ((await testPages.getCurrentTitle()) != "EasyList Filters") {
+        await testPages.switchToTab("EasyList Filters");
         await browser.refresh();
       }
     }
-    expect(await testPages.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this"
-    );
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "first bannerads/* blocking filter should block this"
-    );
-    expect(await testPages.getSearchAdDivText()).to.include(
-      "search-ad id hiding filter should hide this"
-    );
-    expect(await testPages.getAdContainerDivText()).to.include(
-      "AdContainer class hiding filter should hide this"
-    );
+    await testPages.checkPage({ expectAllowlisted: true });
+
     await switchToABPOptionsTab();
     await advancedPage.init();
     await advancedPage.clickAddBuiltinFilterListButton();
@@ -206,31 +169,17 @@ describe("test subscriptions as part of the integration tests", function () {
     expect(await advancedPage.isEasyListFLStatusToggleSelected()).to.be.true;
     expect(await advancedPage.isEasyListFLUpdatingDone()).to.be.true;
     await browser.newWindow(
-      "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/block" +
-        "ing-hiding/blocking-hiding-testpage.html"
+      "http://testpages.eyeo.com:3005/easylist-filters.html"
     );
+
     await browser.refresh();
     if (isFirefox()) {
-      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
-        await testPages.switchToTab("Blocking and hiding");
+      if ((await testPages.getCurrentTitle()) != "EasyList Filters") {
+        await testPages.switchToTab("EasyList Filters");
         await browser.refresh();
       }
     }
     lastTest = true;
-    try {
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked"
-      );
-    } catch (Exception) {
-      await browser.pause(1000);
-      expect(await testPages.getPopadsFilterText()).to.include(
-        "pop_ads.js was blocked"
-      );
-    }
-    expect(await testPages.getBanneradsFilterText()).to.include(
-      "bannerads/* was blocked"
-    );
-    expect(await testPages.isSearchAdDivDisplayed()).to.be.false;
-    expect(await testPages.isAdContainerDivDisplayed()).to.be.false;
+    await testPages.checkPage({ expectAllowlisted: false });
   });
 });

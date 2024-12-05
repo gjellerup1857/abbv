@@ -38,7 +38,7 @@ async function migrateUserData() {
   // because it no longer serves any purpose
   unsubscribeToFilterList("https://cdn.adblockcdn.com/filters/adblock_custom.txt");
 
-  // Remove any of the old DC filters,
+  // Remove any of the old Distraction Control Filters,
   // Subscript to the new DC filter list
   const DISTRACTION_CONTROL_URL_LIST = [
     "https://easylist-downloads.adblockplus.org/v3/full/distraction-control-newsletter.txt",

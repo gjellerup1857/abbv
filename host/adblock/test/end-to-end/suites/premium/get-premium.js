@@ -34,6 +34,7 @@ import {
   premiumUrl,
   enableTemporaryPremium,
   localTestPageUrl,
+  dcTestPageUrl,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 import { premiumPopupToggleItems } from "../../utils/dataset.js";
@@ -164,18 +165,9 @@ export default () => {
     }
     expect(actualValues).toEqual(expectedValues);
 
-    const url = "http://localhost:3005/dc-filters.html";
-    await openNewTab(url);
-    const dcFilters = [
-      "#pushnotifications-hiding-filter",
-      "#pushnotifications-blocking-filter",
-      "#product-video-container",
-      "#autoplayvideo-blocking-filter",
-      "#survey-feedback-to-left",
-      "#survey-blocking-filter",
-      "#newsletterMsg",
-      "#newsletter-blocking-filter",
-    ];
+    await openNewTab(dcTestPageUrl);
+    await getDisplayedElement("#control-element");
+    const dcFilters = ["#script-id-dc", "#element-id-dc"];
     for (const dcFilter of dcFilters) {
       await waitForNotDisplayed(dcFilter);
     }
