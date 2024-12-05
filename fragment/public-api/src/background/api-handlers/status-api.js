@@ -48,16 +48,6 @@ async function getAllowlistStatus({ tabId, ewe }) {
 }
 
 /**
- * Checks if AA is enabled
- *
- * @param {any} ewe The filter engine
- * @returns {Promise<*>} True if AA is enabled, False otherwise
- */
-async function hasAAEnabled({ ewe }) {
-  return await ewe.subscriptions.hasAcceptableAdsEnabled();
-}
-
-/**
  * Retrieves the extension status
  *
  * @returns {Promise<any>} The extension status info
@@ -65,7 +55,7 @@ async function hasAAEnabled({ ewe }) {
 export async function getStatus() {
   const tabId = this.sender.tab.id;
   const allowlist = await getAllowlistStatus({ tabId, ewe: this.ewe });
-  const aa = await hasAAEnabled({ ewe: this.ewe });
+  const aa = await this.ewe.subscriptions.hasAcceptableAdsEnabled();
   const license = this.isPremiumActive() ? this.getEncodedLicense() : null;
 
   return {
