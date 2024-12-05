@@ -30,6 +30,7 @@ import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 import bypassAPI from "./public-api/bypass-api.js";
 import eyeometry from "./data-collection/eyeometry.js";
+import help_flow from "./helpflow.js";
 
 export default () => {
   beforeEach(async function () {
@@ -44,6 +45,7 @@ export default () => {
   });
 
   describe("Popup Page", popupPage);
+  describe("Helpflow from pop up page", help_flow);
 
   describe("Options Page", function () {
     describe("Acceptable Ads", optionsPageAA);
