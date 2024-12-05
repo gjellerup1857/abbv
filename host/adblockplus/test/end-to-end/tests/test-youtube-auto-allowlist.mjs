@@ -24,34 +24,43 @@ export default () => {
   it("should auto-allowlist YouTube", async function () {
     await browser.newWindow("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     const popupPage = new PopupPage(browser);
-    await popupPage.switchToTab(/youtube/); 
-    const tabId = await getTabId({title: "Rick Astley - Never Gonna Give You" +
-      " Up (Official Music Video) - YouTube" });
+    await popupPage.switchToTab(/youtube/);
+    const tabId = await getTabId({
+      title:
+        "Rick Astley - Never Gonna Give You" +
+        " Up (Official Music Video) - YouTube"
+    });
 
-    await browser.executeScript("const ytElement = document.createElement(" +
-      "'ytd-enforcement-message-view-model');" +
-      "document.body.appendChild(ytElement);",
+    await browser.executeScript(
+      "const ytElement = document.createElement(" +
+        "'ytd-enforcement-message-view-model');" +
+        "document.body.appendChild(ytElement);",
       []
     );
-    await browser.waitUntil(async () => {
+    await browser.waitUntil(
+      async () => {
         const readyState = await browser.executeScript(
           "return document.readyState",
           []
         );
         return readyState === "complete";
-      }, {
+      },
+      {
         timeout: 2000,
-        timeoutMsg: "Page did not refresh within the expected time",
+        timeoutMsg: "Page did not refresh within the expected time"
       }
     );
 
     await popupPage.init(popupUrl, tabId);
-    await browser.waitUntil(async () => {
-        return await popupPage.isDomainToggleChecked() == false;
-      }, {
+    await browser.waitUntil(
+      async () => {
+        return (await popupPage.isDomainToggleChecked()) == false;
+      },
+      {
         timeout: 5000,
-        timeoutMsg: "Toggle was not unchecked within the expected time",
-    });
+        timeoutMsg: "Toggle was not unchecked within the expected time"
+      }
+    );
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
   });
 };
