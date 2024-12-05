@@ -25,6 +25,18 @@ import { Prefs } from "./prefs";
 import SubscriptionAdapter from "../subscriptionadapter";
 import { getUserId } from "../id/background/index";
 import { getWebAllowlistingFilterCount } from "../telemetry/background/custom-rule";
+import { getAAStatus } from "../telemetry/background/telemetry-base";
+import { License } from "../picreplacement/check";
+
+function booleanToURLBoolean(value) {
+  return value ? "1" : "0";
+}
+
+async function getPremiumStatus() {
+  await License.ready();
+  const hasActiveLicense = License.isActiveLicense();
+  return booleanToURLBoolean(hasActiveLicense);
+}
 
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
@@ -58,6 +70,9 @@ export async function setUninstallURL() {
         const lastUpdateTime = await getLastUpdateTime();
         url = `${url}&lt=${lastUpdateTime}`;
         url += `&wafc=${await getWebAllowlistingFilterCount()}`;
+        // CDP data
+        url += `&ps=${await getPremiumStatus()}`;
+        url += `&aa=${await getAAStatus()}`;
         browser.runtime.setUninstallURL(url);
       };
       // start an interval timer that will update the Uninstall URL every 2
