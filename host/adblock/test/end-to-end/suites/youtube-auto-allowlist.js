@@ -17,11 +17,7 @@
 
 import { expect } from "expect";
 
-import {
-  getDisplayedElement,
-  openNewTab,
-  getTabId,
-} from "../utils/driver.js";
+import { getDisplayedElement, openNewTab, getTabId } from "../utils/driver.js";
 import { initOptionsGeneralTab, initPopupPage } from "../utils/page.js";
 import { getOptionsHandle } from "../utils/hook.js";
 
@@ -36,15 +32,19 @@ export default () => {
       const ytElement = document.createElement("ytd-enforcement-message-view-model");
       document.body.appendChild(ytElement);
     });
-    await driver.wait(async () => {
-      const readyState = await driver.executeScript("return document.readyState");
-      return readyState === "complete";
-    }, 2000, "Page did not refresh within the expected time");
+    await driver.wait(
+      async () => {
+        const readyState = await driver.executeScript("return document.readyState");
+        return readyState === "complete";
+      },
+      2000,
+      "Page did not refresh within the expected time",
+    );
 
     await initPopupPage(tabId);
     const domainPausedText = await getDisplayedElement('[i18n="status_domain_paused"]');
     expect(await domainPausedText.getText()).toEqual(
-      'AdBlock is paused for this visit. You may need to refresh the page to see your changes.',
-    );    
+      "AdBlock is paused for this visit. You may need to refresh the page to see your changes.",
+    );
   });
 };
