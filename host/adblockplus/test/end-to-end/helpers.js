@@ -214,14 +214,15 @@ async function enablePremiumByUI() {
   const premiumCheckoutPage = new PremiumCheckoutPage(browser);
   await premiumCheckoutPage.init();
   await browser.pause(2000); // the first checkout page may take some time to be ready
-  const randomEmail = "test_automation" +
-      randomIntFromInterval(1000000, 9999999).toString() +
-      "@adblock.org"
+  const randomEmail =
+    "test_automation" +
+    randomIntFromInterval(1000000, 9999999).toString() +
+    "@adblock.org";
   await premiumCheckoutPage.typeTextToEmailField(randomEmail);
-  if (await premiumCheckoutPage.getEmailTextFieldText() != randomEmail) {
+  // Email is not correctly filled sometimes
+  if ((await premiumCheckoutPage.getEmailTextFieldText()) != randomEmail) {
     await premiumCheckoutPage.typeTextToEmailField(randomEmail);
   }
-
   try {
     await premiumCheckoutPage.typeTextToZIPField("10001");
   } catch (e) {} // Depending on the location, the ZIP may be required or not
