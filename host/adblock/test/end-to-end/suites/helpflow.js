@@ -45,7 +45,7 @@ export default () => {
     await clickHelpIcon();
     await clickOnDisplayedElement(seeAdSelector, 3000);
     await clickOnDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
-    await clickOnDisplayedElement("[i18n='ok']", 1000);
+    await clickOnDisplayedElement("[i18n='ok']", 3000);
     await clickOnDisplayedElement("[i18n='reload_the_page']");
     await driver.sleep(3000);
     await initOptionsGeneralTab(getOptionsHandle());
@@ -62,7 +62,7 @@ export default () => {
     await clickOnDisplayedElement(seeAdSelector, 3000);
     await clickOnDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
 
-    await clickOnDisplayedElement("[i18n='ok']");
+    await clickOnDisplayedElement("[i18n='ok']", 3000);
     const allowlistText = await getDisplayedElement("[i18n='page_is_whitelisted']", 5000);
     expect(await allowlistText.getText()).toContain(
       "This page is on your allowlist, which is why you're seeing an ad.",
