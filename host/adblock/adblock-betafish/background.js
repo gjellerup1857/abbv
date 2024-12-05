@@ -60,6 +60,7 @@ import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
 import * as prefs from "./prefs/background";
 import { FilterOrigin } from "../src/filters/shared";
+import { start as startFiltersMigration } from "../src/filters/background";
 
 import {
   createFilterMetaData,
@@ -722,6 +723,7 @@ initialize
       getEncodedLicense: License.getBypassPayload,
     });
     addAllowlistingListeners();
+    await startFiltersMigration();
   })
   .catch((e) => {
     const hasInternalError = /internal error/i.test(e.message);
