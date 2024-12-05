@@ -36,7 +36,7 @@ import { determineUserLanguage, storageSet, getUserAgentInfo } from "~/utilities
 
 const FiftyFiveMinutes = 3300000;
 
-// Returns a `aa` property which encodes the stats of Acceptable Ads
+// Returns `aa` property which encodes the status of Acceptable Ads
 // and Acceptable Ads Privacy subscriptions
 export async function getAAStatus() {
   const subs = await SubscriptionAdapter.getAllSubscriptionsMinusText();
