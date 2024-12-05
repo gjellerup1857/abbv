@@ -248,7 +248,6 @@ async function enablePremiumByUI() {
     },
     { timeout, timeoutMsg: `Premium button not displayed after ${timeout}ms` }
   );
-  console.log("HERE5");
 }
 
 async function executeAsyncScript(script, ...args) {
