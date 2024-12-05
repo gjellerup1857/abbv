@@ -27,22 +27,22 @@ class AaTestPage extends BasePage {
   }
 
   async init() {
-    // assuming "testpages.adblockplus.org" is bound to "localhost"
+    // assuming "testpages.eyeo.com" is bound to "localhost"
     // in the test with DNS mapping during the test
-    await browser.newWindow("http://testpages.adblockplus.org:3005/aa.html");
+    await browser.newWindow("http://testpages.eyeo.com:3005/aa-filters.html");
     await this.switch();
   }
 
   get selector() {
-    return "#abptest";
+    return "#test-aa";
   }
 
   get visibleSelector() {
-    return "#abptest2";
+    return "#control-element";
   }
 
   async switch() {
-    await this.switchToTab(/AcceptableAds/);
+    await this.switchToTab(/Acceptable Ads Filters/);
   }
 }
 

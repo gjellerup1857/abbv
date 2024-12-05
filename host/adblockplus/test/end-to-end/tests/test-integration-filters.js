@@ -68,7 +68,7 @@ describe("test custom filters as part of the integration tests", function () {
 
     const testPages = new TestPages(browser);
     if (isFirefox()) {
-      if ((await testPages.getCurrentTitle()) != "Blocking and hiding") {
+      if ((await testPages.getCurrentTitle()) != "EasyList Filters") {
         await browser.refresh();
         await testPages.switchToTab(/custom-filters-testpage/);
         await browser.pause(1000);
