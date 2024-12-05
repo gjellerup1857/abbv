@@ -458,12 +458,11 @@ export async function waitForSubscribed(
 ) {
   const regexp = allowFetching ? /updated|Subscribed|Fetching/ : /updated|Subscribed/;
 
-  const flEnabled = await isCheckboxEnabled(inputId);
-  expect(flEnabled).toEqual(true);
   await driver.wait(
     async () => {
+      const flEnabled = await isCheckboxEnabled(inputId);
       const text = await getSubscriptionInfo(name);
-      return regexp.test(text);
+      return flEnabled && regexp.test(text);
     },
     timeout,
     `${name} was not updated/subscribed/fetching after adding it`,

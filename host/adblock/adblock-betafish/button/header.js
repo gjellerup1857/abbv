@@ -41,11 +41,18 @@ const openOptionsPage = async () => {
   closePopup();
 };
 
-const openHelp = (pageInfo) => {
+const openHelp = (pageInfo, tabId) => {
   sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "feedback_clicked" });
   if (!pageInfo.disabledSite) {
     // This navigates to the index and starts the help SPA
-    window.location.assign("adblock-button-popup.html?command=showHelp");
+    const currentURL = new URL(window.location.href);
+    currentURL.pathname = "/adblock-button-popup.html";
+    currentURL.search = "?command=showHelp";
+    // Add tabId if it exists
+    if (tabId) {
+      currentURL.searchParams.set("tabId", tabId);
+    }
+    window.location.href = currentURL.toString();
   } else {
     sendMessageWithNoResponse({ command: "openTab", urlToOpen: "https://help.getadblock.com/" });
   }
@@ -102,7 +109,7 @@ const checkAndShowPremium = (info, $template) => {
   }
 };
 
-const addTranslationsAndActions = (info, $template) => {
+const addTranslationsAndActions = (info, tabId, $template) => {
   const tabSupportText = translate("tabsupport");
   const optionsText = translate("options");
   const moreOptionsText = translate("more_options_hover");
@@ -122,7 +129,7 @@ const addTranslationsAndActions = (info, $template) => {
   $template.find("#header-logo").on("click", openHomePage);
   $template.find("#premium_status_msg").on("click", openPremiumTab);
   $template.find("#svg_options").on("click", openOptionsPage);
-  $template.find("#help_link").on("click", openHelp.bind(null, info));
+  $template.find("#help_link").on("click", openHelp.bind(null, info, tabId));
 };
 
 const initialize = async function () {
@@ -132,7 +139,7 @@ const initialize = async function () {
 
   addLogoAndTheme(info, $template);
   checkAndShowPremium(info, $template);
-  addTranslationsAndActions(info, $template);
+  addTranslationsAndActions(info, tabId, $template);
   checkAnddisableOnPageOptions(info, $template);
 
   // Append everything

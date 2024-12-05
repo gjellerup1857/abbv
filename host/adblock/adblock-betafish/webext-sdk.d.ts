@@ -30,6 +30,56 @@ interface FiltersGetAllowingFiltersOptions {
 }
 
 declare module "@eyeo/webext-ad-filtering-solution" {
+  /**
+   * Extra data associated with a filter.
+   *
+   * The SDK doesn't specify the type allowed for metadata entries.
+   */
+  type FilterMetadata = Record<string, any>;
+
+  /**
+   * Represents a single filter rule and its state.
+   */
+  interface Filter {
+    /**
+     * A {@link https://help.eyeo.com/adblockplus/how-to-write-filters|filter}
+     * rule that specifies what content to block or to allow.
+     * Used to identify a filter.
+     */
+    text: string;
+    /**
+     * Indicates whether this filter would be applied. Filters are enabled by
+     * default. For comment filters returned value is null.
+     */
+    enabled: boolean | null;
+    /**
+     * For element hiding emulation filters, true if the filter will remove elements from the DOM rather hiding them.
+     */
+    remove?: boolean;
+    /**
+     * Indicates that this filter is not subject to an internal optimization.
+     * Filters that are considered slow should be avoided.
+     * Only URLFilters can be slow.
+     */
+    slow: boolean;
+    /**
+     * The filter {@link https://gitlab.com/eyeo/adblockplus/abc/adblockpluscore/-/jobs/artifacts/0.6.0/file/build/docs/module-filterClasses.Filter.html?job=docs#type|type}
+     */
+    type: string;
+    /**
+     * True when the filter applies to third-party, false to first-party,
+     * null otherwise.
+     */
+    thirdParty: boolean | null;
+    /**
+     * CSS selector for the HTML elements that will be hidden.
+     */
+    selector: string | null;
+    /**
+     * Content Security Policy to be injected.
+     */
+    csp: string | null;
+  }
   declare namespace filters {
     /**
      * Returns the allowing filters that will be effective when the given
@@ -53,7 +103,34 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      *
      * @returns filter metadata
      */
-    const getMetadata: (text: string) => Promise<?object>;
+    const getMetadata: (text: string) => Promise<?FilterMetadata>;
+
+    /**
+     * Returns an array of user filter objects.
+     *
+     * @returns user filter objects
+     */
+    const getUserFilters: () => Promise<Filter[]>;
+
+    /**
+     * Sets metadata for a filter
+     *
+     * @param text - Filter text
+     * @param metadata - Metadata to set
+     */
+    const setMetadata: (text: string, metadata: FilterMetadata) => Promise<void>;
+  }
+
+  declare namespace experiments {
+    /**
+     * Returns the assignments for the user
+     */
+    const getAssignments: () => Promise<Record<string, string>>;
+
+    /**
+     * Returns the value of the flag
+     */
+    const getFlag: (flag: string) => Promise<boolean | string | number | strings[] | null>;
   }
 
   declare namespace notifications {
