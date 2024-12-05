@@ -38,6 +38,44 @@ async function getPremiumStatus() {
   return booleanToURLBoolean(hasActiveLicense);
 }
 
+/**
+ * Converts BigInt number to bytes array
+ *
+ * @param {BigInt} bn - Number
+ * @returns {Uint8Array} bytes array
+ */
+function bnToBytes(bn) {
+  const chars = BigInt(bn).toString(8);
+  const buffer = new Uint8Array(chars.length);
+
+  return buffer.map((byte, idx) => {
+    return parseInt(chars.slice(idx, idx + 1), 8);
+  });
+}
+
+/**
+ * Retrieves split experiments assignments as base64-encoded bitmap
+ *
+ * @returns {string} split experiments assignments
+ */
+async function getExperiments() {
+  let variantsBitmap = 0n;
+
+  const experiments = await ewe.experiments.getExperiments();
+  for (const experiment of [...experiments].reverse()) {
+    for (const variant of [...experiment.variants].reverse()) {
+      variantsBitmap |= variant.assigned ? 1n : 0n;
+      variantsBitmap <<= 1n;
+    }
+  }
+  variantsBitmap >>= 1n;
+
+  const bytes = bnToBytes(variantsBitmap);
+  const base64 = btoa(String.fromCharCode(...bytes));
+
+  return base64;
+}
+
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
     const userID = await getUserId();
@@ -61,18 +99,28 @@ export async function setUninstallURL() {
       const updateUninstallURL = async function () {
         const data = await browser.storage.local.get("blockage_stats");
         let url = uninstallURL;
+
         if (data && data.blockage_stats && data.blockage_stats.start) {
           const installedDuration = Date.now() - data.blockage_stats.start;
           url = `${url}&t=${installedDuration}`;
         }
+
         const bc = Prefs.blocked_total;
         url = `${url}&bc=${bc}`;
+
+        const experimentsRevision = await ewe.experiments.getRevisionId();
+        url = `${url}&er=${encodeURIComponent(experimentsRevision)}`;
+        const experimentsVariants = await getExperiments();
+        url = `${url}&ev=${encodeURIComponent(experimentsVariants)}`;
+
         const lastUpdateTime = await getLastUpdateTime();
         url = `${url}&lt=${lastUpdateTime}`;
-        url += `&wafc=${await getWebAllowlistingFilterCount()}`;
+        url = `${url}&wafc=${await getWebAllowlistingFilterCount()}`;
+
         // CDP data
-        url += `&ps=${await getPremiumStatus()}`;
-        url += `&aa=${await getAAStatus()}`;
+        url = `${url}&ps=${await getPremiumStatus()}`;
+        url = `${url}&aa=${await getAAStatus()}`;
+
         browser.runtime.setUninstallURL(url);
       };
       // start an interval timer that will update the Uninstall URL every 2
