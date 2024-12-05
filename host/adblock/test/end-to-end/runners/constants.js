@@ -19,3 +19,6 @@ export function getManifestVersionArg() {
 
 // Screenshots folder path
 export const screenshotsPath = path.join(process.cwd(), "test", "end-to-end", "screenshots");
+
+// Path to build the helper extension
+export const helperExtensionPath = path.join(process.cwd(), "dist", "devenv", "helper-extension");

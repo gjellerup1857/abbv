@@ -1,8 +1,9 @@
 /* eslint-disable */
 import { spawn } from "child_process";
-import { runTestServer, killTestServer } from "@eyeo/test-utils";
+import { runTestServer, killTestServer, buildHelperExtension } from "@eyeo/test-utils";
 
 import { removeScreenshots } from "./runners/helpers.js";
+import { helperExtensionPath } from "./runners/constants.js";
 
 // Extract command-line arguments after the script name
 // e.g., --suite filterlists
@@ -30,6 +31,9 @@ async function runMochaTests() {
 }
 
 async function main() {
+  await buildHelperExtension(process.env.MANIFEST_VERSION, helperExtensionPath);
+  console.log(`Helper extension built to ${helperExtensionPath}`);
+
   await runTestServer();
   await removeScreenshots();
 
