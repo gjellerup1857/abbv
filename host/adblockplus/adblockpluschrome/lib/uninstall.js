@@ -173,6 +173,8 @@ export async function setUninstallURL() {
 }
 
 export function start() {
+  ewe.experiments.onChanged.addListener(setUninstallURL);
+
   ewe.notifications.on("downloaded", setUninstallURL);
 
   ewe.filters.onAdded.addListener(setUninstallURL);
