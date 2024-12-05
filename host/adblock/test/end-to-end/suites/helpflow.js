@@ -10,7 +10,7 @@ import {
   getDisplayedElement,
   openNewTab,
   getTabId,
-  waitAndClickOnElement,
+  clickOnDisplayedElement,
 } from "../utils/driver.js";
 
 const seeAdSelector = "[i18n='see_ad']";
@@ -32,12 +32,10 @@ async function clickHelpIcon() {
   const tabId = await getTabId(getOptionsHandle());
 
   await initPopupPage(tabId);
-  await waitAndClickOnElement("#help_link", 3000);
-  const currentURL = await driver.getCurrentUrl();
-  const newUrl = `${currentURL}&tabId=${tabId}`;
-  await driver.navigate().to(newUrl);
-  // Ensure the right helpflow UI has effectively loaded
+  await clickOnDisplayedElement("#help_link", 3000);
+  //Ensure the right helpflow UI has effectively loaded
   await getDisplayedElement(seeAdSelector, 3000);
+  await driver.sleep(4000);
 }
 
 export default () => {
@@ -45,11 +43,10 @@ export default () => {
     // Capture the last download timestamp before filterlists are updated
     const lastDownloadBeforeReload = await getLastDownloadTimestamp();
     await clickHelpIcon();
-    await waitAndClickOnElement(seeAdSelector, 3000);
-    await waitAndClickOnElement("[i18n='first_time_seeing_ad']", 3000);
-    await waitAndClickOnElement(".button.help-button", 1000);
-    await waitAndClickOnElement("[i18n='updating_filter_lists']");
-    await waitAndClickOnElement("[i18n='reload_the_page']");
+    await clickOnDisplayedElement(seeAdSelector, 3000);
+    await clickOnDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
+    await clickOnDisplayedElement("[i18n='ok']", 1000);
+    await clickOnDisplayedElement("[i18n='reload_the_page']");
     await driver.sleep(3000);
     await initOptionsGeneralTab(getOptionsHandle());
     // Capture the last download timestamp after filterlists are updated
@@ -62,39 +59,38 @@ export default () => {
     await addFiltersToAdBlock("@@localhost:3005$document");
     await clickHelpIcon();
 
-    await waitAndClickOnElement(seeAdSelector, 3000);
-    await waitAndClickOnElement("[i18n='first_time_seeing_ad']", 3000);
+    await clickOnDisplayedElement(seeAdSelector, 3000);
+    await clickOnDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
 
-    await waitAndClickOnElement(".button.help-button", 1000);
-    const allowlistText = await getDisplayedElement("[i18n='page_is_whitelisted']");
+    await clickOnDisplayedElement("[i18n='ok']");
+    const allowlistText = await getDisplayedElement("[i18n='page_is_whitelisted']", 5000);
     expect(await allowlistText.getText()).toContain(
       "This page is on your allowlist, which is why you're seeing an ad.",
     );
-    await allowlistText.click();
-    await waitAndClickOnElement("[i18n='no']");
-    await waitAndClickOnElement("[i18n-aria-label='back_help_flow']");
-    await waitAndClickOnElement("[i18n='yes']");
+    await clickOnDisplayedElement("[i18n='no']");
+    await clickOnDisplayedElement("[i18n-aria-label='back_help_flow']");
+    await clickOnDisplayedElement("[i18n='yes']");
   });
 
   it("initiates helpflow and removes allowlisted site from the allowlist", async function () {
     await addFiltersToAdBlock("@@localhost:3005$document");
     await clickHelpIcon();
 
-    await waitAndClickOnElement(seeAdSelector, 3000);
-    await waitAndClickOnElement("[i18n='first_time_seeing_ad']", 3000);
-    await waitAndClickOnElement(".button.help-button", 3000);
-    await getDisplayedElement("[i18n='page_is_whitelisted']");
-    await waitAndClickOnElement("[i18n='yes']");
-    await waitAndClickOnElement("[i18n='reload_the_page']");
+    await clickOnDisplayedElement(seeAdSelector, 3000);
+    await clickOnDisplayedElement("[i18n='first_time_seeing_ad']", 3000);
+    await clickOnDisplayedElement(".button.help-button", 3000);
+    await getDisplayedElement("[i18n='page_is_whitelisted']", 5000);
+    await clickOnDisplayedElement("[i18n='yes']");
+    await clickOnDisplayedElement("[i18n='reload_the_page']");
   });
 
   it("initiates helpflow for ads everywhere", async function () {
     await clickHelpIcon();
 
-    await waitAndClickOnElement(seeAdSelector, 5000);
-    await waitAndClickOnElement("[i18n='see_ad_everywhere']", 3000);
+    await clickOnDisplayedElement(seeAdSelector, 5000);
+    await clickOnDisplayedElement("[i18n='see_ad_everywhere']", 3000);
 
-    await waitAndClickOnElement("[i18n='learn_more_to_resolve']", 3000);
+    await clickOnDisplayedElement("[i18n='learn_more_to_resolve']", 3000);
     const helpWindow = await driver.getWindowHandle();
     await driver.switchTo().window(helpWindow);
   });
@@ -102,8 +98,8 @@ export default () => {
   it("initiates helpflow for website is broken", async function () {
     await clickHelpIcon();
 
-    await waitAndClickOnElement("[i18n='website_broken']", 5000);
-    await waitAndClickOnElement("[i18n='reload_the_page']", 3000);
+    await clickOnDisplayedElement("[i18n='website_broken']", 5000);
+    await clickOnDisplayedElement("[i18n='reload_the_page']", 3000);
     await driver.sleep(3000);
     //check that AdBlock is disabld after page is reloaded
     await openNewTab(blockHideUrl);
