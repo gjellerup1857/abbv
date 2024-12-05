@@ -113,16 +113,16 @@ const popupMenuHelpActionMap = {
     window.close();
   },
   reloadFinishFlowAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(pageInfo.id);
     logHelpFlowResults("reloadFinishFlow");
     window.close();
   },
   reloadCheckAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(pageInfo.id);
     transitionTo("checkedBasics", false);
   },
   reloadCheckDistractionAction() {
-    browser.tabs.reload();
+    browser.tabs.reload(pageInfo.id);
     transitionTo("checkedDistractionBasics", false);
   },
   stillSeeAdAction() {
@@ -163,7 +163,7 @@ const popupMenuHelpActionMap = {
   unpauseAndReloadAction() {
     if (pageInfo.paused) {
       browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: false }).then(() => {
-        browser.tabs.reload();
+        browser.tabs.reload(pageInfo.id);
         transitionTo("unpauseAndReload", false);
       });
     } else if (pageInfo.url) {
@@ -174,11 +174,11 @@ const popupMenuHelpActionMap = {
           newValue: false,
         })
         .then(() => {
-          browser.tabs.reload();
+          browser.tabs.reload(pageInfo.id);
           transitionTo("unpauseAndReload", false);
         });
     } else {
-      browser.tabs.reload();
+      browser.tabs.reload(pageInfo.id);
       transitionTo("unpauseAndReload", false);
     }
   },
@@ -186,12 +186,14 @@ const popupMenuHelpActionMap = {
   unpauseAndReloadActionDistraction() {
     if (pageInfo.paused) {
       browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: false }).then(() => {
-        browser.tabs.reload();
-        browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
-          // eslint-disable-next-line no-global-assign
-          pageInfo = info;
-          transitionTo("unpauseAndReloadDistraction", false);
-        });
+        browser.tabs.reload(pageInfo.id);
+        browser.runtime
+          .sendMessage({ command: "getCurrentTabInfo", tabId: pageInfo.id })
+          .then((info) => {
+            // eslint-disable-next-line no-global-assign
+            pageInfo = info;
+            transitionTo("unpauseAndReloadDistraction", false);
+          });
       });
     } else if (pageInfo.url) {
       browser.runtime
@@ -201,20 +203,24 @@ const popupMenuHelpActionMap = {
           newValue: false,
         })
         .then(() => {
-          browser.tabs.reload();
-          browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
-            // eslint-disable-next-line no-global-assign
-            pageInfo = info;
-            transitionTo("unpauseAndReloadDistraction", false);
-          });
+          browser.tabs.reload(pageInfo.id);
+          browser.runtime
+            .sendMessage({ command: "getCurrentTabInfo", tabId: pageInfo.id })
+            .then((info) => {
+              // eslint-disable-next-line no-global-assign
+              pageInfo = info;
+              transitionTo("unpauseAndReloadDistraction", false);
+            });
         });
     } else {
-      browser.tabs.reload();
-      browser.runtime.sendMessage({ command: "getCurrentTabInfo" }).then((info) => {
-        // eslint-disable-next-line no-global-assign
-        pageInfo = info;
-        transitionTo("unpauseAndReloadDistraction", false);
-      });
+      browser.tabs.reload(pageInfo.id);
+      browser.runtime
+        .sendMessage({ command: "getCurrentTabInfo", tabId: pageInfo.id })
+        .then((info) => {
+          // eslint-disable-next-line no-global-assign
+          pageInfo = info;
+          transitionTo("unpauseAndReloadDistraction", false);
+        });
     }
   },
   dontChangeSeeAdsAction() {
@@ -229,7 +235,7 @@ const popupMenuHelpActionMap = {
   // Pauses and reloads the page
   reloadStillBrokenAction() {
     browser.runtime.sendMessage({ command: "adblockIsPaused", newValue: true }).then(() => {
-      browser.tabs.reload();
+      browser.tabs.reload(pageInfo.id);
       transitionTo("reloadStillBroken", false);
     });
   },
@@ -281,7 +287,7 @@ const popupMenuHelpActionMap = {
     browser.runtime.sendMessage({ type: "subscriptions.add", url: savedData.subURL });
   },
   reloadcheckedDistractions() {
-    browser.tabs.reload();
+    browser.tabs.reload(pageInfo.id);
     transitionTo("checkedDistractions", false);
   },
   distractionsProblemSolvedAction() {
