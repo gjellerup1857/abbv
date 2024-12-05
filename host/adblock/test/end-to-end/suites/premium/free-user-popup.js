@@ -3,7 +3,12 @@
 import { expect } from "expect";
 
 import { getOptionsHandle } from "../../utils/hook.js";
-import { getUserIdFromStorage, initPopupPage } from "../../utils/page.js";
+import {
+  getUserIdFromStorage,
+  initPopupPage,
+  localTestPageUrl,
+  premiumUrl,
+} from "../../utils/page.js";
 import { getDisplayedElement, getTabId, openNewTab, findUrl } from "../../utils/driver.js";
 
 export default () => {
@@ -12,20 +17,22 @@ export default () => {
     { selector: '[data-name="blockDistractions"]', title: "Block Distractions" },
   ];
 
+  let fullPremiumUrl;
+
   before(async function () {
     const userId = await getUserIdFromStorage(getOptionsHandle());
-    global.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
+    fullPremiumUrl = `${premiumUrl}/?u=${userId}`;
   });
 
   beforeEach(async function () {
-    await openNewTab("https://example.com/");
+    await openNewTab(localTestPageUrl);
     const tabId = await getTabId(getOptionsHandle());
     await initPopupPage(tabId);
   });
 
   for (const { selector, title } of premiumFeatures) {
     it(`shows '${title}' as locked`, async function () {
-      const titleElem = await getDisplayedElement(`${selector} .title`);
+      const titleElem = await getDisplayedElement(`${selector} .title`, { forceRefresh: false });
       expect(await titleElem.getText()).toEqual(title);
 
       const learnMoreBtn = await getDisplayedElement(`${selector} button`);
@@ -35,9 +42,7 @@ export default () => {
       await learnMoreBtn.click();
 
       // find new opened tab
-      await findUrl(premiumURL);
-      const currentURL = await driver.getCurrentUrl();
-      expect(currentURL).toEqual(premiumURL);
+      await findUrl(fullPremiumUrl);
     });
   }
 };

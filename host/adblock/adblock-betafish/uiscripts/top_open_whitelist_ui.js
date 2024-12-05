@@ -265,7 +265,7 @@ function topOpenWhitelistUI(options) {
           command: "addCustomFilter",
           filterTextToAdd: filter,
           addCustomFilterRandomName: options.addCustomFilterRandomName,
-          origin: "wizard",
+          origin: modulesAsGlobal.filters.FilterOrigin.wizard,
         })
         .then(() => {
           if ($dialog.find("#adblock-reload-page").is(":checked")) {

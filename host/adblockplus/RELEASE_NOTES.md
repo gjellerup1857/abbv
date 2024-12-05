@@ -1,6 +1,14 @@
 # Unreleased
 
-- Updated webext-ad-filtering-solution to 1.19.0
+- Updated webext-ad-filtering-solution to 1.21.0
+- Pass premium status in uninstall link (EXT-430)
+- Updated snippets to 1.7.1
+
+# 4.9.4 - 2024-12-02
+
+- This release contains mostly only minor updates and under-the-hood changes.
+- Updated webext-ad-filtering-solution to 1.20.0
+- Added skeleton for public API inside custom iframe. The API is currently inactive (EXT-567)
 
 # 4.9.3 - 2024-11-19
 

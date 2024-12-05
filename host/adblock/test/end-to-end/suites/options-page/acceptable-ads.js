@@ -17,7 +17,11 @@
 
 import { expect } from "expect";
 
-import { isCheckboxEnabled, getDisplayedElement } from "../../utils/driver.js";
+import {
+  isCheckboxEnabled,
+  getDisplayedElement,
+  clickOnDisplayedElement,
+} from "../../utils/driver.js";
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
@@ -31,17 +35,23 @@ export default () => {
   });
 
   it("displays AA default state", async function () {
+    const { expectAAEnabled } = browserDetails;
+
     await initOptionsGeneralTab(getOptionsHandle());
-    await driver.wait(async () => {
-      const aaEnabled = await isCheckboxEnabled("acceptable_ads");
-      return aaEnabled === browserDetails.expectAAEnabled;
-    });
+    await driver.wait(
+      async () => {
+        const aaEnabled = await isCheckboxEnabled("acceptable_ads");
+        return aaEnabled === expectAAEnabled;
+      },
+      5000,
+      `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
+    );
     const aaPrivacyEnabled = await isCheckboxEnabled("acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(false);
 
     await initOptionsFiltersTab(getOptionsHandle());
     const aaFLEnabled = await isCheckboxEnabled("adblockFilterList_0");
-    expect(aaFLEnabled).toEqual(browserDetails.expectAAEnabled);
+    expect(aaFLEnabled).toEqual(expectAAEnabled);
     const aaFLPrivacyEnabled = await isCheckboxEnabled("adblockFilterList_1");
     expect(aaFLPrivacyEnabled).toEqual(false);
   });
@@ -50,11 +60,12 @@ export default () => {
     await initOptionsGeneralTab(getOptionsHandle());
     let aaPrivacyEnabled = await isCheckboxEnabled("acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(false);
-    const aaPrivacy = await getDisplayedElement("label:has(> #acceptable_ads_privacy)");
-    await aaPrivacy.click();
+    await clickOnDisplayedElement("label:has(> #acceptable_ads_privacy)");
     aaPrivacyEnabled = await isCheckboxEnabled("acceptable_ads_privacy");
     expect(aaPrivacyEnabled).toEqual(true);
-    const aaPrivacyHelper = await getDisplayedElement("#aa-privacy-helper > span", 4000);
+    const aaPrivacyHelper = await getDisplayedElement("#aa-privacy-helper > span", {
+      timeout: 4000,
+    });
     expect(await aaPrivacyHelper.getText()).toEqual(
       "For this feature to work properly, please enable Do Not Track (DNT) in your browser preferences.",
     );
@@ -74,7 +85,10 @@ export default () => {
     }
     await aaCheckbox.click(); // disables AA
 
-    const aaInfo = await getDisplayedElement("#acceptable_ads_info > span", 2000, false);
+    const aaInfo = await getDisplayedElement("#acceptable_ads_info > span", {
+      timeout: 3000,
+      forceRefresh: false,
+    });
     expect(await aaInfo.getText()).toEqual(
       "You're no longer subscribed to the Acceptable Ads filter list.",
     );

@@ -11,7 +11,7 @@ const OptionItem = ({
   subOptions,
   isChecked,
   isSubOption = false,
-  selector: Selector = Checkbox,
+  selector = [Checkbox],
 }) => {
   const subOptionLiClasses = isSubOption ? "pl-6" : "first-of-type:border-none";
   const itemClasses = ["text-lg  border-t border-theme-accent-light", subOptionLiClasses].join(" ");
@@ -20,12 +20,13 @@ const OptionItem = ({
   const outerDivClasses = ["flex justify-between py-2", alignementClasses].join(" ");
   const innerDivClasses = ["flex", alignementClasses].join(" ");
 
+  const [Selector, selectorOptions = {}] = selector;
+
   return (
     <li key={name} className={itemClasses}>
       <div className={outerDivClasses}>
         <div className={innerDivClasses}>
-          {/* The Toggle and Checkbox APIs need to be aligned */}
-          <Selector id={name} name={name} onChange={onChange} checked={isChecked(name)} />
+          <Selector id={name} onChange={onChange} checked={isChecked(name)} {...selectorOptions} />
           <label className="ml-4" for={name}>
             {translate(textKey)}
           </label>
@@ -55,7 +56,12 @@ const OptionItem = ({
         {subOptions && (
           <ul>
             {subOptions.map((option) => (
-              <OptionItem isSubOption selector={ToggleSwitch} {...option} isChecked={isChecked} />
+              <OptionItem
+                isSubOption
+                selector={[ToggleSwitch, { kind: "inline" }]}
+                {...option}
+                isChecked={isChecked}
+              />
             ))}
           </ul>
         )}

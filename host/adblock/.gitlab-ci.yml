@@ -46,10 +46,16 @@ stages:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     # Run automatically on release and main branch
-    - if: $CI_COMMIT_BRANCH == "adblock-release" || $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "adblock-release" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_TAG =~ /^(adblock)-v?\d+(\.\d+)*$/
     # Run manually on all other branches
     - when: manual
       allow_failure: true
+
+.release-tag:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^(adblock)-v?\d+(\.\d+)*$/'
+      when: on_success
+    - when: never
 
 ################################################################################
 # Build
@@ -79,7 +85,6 @@ build:
       - host/adblock/dist/release/adblock-*.tar.gz
       - host/adblock/dist/release/adblock-chrome-*-mv2.zip
       - host/adblock/dist/release/adblock-chrome-*-mv3.zip
-      - host/adblock/dist/release/adblock-firefox-*-mv2.xpi
       - host/adblock/dist/release/adblock-firefox-*-mv2.xpi
 
 buildfromsource:
@@ -258,8 +263,9 @@ comp:MV2:chromium:oldest:
   stage: end-to-end
   extends: .docker
   script:
+    - echo "EYEOMETRY_BEARER=\"$ADBLOCK_EYEOMETRY_BEARER\"" >> host/adblock/.env
     - docker build -t end-to-end -f host/adblock/test/end-to-end/Dockerfile .
-    - docker run --cpus=2 --shm-size=2g -t -e BROWSER -e MANIFEST_VERSION end-to-end
+    - docker run --cpus=2 --shm-size=2g -t -e BROWSER -e MANIFEST_VERSION -e CI end-to-end
   after_script:
     - IMAGE_ID=$(docker ps -aqf ancestor=end-to-end)
     - docker cp $IMAGE_ID:/extensions/host/adblock/test/end-to-end/screenshots host/adblock/ 2> /dev/null
@@ -291,16 +297,28 @@ end-to-end:MV3:chromium:
 # Release
 ################################################################################
 
-create_release:
+.gitlab-api-release-automation:
   stage: release
   image: gitlab/glab
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^(adblock)-v?\d+(\.\d+)*$/'
-      when: on_success
-    - when: never
-  script:
-    - apk add nodejs
+    - !reference [.release-tag, rules]
+  before_script:
+    - apk add git nodejs
     - version=${CI_COMMIT_TAG/adblock-/""}
-    - release_notes=$(node scripts/release-utils/get-release-notes.js adblock $version)
     - glab auth login --token $GITLAB_TOKEN_RELEASE
+    - git remote set-url --push origin "https://$GITLAB_TOKEN_RELEASE_NAME:$GITLAB_TOKEN_RELEASE@gitlab.com/$CI_PROJECT_PATH.git"
+
+create_release:
+  extends: .gitlab-api-release-automation
+  needs: ["build"]
+  script:
+    - release_notes=$(node scripts/release-utils/get-release-notes.js adblock $version)
     - glab release create $CI_COMMIT_TAG -n "AdBlock $version" host/adblock/dist/release/* -N "$release_notes"
+
+create_release_mr_back_to_main:
+  extends: .gitlab-api-release-automation
+  needs: []
+  script:
+    - git checkout -B $CI_COMMIT_TAG-merge-back-to-main refs/tags/$CI_COMMIT_TAG
+    - git push origin $CI_COMMIT_TAG-merge-back-to-main
+    - glab mr create --title "AdBlock $version release back to main" --description "Automatically bringing release changes back to the main branch" --remove-source-branch --yes

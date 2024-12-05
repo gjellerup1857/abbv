@@ -343,6 +343,8 @@
     // If sent by popup or the background page itself, there is no "tab".
     if ("tab" in rawSender) {
       sender.page = new Page(rawSender.tab);
+      sender.tab = rawSender.tab;
+      sender.frameId = rawSender.frameId;
       sender.frame = {
         id: rawSender.frameId,
         url: new URL(rawSender.url),

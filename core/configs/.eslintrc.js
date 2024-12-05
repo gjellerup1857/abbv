@@ -7,17 +7,33 @@ module.exports = {
     es2021: true,
     webextensions: true
   },
-  extends: [
-    "love",
-    "plugin:prettier/recommended"
-  ],
-  parser: "@typescript-eslint/parser",
+  ignorePatterns: ["dist/"],
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module"
   },
-  rules: {
-    "@typescript-eslint/strict-boolean-expressions": "off",
-    "curly": "error"
-  }
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx"],
+      extends: [
+        "love",
+        "plugin:prettier/recommended"
+      ],
+      parser: "@typescript-eslint/parser",
+      rules: {
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "curly": "error"
+      }
+    },
+    {
+      // JavaScript-specific rules
+      files: ["*.js"],
+      extends: [
+        "plugin:prettier/recommended"
+      ],
+      rules: {
+        // Add other JavaScript-specific rules here
+      },
+    },
+  ],
 };

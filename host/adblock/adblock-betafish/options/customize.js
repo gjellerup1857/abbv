@@ -211,7 +211,10 @@ $(async () => {
     }
 
     if (newFiltersToAdd.length) {
-      const errors = await FiltersProxy.add(newFiltersToAdd.join("\n"), "customize");
+      const errors = await FiltersProxy.add(
+        newFiltersToAdd.join("\n"),
+        modulesAsGlobal.filters.FilterOrigin.customize,
+      );
       if (errors) {
         const { filter, reason, type } = errors;
         // if multiple errors are returned, only show the first one.

@@ -26,7 +26,7 @@ class PremiumCheckoutPage extends BasePage {
   }
 
   async init() {
-    await this.paddleFrame.waitForExist({ timeout: 10000 });
+    await this.paddleFrame.waitForDisplayed({ timeout: 30000 });
     await browser.switchToFrame(await this.paddleFrame);
     await this.waitForDisplayedNoError(this.emailTextField);
   }
@@ -82,6 +82,10 @@ class PremiumCheckoutPage extends BasePage {
     await this.waitForEnabledThenClick(this.subscribeButton);
   }
 
+  async getEmailTextFieldText() {
+    return await (await this.emailTextField).getText();
+  }
+
   async isGetStartedWithABPPremiumButtonDisplayed() {
     return await (await this.getStartedWithABPPremiumButton).isDisplayed();
   }
@@ -107,6 +111,7 @@ class PremiumCheckoutPage extends BasePage {
     await this.waitForEnabledThenClick(this.emailTextField, 10000);
     // first click sometimes doesn't work
     await this.waitForEnabledThenClick(this.emailTextField, 10000);
+    await this.clearValue('input[id="email"]');
     await browser.keys(text);
   }
 

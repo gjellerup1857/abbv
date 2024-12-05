@@ -21,7 +21,8 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import * as info from "info";
-import { start as startYtWallDection } from "@eyeo/yt-wall-detection/background";
+import { start as startYtWallDetection } from "@eyeo/yt-wall-detection/background";
+import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { Prefs } from "./alias/prefs";
 
 import { getCustomFilterMetaData, getDebugInfo } from "./debug/background";
@@ -58,6 +59,8 @@ import ServerMessages from "~/servermessages";
 import SubscriptionAdapter from "./subscriptionadapter";
 import SyncService from "./picreplacement/sync-service";
 import * as prefs from "./prefs/background";
+import { FilterOrigin } from "../src/filters/shared";
+import { start as startFiltersMigration } from "../src/filters/background";
 
 import {
   createFilterMetaData,
@@ -177,6 +180,10 @@ const countCache = (function countCache() {
 })();
 countCache.init();
 
+const isAllowlistFilter = function (text) {
+  return /^@@/.test(text);
+};
+
 // Add a new custom filter entry.
 // Inputs: filter:string - line of text to add to custom filters.
 //         origin:string - the source or trigger for the filter list entry
@@ -187,7 +194,18 @@ const addCustomFilter = async function (filterText, origin) {
     if (response) {
       return response;
     }
-    await ewe.filters.add([filterText], createFilterMetaData(origin));
+
+    const metadata = createFilterMetaData(origin);
+    if (
+      isAllowlistFilter(filterText) &&
+      [FilterOrigin.wizard, FilterOrigin.youtube, FilterOrigin.popup].includes(origin)
+    ) {
+      const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
+      metadata.expiresAt = Date.now() + autoExtendMs;
+      metadata.autoExtendMs = autoExtendMs;
+    }
+
+    await ewe.filters.add([filterText], metadata);
     await ewe.filters.enable([filterText]);
     if (isSelectorFilter(filterText)) {
       countCache.addCustomFilterCount(filterText);
@@ -200,22 +218,7 @@ const addCustomFilter = async function (filterText, origin) {
   }
 };
 
-// Creates a custom filter entry that allowlists a given domain
-// Inputs: pageUrl:string - url of the page
-//         origin:string - the source or trigger for the filter list entry
-// Returns: null if successful, otherwise an exception
-const createDomainAllowlistFilter = async function (pageUrl, origin) {
-  const theURL = new URL(pageUrl);
-  const host = theURL.hostname.replace(/^www\./, "");
-  const filter = `@@||${host}/*^$document`;
-  return addCustomFilter(filter, origin);
-};
-
 // UNWHITELISTING
-
-const isWhitelistFilter = function (text) {
-  return /^@@/.test(text);
-};
 
 // Look for a custom filter that would whitelist the 'url' parameter
 // and if any exist, remove the first one.
@@ -242,7 +245,7 @@ const tryToUnwhitelist = async function (pageUrl, tabId) {
       await ewe.filters.remove([`${text}|~${finalUrl}`]);
       return true;
     }
-    if (isWhitelistFilter(text) && (await ewe.filters.getAllowingFilters(tabId)).includes(text)) {
+    if (isAllowlistFilter(text) && (await ewe.filters.getAllowingFilters(tabId)).includes(text)) {
       await ewe.filters.remove([text]);
       return true;
     }
@@ -703,7 +706,7 @@ initialize
     await startCdpOptOutListener();
     revalidateAllowlistingStates();
     prefs.migrateUserData();
-    startYtWallDection({
+    startYtWallDetection({
       allowlistTab: adblockIsDomainPaused,
       addTrustedMessageTypes: ext.addTrustedMessageTypes,
       ewe,
@@ -712,7 +715,15 @@ initialize
       prefs: Prefs,
       sendAdWallEvents: ServerMessages.recordAdWallMessage,
     });
+    startPublicAPI({
+      ewe,
+      port,
+      addTrustedMessageTypes: ext.addTrustedMessageTypes,
+      isPremiumActive: License.isActiveLicense,
+      getEncodedLicense: License.getBypassPayload,
+    });
     addAllowlistingListeners();
+    await startFiltersMigration();
   })
   .catch((e) => {
     const hasInternalError = /internal error/i.test(e.message);
@@ -754,7 +765,6 @@ Object.assign(self, {
   getUserFilters,
   updateFilterLists,
   checkUpdateProgress,
-  createDomainAllowlistFilter,
   getDebugInfo,
   openTab,
   saveDomainPauses,
@@ -771,7 +781,7 @@ Object.assign(self, {
   removeCustomFilterForHost,
   reloadTab,
   isSelectorFilter,
-  isWhitelistFilter,
+  isAllowlistFilter,
   isSelectorExcludeFilter,
   pausedFilterText1,
   pausedFilterText2,

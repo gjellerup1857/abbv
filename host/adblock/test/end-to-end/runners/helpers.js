@@ -23,8 +23,8 @@ import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 import {
   getBrowserNameArg,
   getManifestVersionArg,
-  getScreenshotsPath,
-  screenshotsBasePath,
+  screenshotsPath,
+  helperExtensionPath,
 } from "./constants.js";
 import { reloadExtension } from "../utils/page.js";
 import { sleep, changeExtensionVersion } from "@eyeo/test-utils";
@@ -105,10 +105,7 @@ export async function startBrowser(extensionPath, retry = 0) {
     const { versionNumber } = await BROWSERS[browserName].installBrowser(version);
     console.log(`Installed ${browserName} ${versionNumber} ...`);
 
-    const extensionPaths = [
-      path.join(process.cwd(), "dist", "devenv", "helper-extension"),
-      extensionPath,
-    ];
+    const extensionPaths = [helperExtensionPath, extensionPath];
     const headless = process.env.FORCE_HEADFUL !== "true";
 
     let options;
@@ -197,12 +194,11 @@ export async function screenshot(title) {
   const base64Data = data.replace(/^data:image\/png;base64,/, "");
 
   // ensure screenshots directory exists and write the screenshot to a file
-  const screenshotsPath = getScreenshotsPath();
   await fs.promises.mkdir(screenshotsPath, { recursive: true });
   await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
 }
 
-// Removes the screenshots base folder
+// Removes the screenshots folder
 export async function removeScreenshots() {
-  await fs.promises.rm(screenshotsBasePath, { recursive: true, force: true });
+  await fs.promises.rm(screenshotsPath, { recursive: true, force: true });
 }

@@ -27,6 +27,7 @@ module.exports = {
   allowlistingFilter: "@@||localhost^$document",
   customBlockingFilters: [
     "/pop_ads.js", // no longer exists in EasyList
+    "/bannerads/blocking-filter.js", // Sometimes needed
     "localhost###search-ad", // Needed to override EasyList's "@@://localhost:$generichide"
     "localhost##.AdContainer" // Needed to override EasyList's "@@://localhost:$generichide"
   ],
@@ -44,5 +45,6 @@ module.exports = {
   regexManifestVersion: /(?<="version": ").*?(?=")/,
   snippetsPageUrl:
     "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/snippets" +
-    "/snippets-testpage.html"
+    "/snippets-testpage.html",
+  uninstallUrl: "https://adblockplus.org/en/uninstalled"
 };

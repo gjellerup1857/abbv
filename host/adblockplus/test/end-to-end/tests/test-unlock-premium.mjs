@@ -20,8 +20,7 @@ import { expect } from "chai";
 import {
   enablePremiumByMockServer,
   enablePremiumByUI,
-  getTabId,
-  isFirefox
+  getTabId
 } from "../helpers.js";
 import PremiumHeaderChunk from "../page-objects/premiumHeader.chunk.js";
 import PopupPage from "../page-objects/popup.page.js";
@@ -35,9 +34,6 @@ export default () => {
   });
 
   it("should be able to activate premium", async function () {
-    // https://eyeo.atlassian.net/browse/EXT-608
-    if (isFirefox()) this.skip();
-
     await enablePremiumByUI();
     const premiumHeaderChunk = new PremiumHeaderChunk(browser);
     expect(await premiumHeaderChunk.isPremiumHeaderDisplayed()).to.be.true;

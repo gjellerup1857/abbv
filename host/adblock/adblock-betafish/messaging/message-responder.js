@@ -17,7 +17,7 @@
 
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, isTrustedSender,  tryToUnwhitelist, getUserFilters,
-   createDomainAllowlistFilter, addCustomFilter, countCache, checkUpdateProgress,
+   addCustomFilter, countCache, checkUpdateProgress,
    adblockIsPaused, pageIsWhitelisted, adblockIsDomainPaused, getCurrentTabInfo,
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
    getDebugInfo, addYTChannelListeners, removeYTChannelListeners, openYTManagedSubPage,
@@ -211,9 +211,6 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return;
     case "subscriptions.has":
       return processMessageResponse(sendResponse, ewe.subscriptions.has(message.url));
-    case "createDomainAllowlistFilter":
-      sendResponse({});
-      return createDomainAllowlistFilter(message.url, message.origin).then((results) => results);
     case "getUserFilters":
       sendResponse({ response: getUserFilters() });
       return;

@@ -58,9 +58,6 @@ export default function () {
       { timeout: 10000, refresh: true }
     );
 
-    // refresh the page to ensure the allowlisting is applied
-    await browser.refresh();
-
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);
     await testPages.checkPage({ expectAllowlisted: true });
@@ -81,9 +78,6 @@ export default function () {
 
     // verify that the page received the allowlisting successfully event
     expect(allowlistedEvent).to.not.be.null;
-
-    // refresh the page to ensure the allowlisting is applied
-    await browser.refresh();
 
     // verify that the page is allowlisted
     const testPages = new TestPages(browser);

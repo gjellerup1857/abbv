@@ -19,6 +19,11 @@ import { type Command } from "../../../ipm/background";
 import { type Timing } from "../timing.types";
 
 /**
+ * The default priority for dialog commands.
+ */
+export const defaultPriority = 1;
+
+/**
  * On-page dialog command parameters
  */
 export interface DialogParams {
@@ -31,6 +36,7 @@ export interface DialogParams {
   button_target: string;
   domain_list?: string;
   license_state_list?: string;
+  priority?: number;
 }
 
 /**

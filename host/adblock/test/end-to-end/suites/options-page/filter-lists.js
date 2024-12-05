@@ -16,31 +16,29 @@
  */
 
 import { expect } from "expect";
-import webdriver from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 
 import {
   isCheckboxEnabled,
   getDisplayedElement,
   findUrl,
   waitForNotDisplayed,
+  clickOnDisplayedElement,
 } from "../../utils/driver.js";
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   getSubscriptionInfo,
   clickFilterlist,
-  checkSubscribedInfo,
+  waitForSubscribed,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
 import { getDefaultFilterLists, languageFilterLists } from "../../utils/dataset.js";
 
-const { By } = webdriver;
-
 async function setFilterListUrl(url) {
-  const customFLElem = await getDisplayedElement("#txtNewSubscriptionUrl");
-  await customFLElem.click();
+  const customFLElem = await clickOnDisplayedElement("#txtNewSubscriptionUrl");
   await customFLElem.sendKeys(url);
-  await driver.findElement(By.id("btnNewSubscriptionUrl")).click();
+  await clickOnDisplayedElement("#btnNewSubscriptionUrl");
 }
 
 export default () => {
@@ -83,6 +81,8 @@ export default () => {
   });
 
   it("updates all filter lists", async function () {
+    this.timeout(40000); // Updating all filter list may take longer depending on network conditions
+
     const defaultFilterLists = getDefaultFilterLists().filter(({ enabled }) => enabled);
 
     const checkDefaultSubscriptionsInfo = async (updatedWhen, timeout) => {
@@ -104,10 +104,8 @@ export default () => {
 
     await checkDefaultSubscriptionsInfo("ago", 20000);
 
-    const updateNow = await getDisplayedElement("#btnUpdateNow");
-    await updateNow.click();
+    await clickOnDisplayedElement("#btnUpdateNow");
     await checkDefaultSubscriptionsInfo("right now", 10000);
-
     await checkDefaultSubscriptionsInfo("seconds ago", 20000);
   });
 
@@ -118,18 +116,12 @@ export default () => {
         : "https://easylist-downloads.adblockplus.org/v3/full/exceptionrules.txt";
 
     const enableAdvancedUser = async () => {
-      let advancedUserEnabled = await isCheckboxEnabled("enable_show_advanced_options");
+      const advancedUserEnabled = await isCheckboxEnabled("enable_show_advanced_options");
       if (!advancedUserEnabled) {
-        const advancedUser = await getDisplayedElement("span:has(> #enable_show_advanced_options)");
-        await advancedUser.click();
-        // after clicking on advancedUser the page seems to reload itself
-        await driver.sleep(1000);
+        await clickOnDisplayedElement("span:has(> #enable_show_advanced_options)");
         await driver.wait(
-          async () => {
-            advancedUserEnabled = await isCheckboxEnabled("enable_show_advanced_options");
-            return advancedUserEnabled;
-          },
-          1000,
+          async () => isCheckboxEnabled("enable_show_advanced_options"),
+          2000,
           "The advanced user was not enabled after clicking",
         );
       }
@@ -139,12 +131,8 @@ export default () => {
     await enableAdvancedUser();
 
     await initOptionsFiltersTab(getOptionsHandle());
-    const showLinks = await getDisplayedElement("#btnShowLinks");
-    await showLinks.click();
-
-    const aaLink = await getDisplayedElement('[name="acceptable_ads"] > label a.filter-list-link');
-    await aaLink.click();
-
+    await clickOnDisplayedElement("#btnShowLinks");
+    await clickOnDisplayedElement('[name="acceptable_ads"] > label a.filter-list-link');
     await findUrl(aaUrl);
   });
 
@@ -170,10 +158,9 @@ export default () => {
         );
       }
 
-      // Clicking right after unsubscribed may be ineffective
-      await driver.sleep(1000);
+      await driver.sleep(1000); // Clicking right after unsubscribed may be ineffective
       await clickFilterlist(name, inputId, true);
-      await checkSubscribedInfo(name, inputId);
+      await waitForSubscribed(name, inputId);
     });
   }
 
@@ -181,12 +168,10 @@ export default () => {
     const name = "easylist_plus_vietnamese";
     const inputId = "languageFilterList_24";
 
-    await getDisplayedElement("#language_select");
-    await driver.findElement(By.css(`#language_select > option[value="${name}"]`)).click();
-    await checkSubscribedInfo(name, inputId);
+    await clickOnDisplayedElement(`#language_select > option[value="${name}"]`);
+    await waitForSubscribed(name, inputId, { allowFetching: true });
 
-    // Clicking right after subscribed may be ineffective
-    await driver.sleep(1000);
+    await driver.sleep(1500); // Clicking right after subscribed may be ineffective
     await clickFilterlist(name);
     await waitForNotDisplayed(`[name="${name}"]`);
   });
@@ -197,10 +182,10 @@ export default () => {
     const inputId = "customFilterList_1";
 
     await setFilterListUrl(subscriptionUrl);
-    await checkSubscribedInfo(name, inputId);
+    await waitForSubscribed(name, inputId, { allowFetching: true });
 
     await clickFilterlist(name, inputId, false);
-    await driver.findElement(By.css(`[name="${name}"] a.remove_filterList`)).click();
+    await clickOnDisplayedElement(`[name="${name}"] a.remove_filterList`);
     await waitForNotDisplayed(`[name="${name}"]`);
   });
 

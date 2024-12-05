@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/extensions */
 import { expect } from "expect";
-import webdriver from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 
 import { getOptionsHandle } from "../../utils/hook.js";
 import {
@@ -12,6 +12,7 @@ import {
   initOptionsBackupSyncTab,
   initOptionsPremiumFlTab,
   checkPremiumPageHeader,
+  premiumUrl,
 } from "../../utils/page.js";
 import {
   getDisplayedElement,
@@ -20,16 +21,22 @@ import {
 } from "../../utils/driver.js";
 
 export default () => {
+  let fullPremiumUrl;
+
   before(async function () {
     const userId = await getUserIdFromStorage(getOptionsHandle());
-    global.premiumURL = `https://getadblock.com/en/premium/?u=${userId}`;
+    fullPremiumUrl = `${premiumUrl}/?u=${userId}`;
   });
 
   it("displays cta and premium features", async function () {
     await initOptionsPremiumTab(getOptionsHandle());
-    await checkPremiumPageHeader("#locked-user-pay-section-mab > p", "#get-it-now-mab", premiumURL);
+    await checkPremiumPageHeader(
+      "#locked-user-pay-section-mab > p",
+      "#get-it-now-mab",
+      fullPremiumUrl,
+    );
 
-    const features = await driver.findElements(webdriver.By.css("#myadblock-features > div"));
+    const features = await driver.findElements(By.css("#myadblock-features > div"));
     expect(features.length).toEqual(4);
 
     // click on each feature and check if it navigates to the correct premium page
@@ -62,14 +69,14 @@ export default () => {
       await checkPremiumPageHeader(
         "#locked-user-pay-section-themes > p",
         "#get-it-now-themes",
-        premiumURL,
+        fullPremiumUrl,
       );
 
       const selectedTheme = await getDisplayedElement(`${selector} .theme-box.selected`);
       expect(await selectedTheme.getAttribute("data-theme")).toEqual("default_theme");
 
       const lockedThemesElems = await driver.findElements(
-        webdriver.By.css(`${selector} .theme-wrapper.locked .theme-box`),
+        By.css(`${selector} .theme-wrapper.locked .theme-box`),
       );
 
       const lockedThemesIds = await Promise.all(
@@ -79,7 +86,7 @@ export default () => {
       expect(lockedThemesIds.sort()).toEqual(expectedLockedThemeIds.sort());
 
       for (const themeId of expectedLockedThemeIds) {
-        await clickAndCloseNewTab(`${selector} [data-theme="${themeId}"]`, premiumURL);
+        await clickAndCloseNewTab(`${selector} [data-theme="${themeId}"]`, fullPremiumUrl);
       }
     });
   }
@@ -90,18 +97,18 @@ export default () => {
     await checkPremiumPageHeader(
       "#locked-user-pay-section-image-swap > p",
       "#get-it-now-image-swap",
-      premiumURL,
+      fullPremiumUrl,
     );
 
     const selectedOption = await getDisplayedElement("#channel-options .selected");
     expect(await selectedOption.getText()).toContain("Don't swap ads");
 
-    const lockedOptions = await driver.findElements(webdriver.By.css("#channel-options .locked"));
+    const lockedOptions = await driver.findElements(By.css("#channel-options .locked"));
     expect(lockedOptions.length).toEqual(8);
 
     // click on all locked options
     for (let i = 0; i < 8; i++) {
-      await clickAndCloseNewTab(`#channel-options > li:nth-child(${i + 2})`, premiumURL);
+      await clickAndCloseNewTab(`#channel-options > li:nth-child(${i + 2})`, fullPremiumUrl);
     }
   });
 
@@ -110,13 +117,13 @@ export default () => {
     await checkPremiumPageHeader(
       "#locked-user-pay-section-sync > p",
       "#get-it-now-sync",
-      premiumURL,
+      fullPremiumUrl,
     );
 
     const ctaLink = await getDisplayedElement("#get-sync");
     expect(await ctaLink.getText()).toEqual("Get Sync");
 
-    await clickAndCloseNewTab("#get-sync", premiumURL);
+    await clickAndCloseNewTab("#get-sync", fullPremiumUrl);
   });
 
   it("shows premium filter lists locked in options page", async function () {
@@ -124,25 +131,25 @@ export default () => {
     await checkPremiumPageHeader(
       "#locked-user-pay-section-distraction-control > p",
       "#get-it-now-distraction-control",
-      premiumURL,
+      fullPremiumUrl,
     );
 
     const lockedIcons = await driver.findElements(
-      webdriver.By.css(".filter-subscription-wrapper .locked .premium_locked_icon"),
+      By.css(".filter-subscription-wrapper .locked .premium_locked_icon"),
     );
     const iconsVisibility = await Promise.all(lockedIcons.map((i) => i.isDisplayed()));
     expect(iconsVisibility).toEqual([true, true]);
 
     const listTitlesElems = await driver.findElements(
-      webdriver.By.css(".filter-subscription-wrapper .locked .premium_filter_list_title"),
+      By.css(".filter-subscription-wrapper .locked .premium_filter_list_title"),
     );
 
     const listTitles = await Promise.all(listTitlesElems.map((e) => e.getText()));
     expect(listTitles).toEqual(["Distraction Control", "Cookie Consent Cutter"]);
 
     // check distraction control link
-    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(1)", premiumURL);
+    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(1)", fullPremiumUrl);
     // check cookie consent cutter link
-    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(2)", premiumURL);
+    await clickAndCloseNewTab("#premium-filter-lists > div:nth-child(2)", fullPremiumUrl);
   });
 };

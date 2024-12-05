@@ -16,6 +16,7 @@
  */
 
 import * as messaging from "../../core/messaging/front";
+import * as filters from "../../filters/shared";
 
 /**
  * Initializes functionality for exposing modules as globals
@@ -25,7 +26,7 @@ function start(): void {
     return;
   }
 
-  self.modulesAsGlobal = { messaging };
+  self.modulesAsGlobal = { messaging, filters };
 }
 
 start();

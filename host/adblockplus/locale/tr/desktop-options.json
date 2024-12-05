@@ -35,6 +35,9 @@
   "options_allowlist_description": {
     "message": "Bu web sitelerinde reklam engellemeyi kapattınız; bu nedenle, bu web sitelerindeki reklamları göreceksiniz."
   },
+  "options_allowlist_description_7_days": {
+    "message": "Son 7 gün içerisinde ziyaret etmediğiniz web siteleri ya da sayfalar izin listenizden otomatik olarak kaldırılır."
+  },
   "options_allowlist_empty_1": {
     "message": "İzin verilenler listenizde hiç web sitesi yok."
   },

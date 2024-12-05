@@ -16,10 +16,10 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, updateButtonUIAndContextMenus, isWhitelistFilter */
+/* global browser, updateButtonUIAndContextMenus, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
-
+import { FilterOrigin } from "../../../src/filters/shared";
 import { createFilterMetaData } from "../../utilities/background/bg-functions";
 import { Prefs } from "~/alias/prefs";
 import { initialize } from "~/alias/subscriptionInit";
@@ -135,7 +135,7 @@ const adblockIsDomainPaused = function (
   activeTab,
   newValue,
   sessionOnly = false,
-  origin = "popup",
+  origin = FilterOrigin.popup,
 ) {
   // get stored domain pauses
   let storedDomainPauses = sessionStorageGet(domainPausedKey);
@@ -207,7 +207,7 @@ browser.storage.local.get(pausedKey).then((response) => {
 // If Adblock was paused on the domain, and the allowlist filter expired,
 // refresh the paused domains map to reflect the change.
 ewe.filters.onRemoved.addListener((filter) => {
-  if (!isWhitelistFilter(filter.text)) {
+  if (!isAllowlistFilter(filter.text)) {
     return;
   }
 

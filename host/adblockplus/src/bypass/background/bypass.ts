@@ -27,6 +27,7 @@ import { info } from "../../info/background";
 import * as logger from "../../logger/background";
 
 import { type Message } from "~/core/messaging/shared";
+import { FilterOrigin } from "~/filters/shared";
 import type { PremiumGetAuthPayloadOptions } from "./bypass.types";
 import type {
   AllowlistState,
@@ -207,7 +208,7 @@ async function getAllowlistState(
     const metadata = await ewe.filters.getMetadata(filter);
     const { origin } = metadata ?? {};
 
-    if (origin === "web") {
+    if (origin === FilterOrigin.web) {
       source = "1ca";
       break;
     } else {

@@ -25,6 +25,7 @@ import popupMain from "./test-popup-main.mjs";
 import freeUser from "./test-abp-premium-ui-free-user.mjs";
 import publicAPI from "./public-api/index.mjs";
 import unlockPremium from "./test-unlock-premium.mjs";
+import eyeometry from "./test-eyeometry.mjs";
 
 export default () => {
   describe("Regular tests", function () {
@@ -50,6 +51,7 @@ export default () => {
     describe("Public API", publicAPI);
     describe("Premium - Free User", freeUser);
     describe("Premium - Unlock Premium", unlockPremium);
+    describe("Eyeometry", eyeometry);
 
     // Needs to be the last suite to run because the extension gets uninstalled
     describe("Uninstall with default settings", uninstallDefault);

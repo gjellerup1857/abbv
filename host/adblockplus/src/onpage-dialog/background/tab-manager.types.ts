@@ -16,6 +16,18 @@
  */
 
 /**
+ * The key under which we store the timestamp of the last time we showed a
+ * dialog.
+ */
+export const lastShownKey = "onpage_dialog_last_shown";
+
+/**
+ * The key under which we store the minimum amount of time between two
+ * dialogs being shown.
+ */
+export const coolDownPeriodKey = "onpage_dialog_cool_down";
+
+/**
  * On-page dialog event names
  */
 export enum DialogEventType {

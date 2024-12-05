@@ -16,17 +16,14 @@
  */
 
 import { expect } from "expect";
-import webdriver from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 
 import { openNewTab } from "../utils/driver.js";
-
-const { By } = webdriver;
+import { localTestPageUrl } from "../utils/page.js";
 
 export default () => {
   it("loads a test server page", async function () {
-    const url = "http://localhost:3005/test.html";
-
-    await openNewTab(url);
+    await openNewTab(localTestPageUrl);
     const elem = await driver.findElement(By.css("h1"));
     expect(await elem.getText()).toEqual("Hello from host pages");
   });

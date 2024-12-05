@@ -40,7 +40,6 @@ export default function () {
     await reloadExtension();
     ({ extVersion } = global);
 
-    customBlockingFilters.push("/bannerads/blocking-filter.js");
     // To be removed by https://eyeo.atlassian.net/browse/EXT-282
     await addFiltersToABP(customBlockingFilters.join("\n"));
   });
