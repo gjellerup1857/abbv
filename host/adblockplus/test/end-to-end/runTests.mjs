@@ -33,7 +33,7 @@ async function runMochaTests() {
       // Add the "--parallel" flag to run tests in parallel.
       // Ensure the real-time logging can work in parallel before doing that and
       // the CI server can handle the increased load.
-      ["runners/runner.*.mjs", "--timeout", "300000", ...args],
+      ["runners/runner.currentBuild.mjs", "--timeout", "300000", ...args],
       { stdio: "inherit" }
     );
 
