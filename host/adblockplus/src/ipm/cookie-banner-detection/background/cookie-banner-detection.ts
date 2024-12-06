@@ -44,8 +44,7 @@ async function injectDetectionScript(
   }
 }
 
-function informIPMAboutDetection(): void {
-}
+function informIPMAboutDetection(): void {}
 
 /**
  * Starts the cookie banner detection feature
