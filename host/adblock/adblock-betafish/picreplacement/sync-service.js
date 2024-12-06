@@ -420,7 +420,7 @@ const SyncService = (function getSyncService() {
     // Remove the domain pause white-list items
     const domainPauses = adblockIsDomainPaused();
     for (const aDomain in domainPauses) {
-      const index = filters.indexOf(`@@${aDomain}$document`);
+      const index = filters.indexOf(`@@||${aDomain}^$document`);
       if (index >= 0) {
         filters.splice(index, 1);
       }

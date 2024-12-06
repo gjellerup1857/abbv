@@ -39,6 +39,10 @@ const pausedFilterText1 = "@@*";
 // white-list all documents, which prevents element hiding
 const pausedFilterText2 = "@@*$document";
 
+const createDomainAllowlistRule = function (domain) {
+  return `@@||${domain}^$document`;
+};
+
 // Get or set if AdBlock is paused
 // Inputs: newValue (optional boolean): if true, AdBlock will be paused, if
 // false, AdBlock will not be paused.
@@ -85,7 +89,7 @@ const domainPauseChangeHelper = function (tabId, newDomain) {
   for (const aDomain in storedDomainPauses) {
     if (storedDomainPauses[aDomain] === tabId && aDomain !== newDomain) {
       // Remove the filter that white-listed the domain
-      ewe.filters.remove([`@@${aDomain}$document`]);
+      ewe.filters.remove([createDomainAllowlistRule(aDomain)]);
       delete storedDomainPauses[aDomain];
 
       // save updated domain pauses
@@ -146,7 +150,8 @@ const adblockIsDomainPaused = function (
   }
 
   // return a boolean indicating whether the domain is paused if newValue is undefined
-  const activeDomain = parseUri(activeTab.url).host;
+  let activeDomain = parseUri(activeTab.url).host;
+  activeDomain = activeDomain.replace(/^www\./, "");
   if (newValue === undefined) {
     if (storedDomainPauses) {
       return Object.prototype.hasOwnProperty.call(storedDomainPauses, activeDomain);
@@ -168,7 +173,7 @@ const adblockIsDomainPaused = function (
       expiresAt: Date.now() + autoExtendMs,
       autoExtendMs,
     };
-    ewe.filters.add([`@@${activeDomain}$document`], metadata);
+    ewe.filters.add(createDomainAllowlistRule(activeDomain), metadata);
 
     // Only keep a record of the paused tabs if it's session only, otherwise,
     // the rule will expire automatically. This is to prevent the smart
@@ -183,7 +188,7 @@ const adblockIsDomainPaused = function (
     browser.tabs.onRemoved.addListener(domainPauseClosedTabHandler);
   } else {
     // remove the domain pause
-    ewe.filters.remove([`@@${activeDomain}$document`]);
+    ewe.filters.remove(createDomainAllowlistRule(activeDomain));
     delete storedDomainPauses[activeDomain];
   }
 
@@ -218,7 +223,7 @@ ewe.filters.onRemoved.addListener((filter) => {
   }
 
   for (const domain in domains) {
-    if (`@@${domain}$document` === filter.text) {
+    if (createDomainAllowlistRule(domain) === filter.text) {
       delete domains[domain];
       saveDomainPauses(domains);
       return;
@@ -226,16 +231,51 @@ ewe.filters.onRemoved.addListener((filter) => {
   }
 });
 
+// If an allowlist rule is added with the "expiresByTabId" metadata
+// property, add the host to the stored domain pause object
+// This allows other functionality within AdBlock to correctly
+// detect the new temporary allowlist rules (and function correctly)
+ewe.filters.onAdded.addListener(async (filter) => {
+  if (!isAllowlistFilter(filter.text)) {
+    return;
+  }
+  const metadata = await ewe.filters.getMetadata(filter.text);
+  if (!metadata || !metadata.expiresByTabId) {
+    return;
+  }
+  const tab = await browser.tabs.get(metadata.expiresByTabId).catch(() => {
+    return null;
+  });
+  if (!tab || !tab.url) {
+    return;
+  }
+  const tabURL = new URL(tab?.url);
+  const host = tabURL.hostname.replace(/^www\./, "");
+  const domains = adblockIsDomainPaused() || {};
+  domains[host] = metadata.expiresByTabId;
+  saveDomainPauses(domains);
+});
+
 // If AdBlock was domain paused on shutdown, then unpause / remove
 // all domain pause white-list entries at startup.
-browser.storage.local.get(domainPausedKey).then((response) => {
+browser.storage.local.get(domainPausedKey).then(async (response) => {
   const storedDomainPauses = response[domainPausedKey];
   if (!isEmptyObject(storedDomainPauses)) {
-    initialize.then(() => {
-      for (const aDomain in storedDomainPauses) {
-        ewe.filters.remove([`@@${aDomain}$document`]);
+    initialize.then(async () => {
+      for (const [host, tabId] of Object.entries(storedDomainPauses)) {
+        // eslint-disable-next-line no-await-in-loop
+        const aTab = await browser.tabs.get(tabId).catch(() => {
+          // return nothing
+        });
+        // if the tab exists, don't remove the filter
+        if (aTab) {
+          continue;
+        }
+        const ruleText = createDomainAllowlistRule(host);
+        ewe.filters.remove(ruleText);
+        delete storedDomainPauses[host];
       }
-      browser.storage.local.remove(domainPausedKey);
+      saveDomainPauses(storedDomainPauses);
     });
   }
 });
