@@ -448,9 +448,6 @@ export default function createWdioPolyfill(
           const locator = selector.startsWith("//")
             ? By.xpath(selector)
             : By.css(selector);
-          console.log('in findElement')
-          console.trace()
-          console.log(locator, driver)
           elem = await driver.findElement(locator);
           return !!elem;
         } catch (e) {

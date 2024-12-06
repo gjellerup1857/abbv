@@ -171,16 +171,11 @@ class BasePage {
   }
 
   async waitUntilTextIs(element, text, timeoutVal = 5000) {
-    console.log(this)
-    console.log('finding element: ', element)
-    const el = await (element)
-    console.log('element found', el)
     return await (
-      el
+      await element
     ).waitUntil(
       async function () {
-        console.log(this)
-        return (await this.getText()) === text;
+        return (await await this.getText()) === text;
       },
       {
         timeout: timeoutVal,

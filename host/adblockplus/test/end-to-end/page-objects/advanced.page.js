@@ -22,7 +22,6 @@ const BasePage = require("./base.page");
 class AdvancedPage extends BasePage {
   constructor(browser) {
     super();
-    console.log(browser)
     this.browser = browser;
   }
 
