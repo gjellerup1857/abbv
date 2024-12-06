@@ -404,6 +404,7 @@ class PopupPage extends BasePage {
   }
 
   async isDomainToggleChecked() {
+    await this.thisDomainToggle.waitForExist({ timeout: 2000 });
     if (isFirefox()) {
       return (await this.thisDomainToggle.getAttribute("checked")) != null;
     }

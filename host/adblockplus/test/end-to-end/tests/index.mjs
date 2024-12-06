@@ -26,6 +26,7 @@ import freeUser from "./test-abp-premium-ui-free-user.mjs";
 import publicAPI from "./public-api/index.mjs";
 import unlockPremium from "./test-unlock-premium.mjs";
 import eyeometry from "./test-eyeometry.mjs";
+import youtubeAutoAllowlist from "./test-youtube-auto-allowlist.mjs";
 
 export default () => {
   describe("Regular tests", function () {
@@ -52,6 +53,7 @@ export default () => {
     describe("Premium - Free User", freeUser);
     describe("Premium - Unlock Premium", unlockPremium);
     describe("Eyeometry", eyeometry);
+    describe("YouTube Auto-allowlist", youtubeAutoAllowlist);
 
     // Needs to be the last suite to run because the extension gets uninstalled
     describe("Uninstall with default settings", uninstallDefault);
