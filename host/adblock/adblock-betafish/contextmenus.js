@@ -34,7 +34,7 @@ const updateBadge = async function (tabArg) {
     if (
       tab.active &&
       (adblockIsPaused() ||
-        adblockIsDomainPaused({ url: tab.url.href, id: tab.id }) ||
+        (await adblockIsDomainPaused({ url: tab.url.href, id: tab.id })) ||
         !!(await ewe.filters.getAllowingFilters(tab.id)).length)
     ) {
       setBadge(tab.id, { number: "" });
@@ -189,7 +189,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       case "domain_pause_adblock":
         ServerMessages.recordGeneralMessage("cm_domain_pause_clicked");
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true, false, "context");
+        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true, "context");
         updateButtonUIAndContextMenus(tab);
         break;
       case "resume_blocking_ads_domain":
@@ -278,7 +278,7 @@ let updateContextMenuItems = async function (page) {
   if (!Prefs.shouldShowBlockElementMenu) {
     return;
   }
-  const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
+  const domainIsPaused = await adblockIsDomainPaused({ url: page.url.href, id: page.id });
   if (adblockIsPaused()) {
     await browser.contextMenus.create(contextMenuItem.unpauseAll, checkLastError);
   } else if (domainIsPaused) {

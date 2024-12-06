@@ -184,9 +184,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return Promise.resolve(isPaused);
     }
     case "adblockIsDomainPaused": {
-      const isDomainPaused = adblockIsDomainPaused(message.activeTab, message.newValue);
-      sendResponse(isDomainPaused);
-      return Promise.resolve(isDomainPaused);
+      sendResponse({});
+      return adblockIsDomainPaused(message.activeTab, message.newValue);
     }
     case "getPausedFilterText":
       return processMessageResponse(sendResponse, { pausedFilterText1, pausedFilterText2 });

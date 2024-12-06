@@ -471,7 +471,7 @@ const getCurrentTabInfo = function (secondTime, tabId) {
           id: page.id,
           settings: getSettings(),
           paused: adblockIsPaused(),
-          domainPaused: adblockIsDomainPaused({ url: page.url.href, id: page.id }),
+          domainPaused: await adblockIsDomainPaused({ url: page.url.href, id: page.id }),
           blockCountPage: await getBlockedPerPage(tab),
           blockCountTotal: Stats.blocked_total,
           customFilterCount: countCache.getCustomFilterCount(customFilterCheckUrl),

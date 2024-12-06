@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, updateButtonUIAndContextMenus, isAllowlistFilter */
+/* global browser, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { FilterOrigin } from "../../../src/filters/shared";
@@ -27,7 +27,6 @@ import ServerMessages from "~/servermessages";
 
 import {
   chromeStorageSetHelper,
-  isEmptyObject,
   parseUri,
   sessionStorageGet,
   sessionStorageSet,
@@ -74,57 +73,6 @@ const domainPausedKey = "domainPaused";
 // Returns: undefined
 const saveDomainPauses = function (domainPauses) {
   chromeStorageSetHelper(domainPausedKey, domainPauses);
-  sessionStorageSet(domainPausedKey, domainPauses);
-};
-
-// Helper that removes any domain pause filter rules based on tab events
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          newDomain (optional string): the current domain of the tab
-// Returns: undefined
-const domainPauseChangeHelper = function (tabId, newDomain) {
-  // get stored domain pauses
-  const storedDomainPauses = sessionStorageGet(domainPausedKey);
-
-  // check if any of the stored domain pauses match the affected tab
-  for (const aDomain in storedDomainPauses) {
-    if (storedDomainPauses[aDomain] === tabId && aDomain !== newDomain) {
-      // Remove the filter that white-listed the domain
-      ewe.filters.remove([createDomainAllowlistRule(aDomain)]);
-      delete storedDomainPauses[aDomain];
-
-      // save updated domain pauses
-      saveDomainPauses(storedDomainPauses);
-    }
-  }
-  updateButtonUIAndContextMenus();
-};
-
-// Handle the effects of a tab update event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (required object with a url property): contains the
-// new url for the tab
-//          tab (optional Tab object): the affected tab
-// Returns: undefined
-const domainPauseNavigationHandler = function (tabId, changeInfo) {
-  if (changeInfo === undefined || changeInfo.url === undefined || tabId === undefined) {
-    return;
-  }
-
-  const newDomain = parseUri(changeInfo.url).host;
-
-  domainPauseChangeHelper(tabId, newDomain);
-};
-
-// Handle the effects of a tab remove event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (optional object): info about the remove event
-// Returns: undefined
-const domainPauseClosedTabHandler = function (tabId) {
-  if (tabId === undefined) {
-    return;
-  }
-
-  domainPauseChangeHelper(tabId);
 };
 
 // Get or set if AdBlock is domain paused for the domain of the specified tab
@@ -135,14 +83,10 @@ const domainPauseClosedTabHandler = function (tabId) {
 // Returns: undefined if activeTab and newValue were specified; otherwise if activeTab
 // is specified it returns true if domain paused, false otherwise; finally it returns
 // the complete storedDomainPauses if activeTab is not specified
-const adblockIsDomainPaused = function (
-  activeTab,
-  newValue,
-  sessionOnly = false,
-  origin = FilterOrigin.popup,
-) {
+const adblockIsDomainPaused = async function (activeTab, newValue, origin = FilterOrigin.popup) {
   // get stored domain pauses
-  let storedDomainPauses = sessionStorageGet(domainPausedKey);
+  const response = await browser.storage.local.get(domainPausedKey);
+  const storedDomainPauses = response[domainPausedKey];
 
   // return the complete list of stored domain pauses if activeTab is undefined
   if (activeTab === undefined) {
@@ -159,11 +103,6 @@ const adblockIsDomainPaused = function (
     return false;
   }
 
-  // create storedDomainPauses object if needed
-  if (!storedDomainPauses) {
-    storedDomainPauses = {};
-  }
-
   // set or delete a domain pause
   if (newValue === true) {
     // add a domain pause
@@ -174,26 +113,10 @@ const adblockIsDomainPaused = function (
       autoExtendMs,
     };
     ewe.filters.add(createDomainAllowlistRule(activeDomain), metadata);
-
-    // Only keep a record of the paused tabs if it's session only, otherwise,
-    // the rule will expire automatically. This is to prevent the smart
-    // allowlist rule from being removed when the tab is closed.
-    if (sessionOnly) {
-      storedDomainPauses[activeDomain] = activeTab.id;
-    }
-
-    browser.tabs.onUpdated.removeListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.removeListener(domainPauseClosedTabHandler);
-    browser.tabs.onUpdated.addListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.addListener(domainPauseClosedTabHandler);
   } else {
     // remove the domain pause
     ewe.filters.remove(createDomainAllowlistRule(activeDomain));
-    delete storedDomainPauses[activeDomain];
   }
-
-  // save the updated list of domain pauses
-  saveDomainPauses(storedDomainPauses);
   return undefined;
 };
 
@@ -211,13 +134,13 @@ browser.storage.local.get(pausedKey).then((response) => {
 
 // If Adblock was paused on the domain, and the allowlist filter expired,
 // refresh the paused domains map to reflect the change.
-ewe.filters.onRemoved.addListener((filter) => {
+ewe.filters.onRemoved.addListener(async (filter) => {
   if (!isAllowlistFilter(filter.text)) {
     return;
   }
 
   // get stored domain pauses
-  const domains = adblockIsDomainPaused();
+  const domains = await adblockIsDomainPaused();
   if (!domains) {
     return;
   }
@@ -251,33 +174,9 @@ ewe.filters.onAdded.addListener(async (filter) => {
   }
   const tabURL = new URL(tab?.url);
   const host = tabURL.hostname.replace(/^www\./, "");
-  const domains = adblockIsDomainPaused() || {};
+  const domains = (await adblockIsDomainPaused()) || {};
   domains[host] = metadata.expiresByTabId;
   saveDomainPauses(domains);
-});
-
-// If AdBlock was domain paused on shutdown, then unpause / remove
-// all domain pause white-list entries at startup.
-browser.storage.local.get(domainPausedKey).then(async (response) => {
-  const storedDomainPauses = response[domainPausedKey];
-  if (!isEmptyObject(storedDomainPauses)) {
-    initialize.then(async () => {
-      for (const [host, tabId] of Object.entries(storedDomainPauses)) {
-        // eslint-disable-next-line no-await-in-loop
-        const aTab = await browser.tabs.get(tabId).catch(() => {
-          // return nothing
-        });
-        // if the tab exists, don't remove the filter
-        if (aTab) {
-          continue;
-        }
-        const ruleText = createDomainAllowlistRule(host);
-        ewe.filters.remove(ruleText);
-        delete storedDomainPauses[host];
-      }
-      saveDomainPauses(storedDomainPauses);
-    });
-  }
 });
 
 browser.commands.onCommand.addListener((command) => {
