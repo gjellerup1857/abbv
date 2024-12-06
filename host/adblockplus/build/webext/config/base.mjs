@@ -132,6 +132,10 @@ export default {
         dest: "yt-auto-allowlist.preload.js",
         package: "@eyeo-fragments/yt-wall-detection",
         src: "/content"
+      },
+      {
+        dest: "cookie-banner-detection.preload.js",
+        src: ["src/ipm/cookie-banner-detection/content/index.ts"]
       }
     ]
   },

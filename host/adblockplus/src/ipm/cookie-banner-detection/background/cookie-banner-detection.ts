@@ -16,7 +16,9 @@
  */
 
 import { type WebNavigation } from "webextension-polyfill";
+import { addTrustedMessageTypes, port } from "~/core/messaging/background";
 import { setupDetection } from "../content/detection";
+import { detectionMessage } from "../shared";
 import { executeFunction } from "./script-injector";
 
 /**
@@ -42,10 +44,16 @@ async function injectDetectionScript(
   }
 }
 
+function informIPMAboutDetection(): void {
+}
+
 /**
  * Starts the cookie banner detection feature
  */
 export function start(): void {
+  addTrustedMessageTypes(null, [detectionMessage]);
+  port.on(detectionMessage, informIPMAboutDetection);
+
   browser.webNavigation.onCommitted.addListener((details) => {
     void injectDetectionScript(details);
   });
