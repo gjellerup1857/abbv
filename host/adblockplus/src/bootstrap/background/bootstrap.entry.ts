@@ -54,6 +54,7 @@ import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { port, addTrustedMessageTypes } from "~/core/messaging/background";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { getAuthPayload, hasActiveLicense } from "~/premium/background";
+import { start as startCookieBannerDetection } from "../../ipm/cookie-banner-detection/background";
 
 function reportAndLogError(e: Error): void {
   reportError(e);
@@ -104,6 +105,7 @@ async function bootstrap(): Promise<void> {
       isPremiumActive: hasActiveLicense,
       getEncodedLicense: getAuthPayload
     });
+    startCookieBannerDetection();
   } catch (error) {
     reportError(error as Error);
   }
