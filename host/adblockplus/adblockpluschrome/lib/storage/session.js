@@ -73,7 +73,15 @@ export class SessionStorage {
     const globalKey = this._getGlobalKey(key);
     if (useMemoryStorage) return memoryStorage.get(globalKey);
 
-    const storage = await browser.storage.session.get(globalKey);
+    let storage = {};
+    try {
+      storage = await browser.storage.session.get(globalKey);
+    } catch (error) {
+      throw Error(
+        "Error occured when retrieving session storage entry for given key: " +
+          error
+      );
+    }
     return storage[globalKey];
   }
 
@@ -89,8 +97,14 @@ export class SessionStorage {
       memoryStorage.set(globalKey, value);
       return;
     }
-
-    await browser.storage.session.set({ [globalKey]: value });
+    try {
+      await browser.storage.session.set({ [globalKey]: value });
+    } catch (error) {
+      throw Error(
+        "Error was thrown when setting session storage entry for given key" +
+          error
+      );
+    }
   }
 
   /**
