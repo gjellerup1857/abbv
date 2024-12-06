@@ -24,6 +24,10 @@
  */
 export function setupDetection() {
   /**
+   * The name of the CustomEvent sent from main to isolated world.
+   */
+  const detectionEventName = "CookieBannerDetected";
+  /**
    * The name of the key where the TCF API is going to be found at.
    */
   const tcfKeyName = "__tcfapi";
@@ -70,7 +74,7 @@ export function setupDetection() {
       return;
     }
 
-    // trigger custom event
+    document.dispatchEvent(new CustomEvent(detectionEventName));
     window[tcfKeyName]?.("removeEventListener", 2, () => {}, tcData.listenerId);
   }
 
