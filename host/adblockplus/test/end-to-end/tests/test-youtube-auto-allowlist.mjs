@@ -37,35 +37,30 @@ export default () => {
         " Up (Official Music Video) - YouTube"
     });
 
-    await browser.executeScript(
-      "const ytElement = document.createElement(" +
-        "'ytd-enforcement-message-view-model');" +
-        "document.body.appendChild(ytElement);",
-      []
-    );
-    await browser.waitUntil(
+    await driver.executeScript(() => {
+      const ytElement = document.createElement(
+        "ytd-enforcement-message-view-model"
+      );
+      document.body.appendChild(ytElement);
+    });
+    await driver.wait(
       async () => {
-        const readyState = await browser.executeScript(
-          "return document.readyState",
-          []
+        const readyState = await driver.executeScript(
+          "return document.readyState"
         );
         return readyState === "complete";
       },
-      {
-        timeout: 2000,
-        timeoutMsg: "Page did not refresh within the expected time"
-      }
+      2000,
+      "Page did not refresh within the expected time"
     );
 
     await popupPage.init(popupUrl, tabId);
-    await browser.waitUntil(
+    await driver.wait(
       async () => {
         return (await popupPage.isDomainToggleChecked()) == false;
       },
-      {
-        timeout: 5000,
-        timeoutMsg: "Toggle was not unchecked within the expected time"
-      }
+      5000,
+      "Toggle was not unchecked within the expected time"
     );
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
   });
