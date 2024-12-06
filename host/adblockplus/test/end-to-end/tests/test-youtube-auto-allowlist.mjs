@@ -28,7 +28,8 @@ export default () => {
   });
 
   it("should auto-allowlist YouTube", async function () {
-    await browser.newWindow("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    await driver.switchTo().newWindow("tab");
+    await driver.navigate().to("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     const popupPage = new PopupPage(browser);
     await popupPage.switchToTab(/youtube/);
     const tabId = await getTabId({
