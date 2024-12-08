@@ -36,16 +36,65 @@ export default () => {
     ).to.be.false;
   });
 
+  it("should go to filter list web page", async function () {
+    const advancedPage = new AdvancedPage(browser);
+    await advancedPage.init();
+    await advancedPage.clickEasyListFLGearIcon();
+    await advancedPage.clickEasyListFLWebsiteButton();
+    await advancedPage.switchToEasylisttoTab();
+    expect(await advancedPage.getCurrentUrl()).to.equal("https://easylist.to/");
+  });
+
+  it("should go to filter list source page", async function () {
+    const easylistSourcePage =
+      process.env.MANIFEST_VERSION === "3"
+        ? "https://easylist-downloads.adblockplus.org/v3/full/easylist.txt"
+        : "https://easylist-downloads.adblockplus.org/easylist.txt";
+    const advancedPage = new AdvancedPage(browser);
+    await advancedPage.init();
+    await advancedPage.clickEasyListFLGearIcon();
+    await advancedPage.clickEasyListFLSourceButton();
+    await advancedPage.switchToEasylistSourceTab();
+    expect(await advancedPage.getCurrentUrl()).to.equal(easylistSourcePage);
+  });
+
+  it("should add a filter list via URL", async function () {
+    const advancedPage = new AdvancedPage(browser);
+    await advancedPage.init();
+    await advancedPage.clickAddNewFilterListButton();
+    expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
+
+    await advancedPage.typeTextToFilterListUrlInput(
+      "https://test-filterlist.txt"
+    );
+    await advancedPage.clickAddAFilterListButton();
+    expect(await advancedPage.isAddNewFilterListDialogDisplayed(true)).to.be
+      .true;
+    expect(await advancedPage.isTestFilterListDisplayed()).to.be.true;
+    expect(await advancedPage.isTestFilterListStatusToggleSelected()).to.be
+      .true;
+  });
+
+  it("should display an error for invalid filter list via URL", async function () {
+    const advancedPage = new AdvancedPage(browser);
+    await advancedPage.init();
+    await advancedPage.clickAddNewFilterListButton();
+    expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
+
+    await advancedPage.typeTextToFilterListUrlInput("test-filterlist.txt");
+    await advancedPage.clickAddAFilterListButton();
+    expect(await advancedPage.isUrlErrorMessageDisplayed()).to.be.true;
+    await advancedPage.clickCancelAddingFLButton();
+    expect(await advancedPage.isTestFilterListNoHtttpsDisplayed()).to.be.false;
+  });
+
   it("should update all filter lists", async function () {
     // A long timeout is needed because the 'Last Updated' text is changed to 'minutes ago'
     // one minute after installing. When running tests in the CI, more than a minute should
     // already pass before we get to this test, but when running it locally in isolation,
     // it will need more than a minute to run
     const timeout = 65000;
-
-    await switchToABPOptionsTab({ refresh: true });
     const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
 
     await browser.waitUntil(
       async () => {
@@ -54,7 +103,7 @@ export default () => {
         await advancedPage.init();
 
         try {
-          await advancedPage.waitForAbpFiltersFLLastUpdatedTextToEqual(
+          await advancedPage.waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
             "minutes ago"
           );
           return true;
@@ -113,28 +162,6 @@ export default () => {
     }
   });
 
-  it("should go to filter list web page", async function () {
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    await advancedPage.clickEasyListFLGearIcon();
-    await advancedPage.clickEasyListFLWebsiteButton();
-    await advancedPage.switchToEasylisttoTab();
-    expect(await advancedPage.getCurrentUrl()).to.equal("https://easylist.to/");
-  });
-
-  it("should go to filter list source page", async function () {
-    const easylistSourcePage =
-      process.env.MANIFEST_VERSION === "3"
-        ? "https://easylist-downloads.adblockplus.org/v3/full/easylist.txt"
-        : "https://easylist-downloads.adblockplus.org/easylist.txt";
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    await advancedPage.clickEasyListFLGearIcon();
-    await advancedPage.clickEasyListFLSourceButton();
-    await advancedPage.switchToEasylistSourceTab();
-    expect(await advancedPage.getCurrentUrl()).to.equal(easylistSourcePage);
-  });
-
   it("should disable/enable a filter list", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -187,36 +214,6 @@ export default () => {
         timeoutMsg: "isListeFRPlusEasylistLanguageTableItemDisplayed timed out"
       }
     );
-  });
-
-  it("should add a filter list via URL", async function () {
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    await advancedPage.clickAddNewFilterListButton();
-    expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
-
-    await advancedPage.typeTextToFilterListUrlInput(
-      "https://test-filterlist.txt"
-    );
-    await advancedPage.clickAddAFilterListButton();
-    expect(await advancedPage.isAddNewFilterListDialogDisplayed(true)).to.be
-      .true;
-    expect(await advancedPage.isTestFilterListDisplayed()).to.be.true;
-    expect(await advancedPage.isTestFilterListStatusToggleSelected()).to.be
-      .true;
-  });
-
-  it("should display an error for invalid filter list via URL", async function () {
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    await advancedPage.clickAddNewFilterListButton();
-    expect(await advancedPage.isAddNewFilterListDialogDisplayed()).to.be.true;
-
-    await advancedPage.typeTextToFilterListUrlInput("test-filterlist.txt");
-    await advancedPage.clickAddAFilterListButton();
-    expect(await advancedPage.isUrlErrorMessageDisplayed()).to.be.true;
-    await advancedPage.clickCancelAddingFLButton();
-    expect(await advancedPage.isTestFilterListNoHtttpsDisplayed()).to.be.false;
   });
 
   it("should display disabled filters error", async function () {

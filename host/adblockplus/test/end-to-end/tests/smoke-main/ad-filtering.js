@@ -85,6 +85,58 @@ module.exports = function () {
       await generalPage.clickAllowAcceptableAdsCheckbox();
   });
 
+  it("displays acceptable ads", async function () {
+    async function assertAcceptableAdsIsShown(shown) {
+      const shortTimeout = 2000;
+      const timeout = 7000;
+
+      const testPage = new AaTestPage(browser);
+      await testPage.init();
+      await browser.waitUntil(
+        async () => {
+          await browser.refresh();
+          return (
+            (await testPage.isElementDisplayed(
+              testPage.selector,
+              shown,
+              shortTimeout
+            )) === false
+          );
+        },
+        {
+          timeout,
+          timeoutMsg: `The AA element is still ${shown ? "not " : ""}shown in ${timeout}ms`
+        }
+      );
+
+      expect(
+        await testPage.isElementDisplayed(
+          testPage.visibleSelector,
+          false,
+          shortTimeout
+        )
+      ).to.be.true;
+    }
+    const acceptableAdsIsOn = true;
+    const generalPage = new GeneralPage(browser);
+
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      acceptableAdsIsOn
+    );
+
+    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
+
+    // Switch AA
+    await switchToABPOptionsTab({});
+    await generalPage.clickAllowAcceptableAdsCheckbox();
+
+    // Make sure the AA state has been changed due to click above
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      !acceptableAdsIsOn
+    );
+    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
+  });
+
   it("uses sitekey to allowlist content", async function () {
     const manifestVersion = process.env.MANIFEST_VERSION;
     const sitekeyUrl = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
@@ -186,57 +238,5 @@ module.exports = function () {
     await testPages.checkPage({ expectAllowlisted: false });
     expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
-  });
-
-  it("displays acceptable ads", async function () {
-    async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 2000;
-      const timeout = 7000;
-
-      const testPage = new AaTestPage(browser);
-      await testPage.init();
-      await browser.waitUntil(
-        async () => {
-          await browser.refresh();
-          return (
-            (await testPage.isElementDisplayed(
-              testPage.selector,
-              shown,
-              shortTimeout
-            )) === false
-          );
-        },
-        {
-          timeout,
-          timeoutMsg: `The AA element is still ${shown ? "not " : ""}shown in ${timeout}ms`
-        }
-      );
-
-      expect(
-        await testPage.isElementDisplayed(
-          testPage.visibleSelector,
-          false,
-          shortTimeout
-        )
-      ).to.be.true;
-    }
-    const acceptableAdsIsOn = true;
-    const generalPage = new GeneralPage(browser);
-
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
-      acceptableAdsIsOn
-    );
-
-    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
-
-    // Switch AA
-    await switchToABPOptionsTab({});
-    await generalPage.clickAllowAcceptableAdsCheckbox();
-
-    // Make sure the AA state has been changed due to click above
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
-      !acceptableAdsIsOn
-    );
-    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
   });
 };
