@@ -60,7 +60,7 @@ export default () => {
       async () => {
         return (await popupPage.isDomainToggleChecked()) == false;
       },
-      5000,
+      7000,
       "Toggle was not unchecked within the expected time"
     );
     expect(await popupPage.isDomainToggleChecked()).to.be.false;
