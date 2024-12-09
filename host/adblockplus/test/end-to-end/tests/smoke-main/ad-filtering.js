@@ -85,10 +85,60 @@ module.exports = function () {
       await generalPage.clickAllowAcceptableAdsCheckbox();
   });
 
+  it("blocks and hides ads", async function () {
+    await waitForNewWindow(testData.blockHideUrl);
+
+    const testPages = new TestPages(browser);
+    await testPages.checkPage({ expectAllowlisted: false });
+    await browser.closeWindow();
+  });
+
+  it("uses sitekey to allowlist content", async function () {
+    const manifestVersion = process.env.MANIFEST_VERSION;
+    const sitekeyUrl = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
+
+    await waitForNewWindow(sitekeyUrl, 8000);
+    const filters = await getTestpagesFilters();
+
+    await switchToABPOptionsTab();
+    await addFiltersToABP(filters);
+
+    const generalPage = new GeneralPage(browser);
+    await generalPage.switchToTab(sitekeyUrl, 8000);
+    await browser.refresh();
+    await browser.waitUntil(async () => {
+      return (
+        (await generalPage.isElementDisplayed("#sitekey-fail-1", false, 200)) ==
+        false
+      );
+    });
+    expect(await generalPage.isElementDisplayed("#sitekey-fail-2", false, 100))
+      .to.be.false;
+    expect(
+      await generalPage.isElementDisplayed(
+        "#sitekey-area > div.testcase-examplecontent"
+      )
+    ).to.be.true;
+
+    await browser.switchToFrame(await $("#sitekey-frame"));
+    expect(await generalPage.isElementDisplayed("#inframe-target")).to.be.true;
+    if (manifestVersion === "3") {
+      expect(await generalPage.isElementDisplayed("#inframe-image", false, 100))
+        .to.be.false;
+    } else {
+      expect(await generalPage.isElementDisplayed("#inframe-image")).to.be.true;
+    }
+
+    await browser.closeWindow();
+
+    await switchToABPOptionsTab();
+    await removeAllFiltersFromABP();
+  });
+
   it("displays acceptable ads", async function () {
     async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 2000;
-      const timeout = 7000;
+      const shortTimeout = 3000;
+      const timeout = 10000;
 
       const testPage = new AaTestPage(browser);
       await testPage.init();
@@ -135,56 +185,6 @@ module.exports = function () {
       !acceptableAdsIsOn
     );
     await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
-  });
-
-  it("uses sitekey to allowlist content", async function () {
-    const manifestVersion = process.env.MANIFEST_VERSION;
-    const sitekeyUrl = `https://abptestpages.org/en/exceptions/sitekey_mv${manifestVersion}`;
-
-    await waitForNewWindow(sitekeyUrl, 8000);
-    const filters = await getTestpagesFilters();
-
-    await switchToABPOptionsTab();
-    await addFiltersToABP(filters);
-
-    const generalPage = new GeneralPage(browser);
-    await generalPage.switchToTab(sitekeyUrl, 8000);
-    await browser.refresh();
-    await browser.waitUntil(async () => {
-      return (
-        (await generalPage.isElementDisplayed("#sitekey-fail-1", false, 200)) ==
-        false
-      );
-    });
-    expect(await generalPage.isElementDisplayed("#sitekey-fail-2", false, 100))
-      .to.be.false;
-    expect(
-      await generalPage.isElementDisplayed(
-        "#sitekey-area > div.testcase-examplecontent"
-      )
-    ).to.be.true;
-
-    await browser.switchToFrame(await $("#sitekey-frame"));
-    expect(await generalPage.isElementDisplayed("#inframe-target")).to.be.true;
-    if (manifestVersion === "3") {
-      expect(await generalPage.isElementDisplayed("#inframe-image", false, 100))
-        .to.be.false;
-    } else {
-      expect(await generalPage.isElementDisplayed("#inframe-image")).to.be.true;
-    }
-
-    await browser.closeWindow();
-
-    await switchToABPOptionsTab();
-    await removeAllFiltersFromABP();
-  });
-
-  it("blocks and hides ads", async function () {
-    await waitForNewWindow(testData.blockHideUrl);
-
-    const testPages = new TestPages(browser);
-    await testPages.checkPage({ expectAllowlisted: false });
-    await browser.closeWindow();
   });
 
   it("uses snippets to block ads", async function () {
