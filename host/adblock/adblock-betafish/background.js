@@ -21,7 +21,7 @@
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
 import * as info from "info";
-import { start as startYtWallDetection } from "@eyeo/yt-wall-detection/background";
+import { start as startYtWallDetection } from "@eyeo-fragments/yt-wall-detection/background";
 import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { Prefs } from "./alias/prefs";
 
