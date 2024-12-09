@@ -54,9 +54,5 @@ describe("Smoke Tests - Uninstall with custom settings", function () {
     expect(searchParams.get("s")).to.equal("0");
     expect(searchParams.get("c")).to.equal("0");
     expect(searchParams.get("fv")).to.equal(todaysDate);
-
-    // TODO: NYI
-    expect(searchParams.get("er")).to.equal("foo");
-    expect(searchParams.get("ev")).to.equal("foo");
   });
 });
