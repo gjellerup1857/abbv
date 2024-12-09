@@ -36,7 +36,7 @@ import { start as startRecommendedLanguage } from "../../../lib/recommendLanguag
 import { start as startAllowListing } from "../../allowlisting/background";
 import { start as startBypass } from "../../bypass/background";
 import { start as startComposer } from "../../composer/background";
-import { start as startIPM } from "@eyeo/ipm/background";
+import { start as startIPM } from "@eyeo-fragments/ipm/background";
 import { start as startNewTab } from "../../new-tab/background";
 import { start as startOnPageDialog } from "../../onpage-dialog/background";
 import { start as startPremiumOnboarding } from "../../premium-onboarding/background";

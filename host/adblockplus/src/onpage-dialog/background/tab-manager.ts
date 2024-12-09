@@ -40,7 +40,7 @@ import {
   getContent,
   isCommandExpired,
   recordEvent
-} from "@eyeo/ipm/background";
+} from "@eyeo-fragments/ipm/background";
 import * as logger from "../../logger/background";
 import { type Message, isMessage } from "~/core/messaging/shared";
 import { type TabRemovedEventData } from "../../polyfills/background";
