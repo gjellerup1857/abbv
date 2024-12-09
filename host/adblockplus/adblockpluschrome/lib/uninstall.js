@@ -83,19 +83,13 @@ function getAdsSubscriptions() {
  */
 function bnToBytes(bn) {
   let hex = BigInt(bn).toString(16);
-  if (hex.length % 2) {
-    hex = `0${hex}`;
-  }
+  if (hex.length % 2) hex = `0${hex}`;
 
   const length = hex.length / 2;
   const bytes = new Uint8Array(length);
 
-  for (let i = 0; i < length; i++) {
-    bytes[i] = parseInt(
-      hex.substring(i * 2, i * 2 + 2),
-      16
-    );
-  }
+  for (let i = 0; i < length; i++)
+    bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
 
   return bytes;
 }
