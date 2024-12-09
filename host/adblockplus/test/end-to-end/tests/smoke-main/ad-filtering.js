@@ -62,27 +62,23 @@ function removeAllFiltersFromABP() {
 }
 
 module.exports = function () {
-  let aaCheckboxSelected;
-
   before(async function () {
     await afterSequence();
 
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
-
-    aaCheckboxSelected =
-      await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
   after(async function () {
     await afterSequence();
+  });
 
-    const generalPage = new GeneralPage(browser);
-    await generalPage.init();
+  it("blocks and hides ads", async function () {
+    await waitForNewWindow(testData.blockHideUrl);
 
-    const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
-    if (selected !== aaCheckboxSelected)
-      await generalPage.clickAllowAcceptableAdsCheckbox();
+    const testPages = new TestPages(browser);
+    await testPages.checkPage({ expectAllowlisted: false });
+    await browser.closeWindow();
   });
 
   it("uses sitekey to allowlist content", async function () {
@@ -127,71 +123,10 @@ module.exports = function () {
     await removeAllFiltersFromABP();
   });
 
-  it("blocks and hides ads", async function () {
-    await waitForNewWindow(testData.blockHideUrl);
-
-    const testPages = new TestPages(browser);
-    await testPages.checkPage({ expectAllowlisted: false });
-    await browser.closeWindow();
-  });
-
-  it("uses snippets to block ads", async function () {
-    const advancedPage = new AdvancedPage(browser);
-    await advancedPage.init();
-    await advancedPage.typeTextToAddCustomFilterListInput(
-      "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]"
-    );
-    await advancedPage.clickAddCustomFilterListButton();
-    await browser.newWindow(testData.snippetsPageUrl);
-    const testPages = new TestPages(browser);
-    await driver.sleep(30000);
-    const timeout = 5000;
-    await browser.waitUntil(
-      async () => {
-        return (await testPages.isSnippetFilterDivDisplayed()) == false;
-      },
-      { timeout, timeoutMsg: `snippet div still displayed after ${timeout}ms` }
-    );
-    expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
-    await browser.closeWindow();
-  });
-
-  it("allowlists websites", async function () {
-    const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
-    await allowistedWebsitesPage.init();
-    await allowistedWebsitesPage.setAllowlistingTextboxValue(
-      "http://testpages.eyeo.com/"
-    );
-    expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
-    await allowistedWebsitesPage.clickAddWebsiteButton();
-
-    await waitForNewWindow(testData.blockHideUrl);
-
-    const testPages = new TestPages(browser);
-    await testPages.checkPage({ expectAllowlisted: true });
-
-    await switchToABPOptionsTab();
-
-    await allowistedWebsitesPage.removeAllowlistedDomain("testpages.eyeo.com");
-    const attributesOfAllowlistingTableItems =
-      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
-        "class"
-      );
-    attributesOfAllowlistingTableItems.forEach(async (element) => {
-      expect(element).to.equal("empty-placeholder");
-    });
-
-    await waitForNewWindow(testData.blockHideUrl);
-
-    await testPages.checkPage({ expectAllowlisted: false });
-    expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
-    expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
-  });
-
   it("displays acceptable ads", async function () {
     async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 2000;
-      const timeout = 7000;
+      const shortTimeout = 3000;
+      const timeout = 10000;
 
       const testPage = new AaTestPage(browser);
       await testPage.init();
@@ -238,5 +173,64 @@ module.exports = function () {
       !acceptableAdsIsOn
     );
     await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
+
+    // Turn AA back on
+    await switchToABPOptionsTab({});
+    await generalPage.clickAllowAcceptableAdsCheckbox();
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      acceptableAdsIsOn
+    );
+  });
+
+  it("uses snippets to block ads", async function () {
+    const advancedPage = new AdvancedPage(browser);
+    await advancedPage.init();
+    await advancedPage.typeTextToAddCustomFilterListInput(
+      "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]"
+    );
+    await advancedPage.clickAddCustomFilterListButton();
+    await browser.newWindow(testData.snippetsPageUrl);
+    const testPages = new TestPages(browser);
+    const timeout = 5000;
+    await browser.waitUntil(
+      async () => {
+        return (await testPages.isSnippetFilterDivDisplayed()) == false;
+      },
+      { timeout, timeoutMsg: `snippet div still displayed after ${timeout}ms` }
+    );
+    expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
+    await browser.closeWindow();
+  });
+
+  it("allowlists websites", async function () {
+    const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
+    await allowistedWebsitesPage.init();
+    await allowistedWebsitesPage.setAllowlistingTextboxValue(
+      "http://testpages.eyeo.com/"
+    );
+    expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
+    await allowistedWebsitesPage.clickAddWebsiteButton();
+
+    await waitForNewWindow(testData.blockHideUrl);
+
+    const testPages = new TestPages(browser);
+    await testPages.checkPage({ expectAllowlisted: true });
+
+    await switchToABPOptionsTab();
+
+    await allowistedWebsitesPage.removeAllowlistedDomain("testpages.eyeo.com");
+    const attributesOfAllowlistingTableItems =
+      await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
+        "class"
+      );
+    attributesOfAllowlistingTableItems.forEach(async (element) => {
+      expect(element).to.equal("empty-placeholder");
+    });
+
+    await waitForNewWindow(testData.blockHideUrl);
+
+    await testPages.checkPage({ expectAllowlisted: false });
+    expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
+    expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
   });
 };
