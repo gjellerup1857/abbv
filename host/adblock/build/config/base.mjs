@@ -76,8 +76,8 @@ export default {
         src: ["src/premium-push-notification/content/deny-notifications-requests.ts"],
       },
       {
-        dest: "yt-wall-detection.preload.js",
-        package: "@eyeo/yt-wall-detection",
+        dest: "yt-auto-allowlist.preload.js",
+        package: "@eyeo-fragments/yt-wall-detection",
         src: "/content",
       },
       {

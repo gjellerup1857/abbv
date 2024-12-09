@@ -30,6 +30,7 @@ import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 import bypassAPI from "./public-api/bypass-api.js";
 import eyeometry from "./data-collection/eyeometry.js";
+import youtubeAutoAllowlist from "./youtube-auto-allowlist.js";
 
 export default () => {
   beforeEach(async function () {
@@ -54,6 +55,8 @@ export default () => {
     dataCollection();
     describe("Eyeometry", eyeometry);
   });
+
+  describe("YouTube auto-allowlist", youtubeAutoAllowlist);
 
   describe("Public API", function () {
     describe("One click allowlisting", oneClickAllowlisting);

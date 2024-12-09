@@ -1,5 +1,5 @@
 {
-  "name": "@eyeo/yt-wall-detection",
+  "name": "@eyeo-fragments/yt-wall-detection",
   "type": "module",
   "license": "GPL-3.0",
   "private": true,
