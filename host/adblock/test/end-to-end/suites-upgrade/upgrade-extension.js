@@ -27,7 +27,7 @@ import {
   clickOnDisplayedElement,
 } from "../utils/driver.js";
 import {
-  blockHideUrl,
+  blockHideLocalhostUrl,
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   waitForSubscribed,
@@ -50,25 +50,27 @@ import {
   languageFilterLists,
 } from "../utils/dataset.js";
 
-async function checkBlockedAds(minAdsBlocked, maxAdsBlocked) {
+async function blockAds(expectedMinBlocked, expectedMaxBlocked) {
+  const timeout = 8000;
+
   let errorMessage;
   let adsBlocked;
-
   try {
-    // under certain conditions the ads are not being blocked after loading blockhide url, so we have to retry until ads are blocked
+    // under certain conditions the ads are not being blocked after loading blockHideUrl,
+    // so we have to retry until ads are blocked
     await driver.wait(async () => {
-      await openNewTab(blockHideUrl);
-      await driver.switchTo().window(getOptionsHandle());
+      await openNewTab(blockHideLocalhostUrl);
       try {
-        adsBlocked = await waitForAdsBlockedToBeInRange(minAdsBlocked, maxAdsBlocked);
+        adsBlocked = await waitForAdsBlockedToBeInRange(expectedMinBlocked, expectedMaxBlocked);
         return true;
       } catch (err) {
         errorMessage = err.message;
       }
-    }, 8000);
+    }, timeout);
   } catch (e) {
-    throw errorMessage;
+    throw new Error(`${errorMessage}\nTimed out after ${timeout}ms`);
   }
+
   return adsBlocked;
 }
 
@@ -76,7 +78,7 @@ export default () => {
   it("keeps settings after upgrade", async function () {
     this.timeout(100000); // Long test with many checks, including the extension reload
 
-    const customFilter = "/testfiles/blocking/partial-path/";
+    const customBlockingFilter = "localhost*js/test-script.js";
     const maxAdsBlocked = 15;
 
     // activate premium
@@ -106,7 +108,9 @@ export default () => {
       ["easyprivacy", "acceptable_ads", "easylist"].includes(list.name),
     );
     for (const list of lists) {
-      await clickOnDisplayedElement(`span:has(> #${list.inputId})`);
+      // Easyprivacy is down below the page, therefore scrollIntoView is needed
+      await clickOnDisplayedElement(`span:has(> #${list.inputId})`, { scrollIntoView: true });
+
       if (list.enabled) {
         // if list is enabled by default, it should be unsubscribed
         await driver.wait(
@@ -130,17 +134,17 @@ export default () => {
     await driver.wait(isCheckboxEnabled(langList.inputId), 2000, `${langList.text} is not enabled`);
     await waitForSubscribed(langList.name, langList.inputId);
 
+    // Add custom filter. Needs to be added before blocking ads
+    await initOptionsCustomizeTab(getOptionsHandle());
+    await setCustomFilters([customBlockingFilter], true);
+
     // ads should be blocked before the domain is allowlisted
-    const blockedBeforeUpgrade = await checkBlockedAds(0, maxAdsBlocked);
+    const blockedBeforeUpgrade = await blockAds(0, maxAdsBlocked);
 
     // allowlist the page
     // The URL used here cannot be localTestPageUrl because it interferes with
     // getPopupBlockedAdsTotalCount, which uses it
     await setPausedStateFromPopup(aaTestPageUrl, true);
-
-    // Add custom filter
-    await initOptionsCustomizeTab(getOptionsHandle());
-    await setCustomFilters([customFilter], true);
 
     // upgrade extension
     const prevExtVersion = extension.version;
@@ -157,7 +161,7 @@ export default () => {
     expect(await getPopupBlockedAdsTotalCount()).toBeGreaterThanOrEqual(blockedBeforeUpgrade);
 
     // check if blocked ads are still increasing
-    await checkBlockedAds(blockedBeforeUpgrade, maxAdsBlocked);
+    await blockAds(blockedBeforeUpgrade, maxAdsBlocked);
 
     // check if premium filterlists are still enabled and can be changed
     await initOptionsPremiumFlTab(getOptionsHandle());
@@ -188,7 +192,8 @@ export default () => {
 
     // acceptable ads (on), easylist (on), easyprivacy (off)
     for (const list of lists) {
-      await clickOnDisplayedElement(`span:has(> #${list.inputId})`);
+      await clickOnDisplayedElement(`span:has(> #${list.inputId})`, { scrollIntoView: true });
+
       if (list.enabled) {
         // if list is enabled by default, it should be subscribed
         await waitForSubscribed(list.name, list.inputId);
@@ -218,10 +223,10 @@ export default () => {
       5000,
       "Custom filters were empty",
     );
-    expect(customFilters).toContain(customFilter);
+    expect(customFilters).toContain(customBlockingFilter);
 
     // check if custom filters can be changed
     await setCustomFilters([]);
-    expect(await getCustomFilters()).not.toContain(customFilter);
+    expect(await getCustomFilters()).not.toContain(customBlockingFilter);
   });
 };
