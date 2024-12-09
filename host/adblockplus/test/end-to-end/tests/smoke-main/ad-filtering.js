@@ -62,27 +62,15 @@ function removeAllFiltersFromABP() {
 }
 
 module.exports = function () {
-  let aaCheckboxSelected;
-
   before(async function () {
     await afterSequence();
 
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
-
-    aaCheckboxSelected =
-      await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
   after(async function () {
     await afterSequence();
-
-    const generalPage = new GeneralPage(browser);
-    await generalPage.init();
-
-    const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
-    if (selected !== aaCheckboxSelected)
-      await generalPage.clickAllowAcceptableAdsCheckbox();
   });
 
   it("blocks and hides ads", async function () {
@@ -185,6 +173,13 @@ module.exports = function () {
       !acceptableAdsIsOn
     );
     await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
+
+    // Turn AA back on
+    await switchToABPOptionsTab({});
+    await generalPage.clickAllowAcceptableAdsCheckbox();
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      acceptableAdsIsOn
+    );
   });
 
   it("uses snippets to block ads", async function () {
@@ -196,7 +191,6 @@ module.exports = function () {
     await advancedPage.clickAddCustomFilterListButton();
     await browser.newWindow(testData.snippetsPageUrl);
     const testPages = new TestPages(browser);
-    await driver.sleep(30000);
     const timeout = 5000;
     await browser.waitUntil(
       async () => {

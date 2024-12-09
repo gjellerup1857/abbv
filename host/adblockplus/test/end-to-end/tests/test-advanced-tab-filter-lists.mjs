@@ -114,7 +114,7 @@ export default () => {
       {
         timeout,
         timeoutMsg: `Last updated text was not 'minutes ago'`,
-        interval: 5000
+        interval: 2000
       }
     );
 
