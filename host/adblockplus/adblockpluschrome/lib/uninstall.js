@@ -82,12 +82,22 @@ function getAdsSubscriptions() {
  * @returns {Uint8Array} bytes array
  */
 function bnToBytes(bn) {
-  const chars = BigInt(bn).toString(8);
-  const buffer = new Uint8Array(chars.length);
+  let hex = BigInt(bn).toString(16);
+  if (hex.length % 2) {
+    hex = `0${hex}`;
+  }
 
-  return buffer.map((byte, idx) => {
-    return parseInt(chars.slice(idx, idx + 1), 8);
-  });
+  const length = hex.length / 2;
+  const bytes = new Uint8Array(length);
+
+  for (let i = 0; i < length; i++) {
+    bytes[i] = parseInt(
+      hex.substring(i * 2, i * 2 + 2),
+      16
+    );
+  }
+
+  return bytes;
 }
 
 /**
