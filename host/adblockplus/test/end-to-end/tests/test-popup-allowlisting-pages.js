@@ -22,7 +22,6 @@ const {
   afterSequence,
   getTabId,
   switchToABPOptionsTab,
-  waitForCondition,
   doesTabExist,
   isFirefox
 } = require("../helpers");
@@ -48,22 +47,22 @@ describe("test popup allowlisting and disallowlisting pages", function () {
   it("should disallowlist pages from popup", async function () {
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
+    await testPage.switchToTab("EasyList Filters");
     const blockingAndHidingUrl = await testPage.getCurrentUrl();
-    const tabId = await getTabId({ title: "Blocking and hiding" });
+    const tabId = await getTabId({ title: "EasyList Filters" });
     const popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
     await popupPage.clickRefreshButton();
     await testPage.switchToTab("Adblock Plus Options");
-    await testPage.switchToTab("Blocking and hiding");
+    await testPage.switchToTab("EasyList Filters");
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.false;
     await popupPage.clickThisPageToggle();
     await popupPage.clickRefreshButton();
     await testPage.switchToTab("Adblock Plus Options");
-    await testPage.switchToTab("Blocking and hiding");
+    await testPage.switchToTab("EasyList Filters");
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
     expect(await popupPage.isPageToggleChecked()).to.be.true;
@@ -86,8 +85,8 @@ describe("test popup allowlisting and disallowlisting pages", function () {
     lastTest = true;
     const testPage = new TestPage(browser);
     await browser.newWindow(testData.blockHideUrl);
-    await testPage.switchToTab("Blocking and hiding");
-    let tabId = await getTabId({ title: "Blocking and hiding" });
+    await testPage.switchToTab("EasyList Filters");
+    let tabId = await getTabId({ title: "EasyList Filters" });
     let popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     await popupPage.clickThisPageToggle();
@@ -96,19 +95,10 @@ describe("test popup allowlisting and disallowlisting pages", function () {
     await popupPage.clickRefreshButton();
 
     await switchToABPOptionsTab({ switchToFrame: false });
-    await testPage.switchToTab("Blocking and hiding");
+    await testPage.switchToTab("EasyList Filters");
     await browser.refresh();
-    await waitForCondition(
-      "getPopadsFilterText",
-      3000,
-      testPage,
-      true,
-      200,
-      "pop_ads.js blocking filter should block this"
-    );
-    expect(await testPage.getPopadsFilterText()).to.include(
-      "pop_ads.js blocking filter should block this"
-    );
+    await testPage.checkPage({ expectAllowlisted: true });
+
     // skip for FF, popup.html does not close
     if (!isFirefox()) {
       expect(await doesTabExist(popupUrl)).to.be.false;
@@ -118,12 +108,10 @@ describe("test popup allowlisting and disallowlisting pages", function () {
     expect(await popupPage.isPageToggleChecked()).to.be.false;
     expect(await popupPage.isPageStatsCounterDisplayed()).to.be.false;
     expect(await popupPage.isBlockSpecificElementButtonDisplayed()).to.be.false;
-    const adblockedCountUrl =
-      "eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/adblocking/" +
-      "adblocked-count/adblocked-count-testpage.html";
-    await browser.newWindow(`https://${adblockedCountUrl}`);
-    await popupPage.switchToTab("Ad blocked count testpage");
-    tabId = await getTabId({ title: "Ad blocked count testpage" });
+    const blockHideUrl = "http://testpages.eyeo.com:3005/easylist-filters.html";
+    await browser.newWindow(blockHideUrl);
+    await popupPage.switchToTab("EasyList Filters");
+    tabId = await getTabId({ title: "EasyList Filters" });
     popupPage = new PopupPage(browser);
     await popupPage.init(popupUrl, tabId);
     expect(await popupPage.isDomainToggleChecked()).to.be.true;
@@ -137,7 +125,7 @@ describe("test popup allowlisting and disallowlisting pages", function () {
         "class"
       );
     attributesOfAllowlistingTableItems.forEach(async (element) => {
-      expect(element).to.equal(adblockedCountUrl);
+      expect(element).to.equal(blockHideUrl);
     });
   });
 });

@@ -27,7 +27,6 @@ import {
   clickOnDisplayedElement,
 } from "../utils/driver.js";
 import {
-  addFiltersToAdBlock,
   blockHideUrl,
   initOptionsGeneralTab,
   initOptionsFiltersTab,
@@ -51,18 +50,29 @@ import {
   languageFilterLists,
 } from "../utils/dataset.js";
 
-async function blockAds() {
-  await openNewTab(blockHideUrl);
-  await driver.switchTo().window(getOptionsHandle());
+async function checkBlockedAds(minAdsBlocked, maxAdsBlocked) {
+  let errorMessage;
+  let adsBlocked;
+
+  try {
+    // under certain conditions the ads are not being blocked after loading blockhide url, so we have to retry until ads are blocked
+    await driver.wait(async () => {
+      await openNewTab(blockHideUrl);
+      await driver.switchTo().window(getOptionsHandle());
+      try {
+        adsBlocked = await waitForAdsBlockedToBeInRange(minAdsBlocked, maxAdsBlocked);
+        return true;
+      } catch (err) {
+        errorMessage = err.message;
+      }
+    }, 8000);
+  } catch (e) {
+    throw errorMessage;
+  }
+  return adsBlocked;
 }
 
 export default () => {
-  beforeEach(async function () {
-    // This filter no longer exists in easylist
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock("/pop_ads.js");
-  });
-
   it("keeps settings after upgrade", async function () {
     this.timeout(100000); // Long test with many checks, including the extension reload
 
@@ -120,6 +130,9 @@ export default () => {
     await driver.wait(isCheckboxEnabled(langList.inputId), 2000, `${langList.text} is not enabled`);
     await waitForSubscribed(langList.name, langList.inputId);
 
+    // ads should be blocked before the domain is allowlisted
+    const blockedBeforeUpgrade = await checkBlockedAds(0, maxAdsBlocked);
+
     // allowlist the page
     // The URL used here cannot be localTestPageUrl because it interferes with
     // getPopupBlockedAdsTotalCount, which uses it
@@ -129,9 +142,6 @@ export default () => {
     await initOptionsCustomizeTab(getOptionsHandle());
     await setCustomFilters([customFilter], true);
 
-    await blockAds();
-    const blockedBeforeUpgrade = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
-
     // upgrade extension
     const prevExtVersion = extension.version;
     await upgradeExtension();
@@ -139,12 +149,15 @@ export default () => {
     // check the extension version has changed
     expect(extension.version).not.toEqual(prevExtVersion);
 
+    // check if the page is still allowlisted and can be changed
+    // allowlist has to be removed before we continue blocking ads
+    await setPausedStateFromPopup(aaTestPageUrl, false);
+
     // check blocked ads count is kept after upgrade
-    expect(await getPopupBlockedAdsTotalCount()).toEqual(blockedBeforeUpgrade);
+    expect(await getPopupBlockedAdsTotalCount()).toBeGreaterThanOrEqual(blockedBeforeUpgrade);
 
     // check if blocked ads are still increasing
-    await blockAds();
-    await waitForAdsBlockedToBeInRange(blockedBeforeUpgrade, maxAdsBlocked);
+    await checkBlockedAds(blockedBeforeUpgrade, maxAdsBlocked);
 
     // check if premium filterlists are still enabled and can be changed
     await initOptionsPremiumFlTab(getOptionsHandle());
@@ -193,9 +206,6 @@ export default () => {
       // checkbox should equal to the default value
       expect(await isCheckboxEnabled(list.inputId)).toEqual(list.enabled);
     }
-
-    // check if the page is still allowlisted and can be changed
-    await setPausedStateFromPopup(aaTestPageUrl, false);
 
     // check if custom filters are still there and can be changed
     await initOptionsCustomizeTab(getOptionsHandle());

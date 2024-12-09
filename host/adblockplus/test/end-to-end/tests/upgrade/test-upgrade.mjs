@@ -39,7 +39,7 @@ let prevExtVersion;
 async function blockSomeItems() {
   const page = new TestPage(browser);
   await browser.newWindow(testData.blockHideUrl);
-  await page.switchToTab("Blocking and hiding");
+  await page.switchToTab("EasyList Filters");
 
   // We need to wait here to blocking to be applied
   await browser.pause(2000);
@@ -49,9 +49,10 @@ async function blockSomeItems() {
 
 async function getTotalCount() {
   const page = new TestPage(browser);
-  await browser.newWindow("http://localhost:3005/dc-filters.html");
-  await page.switchToTab("DC filters");
-  const tabId = await getTabId({ title: "DC filters" });
+  // We should get the total blocked count from the page with no ads
+  await browser.newWindow("http://localhost:3005/test.html");
+  await page.switchToTab("localhost:3005/test.html");
+  const tabId = await getTabId({ title: "localhost:3005/test.html" });
 
   const popup = new PopupPage(browser);
   await popup.init(popupUrl, tabId);
@@ -59,7 +60,7 @@ async function getTotalCount() {
 
   // cleanup
   await browser.closeWindow();
-  await page.switchToTab("DC filters");
+  await page.switchToTab("localhost:3005/test.html");
   await browser.closeWindow();
   await switchToABPOptionsTab();
 

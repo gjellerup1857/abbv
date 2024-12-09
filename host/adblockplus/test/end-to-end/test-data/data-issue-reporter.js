@@ -23,13 +23,13 @@ module.exports = {
   emailLabelText: "Email:",
   emailText: "********@a******.o*****",
   filterData: [
-    '<filter text="/pop_ads.js" subscriptions="h' +
+    '<filter text="testpages.eyeo.com/js/test-script.js" subscriptions="h' +
       'ttps://easylist-downloads.adblockplus.org/easylist.txt" hitCount="1"/>',
-    '<filter text="/bannerads/*" subscriptions="https://easylist-downlo' +
+    '<filter text="testpages.eyeo.com/js/test-script-regex*" subscriptions="https://easylist-downlo' +
       'ads.adblockplus.org/easylist.txt" hitCount="2"/>',
-    '<filter text="###search-ad" subscriptions="https://easylist-downloads.a' +
+    '<filter text="testpages.eyeo.com##.test-element-class" subscriptions="https://easylist-downloads.a' +
       'dblockplus.org/easylist.txt" hitCount="1"/>',
-    '<filter text="##.AdContainer" subscriptions="https' +
+    '<filter text="testpages.eyeo.com###test-element-id" subscriptions="https' +
       '://easylist-downloads.adblockplus.org/easylist.txt" hitCount="1"/>'
   ],
   issueTypeLableText: "Issue type:",
@@ -41,30 +41,19 @@ module.exports = {
     "Please wait, the report is being processed. " +
     "This will usually take at most 1 minute. You do not need to reload this" +
     " page, it will reload automatically.",
-  testPageUrl:
-    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-reporter/" +
-    "issue-reporter-testpage.html",
+  testPageUrl: "http://testpages.eyeo.com:3005/easylist-filters.html",
   topNoteText:
     "Note: An additional tab will temporarily open so the " +
     "page you are on won't be affected by the Issue Reporter.",
   requestData: [
-    '<request location="https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-reporter/' +
-      'issue-reporter-testpage.html" type="DOCUMENT" docDomain="null" thirdPar' +
-      'ty="undefined" count="3" filter="##.AdContainer"/>',
-    '<request location="https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-reporter/' +
-      'scripts/pop_ads.js" type="SCRIPT" docDomain="eyeo.gitlab.io" ' +
-      'thirdParty="undefined" count="1" filter="/pop_ads.js"/>',
-    '<request location="https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-reporter/' +
-      'scripts/bannerads/blocking-filter.js" type="SCRIPT" docDomain="adblocki' +
-      'nc.gitlab.io" thirdParty="undefined" count="1" filter="/bannerads/*"/>',
-    '<request location="https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/style.css" type' +
-      '="STYLESHEET" docDomain="eyeo.gitlab.io" thirdParty="undefined" c' +
-      'ount="1"/>',
-    '<request location="https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-reporter/' +
-      'scripts/bannerads/blocking-filter2.js" type="SCRIPT" docDomain="adblock' +
-      'inc.gitlab.io" thirdParty="undefined" count="1" filter="/bannerads/*"/>',
-    '<request location="https://gitlab.com/users/sign_in" type="IMAGE" docDo' +
-      'main="eyeo.gitlab.io" thirdParty="undefined" count="1"/>'
+    '<request location="http://testpages.eyeo.com:3005/easylist-filters.html" type="DOCUMENT" docDomain="null" thirdPar' +
+      'ty="undefined" count="3" filter="testpages.eyeo.com##.test-element-id"/>',
+    '<request location="http://testpages.eyeo.com:3005/easylist-filters.html" type="DOCUMENT" docDomain="null" thirdPar' +
+      'ty="undefined" count="3" filter="testpages.eyeo.com##.test-element-class"/>',
+    '<request location="http://testpages.eyeo.com:3005/js/test-script.js" type="SCRIPT" docDomain="testpages.' +
+      'thirdParty="undefined" count="1" filter="testpages.eyeo.com/js/test-script.js"/>',
+    '<request location="http://testpages.eyeo.com:3005/js/test-script-regex.js" type="SCRIPT" docDomain="testpages.' +
+      'eyeo.com:3005" thirdParty="undefined" count="1" filter="testpages.eyeo.com##.test-element-class"/>'
   ],
   savedReportText:
     "Your report has been saved. You can access it at " +
@@ -78,7 +67,5 @@ module.exports = {
   ],
   timeCellText: "Time:",
   websiteLabelText: "Website:",
-  websiteCellHref:
-    "https://eyeo.gitlab.io/browser-extensions-and-premium/supplemental/QA-team/issue-" +
-    "reporter/issue-reporter-testpage.html"
+  websiteCellHref: "http://testpages.eyeo.com:3005/easylist-filters.html"
 };

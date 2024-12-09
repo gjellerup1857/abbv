@@ -21,13 +21,12 @@ import {
   addFilter,
   reloadExtension,
   waitForNewWindow,
-  addFiltersToABP,
   isEdge
 } from "../../helpers.js";
 import testData from "../../test-data/data-smoke-tests.js";
 import TestPages from "../../page-objects/testPages.page.js";
 
-const { blockHideUrl, allowlistingFilter, customBlockingFilters } = testData;
+const { blockHideUrl, allowlistingFilter } = testData;
 
 export default function () {
   let extVersion;
@@ -39,9 +38,6 @@ export default function () {
     await updateExtPrefAPIKey("bypass_authorizedKeys");
     await reloadExtension();
     ({ extVersion } = global);
-
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP(customBlockingFilters.join("\n"));
   });
 
   it("returns adblocking is active extension info", async function () {
