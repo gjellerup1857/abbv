@@ -86,12 +86,12 @@ const DataCollectionV2 = (function getDataCollectionV2() {
     }
   };
 
-  const webRequestListener = function (details) {
+  const webRequestListener = async function (details) {
     if (
       details.url &&
       details.type === "main_frame" &&
       !adblockIsPaused() &&
-      !adblockIsDomainPaused({ url: details.url, id: details.id })
+      !(await adblockIsDomainPaused({ url: details.url, id: details.id }))
     ) {
       const domain = parseUri(details.url).host;
       if (!dataCollectionCache.domains[domain]) {

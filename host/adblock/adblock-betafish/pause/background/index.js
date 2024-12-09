@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, updateButtonUIAndContextMenus, isAllowlistFilter */
+/* global browser, isAllowlistFilter */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { FilterOrigin } from "../../../src/filters/shared";
@@ -27,7 +27,6 @@ import ServerMessages from "~/servermessages";
 
 import {
   chromeStorageSetHelper,
-  isEmptyObject,
   parseUri,
   sessionStorageGet,
   sessionStorageSet,
@@ -38,6 +37,10 @@ const pausedKey = "paused";
 const pausedFilterText1 = "@@*";
 // white-list all documents, which prevents element hiding
 const pausedFilterText2 = "@@*$document";
+
+const createDomainAllowlistRule = function (domain) {
+  return `@@||${domain}^$document`;
+};
 
 // Get or set if AdBlock is paused
 // Inputs: newValue (optional boolean): if true, AdBlock will be paused, if
@@ -70,57 +73,6 @@ const domainPausedKey = "domainPaused";
 // Returns: undefined
 const saveDomainPauses = function (domainPauses) {
   chromeStorageSetHelper(domainPausedKey, domainPauses);
-  sessionStorageSet(domainPausedKey, domainPauses);
-};
-
-// Helper that removes any domain pause filter rules based on tab events
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          newDomain (optional string): the current domain of the tab
-// Returns: undefined
-const domainPauseChangeHelper = function (tabId, newDomain) {
-  // get stored domain pauses
-  const storedDomainPauses = sessionStorageGet(domainPausedKey);
-
-  // check if any of the stored domain pauses match the affected tab
-  for (const aDomain in storedDomainPauses) {
-    if (storedDomainPauses[aDomain] === tabId && aDomain !== newDomain) {
-      // Remove the filter that white-listed the domain
-      ewe.filters.remove([`@@${aDomain}$document`]);
-      delete storedDomainPauses[aDomain];
-
-      // save updated domain pauses
-      saveDomainPauses(storedDomainPauses);
-    }
-  }
-  updateButtonUIAndContextMenus();
-};
-
-// Handle the effects of a tab update event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (required object with a url property): contains the
-// new url for the tab
-//          tab (optional Tab object): the affected tab
-// Returns: undefined
-const domainPauseNavigationHandler = function (tabId, changeInfo) {
-  if (changeInfo === undefined || changeInfo.url === undefined || tabId === undefined) {
-    return;
-  }
-
-  const newDomain = parseUri(changeInfo.url).host;
-
-  domainPauseChangeHelper(tabId, newDomain);
-};
-
-// Handle the effects of a tab remove event on any existing domain pauses
-// Inputs:  tabId (required integer): identifier for the affected tab
-//          changeInfo (optional object): info about the remove event
-// Returns: undefined
-const domainPauseClosedTabHandler = function (tabId) {
-  if (tabId === undefined) {
-    return;
-  }
-
-  domainPauseChangeHelper(tabId);
 };
 
 // Get or set if AdBlock is domain paused for the domain of the specified tab
@@ -131,14 +83,10 @@ const domainPauseClosedTabHandler = function (tabId) {
 // Returns: undefined if activeTab and newValue were specified; otherwise if activeTab
 // is specified it returns true if domain paused, false otherwise; finally it returns
 // the complete storedDomainPauses if activeTab is not specified
-const adblockIsDomainPaused = function (
-  activeTab,
-  newValue,
-  sessionOnly = false,
-  origin = FilterOrigin.popup,
-) {
+const adblockIsDomainPaused = async function (activeTab, newValue, origin = FilterOrigin.popup) {
   // get stored domain pauses
-  let storedDomainPauses = sessionStorageGet(domainPausedKey);
+  const response = await browser.storage.local.get(domainPausedKey);
+  const storedDomainPauses = response[domainPausedKey];
 
   // return the complete list of stored domain pauses if activeTab is undefined
   if (activeTab === undefined) {
@@ -146,17 +94,13 @@ const adblockIsDomainPaused = function (
   }
 
   // return a boolean indicating whether the domain is paused if newValue is undefined
-  const activeDomain = parseUri(activeTab.url).host;
+  let activeDomain = parseUri(activeTab.url).host;
+  activeDomain = activeDomain.replace(/^www\./, "");
   if (newValue === undefined) {
     if (storedDomainPauses) {
       return Object.prototype.hasOwnProperty.call(storedDomainPauses, activeDomain);
     }
     return false;
-  }
-
-  // create storedDomainPauses object if needed
-  if (!storedDomainPauses) {
-    storedDomainPauses = {};
   }
 
   // set or delete a domain pause
@@ -168,27 +112,11 @@ const adblockIsDomainPaused = function (
       expiresAt: Date.now() + autoExtendMs,
       autoExtendMs,
     };
-    ewe.filters.add([`@@${activeDomain}$document`], metadata);
-
-    // Only keep a record of the paused tabs if it's session only, otherwise,
-    // the rule will expire automatically. This is to prevent the smart
-    // allowlist rule from being removed when the tab is closed.
-    if (sessionOnly) {
-      storedDomainPauses[activeDomain] = activeTab.id;
-    }
-
-    browser.tabs.onUpdated.removeListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.removeListener(domainPauseClosedTabHandler);
-    browser.tabs.onUpdated.addListener(domainPauseNavigationHandler);
-    browser.tabs.onRemoved.addListener(domainPauseClosedTabHandler);
+    ewe.filters.add(createDomainAllowlistRule(activeDomain), metadata);
   } else {
     // remove the domain pause
-    ewe.filters.remove([`@@${activeDomain}$document`]);
-    delete storedDomainPauses[activeDomain];
+    ewe.filters.remove(createDomainAllowlistRule(activeDomain));
   }
-
-  // save the updated list of domain pauses
-  saveDomainPauses(storedDomainPauses);
   return undefined;
 };
 
@@ -206,19 +134,19 @@ browser.storage.local.get(pausedKey).then((response) => {
 
 // If Adblock was paused on the domain, and the allowlist filter expired,
 // refresh the paused domains map to reflect the change.
-ewe.filters.onRemoved.addListener((filter) => {
+ewe.filters.onRemoved.addListener(async (filter) => {
   if (!isAllowlistFilter(filter.text)) {
     return;
   }
 
   // get stored domain pauses
-  const domains = adblockIsDomainPaused();
+  const domains = await adblockIsDomainPaused();
   if (!domains) {
     return;
   }
 
   for (const domain in domains) {
-    if (`@@${domain}$document` === filter.text) {
+    if (createDomainAllowlistRule(domain) === filter.text) {
       delete domains[domain];
       saveDomainPauses(domains);
       return;
@@ -226,18 +154,29 @@ ewe.filters.onRemoved.addListener((filter) => {
   }
 });
 
-// If AdBlock was domain paused on shutdown, then unpause / remove
-// all domain pause white-list entries at startup.
-browser.storage.local.get(domainPausedKey).then((response) => {
-  const storedDomainPauses = response[domainPausedKey];
-  if (!isEmptyObject(storedDomainPauses)) {
-    initialize.then(() => {
-      for (const aDomain in storedDomainPauses) {
-        ewe.filters.remove([`@@${aDomain}$document`]);
-      }
-      browser.storage.local.remove(domainPausedKey);
-    });
+// If an allowlist rule is added with the "expiresByTabId" metadata
+// property, add the host to the stored domain pause object
+// This allows other functionality within AdBlock to correctly
+// detect the new temporary allowlist rules (and function correctly)
+ewe.filters.onAdded.addListener(async (filter) => {
+  if (!isAllowlistFilter(filter.text)) {
+    return;
   }
+  const metadata = await ewe.filters.getMetadata(filter.text);
+  if (!metadata || !metadata.expiresByTabId) {
+    return;
+  }
+  const tab = await browser.tabs.get(metadata.expiresByTabId).catch(() => {
+    return null;
+  });
+  if (!tab || !tab.url) {
+    return;
+  }
+  const tabURL = new URL(tab?.url);
+  const host = tabURL.hostname.replace(/^www\./, "");
+  const domains = (await adblockIsDomainPaused()) || {};
+  domains[host] = metadata.expiresByTabId;
+  saveDomainPauses(domains);
 });
 
 browser.commands.onCommand.addListener((command) => {
