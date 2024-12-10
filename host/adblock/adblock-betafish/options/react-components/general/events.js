@@ -5,11 +5,15 @@ import {
   globalSettings as settings,
 } from "../shared/globals";
 
+const evtObjWrapper = (checkedVal) => ({
+  target: { checked: checkedVal }
+});
+
 const toggleDataCollectionOptPref = function (value) {
-  settings.data_collection_v2 = false;
+  toggleSettings("data_collection_v2", evtObjWrapper(false));
   DataCollectionV2.end();
-  togglePrefs("send_ad_wall_messages", { target: { checked: !value } });
-  settings.onpageMessages = !value;
+  togglePrefs("send_ad_wall_messages", evtObjWrapper(!value));
+  toggleSettings("onpageMessages",  evtObjWrapper(!value));
 };
 
 /* eslint-disable-next-line no-console */
@@ -28,6 +32,10 @@ export const toggleDataCollectionOptOut = async (evt) => {
 
 export const togglePrefs = (name, evt) => {
   Prefs[name] = evt.target.checked;
+};
+
+export const toggleSettings = (name, evt) => {
+  settings[name] = evt.target.checked;
 };
 
 export const toggleShowContextMenus = (evt) => {

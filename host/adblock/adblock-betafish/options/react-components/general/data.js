@@ -3,6 +3,7 @@ import {
   changeHandler,
   toggleDataCollectionOptOut,
   togglePrefs,
+  toggleSettings,
   toggleShowContextMenus,
 } from "./events";
 
@@ -64,7 +65,7 @@ export const optionsData = [
   },
   {
     name: "display_menu_stats",
-    onChange: changeHandler,
+    onChange: toggleSettings.bind(null, "display_menu_stats"),
     textKey: "show_on_adblock_menu",
   },
   {
@@ -92,7 +93,7 @@ export const optionsData = [
       },
       {
         name: "onpageMessages",
-        onChange: changeHandler,
+        onChange: toggleSettings.bind(null, "onpageMessages"),
         textKey: "onpage_messages",
       },
     ],
@@ -104,7 +105,7 @@ export const optionsData = [
   },
   {
     name: "debug_logging",
-    onChange: changeHandler,
+    onChange: toggleSettings.bind(null, "debug_logging"),
     textKey: "debuginlogoption2",
     extraInfo: "slows_down_extension",
   },
