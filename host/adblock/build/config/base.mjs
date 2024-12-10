@@ -94,6 +94,10 @@ export default {
         dest: "options/react-options.js",
         src: ["adblock-betafish/options/react-components/main.jsx"],
       },
+      {
+        dest: "cookie-banner-detection.preload.js",
+        src: ["adblock-betafish/ipm/cookie-banner-detection/content/index.ts"],
+      },
     ],
   },
   mapping: {
