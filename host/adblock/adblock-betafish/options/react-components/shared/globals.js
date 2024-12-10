@@ -6,9 +6,11 @@
 */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global send */
+/* global abpPrefPropertyNames, Prefs, send, settings */
 
+const globalAbpPrefPropertyNames = abpPrefPropertyNames;
 const globalSend = send;
+const globalSettings = settings;
 const globalPrefs = Prefs;
 
-export { globalPrefs, globalSend };
+export { globalAbpPrefPropertyNames, globalSend, globalSettings, globalPrefs };

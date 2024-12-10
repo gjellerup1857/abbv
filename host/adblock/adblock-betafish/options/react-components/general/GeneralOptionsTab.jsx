@@ -14,7 +14,7 @@ const getCheckedFn = (data) => (name) => {
   return data[name];
 };
 
-export function GeneralOptionsTab({ subs, settings, prefsNames }) {
+export function GeneralOptionsTab({ subs, settings, prefs }) {
   const acceptableAdsData = {
     // If subscribed to acceptable_ads_privacy, then acceptable_ads is not present in subs,
     // but we still need to check the box
@@ -22,8 +22,8 @@ export function GeneralOptionsTab({ subs, settings, prefsNames }) {
     acceptable_ads_privacy: subs.acceptable_ads_privacy?.subscribed,
   };
   // Change from array to object to match format of settings
-  const prefsNamesIntoObject = Object.fromEntries(prefsNames.map((el) => [el, Prefs[el]]));
-  const unifiedSettingsData = { ...acceptableAdsData, ...settings, ...prefsNamesIntoObject };
+  const prefsIntoObject = Object.fromEntries(prefs.map((el) => [el, Prefs[el]]));
+  const unifiedSettingsData = { ...acceptableAdsData, ...settings, ...prefsIntoObject };
 
   const isChecked = getCheckedFn(unifiedSettingsData);
 
