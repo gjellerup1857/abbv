@@ -110,7 +110,7 @@ class Telemetry extends TelemetryBase {
           logger.error("error: ", error);
           // retry any ping requests that fail for network errors
           this.retrySendPingData(pingData, resolve, reject);
-          void ServerMessages.sendMessageToBackupLogServer("fetch_error", error.toString());
+          void ServerMessages.recordGeneralMessage("fetch_error");
         });
       if (!response) {
         logger.error("no response from ping");
