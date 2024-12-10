@@ -73,7 +73,7 @@ export class SessionStorage {
     const globalKey = this._getGlobalKey(key);
     if (useMemoryStorage) return memoryStorage.get(globalKey);
 
-    let storage = {};
+    let storage;
     try {
       storage = await browser.storage.session.get(globalKey);
     } catch (error) {
