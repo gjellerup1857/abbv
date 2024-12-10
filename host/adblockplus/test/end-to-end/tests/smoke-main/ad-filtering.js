@@ -62,15 +62,27 @@ function removeAllFiltersFromABP() {
 }
 
 module.exports = function () {
+  let aaCheckboxSelected;
+
   before(async function () {
     await afterSequence();
 
     const generalPage = new GeneralPage(browser);
     await generalPage.init();
+
+    aaCheckboxSelected =
+      await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
   after(async function () {
     await afterSequence();
+
+    const generalPage = new GeneralPage(browser);
+    await generalPage.init();
+
+    const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
+    if (selected !== aaCheckboxSelected)
+      await generalPage.clickAllowAcceptableAdsCheckbox();
   });
 
   it("blocks and hides ads", async function () {
@@ -123,65 +135,6 @@ module.exports = function () {
     await removeAllFiltersFromABP();
   });
 
-  it("displays acceptable ads", async function () {
-    async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 3000;
-      const timeout = 10000;
-
-      const testPage = new AaTestPage(browser);
-      await testPage.init();
-      await browser.waitUntil(
-        async () => {
-          await browser.refresh();
-          return (
-            (await testPage.isElementDisplayed(
-              testPage.selector,
-              shown,
-              shortTimeout
-            )) === false
-          );
-        },
-        {
-          timeout,
-          timeoutMsg: `The AA element is still ${shown ? "not " : ""}shown in ${timeout}ms`
-        }
-      );
-
-      expect(
-        await testPage.isElementDisplayed(
-          testPage.visibleSelector,
-          false,
-          shortTimeout
-        )
-      ).to.be.true;
-    }
-    const acceptableAdsIsOn = true;
-    const generalPage = new GeneralPage(browser);
-
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
-      acceptableAdsIsOn
-    );
-
-    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
-
-    // Switch AA
-    await switchToABPOptionsTab({});
-    await generalPage.clickAllowAcceptableAdsCheckbox();
-
-    // Make sure the AA state has been changed due to click above
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
-      !acceptableAdsIsOn
-    );
-    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
-
-    // Turn AA back on
-    await switchToABPOptionsTab({});
-    await generalPage.clickAllowAcceptableAdsCheckbox();
-    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
-      acceptableAdsIsOn
-    );
-  });
-
   it("uses snippets to block ads", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
@@ -232,5 +185,55 @@ module.exports = function () {
     await testPages.checkPage({ expectAllowlisted: false });
     expect(await testPages.isSnippetFilterDivDisplayed()).to.be.false;
     expect(await testPages.isHiddenBySnippetTextDisplayed()).to.be.false;
+  });
+
+  it("displays acceptable ads", async function () {
+    async function assertAcceptableAdsIsShown(reverseOption) {
+      const shortTimeout = 3000;
+      const timeout = 10000;
+
+      const testPage = new AaTestPage(browser);
+      await testPage.init();
+      await browser.waitUntil(
+        async () => {
+          await browser.refresh();
+          return await testPage.isElementDisplayed(
+            testPage.selector,
+            reverseOption,
+            shortTimeout
+          );
+        },
+        {
+          timeout,
+          timeoutMsg: `The AA element is ${reverseOption ? "" : "not "}shown after ${timeout}ms`
+        }
+      );
+
+      expect(
+        await testPage.isElementDisplayed(
+          testPage.visibleSelector,
+          false,
+          shortTimeout
+        )
+      ).to.be.true;
+    }
+    const acceptableAdsIsOn = true;
+    const generalPage = new GeneralPage(browser);
+
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      acceptableAdsIsOn
+    );
+
+    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
+
+    // Switch AA
+    await switchToABPOptionsTab({});
+    await generalPage.clickAllowAcceptableAdsCheckbox();
+
+    // Make sure the AA state has been changed due to click above
+    expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
+      !acceptableAdsIsOn
+    );
+    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
   });
 };
