@@ -33,10 +33,10 @@ export const ToggleSwitch = ({
 }) => {
   const [isChecked, setIsChecked] = useState(checked);
 
-  const onChangeHandler = (evt) => {
+  const onChangeHandler = async (evt) => {
     setIsChecked(evt.target.checked);
-    onChange(evt);
     evt.target.blur();
+    await onChange(evt);
   };
 
   const checkedStylesByKind = {

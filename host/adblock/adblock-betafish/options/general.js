@@ -139,10 +139,12 @@ const initialize = async function init() {
     const name = this.id.substring(7); // TODO: hack
     // if the user enables/disables the context menu
     // update the pages
+    // ✅
     if (name === "shouldShowBlockElementMenu") {
       send("updateButtonUIAndContextMenus");
     }
 
+    // ✅
     // need to check for opt-out here before we set the pref
     // in order to send goodbye message before we shutdown channels
     if (name === "data_collection_opt_out") {
@@ -152,6 +154,7 @@ const initialize = async function init() {
       }
     }
 
+    // ✅
     if (abpPrefPropertyNames.indexOf(name) >= 0) {
       Prefs[name] = isEnabled;
       return;

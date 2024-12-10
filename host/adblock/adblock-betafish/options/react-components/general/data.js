@@ -1,5 +1,10 @@
 /* eslint-disable-next-line no-console */
-import { changeHandler, toggleShowContextMenus } from "./events";
+import {
+  changeHandler,
+  toggleDataCollectionOptOut,
+  togglePrefs,
+  toggleShowContextMenus,
+} from "./events";
 
 export const optionsData = [
   {
@@ -54,7 +59,7 @@ export const optionsData = [
   },
   {
     name: "show_statsinicon",
-    onChange: changeHandler,
+    onChange: togglePrefs.bind(null, "show_statsinicon"),
     textKey: "show_on_adblock_button",
   },
   {
@@ -64,12 +69,12 @@ export const optionsData = [
   },
   {
     name: "show_devtools_panel",
-    onChange: changeHandler,
+    onChange: togglePrefs.bind(null, "show_devtools_panel"),
     textKey: "show_devtools_panel",
   },
   {
     name: "data_collection_opt_out",
-    onChange: changeHandler,
+    onChange: toggleDataCollectionOptOut,
     textKey: "data_collection_opt_out",
     subOptions: [
       {
@@ -81,7 +86,7 @@ export const optionsData = [
       },
       {
         name: "send_ad_wall_messages",
-        onChange: changeHandler,
+        onChange: togglePrefs.bind(null, "send_ad_wall_messages"),
         textKey: "allow_ad_wall_messages",
         helpLink: "https://helpcenter.getadblock.com/hc/en-us/articles/22696374171027/",
       },

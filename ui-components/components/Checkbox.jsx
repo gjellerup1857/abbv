@@ -23,9 +23,9 @@ export const Checkbox = ({
   }
 
   const [isChecked, setIsChecked] = useState(checked);
-  const onChangeHandler = (e) => {
+  const onChangeHandler = async (e) => {
     setIsChecked(e.target.checked);
-    onChange(e);
+    await onChange(e);
   }
 
   const defaultStyles = [
