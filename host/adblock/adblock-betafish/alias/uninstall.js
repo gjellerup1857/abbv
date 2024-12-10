@@ -38,6 +38,49 @@ async function getPremiumStatus() {
   return booleanToURLBoolean(hasActiveLicense);
 }
 
+/**
+ * Converts BigInt number to bytes array
+ *
+ * @param {BigInt} bn - Number
+ * @returns {Uint8Array} bytes array
+ */
+function bnToBytes(bn) {
+  let hex = BigInt(bn).toString(16);
+  if (hex.length % 2) hex = `0${hex}`;
+
+  const length = hex.length / 2;
+  const bytes = new Uint8Array(length);
+
+  for (let i = 0; i < length; i++) bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+
+  return bytes;
+}
+
+/**
+ * Retrieves split experiments assignments. It is compressed as base64-encoded
+ * bitmap due to limited space in the uninstall URL.
+ * @link https://eyeo.atlassian.net/browse/DATA-2793
+ *
+ * @returns {string} split experiments assignments
+ */
+async function getExperiments() {
+  let variantsBitmap = 0n;
+
+  const experiments = await ewe.experiments.getExperiments();
+  for (const experiment of [...experiments].reverse()) {
+    for (const variant of [...experiment.variants].reverse()) {
+      variantsBitmap |= variant.assigned ? 1n : 0n;
+      variantsBitmap <<= 1n;
+    }
+  }
+  variantsBitmap >>= 1n;
+
+  const bytes = bnToBytes(variantsBitmap);
+  const base64 = btoa(String.fromCharCode(...bytes));
+
+  return base64;
+}
+
 export async function setUninstallURL() {
   if (browser.runtime.setUninstallURL) {
     const userID = await getUserId();
@@ -61,18 +104,28 @@ export async function setUninstallURL() {
       const updateUninstallURL = async function () {
         const data = await browser.storage.local.get("blockage_stats");
         let url = uninstallURL;
+
         if (data && data.blockage_stats && data.blockage_stats.start) {
           const installedDuration = Date.now() - data.blockage_stats.start;
           url = `${url}&t=${installedDuration}`;
         }
+
         const bc = Prefs.blocked_total;
         url = `${url}&bc=${bc}`;
+
+        const experimentsRevision = await ewe.experiments.getRevisionId();
+        url = `${url}&er=${encodeURIComponent(experimentsRevision)}`;
+        const experimentsVariants = await getExperiments();
+        url = `${url}&ev=${encodeURIComponent(experimentsVariants)}`;
+
         const lastUpdateTime = await getLastUpdateTime();
         url = `${url}&lt=${lastUpdateTime}`;
-        url += `&wafc=${await getWebAllowlistingFilterCount()}`;
+        url = `${url}&wafc=${await getWebAllowlistingFilterCount()}`;
+
         // CDP data
-        url += `&ps=${await getPremiumStatus()}`;
-        url += `&aa=${await getAAStatus()}`;
+        url = `${url}&ps=${await getPremiumStatus()}`;
+        url = `${url}&aa=${await getAAStatus()}`;
+
         browser.runtime.setUninstallURL(url);
       };
       // start an interval timer that will update the Uninstall URL every 2

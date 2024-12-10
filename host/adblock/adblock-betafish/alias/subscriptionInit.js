@@ -199,7 +199,6 @@ const start = async function () {
       url: "https://easylist-downloads.adblockplus.org/ab-testing/experiments.json",
     },
     featureFlags: {
-      cdpPhase3: true,
       inlineCss: false,
     },
   };
