@@ -21,14 +21,14 @@ import {
   isCommandExpired,
 } from "./command-library";
 import { CommandName } from "./command-library.types";
-import { context } from "./context";
+import { prefs } from "./context";
 
 describe("command-library", () => {
   describe("getStoredCommandIds", () => {
     let prefsObj: Record<string, any>;
 
     beforeEach(() => {
-      const prefsGetMock = jest.spyOn(context, "getPreference");
+      const prefsGetMock = jest.spyOn(prefs, "get");
       prefsGetMock.mockImplementation((key) => prefsObj[key]);
     });
 

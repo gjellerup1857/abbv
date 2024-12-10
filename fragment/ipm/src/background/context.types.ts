@@ -42,3 +42,27 @@ export interface Context {
   getBrowserName: () => string;
   getAppVersion: () => string;
 }
+
+export interface Preferences {
+  get: (preference: string) => any;
+  set: (preference: string, value: any) => Promise<void>;
+  on: (preference: string, callback: () => Promise<void>) => void;
+
+  untilLoaded: Promise<void>;
+}
+
+export interface Logger {
+  debug: (...data: unknown[]) => void;
+  error: (...data: unknown[]) => void;
+}
+
+export interface Licensing {
+  isLicenseValid: () => boolean;
+}
+
+export interface UserAndHostInformation {
+  getId: () => Promise<string>;
+  getAppName: () => string;
+  getBrowserName: () => string;
+  getAppVersion: () => string;
+}

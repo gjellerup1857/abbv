@@ -16,7 +16,7 @@
  */
 
 import { createSafeOriginUrl } from "./url";
-import { context } from "./context";
+import { prefs } from "./context";
 
 describe("url", () => {
   describe("createSafeOriginUrl", () => {
@@ -24,7 +24,7 @@ describe("url", () => {
     const safeOrigins = [defaultOrigin, "https://origin2.com"];
 
     beforeEach(() => {
-      jest.spyOn(context, "getPreference").mockImplementation((preference) => {
+      jest.spyOn(prefs, "get").mockImplementation((preference) => {
         switch (preference) {
           case "ipm_default_origin":
             return defaultOrigin;

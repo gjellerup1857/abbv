@@ -17,7 +17,7 @@
 
 import { type LicenseStateBehavior } from "./command-library.types";
 import { LicenseState } from "./data-collection.types";
-import { context } from "./context";
+import { licensing } from "./context";
 
 /**
  * The default license state for the license_state_list command parameter.
@@ -55,7 +55,7 @@ export async function doesLicenseStateMatch(
   }
 
   const licenseStates = behavior.licenseStateList.split(",");
-  const isActive = context.isLicenseValid(); // getPremiumState();
+  const isActive = licensing.isLicenseValid(); // getPremiumState();
 
   for (const licenseState of licenseStates) {
     if (licenseState === LicenseState.inactive && !isActive) {

@@ -17,19 +17,19 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 
-import { context } from "./context";
+import { logger, prefs } from "./context";
 
 async function applyOptOut(): Promise<void> {
-  const isOptedOut = context.getPreference("data_collection_opt_out");
+  const isOptedOut = prefs.get("data_collection_opt_out");
 
   await ewe.cdp.setOptOut(typeof isOptedOut === "boolean" ? isOptedOut : true);
 }
 
 async function initOptOut(): Promise<void> {
-  await context.untilPreferencesLoaded();
+  await prefs.untilLoaded;
 
   await applyOptOut();
-  context.onPreferenceChanged("data_collection_opt_out", applyOptOut);
+  prefs.on("data_collection_opt_out", applyOptOut);
 }
 
 /**
@@ -39,6 +39,6 @@ export async function initialize(): Promise<void> {
   try {
     await initOptOut();
   } catch (error) {
-    context.logError("CDP initialization failed with error: ", error);
+    logger.error("CDP initialization failed with error: ", error);
   }
 }

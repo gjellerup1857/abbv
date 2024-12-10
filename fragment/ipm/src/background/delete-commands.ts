@@ -30,7 +30,7 @@ import {
 } from "./delete-commands.types";
 import { validateParams } from "./param-validator";
 import type { ParamDefinitionList } from "./param-validator.types";
-import { context } from "./context";
+import { logger } from "./context";
 
 /**
  * List of delete-commands parameter definitions
@@ -56,7 +56,7 @@ function isDeleteCommand(command: Command): command is DeleteCommand {
     return true;
   }
 
-  context.logError(
+  logger.error(
     "[delete-commands]: Invalid parameteres received:",
     validationErrors.join(" "),
   );

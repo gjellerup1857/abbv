@@ -31,8 +31,13 @@ import { isDeleteBehavior, setDeleteCommandHandler } from "./delete-commands";
 import { recordEvent, recordGenericEvent } from "./event-recording";
 import { isValidDate } from "./param-validator";
 import { checkLanguage } from "./language-check";
-import { context } from "./context";
-import { type Context } from "./context.types";
+import { prefs, logger, init as contextInit } from "./context";
+import {
+  type Licensing,
+  type Logger,
+  type Preferences,
+  type UserAndHostInformation,
+} from "./context.types";
 
 /**
  * A list of known commands.
@@ -116,12 +121,12 @@ export function dismissCommand(ipmId: string): void {
     return;
   }
 
-  const commandStorage = context.getPreference(commandStorageKey);
+  const commandStorage = prefs.get(commandStorageKey);
   // We can't use a Map or Set for `commandStorage`, so we need dynamic
   // deletion here.
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete commandStorage[command.ipm_id];
-  void context.setPreference(commandStorageKey, commandStorage);
+  void prefs.set(commandStorageKey, commandStorage);
 }
 
 /**
@@ -153,7 +158,7 @@ export function getBehavior(ipmId: string): Behavior | null {
  * @returns command
  */
 export function getCommand(ipmId: string): Command | null {
-  const commandStorage = context.getPreference(commandStorageKey);
+  const commandStorage = prefs.get(commandStorageKey);
   return commandStorage[ipmId] || null;
 }
 
@@ -163,7 +168,7 @@ export function getCommand(ipmId: string): Command | null {
  * @returns An array with command IDs or empty array if there's no commands
  */
 export function getStoredCommandIds(): string[] {
-  const commandStorage = context.getPreference(commandStorageKey);
+  const commandStorage = prefs.get(commandStorageKey);
 
   if (!isCommandMap(commandStorage)) {
     return [];
@@ -201,7 +206,7 @@ export function getContent(ipmId: string): Content | null {
  * @returns Whether the command with the given id has already been processed
  */
 function hasProcessedCommand(ipmId: string): boolean {
-  const commandStorage = context.getPreference(commandStorageKey);
+  const commandStorage = prefs.get(commandStorageKey);
   return ipmId in commandStorage;
 }
 
@@ -249,13 +254,13 @@ function retryExecuteCommands(commandName: CommandName): void {
  * @param commands A list of commands from the IPM server
  */
 function storeCommands(commands: Command[]): void {
-  const storage = context.getPreference(commandStorageKey);
+  const storage = prefs.get(commandStorageKey);
 
   for (const command of commands) {
     storage[command.ipm_id] = command;
   }
 
-  void context.setPreference(commandStorageKey, storage);
+  void prefs.set(commandStorageKey, storage);
 }
 
 /**
@@ -272,19 +277,19 @@ export function executeIPMCommands(
   const actorByExecutableCommand = new Map<Command, CommandActor>();
 
   if (commands.length > maximumProcessableCommands) {
-    context.logError("[ipm]: Too many commands received.");
+    logger.error("[ipm]: Too many commands received.");
     recordGenericEvent("too_many_commands");
     return;
   }
 
   for (const command of commands) {
     if (!isCommand(command)) {
-      context.logError("[ipm]: Invalid command received.");
+      logger.error("[ipm]: Invalid command received.");
       continue;
     }
 
     if (!knownCommandsList.includes(command.command_name)) {
-      context.logError(
+      logger.error(
         "[ipm]: Unknown command name received:",
         command.command_name,
       );
@@ -292,7 +297,7 @@ export function executeIPMCommands(
     }
 
     if (command.version !== CommandVersion[command.command_name]) {
-      context.logError(
+      logger.error(
         `[ipm]: Command version mismatch for command "${
           command.command_name
         }". Requested version was ${command.version}, version present is ${
@@ -303,7 +308,7 @@ export function executeIPMCommands(
     }
 
     if (isCommandExpired(command)) {
-      context.logError("[ipm]: Command has expired.");
+      logger.error("[ipm]: Command has expired.");
       recordEvent(
         command.ipm_id,
         command.command_name,
@@ -320,13 +325,13 @@ export function executeIPMCommands(
 
     const actor = actorByCommandName.get(command.command_name);
     if (!actor) {
-      context.logDebug("[ipm]: No actor found:", command.command_name);
+      logger.debug("[ipm]: No actor found:", command.command_name);
       unexecutableCommands.set(command, isInitialization);
       continue;
     }
 
     if (!actor.isValidCommand(command)) {
-      context.logError("[ipm]: Invalid parameters received.");
+      logger.error("[ipm]: Invalid parameters received.");
       continue;
     }
 
@@ -340,7 +345,7 @@ export function executeIPMCommands(
 
     if (!isInitialization) {
       if (hasProcessedCommand(command.ipm_id)) {
-        context.logError("[ipm]: Campaign already processed:", command.ipm_id);
+        logger.error("[ipm]: Campaign already processed:", command.ipm_id);
         continue;
       }
 
@@ -384,7 +389,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
   const behavior = getBehavior(ipmId);
 
   if (!isDeleteBehavior(behavior)) {
-    context.logError("[delete-commands]: Invalid command behavior.");
+    logger.error("[delete-commands]: Invalid command behavior.");
     return;
   }
 
@@ -393,7 +398,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
 
   // Ignore and dismiss command if it has expired
   if (isCommandExpired(command)) {
-    context.logError("[delete-commands]: Command has expired.");
+    logger.error("[delete-commands]: Command has expired.");
     registerDeleteEvent(ipmId, CommandEventType.expired);
     dismissCommand(ipmId);
     return;
@@ -411,7 +416,7 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
       }
     } catch (error) {
       success = false;
-      context.logError(
+      logger.error(
         "[delete-commands]: Error trying to delete command with ID ",
         commandId,
       );
@@ -428,14 +433,19 @@ async function handleDeleteCommand(ipmId: string): Promise<void> {
 /**
  * Initializes command library
  */
-export async function start(ctx: Context): Promise<void> {
-  Object.assign(context, ctx);
-  await context.untilPreferencesLoaded();
+export async function start(
+  preferences: Preferences,
+  logger: Logger,
+  licensing: Licensing,
+  info: UserAndHostInformation,
+): Promise<void> {
+  contextInit(preferences, logger, licensing, info);
+  await prefs.untilLoaded;
 
   setDeleteCommandHandler(handleDeleteCommand);
 
   // Reinitialize commands from storage
-  const commandStorage = context.getPreference(commandStorageKey);
+  const commandStorage = prefs.get(commandStorageKey);
 
   if (!isCommandMap(commandStorage)) {
     return;

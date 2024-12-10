@@ -29,7 +29,7 @@ import {
   serverUrlKey,
   scheduleName,
 } from "./telemetry.types";
-import { context } from "./context";
+import { logger, prefs } from "./context";
 
 /**
  * Processes a response from the IPM server. Will request command execution
@@ -39,7 +39,7 @@ import { context } from "./context";
  */
 async function processResponse(response: Response): Promise<void> {
   if (!response.ok) {
-    context.logError(
+    logger.error(
       `[Telemetry]: Bad response status from IPM server: ${response.status}`,
     );
     return;
@@ -65,7 +65,7 @@ async function processResponse(response: Response): Promise<void> {
 
     executeIPMCommands(commands);
   } catch (error) {
-    context.logError("[Telemetry]: Error parsing IPM response.", error);
+    logger.error("[Telemetry]: Error parsing IPM response.", error);
   }
 }
 
@@ -74,7 +74,7 @@ async function processResponse(response: Response): Promise<void> {
  */
 export async function sendPing(): Promise<void> {
   // Disable IPM when user opted out of data collection.
-  if (context.getPreference("data_collection_opt_out") === true) {
+  if (prefs.get("data_collection_opt_out") === true) {
     return;
   }
 
@@ -84,7 +84,7 @@ export async function sendPing(): Promise<void> {
   // successful or not.
   void clearEvents();
 
-  const url = context.getPreference(serverUrlKey);
+  const url = prefs.get(serverUrlKey);
   if (typeof url !== "string") {
     return;
   }
@@ -97,7 +97,7 @@ export async function sendPing(): Promise<void> {
   })
     .then(processResponse)
     .catch((error) => {
-      context.logError("[Telemetry]: Ping sending failed with error:", error);
+      logger.error("[Telemetry]: Ping sending failed with error:", error);
     });
 }
 
@@ -112,8 +112,8 @@ export async function start(eventEmitter: EventEmitter): Promise<void> {
   });
 
   if (!eventEmitter.hasSchedule(scheduleName)) {
-    await context.untilPreferencesLoaded();
-    const intervalTime = context.getPreference(intervalKey);
+    await prefs.untilLoaded;
+    const intervalTime = prefs.get(intervalKey);
     if (typeof intervalTime !== "number") {
       return;
     }

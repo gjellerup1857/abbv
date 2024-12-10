@@ -33,7 +33,7 @@ import {
   type UserData,
   eventStorageKey,
 } from "./data-collection.types";
-import { context } from "./context";
+import { info, licensing, prefs } from "./context";
 
 /**
  * Takes a number, turns it into a string, and pads it if necessary to create
@@ -77,11 +77,11 @@ function getLocalTimeStamp(): string {
  */
 async function getBaseAttributes(): Promise<BaseAttributes> {
   return {
-    app_name: context.getAppName(),
-    browser_name: context.getBrowserName(),
+    app_name: info.getAppName(),
+    browser_name: info.getBrowserName(),
     os: (await browser.runtime.getPlatformInfo()).os,
     language_tag: browser.i18n.getUILanguage(),
-    app_version: context.getAppVersion(),
+    app_version: info.getAppVersion(),
     install_type: (await browser.management.getSelf()).installType,
   };
 }
@@ -103,10 +103,10 @@ async function getEventData(
 ): Promise<EventData> {
   return {
     type: DataType.event,
-    device_id: await context.getId(),
+    device_id: await info.getId(),
     action: name,
     platform: PlatformType.web,
-    app_version: context.getAppVersion(),
+    app_version: info.getAppVersion(),
     user_time: getLocalTimeStamp(),
     attributes: {
       ...(await getBaseAttributes()),
@@ -123,14 +123,14 @@ async function getEventData(
  * @returns An object containing device data
  */
 async function getDeviceData(): Promise<DeviceData> {
-  await context.untilPreferencesLoaded();
+  await prefs.untilLoaded;
   return {
     type: DataType.device,
-    device_id: await context.getId(),
+    device_id: await info.getId(),
     attributes: {
       ...(await getBaseAttributes()),
       blocked_total: 0, // We're not sending block count to protect user privacy
-      license_status: context.isLicenseValid()
+      license_status: licensing.isLicenseValid()
         ? LicenseState.active
         : LicenseState.inactive,
     },
@@ -189,10 +189,10 @@ function getIpmData(): IpmData {
  * @returns An object containing the payload
  */
 export async function getPayload(): Promise<PayloadData> {
-  await context.untilPreferencesLoaded();
+  await prefs.untilLoaded;
   const user = await getUserData();
   const device = await getDeviceData();
-  const events = context.getPreference(eventStorageKey);
+  const events = prefs.get(eventStorageKey);
   const ipm = getIpmData();
   return { user, device, events, ipm };
 }
@@ -201,8 +201,8 @@ export async function getPayload(): Promise<PayloadData> {
  * Clears all recorded user events.
  */
 export async function clearEvents(): Promise<void> {
-  await context.untilPreferencesLoaded();
-  void context.setPreference(eventStorageKey, []);
+  await prefs.untilLoaded;
+  void prefs.set(eventStorageKey, []);
 }
 
 /**
@@ -222,14 +222,14 @@ export async function storeEvent(
   commandVersion: number,
   name: string,
 ): Promise<void> {
-  await context.untilPreferencesLoaded();
+  await prefs.untilLoaded;
   const eventData = await getEventData(
     ipmId,
     commandName,
     commandVersion,
     name,
   );
-  const eventStorage = context.getPreference(eventStorageKey) as EventData[];
+  const eventStorage = prefs.get(eventStorageKey) as EventData[];
   eventStorage.push(eventData);
-  void context.setPreference(eventStorageKey, eventStorage);
+  void prefs.set(eventStorageKey, eventStorage);
 }

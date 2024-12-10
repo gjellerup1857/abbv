@@ -17,7 +17,7 @@
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { initialize } from "./eyeometry-mac-counting";
-import { context } from "./context";
+import { prefs } from "./context";
 
 describe("Eyeometry-based MAC counting", () => {
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe("Eyeometry-based MAC counting", () => {
   });
 
   it("sets the opt-out value from prefs on initialization", async () => {
-    await context.setPreference("data_collection_opt_out", true);
+    await prefs.set("data_collection_opt_out", true);
     await initialize();
     expect(ewe.telemetry.setOptOut).toHaveBeenCalledWith(true);
   });

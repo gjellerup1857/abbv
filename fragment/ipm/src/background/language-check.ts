@@ -19,7 +19,7 @@ import browser from "webextension-polyfill";
 import { commandStorageKey } from "./command-library";
 import { recordEvent } from "./event-recording";
 import { type Command } from "./command-library.types";
-import { context } from "./context";
+import { prefs } from "./context";
 
 /**
  * Runs a check to see whether the current user language still matches the
@@ -29,8 +29,8 @@ import { context } from "./context";
  * @param ipmId The ID of the IPM command to run the check for
  */
 export async function checkLanguage(ipmId: string): Promise<void> {
-  await context.untilPreferencesLoaded();
-  const commandStorage = context.getPreference(commandStorageKey);
+  await prefs.untilLoaded;
+  const commandStorage = prefs.get(commandStorageKey);
   if (!(ipmId in commandStorage)) {
     return;
   }

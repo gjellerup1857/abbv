@@ -72,42 +72,30 @@ async function bootstrap(): Promise<void> {
     startTabSessionStorage();
     startDevTools();
     startDebug();
-    void startIPM({
-      async untilPreferencesLoaded() {
-        return await Prefs.untilLoaded;
+    startIPM(
+      Prefs,
+      logger,
+      {
+        isLicenseValid() {
+          const { isActive } = getPremiumState();
+          return isActive;
+        }
       },
-      getPreference(key) {
-        return Prefs.get(key);
-      },
-      async setPreference(key, value) {
-        return await Prefs.set(key, value);
-      },
-      onPreferenceChanged(key, f) {
-        Prefs.on(key, f);
-      },
-      logDebug(...args) {
-        logDebug(args);
-      },
-      logError(...args) {
-        logError(args);
-      },
-      isLicenseValid() {
-        const { isActive } = getPremiumState();
-        return isActive;
-      },
-      async getId() {
-        return await getInstallationId();
-      },
-      getAppName() {
-        return info.baseName;
-      },
-      getBrowserName() {
-        return info.application;
-      },
-      getAppVersion() {
-        return info.addonVersion;
+      {
+        async getId() {
+          return await getInstallationId();
+        },
+        getAppName() {
+          return info.baseName;
+        },
+        getBrowserName() {
+          return info.application;
+        },
+        getAppVersion() {
+          return info.addonVersion;
+        }
       }
-    }).catch(reportAndLogError);
+    ).catch(reportAndLogError);
     startReadyState();
     startFilterConfiguration();
     startStats();
