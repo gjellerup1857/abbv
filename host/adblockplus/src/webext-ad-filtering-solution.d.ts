@@ -24,6 +24,34 @@ declare module "@eyeo/webext-ad-filtering-solution" {
   const AllowlistingCallback: (domain: string) => void;
 
   /**
+   * Represents an experiment
+   */
+  interface Experiment {
+    /**
+     * Experiment ID
+     */
+    id: string;
+    /**
+     * Experiment variants
+     */
+    variants: ExperimentVariant[];
+  }
+
+  /**
+   * Represents a variant of an experiment
+   */
+  interface ExperimentVariant {
+    /**
+     * Experiment variant ID
+     */
+    id: string;
+    /**
+     * Indicates whether current user is assigned to the experiment variant
+     */
+    assigned: boolean;
+  }
+
+  /**
    * Options for retrieving filters
    */
   interface FiltersGetAllowingFiltersOptions {

@@ -30,6 +30,8 @@ const abbreviations = [
   ["apv", "applicationVersion"],
   ["av", "addonVersion"],
   ["c", "corrupted"],
+  ["er", "experimentsRevision"],
+  ["ev", "experimentsVariants"],
   ["fv", "firstVersion"],
   ["ndc", "notificationDownloadCount"],
   ["p", "platform"],
@@ -74,6 +76,50 @@ function getAdsSubscriptions() {
 }
 
 /**
+ * Converts BigInt number to bytes array
+ *
+ * @param {BigInt} bn - Number
+ * @returns {Uint8Array} bytes array
+ */
+function bnToBytes(bn) {
+  let hex = BigInt(bn).toString(16);
+  if (hex.length % 2) hex = `0${hex}`;
+
+  const length = hex.length / 2;
+  const bytes = new Uint8Array(length);
+
+  for (let i = 0; i < length; i++)
+    bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+
+  return bytes;
+}
+
+/**
+ * Retrieves split experiments assignments. It is compressed as base64-encoded
+ * bitmap due to limited space in the uninstall URL.
+ * @link https://eyeo.atlassian.net/browse/DATA-2793
+ *
+ * @returns {string} split experiments assignments
+ */
+async function getExperiments() {
+  let variantsBitmap = 0n;
+
+  const experiments = await ewe.experiments.getExperiments();
+  for (const experiment of [...experiments].reverse()) {
+    for (const variant of [...experiment.variants].reverse()) {
+      variantsBitmap |= variant.assigned ? 1n : 0n;
+      variantsBitmap <<= 1n;
+    }
+  }
+  variantsBitmap >>= 1n;
+
+  const bytes = bnToBytes(variantsBitmap);
+  const base64 = btoa(String.fromCharCode(...bytes));
+
+  return base64;
+}
+
+/**
  * Determines whether any of the given subscriptions are installed and enabled
  *
  * @param {Set} urls
@@ -98,6 +144,8 @@ export async function setUninstallURL() {
   let params = Object.create(info);
 
   params.corrupted = isDataCorrupted() ? "1" : "0";
+  params.experimentsRevision = await ewe.experiments.getRevisionId();
+  params.experimentsVariants = await getExperiments();
   params.firstVersion = ewe.reporting.getFirstVersion();
 
   let notificationDownloadCount = await ewe.notifications.getDownloadCount();
@@ -131,6 +179,8 @@ export async function setUninstallURL() {
 }
 
 export function start() {
+  ewe.experiments.onChanged.addListener(setUninstallURL);
+
   ewe.notifications.on("downloaded", setUninstallURL);
 
   ewe.filters.onAdded.addListener(setUninstallURL);

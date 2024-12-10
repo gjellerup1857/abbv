@@ -17,6 +17,7 @@ module.exports = {
     webextensions: true
   },
   globals: {
+    BigInt: true,
     exports: true,
     ext: true,
     module: true,

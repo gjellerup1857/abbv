@@ -53,5 +53,7 @@ export default () => {
     expect(actualParams).toEqual(expect.objectContaining(expectedParams));
     expect(["u", "0", "1", "2"].includes(actualParams.aa)).toEqual(true);
     expect([1, 0].includes(actualParams.ps)).toEqual(true);
+    expect(/^[a-z0-9]{8}$/i.test(actualParams.er)).toEqual(true);
+    expect(/^[a-z0-9+/]+=*$/i.test(actualParams.ev)).toEqual(true);
   });
 };
