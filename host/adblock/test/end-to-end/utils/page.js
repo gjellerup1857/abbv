@@ -18,6 +18,7 @@
 import { By, Key } from "selenium-webdriver";
 import { expect } from "expect";
 
+import { localTestPageUrl } from "@eyeo/test-utils/urls";
 import {
   getDisplayedElement,
   openNewTab,
@@ -28,17 +29,11 @@ import {
   clickAndCloseNewTab,
   getTabId,
   clickOnDisplayedElement,
-} from "./driver.js";
-import { getOptionsHandle, setOptionsHandle } from "./hook.js";
+} from "@eyeo/test-utils/driver";
+import { getOptionsHandle, setOptionsHandle } from "@eyeo/test-utils/extension";
 
 export const installUrl = "https://getadblock.com/en/installed";
 export const premiumUrl = "https://getadblock.com/en/premium";
-export const blockHideUrl = "http://testpages.eyeo.com:3005/easylist-filters.html";
-export const blockHideLocalhostUrl = "http://localhost:3005/easylist-filters.html";
-export const aaTestPageUrl = "http://testpages.eyeo.com:3005/aa-filters.html";
-export const dcTestPageUrl = "http://testpages.eyeo.com:3005/dc-filters.html";
-export const snippetTestPageUrl = "http://testpages.eyeo.com:3005/snippet-filters.html";
-export const localTestPageUrl = "http://localhost:3005/test.html";
 export const allowlistingFilter = "@@||testpages.eyeo.com^$document";
 
 const optionsPageSleep = 2000;

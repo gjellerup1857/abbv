@@ -1,6 +1,6 @@
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
- * Copyright (C) 2006-present eyeo GmbH
+ * Copyright (C) 2024-present eyeo GmbH
  *
  * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -15,12 +15,16 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import adFiltering from "./smoke-main/ad-filtering.js";
-import extension from "./smoke-main/extension.js";
-import testServer from "./smoke-main/test-server.js";
+import { expect } from "expect";
+import { By } from "selenium-webdriver";
+
+import { openNewTab } from "@eyeo/test-utils/driver";
+import { localTestPageUrl } from "@eyeo/test-utils/urls";
 
 export default () => {
-  describe("Test Server", testServer);
-  describe("Extension", extension);
-  describe("Ad Filtering", adFiltering);
+  it("loads a test server page", async function () {
+    await openNewTab(localTestPageUrl);
+    const elem = await driver.findElement(By.css("h1"));
+    expect(await elem.getText()).toEqual("Hello from host pages");
+  });
 };

@@ -25,9 +25,9 @@ import {
   openNewTab,
   waitForNotDisplayed,
   clickOnDisplayedElement,
-} from "../utils/driver.js";
+} from "@eyeo/test-utils/driver";
+import { blockHideLocalhostUrl, aaTestPageUrl } from "@eyeo/test-utils/urls";
 import {
-  blockHideLocalhostUrl,
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   waitForSubscribed,
@@ -40,10 +40,9 @@ import {
   initOptionsPremiumFlTab,
   getCustomFilters,
   waitForAdsBlockedToBeInRange,
-  aaTestPageUrl,
+  reloadExtension,
 } from "../utils/page.js";
-import { getOptionsHandle } from "../utils/hook.js";
-import { upgradeExtension } from "../runners/helpers.js";
+import { getOptionsHandle, upgradeExtension } from "@eyeo/test-utils/extension";
 import {
   getDefaultFilterLists,
   premiumFilterLists,
@@ -148,7 +147,7 @@ export default () => {
 
     // upgrade extension
     const prevExtVersion = extension.version;
-    await upgradeExtension();
+    await upgradeExtension(reloadExtension);
 
     // check the extension version has changed
     expect(extension.version).not.toEqual(prevExtVersion);

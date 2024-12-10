@@ -1,6 +1,6 @@
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
- * Copyright (C) 2006-present eyeo GmbH
+ * Copyright (C) 2024-present eyeo GmbH
  *
  * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
@@ -15,12 +15,11 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import adFiltering from "./smoke-main/ad-filtering.js";
-import extension from "./smoke-main/extension.js";
-import testServer from "./smoke-main/test-server.js";
+import { runE2ETests } from "@eyeo/test-utils";
 
-export default () => {
-  describe("Test Server", testServer);
-  describe("Extension", extension);
-  describe("Ad Filtering", adFiltering);
-};
+import { runnerConfig } from "./runners/config.js";
+
+runE2ETests(runnerConfig).catch((error) => {
+  console.error("Error running tests:", error);
+  process.exit(1);
+});

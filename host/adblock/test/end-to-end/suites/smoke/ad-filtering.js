@@ -23,13 +23,11 @@ import {
   openNewTab,
   isCheckboxEnabled,
   waitForNotDisplayed,
-} from "../../utils/driver.js";
+} from "@eyeo/test-utils/driver";
+import { blockHideUrl, aaTestPageUrl, snippetTestPageUrl } from "@eyeo/test-utils/urls";
 import {
   addFiltersToAdBlock,
-  blockHideUrl,
-  aaTestPageUrl,
   checkBlockHidePage,
-  snippetTestPageUrl,
   initOptionsCustomizeTab,
   setCustomFilters,
   initOptionsFiltersTab,
@@ -37,7 +35,7 @@ import {
   setAADefaultState,
   allowlistingFilter,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "../../utils/hook.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 export default () => {
   after(async function () {

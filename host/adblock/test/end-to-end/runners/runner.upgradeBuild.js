@@ -20,28 +20,37 @@
 import path from "path";
 
 import { downloadLatestReleaseBuilds } from "@eyeo/test-utils";
+import {
+  setGlobalOptionsHook,
+  cleanupHook,
+  prepareExtensionHook,
+  screenshotsHook,
+  setupBrowserHook,
+} from "@eyeo/test-utils/hooks";
+
 import defineTestSuitesAfterUpgrade from "../suites-upgrade/index.js";
-import { cleanupHook, prepareExtensionHook, screenshotsHook, setupBrowserHook } from "./hooks.js";
-import { getBrowserNameArg, getManifestVersionArg } from "./constants.js";
+import { runnerConfig } from "./config.js";
 
 // [IMPORTANT]: Set a unique runner ID
 global.runnerId = "upgradeBuild";
 
 describe("AdBlock upgrade end-to-end tests", function () {
+  before(() => setGlobalOptionsHook(runnerConfig));
+
   before(async function () {
     // This section downloads the browser, which could take a long time
     // depending on the internet connection speed. Best to disable the normal
     // timeout for this bit.
     this.timeout(0);
 
-    // path to zip files from the latest released build
-    const liveBuildsDirPath = path.join(process.cwd(), "dist", "live");
-    const unpackedDirPath = path.join(liveBuildsDirPath, "adblock-upgrade-unpacked");
+    const { browserName, manifestVersion, liveBuildsDirPath, unpackedUpgradeDirPath } =
+      runnerConfig;
+
     try {
       await downloadLatestReleaseBuilds({
         extName: "adblock",
-        browserName: getBrowserNameArg() === "firefox" ? "firefox" : "chrome",
-        manifestVersion: getManifestVersionArg(),
+        browserName: browserName === "firefox" ? "firefox" : "chrome",
+        manifestVersion,
         outputDirPath: liveBuildsDirPath,
       });
     } catch (e) {
@@ -49,7 +58,7 @@ describe("AdBlock upgrade end-to-end tests", function () {
     }
 
     // Start the browser with the extension.
-    await setupBrowserHook(liveBuildsDirPath, unpackedDirPath);
+    await setupBrowserHook(liveBuildsDirPath, unpackedUpgradeDirPath);
   });
 
   before(prepareExtensionHook);

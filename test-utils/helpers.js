@@ -125,21 +125,3 @@ export function arrayBufferToBase64(buffer) {
 
   return btoa(binary);
 }
-
-/**
- * Changes the extension version in the manifest.json file from "x.x.x[.x]"
- * to "x.x.x.{patch}"
- *
- * @param {string} unpackedDirPath - Path to the unpacked extension folder
- * @param {string} patch - Patch number asigned to the new extension version
- * @returns {Promise<void>}
- */
-export async function changeExtensionVersion(unpackedDirPath, patch = "9999") {
-  const manifestFile = path.join(unpackedDirPath, "manifest.json");
-  const content = JSON.parse(await fs.promises.readFile(manifestFile));
-
-  const [major, minor, hotfix] = content.version.split(".");
-  content.version = `${major}.${minor}.${hotfix}.${patch}`;
-
-  await fs.promises.writeFile(manifestFile, JSON.stringify(content, null, 2));
-}
