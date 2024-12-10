@@ -73,7 +73,7 @@ function getExperiments(assignedVariants: number[]): Experiment[] {
   ];
 }
 
-function getUninstallUrl(overrides: Record<string, string>): string {
+function createExpectedUninstallUrl(overrides: Record<string, string>): string {
   const url = new URL(mockUrl);
 
   const params = new URLSearchParams();
@@ -156,7 +156,7 @@ describe("uninstall", () => {
 
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
-      getUninstallUrl({})
+      createExpectedUninstallUrl({})
     );
   });
 
@@ -170,7 +170,7 @@ describe("uninstall", () => {
     await setUninstallURL();
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
-      getUninstallUrl({
+      createExpectedUninstallUrl({
         ev: "AQ=="
       })
     );
@@ -180,7 +180,7 @@ describe("uninstall", () => {
     await setUninstallURL();
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
-      getUninstallUrl({
+      createExpectedUninstallUrl({
         ev: "BQ=="
       })
     );
@@ -190,7 +190,7 @@ describe("uninstall", () => {
     await setUninstallURL();
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
-      getUninstallUrl({
+      createExpectedUninstallUrl({
         ev: "AgA="
       })
     );
@@ -200,7 +200,7 @@ describe("uninstall", () => {
     await setUninstallURL();
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
-      getUninstallUrl({
+      createExpectedUninstallUrl({
         ev: "AhQ="
       })
     );

@@ -95,7 +95,9 @@ function bnToBytes(bn) {
 }
 
 /**
- * Retrieves split experiments assignments as base64-encoded bitmap
+ * Retrieves split experiments assignments. It is compressed as base64-encoded
+ * bitmap due to limited space in the uninstall URL.
+ * @link https://eyeo.atlassian.net/browse/DATA-2793
  *
  * @returns {string} split experiments assignments
  */
