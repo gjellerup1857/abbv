@@ -169,9 +169,8 @@ const popupMenuHelpActionMap = {
     } else if (pageInfo.url) {
       browser.runtime
         .sendMessage({
-          command: "adblockIsDomainPaused",
-          activeTab: { url: pageInfo.url.href, id: pageInfo.id },
-          newValue: false,
+          command: "removeTemporaryAllowlistForTab",
+          tab: { url: pageInfo.url.href, id: pageInfo.id },
         })
         .then(() => {
           browser.tabs.reload(pageInfo.id);
@@ -198,9 +197,8 @@ const popupMenuHelpActionMap = {
     } else if (pageInfo.url) {
       browser.runtime
         .sendMessage({
-          command: "adblockIsDomainPaused",
+          command: "removeTemporaryAllowlistForTab",
           activeTab: { url: pageInfo.url.href, id: pageInfo.id },
-          newValue: false,
         })
         .then(() => {
           browser.tabs.reload(pageInfo.id);

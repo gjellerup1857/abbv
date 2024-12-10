@@ -18,7 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, isTrustedSender,  tryToUnwhitelist, getUserFilters,
    addCustomFilter, countCache, checkUpdateProgress,
-   adblockIsPaused, pageIsWhitelisted, adblockIsDomainPaused, getCurrentTabInfo,
+   adblockIsPaused, pageIsWhitelisted, getCurrentTabInfo,
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
    getDebugInfo, addYTChannelListeners, removeYTChannelListeners, openYTManagedSubPage,
    addTwitchAllowlistListeners, removeTwitchAllowlistListeners, abpPrefPropertyNames,
@@ -47,6 +47,11 @@ import { getReadyState } from "../testing/ready-state/background/index.ts";
 import { getInfoCommand, injectionOrigins } from "../../src/info-injector/shared";
 import { getInjectionInfo } from "../../src/info-injector/background";
 import { getUserId } from "~/id/background/index";
+import {
+  addTemporaryAllowlistForTab,
+  isTabTemporaryAllowlisted,
+  removeTemporaryAllowlistForTab,
+} from "./pause/background";
 
 export const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -183,10 +188,17 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse(isPaused);
       return Promise.resolve(isPaused);
     }
-    case "adblockIsDomainPaused": {
-      const isDomainPaused = adblockIsDomainPaused(message.activeTab, message.newValue);
-      sendResponse(isDomainPaused);
-      return Promise.resolve(isDomainPaused);
+    case "addTemporaryAllowlistForTab": {
+      sendResponse({});
+      return addTemporaryAllowlistForTab(message.tab);
+    }
+    case "isTabTemporaryAllowlisted": {
+      sendResponse({});
+      return isTabTemporaryAllowlisted(message.tab);
+    }
+    case "removeTemporaryAllowlistForTab": {
+      sendResponse({});
+      return removeTemporaryAllowlistForTab(message.activeTab);
     }
     case "getPausedFilterText":
       return processMessageResponse(sendResponse, { pausedFilterText1, pausedFilterText2 });

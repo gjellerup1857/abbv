@@ -28,7 +28,7 @@ import { Prefs } from "./alias/prefs";
 import { getCustomFilterMetaData, getDebugInfo } from "./debug/background";
 import { getUserFilters } from "./filter-utils";
 import {
-  adblockIsDomainPaused,
+  isTabTemporaryAllowlisted,
   adblockIsPaused,
   pausedFilterText1,
   pausedFilterText2,
@@ -471,7 +471,7 @@ const getCurrentTabInfo = function (secondTime, tabId) {
           id: page.id,
           settings: getSettings(),
           paused: adblockIsPaused(),
-          domainPaused: adblockIsDomainPaused({ url: page.url.href, id: page.id }),
+          domainPaused: await isTabTemporaryAllowlisted({ url: page.url.href, id: page.id }),
           blockCountPage: await getBlockedPerPage(tab),
           blockCountTotal: Stats.blocked_total,
           customFilterCount: countCache.getCustomFilterCount(customFilterCheckUrl),
@@ -707,7 +707,6 @@ initialize
     revalidateAllowlistingStates();
     prefs.migrateUserData();
     startYtWallDetection({
-      allowlistTab: adblockIsDomainPaused,
       addTrustedMessageTypes: ext.addTrustedMessageTypes,
       ewe,
       logger,
@@ -768,7 +767,6 @@ Object.assign(self, {
   getDebugInfo,
   openTab,
   saveDomainPauses,
-  adblockIsDomainPaused,
   pageIsWhitelisted,
   pageIsUnblockable,
   getCurrentTabInfo,

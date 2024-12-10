@@ -16,11 +16,16 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, ext, adblockIsPaused, adblockIsDomainPaused
+/* global browser, ext, adblockIsPaused,
    License, reloadTab, getSettings, tryToUnwhitelist */
 
 import { Prefs } from "prefs";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import {
+  addTemporaryAllowlistForTab,
+  isTabTemporaryAllowlisted,
+  removeTemporaryAllowlistForTab,
+} from "./pause/background";
 import { setBadge } from "../adblockplusui/adblockpluschrome/lib/browserAction";
 import ServerMessages from "./servermessages";
 import { log } from "./utilities/background/bg-functions";
@@ -34,7 +39,7 @@ const updateBadge = async function (tabArg) {
     if (
       tab.active &&
       (adblockIsPaused() ||
-        adblockIsDomainPaused({ url: tab.url.href, id: tab.id }) ||
+        isTabTemporaryAllowlisted({ url: tab.url.href, id: tab.id }) ||
         !!(await ewe.filters.getAllowingFilters(tab.id)).length)
     ) {
       setBadge(tab.id, { number: "" });
@@ -189,12 +194,12 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         break;
       case "domain_pause_adblock":
         ServerMessages.recordGeneralMessage("cm_domain_pause_clicked");
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, true, false, "context");
+        await addTemporaryAllowlistForTab(tab, "context");
         updateButtonUIAndContextMenus(tab);
         break;
       case "resume_blocking_ads_domain":
         ServerMessages.recordGeneralMessage("cm_domain_unpause_clicked");
-        adblockIsDomainPaused({ url: tab.url, id: tab.id }, false);
+        await removeTemporaryAllowlistForTab(tab);
         updateButtonUIAndContextMenus(tab);
         break;
       case "block_this_ad":
@@ -278,7 +283,7 @@ let updateContextMenuItems = async function (page) {
   if (!Prefs.shouldShowBlockElementMenu) {
     return;
   }
-  const domainIsPaused = adblockIsDomainPaused({ url: page.url.href, id: page.id });
+  const domainIsPaused = await isTabTemporaryAllowlisted({ url: page.url.href, id: page.id });
   if (adblockIsPaused()) {
     await browser.contextMenus.create(contextMenuItem.unpauseAll, checkLastError);
   } else if (domainIsPaused) {

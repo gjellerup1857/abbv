@@ -38,9 +38,8 @@ async function pauseOnce() {
   const pageUrl = new URL(this.pageInfo.url);
   const { href } = pageUrl;
   await browser.runtime.sendMessage({
-    command: "adblockIsDomainPaused",
+    command: "addTemporaryAllowlistForTab",
     activeTab: { url: href, id: this.pageInfo.id },
-    newValue: true,
   });
   await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
   browser.tabs.reload();

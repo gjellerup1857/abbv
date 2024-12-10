@@ -16,11 +16,11 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, adblockIsPaused,
-   adblockIsDomainPaused, getUserFilters, */
+/* global browser, adblockIsPaused, getUserFilters, */
 
 import * as info from "info";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
+import { isTabTemporaryAllowlisted } from "./pause/background";
 import SubscriptionAdapter from "./subscriptionadapter";
 import postData from "./fetch-util";
 import { getSettings, settings, setSetting } from "./prefs/background";
@@ -91,7 +91,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
       details.url &&
       details.type === "main_frame" &&
       !adblockIsPaused() &&
-      !adblockIsDomainPaused({ url: details.url, id: details.id })
+      !isTabTemporaryAllowlisted({ url: details.url, id: details.id })
     ) {
       const domain = parseUri(details.url).host;
       if (!dataCollectionCache.domains[domain]) {
