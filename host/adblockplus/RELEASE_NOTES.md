@@ -1,6 +1,6 @@
 # Unreleased
 
-- Updated webext-ad-filtering-solution to 1.21.0
+- Updated webext-ad-filtering-solution to 1.22.0
 - Pass premium status in uninstall link (EXT-430)
 - Updated snippets to 1.7.1
 - Dropped support for Firefox versions older than 68 (EXT-541).
