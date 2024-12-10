@@ -214,11 +214,15 @@ async function enablePremiumByUI() {
   const premiumCheckoutPage = new PremiumCheckoutPage(browser);
   await premiumCheckoutPage.init();
   await browser.pause(2000); // the first checkout page may take some time to be ready
-  await premiumCheckoutPage.typeTextToEmailField(
+  const randomEmail =
     "test_automation" +
-      randomIntFromInterval(1000000, 9999999).toString() +
-      "@adblock.org"
-  );
+    randomIntFromInterval(1000000, 9999999).toString() +
+    "@adblock.org";
+  await premiumCheckoutPage.typeTextToEmailField(randomEmail);
+  // Email is not correctly filled sometimes
+  if ((await premiumCheckoutPage.getEmailTextFieldText()) != randomEmail) {
+    await premiumCheckoutPage.typeTextToEmailField(randomEmail);
+  }
   try {
     await premiumCheckoutPage.typeTextToZIPField("10001");
   } catch (e) {} // Depending on the location, the ZIP may be required or not
@@ -738,6 +742,22 @@ async function reloadExtension(suppressUpdatePage = true) {
   await waitForSwitchToABPOptionsTab(optionsUrl, 60000);
 }
 
+/**
+ * Get persistent storage data
+ * @param {string} storage Storage data type ["local", "session"].
+ * @param {string} key Storage key
+ * @returns {*} Storage data
+ */
+function getFromStorage(storage, key) {
+  return browser.executeAsync(
+    async (params, callback) => {
+      const result = await browser.storage[params.storage].get([params.key]);
+      callback(result[params.key]);
+    },
+    { storage, key }
+  );
+}
+
 module.exports = {
   afterSequence,
   beforeSequence,
@@ -765,5 +785,6 @@ module.exports = {
   addFilter,
   removeFilter,
   reloadExtension,
-  updatePrefs
+  updatePrefs,
+  getFromStorage
 };

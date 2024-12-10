@@ -16,6 +16,8 @@
  */
 
 import { error as logError } from "../../logger/background";
+import * as logger from "../../logger/background";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 
 import { start as startContentFiltering } from "../../../adblockpluschrome/lib/contentFiltering.js";
 import { start as startDebug } from "../../../adblockpluschrome/lib/debug.js";
@@ -42,10 +44,12 @@ import { start as startPremiumOnboarding } from "../../premium-onboarding/backgr
 import { start as startPremiumSubscriptions } from "../../premium-subscriptions/background";
 import { start as startReadyState } from "../../testing/ready-state/background";
 import { start as startYTWallDetection } from "../../yt-wall-detection/background";
+import { start as startYTWallDetectionAndAllowlisting } from "@eyeo-fragments/yt-wall-detection/background";
 import { start as startInfoInjector } from "../../info-injector/background";
 import { start as startUpdateCampaign } from "../../update-campaign/background";
 import { start as startPages } from "../../core/pages/background";
 import { start as startGlobals } from "../../globals/background";
+import { start as startFiltersMigration } from "../../filters/background/";
 import { start as startPublicAPI } from "@eyeo-fragments/public-api";
 import { port, addTrustedMessageTypes } from "~/core/messaging/background";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
@@ -81,9 +85,18 @@ async function bootstrap(): Promise<void> {
     startPremiumOnboarding();
     startPremiumSubscriptions();
     startYTWallDetection();
+    startYTWallDetectionAndAllowlisting({
+      addTrustedMessageTypes: addTrustedMessageTypes,
+      ewe,
+      logger,
+      port,
+      prefs: Prefs,
+      sendAdWallEvents: undefined
+    });
     startInfoInjector();
     startUpdateCampaign();
     startGlobals();
+    void startFiltersMigration();
     startPublicAPI({
       ewe,
       port,

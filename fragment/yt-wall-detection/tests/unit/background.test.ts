@@ -22,7 +22,6 @@ import { JestChrome } from "jest-chrome/types/jest-chrome";
 
 import {
   type addTrustedMessageTypesFunction,
-  type AllowlistFunction,
   type StartInfo,
   type sendAdWallEventsFunction,
 } from "../../src/background/detection.types.js";
@@ -35,9 +34,13 @@ import {
 import { type MessageSender, type AdWallMessage } from "@eyeo/polyfills/all";
 import { start } from "../../src/background/index";
 
-const allowlistTabFNMock = mockFn<AllowlistFunction>();
+const addFiltersMock = mockFn();
+const ewe = {
+  filters: {
+    add: addFiltersMock
+  }
+};
 
-const ewe = {};
 
 const logger = {};
 
@@ -53,7 +56,6 @@ const addTrustedMessageTypesFNMock = mockFn<addTrustedMessageTypesFunction>();
 const sendAdWallEventsFNMock = mockFn<sendAdWallEventsFunction>();
 
 const startInfo: StartInfo = {
-  allowlistTab: allowlistTabFNMock,
   addTrustedMessageTypes: addTrustedMessageTypesFNMock,
   ewe,
   logger,
@@ -75,13 +77,12 @@ const invokeAndTestStart = (startParameters: StartInfo):void => {
 
 describe("Fragment / YT Ad Wall Detection", () => {
   beforeEach(() => {
-    mockReset(allowlistTabFNMock);
+    mockReset(ewe.filters.add);
     mockReset(getFnMock);
     mockReset(setFNMock);
     mockReset(onFnMock);
     mockReset(addTrustedMessageTypesFNMock);
     mockReset(sendAdWallEventsFNMock);
-    mockReset(startInfo.allowlistTab);
     mockReset(startInfo.addTrustedMessageTypes);
     mockReset(startInfo.sendAdWallEvents);
     chrome.runtime.onInstalled.clearListeners();
@@ -134,7 +135,7 @@ describe("Fragment / YT Ad Wall Detection", () => {
       if (arg1 === youTubeWallDetected) {
         processYouTubeWallDetected = arg2;
         let message: AdWallMessage = { userLoggedIn: "0" };
-        let sender: MessageSender = { page: { id: 1 } };
+        let sender: MessageSender = { page: { id: 1, url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' } };
 
         const jestChrome = chrome as any as JestChrome;
         jestChrome.tabs.reload.mockImplementation((argumentOne: any) => {
@@ -143,19 +144,15 @@ describe("Fragment / YT Ad Wall Detection", () => {
 
         processYouTubeWallDetected(message, sender);
         sendAdWallEventsFNMock.calledWith(youTubeWallDetected, "0", "0");
-        allowlistTabFNMock.calledWith(
-          { url: sender.page.url, id: sender.page.id },
-          true,
-          true,
-          "auto",
-        );
+        ewe.filters.add.calledWith(`@@||www.youtube.com$document`, {
+            expiresByTabId: 1,
+            origin: "auto"
+        });
       }
     };
 
-    startInfo.ewe.filters = {
-      getAllowingFilters: function () {
+    startInfo.ewe.filters.getAllowingFilters = function () {
         return Promise.resolve([]);
-      },
     };
 
     invokeAndTestStart(startInfo);
@@ -192,20 +189,16 @@ describe("Fragment / YT Ad Wall Detection", () => {
 
         processYouTubeWallDetected(message, sender);
         sendAdWallEventsFNMock.calledWith(youTubeWallDetected, "0", "0");
-        allowlistTabFNMock.calledWith(
-          { url: sender.page.url, id: sender.page.id },
-          true,
-          true,
-          "auto",
-        );
+        ewe.filters.add.calledWith(`@@||www.youtube.com$document`, {
+          expiresByTabId: 1,
+          origin: "auto"
+        });
       }
     };
 
-    startInfo.ewe.filters = {
-      getAllowingFilters: function () {
-        return Promise.resolve([]);
-      },
-    };
+    startInfo.ewe.filters.getAllowingFilters = function () {
+      return Promise.resolve([]);
+  };
 
     invokeAndTestStart(startInfo);
   });
@@ -228,11 +221,8 @@ describe("Fragment / YT Ad Wall Detection", () => {
         sendAdWallEventsFNMock.calledWith(youTubeAlreadyAllowLlisted, "1", "1");
       }
     };
-
-    startInfo.ewe.filters = {
-      getAllowingFilters: function () {
-        return Promise.resolve(["dummy rule"]);
-      },
+    startInfo.ewe.filters.getAllowingFilters = function () {
+      return Promise.resolve(["dummy rule"]);
     };
 
     invokeAndTestStart(startInfo);

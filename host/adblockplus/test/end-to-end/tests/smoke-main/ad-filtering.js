@@ -74,11 +74,6 @@ module.exports = function () {
       await generalPage.isAllowAcceptableAdsCheckboxSelected();
   });
 
-  beforeEach(async function () {
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToABP(testData.customBlockingFilters.join("\n"));
-  });
-
   after(async function () {
     await afterSequence();
 
@@ -88,6 +83,14 @@ module.exports = function () {
     const selected = await generalPage.isAllowAcceptableAdsCheckboxSelected();
     if (selected !== aaCheckboxSelected)
       await generalPage.clickAllowAcceptableAdsCheckbox();
+  });
+
+  it("blocks and hides ads", async function () {
+    await waitForNewWindow(testData.blockHideUrl);
+
+    const testPages = new TestPages(browser);
+    await testPages.checkPage({ expectAllowlisted: false });
+    await browser.closeWindow();
   });
 
   it("uses sitekey to allowlist content", async function () {
@@ -132,19 +135,11 @@ module.exports = function () {
     await removeAllFiltersFromABP();
   });
 
-  it("blocks and hides ads", async function () {
-    await waitForNewWindow(testData.blockHideUrl);
-
-    const testPages = new TestPages(browser);
-    await testPages.checkPage({ expectAllowlisted: false });
-    await browser.closeWindow();
-  });
-
   it("uses snippets to block ads", async function () {
     const advancedPage = new AdvancedPage(browser);
     await advancedPage.init();
     await advancedPage.typeTextToAddCustomFilterListInput(
-      "eyeo.gitlab.io#$#hide-if-contains 'should be hidden' p[id]"
+      "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]"
     );
     await advancedPage.clickAddCustomFilterListButton();
     await browser.newWindow(testData.snippetsPageUrl);
@@ -164,7 +159,7 @@ module.exports = function () {
     const allowistedWebsitesPage = new AllowlistedWebsitesPage(browser);
     await allowistedWebsitesPage.init();
     await allowistedWebsitesPage.setAllowlistingTextboxValue(
-      "http://localhost/"
+      "http://testpages.eyeo.com/"
     );
     expect(await allowistedWebsitesPage.isAddWebsiteButtonEnabled()).to.be.true;
     await allowistedWebsitesPage.clickAddWebsiteButton();
@@ -176,7 +171,7 @@ module.exports = function () {
 
     await switchToABPOptionsTab();
 
-    await allowistedWebsitesPage.removeAllowlistedDomain("localhost");
+    await allowistedWebsitesPage.removeAllowlistedDomain("testpages.eyeo.com");
     const attributesOfAllowlistingTableItems =
       await allowistedWebsitesPage.getAttributeOfAllowlistingTableItems(
         "class"
@@ -193,26 +188,24 @@ module.exports = function () {
   });
 
   it("displays acceptable ads", async function () {
-    async function assertAcceptableAdsIsShown(shown) {
-      const shortTimeout = 500;
-      const timeout = 5000;
+    async function assertAcceptableAdsIsShown(reverseOption) {
+      const shortTimeout = 3000;
+      const timeout = 10000;
 
       const testPage = new AaTestPage(browser);
       await testPage.init();
       await browser.waitUntil(
         async () => {
           await browser.refresh();
-          return (
-            (await testPage.isElementDisplayed(
-              testPage.selector,
-              shown,
-              shortTimeout
-            )) === false
+          return await testPage.isElementDisplayed(
+            testPage.selector,
+            reverseOption,
+            shortTimeout
           );
         },
         {
           timeout,
-          timeoutMsg: `The AA element is still ${shown ? "not " : ""}shown in ${timeout}ms`
+          timeoutMsg: `The AA element is ${reverseOption ? "" : "not "}shown after ${timeout}ms`
         }
       );
 
@@ -231,7 +224,7 @@ module.exports = function () {
       acceptableAdsIsOn
     );
 
-    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
+    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
 
     // Switch AA
     await switchToABPOptionsTab({});
@@ -241,6 +234,6 @@ module.exports = function () {
     expect(await generalPage.isAllowAcceptableAdsCheckboxSelected()).to.equal(
       !acceptableAdsIsOn
     );
-    await assertAcceptableAdsIsShown(!acceptableAdsIsOn);
+    await assertAcceptableAdsIsShown(acceptableAdsIsOn);
   });
 };

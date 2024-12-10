@@ -16,9 +16,9 @@
  */
 
 import { expect } from "expect";
-import { initOptionsGeneralTab } from "../utils/page.js";
-import { isCheckboxEnabled, waitForNotDisplayed } from "../utils/driver.js";
-import { getOptionsHandle } from "../utils/hook.js";
+import { initOptionsGeneralTab } from "../../utils/page.js";
+import { isCheckboxEnabled, waitForNotDisplayed } from "../../utils/driver.js";
+import { getOptionsHandle } from "../../utils/hook.js";
 
 export default () => {
   it("does not collect data for Firefox", async function () {

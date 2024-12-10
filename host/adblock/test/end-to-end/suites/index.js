@@ -16,7 +16,7 @@
  */
 
 import { beforeEachTasks } from "../utils/hook.js";
-import dataCollection from "./data-collection.js";
+import dataCollection from "./data-collection/data-collection.js";
 import extension from "./smoke/extension.js";
 import adFiltering from "./smoke/ad-filtering.js";
 import uninstall from "./smoke/uninstall.js";
@@ -29,6 +29,8 @@ import freeUserPopup from "./premium/free-user-popup.js";
 import testServer from "./test-server.js";
 import oneClickAllowlisting from "./public-api/one-click-allowlisting.js";
 import bypassAPI from "./public-api/bypass-api.js";
+import eyeometry from "./data-collection/eyeometry.js";
+import youtubeAutoAllowlist from "./youtube-auto-allowlist.js";
 
 export default () => {
   beforeEach(async function () {
@@ -49,7 +51,12 @@ export default () => {
     describe("Filter Lists", optionsPageFL);
   });
 
-  describe("Data collection", dataCollection);
+  describe("Data Collection", function () {
+    dataCollection();
+    describe("Eyeometry", eyeometry);
+  });
+
+  describe("YouTube auto-allowlist", youtubeAutoAllowlist);
 
   describe("Public API", function () {
     describe("One click allowlisting", oneClickAllowlisting);

@@ -25,7 +25,7 @@ import {
   getSubscriptionInfo,
   clickFilterlist,
   reloadExtension,
-  adBlockedCountUrl,
+  blockHideUrl,
   waitForAdsBlockedToBeInRange,
 } from "../../utils/page.js";
 import { getOptionsHandle } from "../../utils/hook.js";
@@ -92,7 +92,7 @@ export default () => {
   it("displays total ad block count", async function () {
     const maxAdsBlocked = 15;
 
-    const websiteHandle = await openNewTab(adBlockedCountUrl);
+    const websiteHandle = await openNewTab(blockHideUrl);
     const blockedFirst = await waitForAdsBlockedToBeInRange(0, maxAdsBlocked);
 
     await driver.switchTo().window(websiteHandle);

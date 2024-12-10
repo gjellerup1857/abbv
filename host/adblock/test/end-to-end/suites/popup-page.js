@@ -7,16 +7,9 @@ import {
   checkBlockHidePage,
   setPausedStateFromPopup,
   initPopupPage,
-  customBlockingFilters,
 } from "../utils/page.js";
 
 export default () => {
-  beforeEach(async function () {
-    // This filter no longer exists in easylist
-    // To be removed by https://eyeo.atlassian.net/browse/EXT-282
-    await addFiltersToAdBlock(customBlockingFilters.join("\n"));
-  });
-
   it("opens the settings page", async function () {
     // Open the Popup page
     await initPopupPage();

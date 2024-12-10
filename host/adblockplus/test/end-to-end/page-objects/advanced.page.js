@@ -1203,7 +1203,7 @@ class AdvancedPage extends BasePage {
     }
   }
 
-  async waitForAbpFiltersFLLastUpdatedTextToEqual(text, timeoutVal = 10000) {
+  async waitForAbpFiltersFLLastUpdatedTextToEqual(text, timeoutVal = 3000) {
     return await this.waitUntilTextIs(
       this.abpFiltersFLLastUpdatedText,
       text,
@@ -1213,7 +1213,7 @@ class AdvancedPage extends BasePage {
 
   async waitForAllowNonintrusiveFLLastUpdatedTextToEqual(
     text,
-    timeoutVal = 10000
+    timeoutVal = 3000
   ) {
     return await this.waitUntilTextIs(
       this.allowNonintrusiveAdvertisingFLLastUpdatedText,
@@ -1237,7 +1237,7 @@ class AdvancedPage extends BasePage {
     );
   }
 
-  async waitForEasyListFLLastUpdatedTextToEqual(text, timeoutVal = 10000) {
+  async waitForEasyListFLLastUpdatedTextToEqual(text, timeoutVal = 3000) {
     return await this.waitUntilTextIs(
       this.easyListFLLastUpdatedText,
       text,

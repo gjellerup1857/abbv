@@ -235,6 +235,16 @@ defaults.logger_log_level = 3;
 defaults.onpage_dialog_command_stats = {};
 
 /**
+ * The timestamp of the last time we showed a dialog.
+ */
+defaults.onpage_dialog_last_shown = 0;
+
+/**
+ * The minimum amount of time between two dialogs being shown.
+ */
+defaults.onpage_dialog_cool_down = 24 * 60 * 60 * 1000;
+
+/**
  * Map of on-page dialog timing configurations
  *
  * @type {Object}
@@ -316,6 +326,13 @@ defaults.yt_allowlist_start_date = 0;
  * @type {number}
  */
 defaults.allowlisting_auto_extend_ms = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * Whether all historic allowlisting filters were transitioned to smart allowlisting
+ *
+ * @type {boolean}
+ */
+defaults.migration_popup_to_smart_allowlist_complete = false;
 
 /**
  * @namespace

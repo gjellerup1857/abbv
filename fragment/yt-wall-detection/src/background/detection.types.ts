@@ -30,17 +30,6 @@ export interface TabDescriptor {
 }
 
 /**
- * Function to allow list a tab or url
- *
- */
-export type AllowlistFunction = (
-  activeTab: TabDescriptor,
-  newValue: boolean,
-  sessionOnly: boolean,
-  origin: string,
-) => void;
-
-/**
  * Function to add trusted message types for certain origins
  *
  */
@@ -78,12 +67,6 @@ export const noop: noopFunction = () => {};
  *       expected that type information below be updated
  */
 export interface StartInfo {
-  /**
-   * A reference to a function that will allowlist the tab
-   *
-   */
-  allowlistTab: AllowlistFunction;
-
   /**
    * A reference to a function will add the message types
    * that are needed from the content script.

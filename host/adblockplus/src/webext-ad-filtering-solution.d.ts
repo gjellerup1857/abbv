@@ -341,6 +341,16 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      */
     const getMetadata: (text: string) => Promise<?FilterMetadata>;
     /**
+     * Sets metadata for a filter
+     *
+     * @param text - Filter text
+     * @param metadata - Metadata to set
+     */
+    const setMetadata: (
+      text: string,
+      metadata: FilterMetadata
+    ) => Promise<void>;
+    /**
      * Returns an array of user filter objects
      *
      * @returns an array of user filter objects
@@ -352,6 +362,20 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * @param texts - The filter rules to be removed.
      */
     const remove: (texts: string | string[]) => Promise<void>;
+  }
+
+  declare namespace experiments {
+    /**
+     * Returns the assignments for the user
+     */
+    const getAssignments: () => Promise<Record<string, string>>;
+
+    /**
+     * Returns the value of the flag
+     */
+    const getFlag: (
+      flag: string
+    ) => Promise<boolean | string | number | strings[] | null>;
   }
 
   declare namespace notifications {

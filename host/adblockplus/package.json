@@ -110,11 +110,12 @@
     }
   },
   "dependencies": {
-    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#1b5da71c910beefb20c3ecd1b2b222005a912076",
+    "@adblockinc/rules": "gitlab:eyeo/extensions/rules#09693685a0729b0e056a426d44c6d1ed96fe84ff",
     "@eyeo-fragments/public-api": "*",
+    "@eyeo-fragments/yt-wall-detection": "*",
     "@eyeo/ext-ui-components": "*",
-    "@eyeo/snippets": "1.7.0",
-    "@eyeo/webext-ad-filtering-solution": "1.20.0",
+    "@eyeo/snippets": "1.7.1",
+    "@eyeo/webext-ad-filtering-solution": "1.21.0",
     "@sentry/browser": "8.2.1",
     "@sentry/cli": "2.37.0",
     "argparse": "1.0.10",
