@@ -140,7 +140,7 @@
     "@eyeo/webext-ad-filtering-solution": "1.22.0",
     "@rollup/plugin-typescript": "8.3.2",
     "@types/dompurify": "3.0.2",
-    "@types/webextension-polyfill": "0.8.0",
+    "@types/webextension-polyfill": "0.12.1",
     "argparse": "1.0.10",
     "del": "7.0.0",
     "dompurify": "3.1.3",
