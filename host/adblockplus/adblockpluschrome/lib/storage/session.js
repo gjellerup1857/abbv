@@ -78,8 +78,8 @@ export class SessionStorage {
       storage = await browser.storage.session.get(globalKey);
     } catch (error) {
       throw Error(
-        "Error occured when retrieving session storage entry for given key: " +
-          error
+        `Error occured when retrieving session storage entry for ${globalKey} key:
+        ${error.message}`
       );
     }
     return storage[globalKey];
@@ -101,8 +101,8 @@ export class SessionStorage {
       await browser.storage.session.set({ [globalKey]: value });
     } catch (error) {
       throw Error(
-        "Error was thrown when setting session storage entry for given key" +
-          error
+        `Error occured when setting session storage entry for ${globalKey} key:
+        ${error.message}`
       );
     }
   }
