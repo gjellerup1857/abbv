@@ -34,6 +34,7 @@ import { getOptionsHandle, setOptionsHandle } from "./hook.js";
 export const installUrl = "https://getadblock.com/en/installed";
 export const premiumUrl = "https://getadblock.com/en/premium";
 export const blockHideUrl = "http://testpages.eyeo.com:3005/easylist-filters.html";
+export const blockHideLocalhostUrl = "http://localhost:3005/easylist-filters.html";
 export const aaTestPageUrl = "http://testpages.eyeo.com:3005/aa-filters.html";
 export const dcTestPageUrl = "http://testpages.eyeo.com:3005/dc-filters.html";
 export const snippetTestPageUrl = "http://testpages.eyeo.com:3005/snippet-filters.html";
@@ -564,15 +565,17 @@ export async function enableTemporaryPremium() {
 }
 
 export async function waitForAdsBlockedToBeInRange(min, max) {
+  const timeout = 5000;
+
   let adsBlocked;
   try {
     await driver.wait(async () => {
       adsBlocked = await getPopupBlockedAdsTotalCount();
       return adsBlocked > min && adsBlocked <= max;
-    }, 5000);
+    }, timeout);
   } catch (err) {
     throw new Error(
-      `Unexpected ads blocked count. Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`,
+      `Unexpected ads blocked count after ${timeout}ms. Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`,
     );
   }
   return adsBlocked;
