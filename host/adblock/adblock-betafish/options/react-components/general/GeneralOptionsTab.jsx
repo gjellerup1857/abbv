@@ -1,9 +1,9 @@
 import { translate } from "../shared/utils";
+import { globalPrefs as Prefs } from "../shared/globals";
 import { OptionsList } from "../shared/OptionsList";
 import { optionsData } from "./data";
 
 const getCheckedFn = (data) => (name) => {
-  console.log("👾", data);
   const dataOptOutKey = "data_collection_opt_out";
   const dataCollectionSubKeys = ["data_collection_v2", "send_ad_wall_messages", "onpageMessages"];
 
@@ -22,10 +22,12 @@ export function GeneralOptionsTab({ subs, settings, prefsNames }) {
     acceptable_ads_privacy: subs.acceptable_ads_privacy?.subscribed,
   };
   // Change from array to object to match format of settings
-  const prefsNamesIntoObject = Object.fromEntries(prefsNames.map((el) => [el, true]));
+  const prefsNamesIntoObject = Object.fromEntries(prefsNames.map((el) => [el, Prefs[el]]));
   const unifiedSettingsData = { ...acceptableAdsData, ...settings, ...prefsNamesIntoObject };
 
   const isChecked = getCheckedFn(unifiedSettingsData);
+
+  console.log("👾", unifiedSettingsData);
 
   return (
     <div className="option-page-content">

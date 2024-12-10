@@ -3,10 +3,12 @@ import ReactDOM from "react-dom/client";
 import { App } from "./app.jsx";
 
 const checkAndAddApp = (data) => {
+  console.log("🦕 app init called", data);
   const url = new URL(window.top.location.href);
   const showNewUI = url.searchParams.has("newUi");
 
-  if (!showNewUI) {
+  // TODO: Flip again before opening MR
+  if (showNewUI) {
     return;
   }
 

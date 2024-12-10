@@ -1,5 +1,5 @@
 /* eslint-disable-next-line no-console */
-const changeHandler = (evt) => console.log("change is possible", evt, evt.target.checked);
+import { changeHandler, toggleShowContextMenus } from "./events";
 
 export const optionsData = [
   {
@@ -49,7 +49,7 @@ export const optionsData = [
   },
   {
     name: "shouldShowBlockElementMenu",
-    onChange: changeHandler,
+    onChange: toggleShowContextMenus,
     textKey: "showcontextmenus2",
   },
   {

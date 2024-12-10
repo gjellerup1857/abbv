@@ -48,29 +48,36 @@ function setDataCollectionOptionsVisibility(visibility) {
 // Check or uncheck each loaded DOM option checkbox according to the
 // user's saved settings.
 const initialize = async function init() {
+  // ✅ imported in main
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
   setDataCollectionOptionsVisibility(!Prefs.data_collection_opt_out);
 
   // if the user is currently subscribed to AA
   // then 'check' the acceptable ads button.
   if ("acceptable_ads" in subs && subs.acceptable_ads.subscribed) {
+    // ⚠️ need to add conditional text
     updateAcceptableAdsUIFN(true, false);
   }
 
   if ("acceptable_ads_privacy" in subs && subs.acceptable_ads_privacy.subscribed) {
+    // ⚠️ need to add conditional text
     updateAcceptableAdsUIFN(true, true);
   }
 
+  // ✅
   for (const name in settings) {
     $(`#enable_${name}`).prop("checked", settings[name]);
   }
 
   if (!settings.youtube_manage_subscribed) {
+    // ⛔️ ok to skip, people should see what page we mean even if not enabled
     $("#youtube_manage_subscribed_link").removeClass("link-text-color");
     $("#youtube_manage_subscribed_link").removeClass("pointer");
     $("#youtube_manage_subscribed_link").addClass("disabled-link-text-color");
   }
 
+  // ✅
+  console.log("😬", abpPrefPropertyNames, Prefs);
   for (const inx in abpPrefPropertyNames) {
     const name = abpPrefPropertyNames[inx];
     $(`#prefs__${name}`).prop("checked", Prefs[name]);
