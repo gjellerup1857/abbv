@@ -87,7 +87,7 @@ export async function initialize(
 
   const client = new BrowserClient({
     dsn,
-    environment,
+    environment: environment ?? "development",
     release: info.addonVersion,
     transport: makeFetchTransport,
     stackParser: defaultStackParser,
