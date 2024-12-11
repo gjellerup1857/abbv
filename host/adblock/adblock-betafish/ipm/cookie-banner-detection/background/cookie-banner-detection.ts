@@ -42,8 +42,7 @@ async function injectDetectionScript(details: WebNavigation.OnCommittedDetailsTy
   }
 }
 
-function informIPMAboutDetection(): void {
-}
+function informIPMAboutDetection(): void {}
 
 /**
  * Starts the cookie banner detection feature
