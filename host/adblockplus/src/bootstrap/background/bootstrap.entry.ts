@@ -114,7 +114,7 @@ async function bootstrap(): Promise<void> {
     startPremiumSubscriptions();
     startYTWallDetection();
     startYTWallDetectionAndAllowlisting({
-      addTrustedMessageTypes: addTrustedMessageTypes,
+      addTrustedMessageTypes,
       ewe,
       logger,
       port,
