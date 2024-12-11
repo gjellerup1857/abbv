@@ -149,9 +149,7 @@ describe("uninstall", () => {
   });
 
   it("generates uninstall URL", async () => {
-    const { setUninstallURL } = await import(
-      "../../../adblockpluschrome/lib/uninstall.js"
-    );
+    const { setUninstallURL } = await import("./uninstall");
     await setUninstallURL();
 
     /* eslint-disable-next-line @typescript-eslint/unbound-method */
@@ -161,9 +159,7 @@ describe("uninstall", () => {
   });
 
   it("adds experiments variants to uninstall URL", async () => {
-    const { setUninstallURL } = await import(
-      "../../../adblockpluschrome/lib/uninstall.js"
-    );
+    const { setUninstallURL } = await import("./uninstall");
 
     // Variants: 0x01
     mockExperiments = getExperiments([1]);

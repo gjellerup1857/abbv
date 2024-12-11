@@ -397,16 +397,27 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * Returns the assignments for the user
      */
     const getAssignments: () => Promise<Record<string, string>>;
-
+    /**
+     * Retrieves current experiments
+     */
+    const getExperiments: () => Promise<Experiment[]>;
     /**
      * Returns the value of the flag
      */
     const getFlag: (
       flag: string
     ) => Promise<boolean | string | number | strings[] | null>;
+    /**
+     * Retrieves current experiment data revision ID
+     */
+    const getRevisionId: () => Promise<string | null>;
   }
 
   declare namespace notifications {
+    /**
+     * Returns the number of times the notifications data have been downloaded.
+     */
+    const getDownloadCount: () => Promise<number>;
     /**
      * Returns the list of ignored notification categories
      */
@@ -418,9 +429,18 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * Returns a mapping between resourceTypes and contentTypes.
      */
     const contentTypesMap: Map<string, string>;
+    /**
+     * Returns the version of the first ever downloaded resource.
+     */
+    const getFirstVersion: () => string;
   }
 
   declare namespace subscriptions {
+    /**
+     * The URL of the Acceptable Ads subscription.
+     */
+    const ACCEPTABLE_ADS_URL: string;
+
     /**
      * Checks if a subscription has been added.
      *

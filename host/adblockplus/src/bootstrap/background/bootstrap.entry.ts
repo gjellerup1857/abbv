@@ -31,7 +31,7 @@ import {
   start as startErrorReporting,
   reportError
 } from "../../error-reporter/background";
-import { start as startUninstall } from "../../../adblockpluschrome/lib/uninstall.js";
+import { start as startUninstall } from "~/uninstall/background";
 import { start as startInit } from "../../../lib/init.js";
 import { start as startRecommendedLanguage } from "../../../lib/recommendLanguage.js";
 import { start as startAllowListing } from "../../allowlisting/background";
@@ -86,7 +86,7 @@ async function bootstrap(): Promise<void> {
     startPremiumSubscriptions();
     startYTWallDetection();
     startYTWallDetectionAndAllowlisting({
-      addTrustedMessageTypes: addTrustedMessageTypes,
+      addTrustedMessageTypes,
       ewe,
       logger,
       port,
