@@ -75,14 +75,15 @@ export async function executeFunction(
 ): Promise<unknown> {
   // Prefer new API, if available
   if (browser.scripting?.executeScript) {
-    // eslint-disable-next-line no-return-await
-    return await browser.scripting.executeScript({
+    const injection = {
       target: { tabId, frameIds: [frameId] },
       world: "MAIN",
       injectImmediately: true,
       func,
       args,
-    });
+    };
+    // eslint-disable-next-line no-return-await
+    return await browser.scripting.executeScript(injection);
   }
 
   // If not available, fall back to old API.
