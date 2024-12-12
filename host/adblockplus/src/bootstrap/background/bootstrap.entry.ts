@@ -60,7 +60,10 @@ function reportAndLogError(e: Error): void {
   logError(e);
 }
 
+function noop() {}
+
 async function bootstrap(): Promise<void> {
+  noop();
   startErrorReporting();
   try {
     startPages();
