@@ -2,13 +2,14 @@ import { expect } from "expect";
 
 import { openNewTab } from "@eyeo/test-utils/driver";
 import { blockHideUrl } from "@eyeo/test-utils/urls";
+import { reloadExtension, sendExtMessage } from "@eyeo/test-utils/extension";
+
 import { sendExtCommand, updateExtPrefAPIKey } from "./shared/helpers.js";
 import {
   checkBlockHidePage,
-  reloadExtension,
   removeFilter,
-  sendExtMessage,
   allowlistingFilter,
+  initOptionsGeneralTab,
 } from "../../utils/page.js";
 
 /**
@@ -47,7 +48,7 @@ export default () => {
     // update prefs and reload extension
     await updateExtPrefAPIKey("allowlisting_authorizedKeys");
     // Suppress the opening of the update page when the extension is reloaded.
-    await reloadExtension();
+    await reloadExtension(initOptionsGeneralTab);
   });
 
   afterEach(async function () {
@@ -74,7 +75,7 @@ export default () => {
     await checkBlockHidePage(true);
 
     // check filter metadata
-    const debugInfo = await sendExtMessage({ command: "getDebugInfo" });
+    const debugInfo = await sendExtMessage(initOptionsGeneralTab, { command: "getDebugInfo" });
     validateFilterMetadata(debugInfo);
   });
 
@@ -102,7 +103,7 @@ export default () => {
     await checkBlockHidePage(true);
 
     // check filter metadata
-    const debugInfo = await sendExtMessage({ command: "getDebugInfo" });
+    const debugInfo = await sendExtMessage(initOptionsGeneralTab, { command: "getDebugInfo" });
     validateFilterMetadata(debugInfo, expiresAt);
   });
 };

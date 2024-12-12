@@ -19,18 +19,19 @@ import { expect } from "expect";
 
 import { findUrl, openNewTab, isCheckboxEnabled } from "@eyeo/test-utils/driver";
 import { blockHideUrl } from "@eyeo/test-utils/urls";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
+import { getOptionsHandle, reloadExtension } from "@eyeo/test-utils/extension";
 
 import {
   initOptionsFiltersTab,
-  installUrl,
   getUserIdFromInstallPage,
   getSubscriptionInfo,
   clickFilterlist,
-  reloadExtension,
   waitForAdsBlockedToBeInRange,
+  expectAAEnabled,
+  initOptionsGeneralTab,
 } from "../../utils/page.js";
 import { getDefaultFilterLists } from "../../utils/dataset.js";
+import { installUrl } from "../../utils/urls.js";
 
 export default () => {
   it("opens the install url", async function () {
@@ -105,7 +106,9 @@ export default () => {
   it("resets settings", async function () {
     this.timeout(50000); // The options page may take long time to appear after reloading the extension
 
-    const enabledFilterLists = getDefaultFilterLists().filter(({ enabled }) => enabled);
+    const enabledFilterLists = getDefaultFilterLists(expectAAEnabled).filter(
+      ({ enabled }) => enabled,
+    );
 
     const handleDisabledFilterlistsAlert = async () => {
       let alert;
@@ -154,7 +157,7 @@ export default () => {
     await driver.sleep(5000);
 
     // reload the extension to restore the default settings
-    await reloadExtension();
+    await reloadExtension(initOptionsGeneralTab);
 
     await initOptionsFiltersTab(getOptionsHandle());
     for (const { name } of enabledFilterLists) {

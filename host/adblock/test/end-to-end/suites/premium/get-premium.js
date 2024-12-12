@@ -34,10 +34,10 @@ import {
   initOptionsGeneralTab,
   initOptionsPremiumTab,
   initPopupPage,
-  premiumUrl,
   enableTemporaryPremium,
 } from "../../utils/page.js";
 import { premiumPopupToggleItems } from "../../utils/dataset.js";
+import { premiumUrl } from "../../utils/urls.js";
 
 export default () => {
   it("activates premium", async function () {

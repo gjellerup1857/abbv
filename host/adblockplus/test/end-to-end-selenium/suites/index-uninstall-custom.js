@@ -16,23 +16,14 @@
  */
 
 import { beforeEachTasks } from "@eyeo/test-utils/hooks";
-import testServer from "./test-server.js";
-import extension from "./smoke/extension.js";
-import adFiltering from "./smoke/ad-filtering.js";
-import uninstallDefault from "./smoke/uninstall-default.js";
+import uninstallCustom from "./smoke/uninstall-custom.js";
 
 export default () => {
   beforeEach(async function () {
     await beforeEachTasks();
   });
 
-  describe("Test Server", testServer);
-
-  describe("Smoke Tests - Main", function () {
-    describe("Extension", extension);
-    describe("Ad Filtering", adFiltering);
+  describe("Smoke Tests - Uninstall Custom", function () {
+    uninstallCustom();
   });
-
-  // Needs to be the last suite to run because the extension gets uninstalled
-  describe("Smoke Tests - Uninstall", uninstallDefault);
 };

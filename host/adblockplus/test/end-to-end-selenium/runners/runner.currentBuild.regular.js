@@ -22,14 +22,12 @@ import {
   screenshotsHook,
   setupBrowserHook
 } from "@eyeo/test-utils/hooks";
+import { findUrl } from "@eyeo/test-utils/driver";
 import { runnerConfig } from "./config.js";
 
 import defineTestSuites from "../suites/index.js";
 
-// [IMPORTANT]: Set a unique runner ID
-global.runnerId = "currentBuild";
-
-describe("Adblock Plus end-to-end tests (selenium)", function () {
+describe("Adblock Plus end-to-end tests - Regular (selenium)", function () {
   before(() => setGlobalOptionsHook(runnerConfig));
 
   before(async function () {
@@ -44,7 +42,11 @@ describe("Adblock Plus end-to-end tests (selenium)", function () {
     await setupBrowserHook(buildsDirPath, unpackedDirPath);
   });
 
-  before(prepareExtensionHook);
+  before(async function () {
+    await prepareExtensionHook();
+    // On ABP the extension is ready after the install URL opens
+    await findUrl(runnerConfig.installUrl);
+  });
 
   afterEach(screenshotsHook);
   after(cleanupHook);

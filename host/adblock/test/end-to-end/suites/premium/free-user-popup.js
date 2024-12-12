@@ -6,7 +6,8 @@ import { getDisplayedElement, getTabId, openNewTab, findUrl } from "@eyeo/test-u
 import { localTestPageUrl } from "@eyeo/test-utils/urls";
 
 import { getOptionsHandle } from "@eyeo/test-utils/extension";
-import { getUserIdFromStorage, initPopupPage, premiumUrl } from "../../utils/page.js";
+import { getUserIdFromStorage, initPopupPage } from "../../utils/page.js";
+import { premiumUrl } from "../../utils/urls.js";
 
 export default () => {
   const premiumFeatures = [

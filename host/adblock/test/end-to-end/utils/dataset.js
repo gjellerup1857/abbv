@@ -143,9 +143,7 @@ export const languageFilterLists = [
   },
 ];
 
-export function getDefaultFilterLists() {
-  const aaEnabled = browserDetails.browserName !== "firefox";
-
+export function getDefaultFilterLists(aaEnabled) {
   return [
     {
       name: "acceptable_ads",

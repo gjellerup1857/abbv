@@ -29,9 +29,6 @@ import {
 import defineTestSuitesAfterUpgrade from "../suites-upgrade/index.js";
 import { runnerConfig } from "./config.js";
 
-// [IMPORTANT]: Set a unique runner ID
-global.runnerId = "upgradeBuild";
-
 describe("AdBlock upgrade end-to-end tests", function () {
   before(() => setGlobalOptionsHook(runnerConfig));
 
