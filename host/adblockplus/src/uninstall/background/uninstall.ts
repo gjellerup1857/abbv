@@ -176,13 +176,23 @@ export async function setUninstallURL(): Promise<void> {
   const adsSubscriptions = getAdsSubscriptions();
   const isAcceptableAdsActive = await isAnySubscriptionActive(aaSubscriptions);
   const isAdBlockingActive = await isAnySubscriptionActive(adsSubscriptions);
+  console.log(isAdBlockingActive, isAcceptableAdsActive);
   params.subscriptions = (isAcceptableAdsActive << 1) | isAdBlockingActive;
   const premiumState = getPremiumState();
   params.premiumStatus = premiumState.isActive ? 1 : 0;
   params.webAllowlistingFilterCount = await getWebAllowlistingFilterCount();
 
   for (const [abbreviation, key] of abbreviations) {
-    search.push(abbreviation + "=" + encodeURIComponent(params[key]));
+    const value = params[key];
+    if (
+      typeof value !== "boolean" &&
+      typeof value !== "number" &&
+      typeof value !== "string"
+    ) {
+      continue;
+    }
+
+    search.push(abbreviation + "=" + encodeURIComponent(value));
   }
 
   void browser.runtime.setUninstallURL(

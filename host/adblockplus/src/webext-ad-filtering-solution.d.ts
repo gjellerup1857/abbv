@@ -24,6 +24,16 @@ declare module "@eyeo/webext-ad-filtering-solution" {
   const AllowlistingCallback: (domain: string) => void;
 
   /**
+   * The EventDispatcher class allows users to listen to certain events that are emitted.
+   */
+  interface EventDispatcher<T> {
+    /**
+     * Attaches a listener function to an event. This listener will be called when the event is emitted. Please note that in an MV3 context this has to happen in the first turn of the event loop. This should happen when your service worker starts.
+     */
+    addListener: (listener: T) => void;
+  }
+
+  /**
    * Represents an experiment
    */
   interface Experiment {
@@ -385,6 +395,20 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      */
     const getUserFilters: () => Promise<Filter[]>;
     /**
+     * Emitted when a new filter is added.
+     */
+    const onAdded: EventDispatcher<(filter: Filter) => unknown>;
+    /**
+     * Emitted when a filter is either enabled or disabled. The property name "enabled" or "metadata" and optionally "oldMetadata" is provided.
+     */
+    const onChanged: EventDispatcher<
+      (filter: Filter, property: string) => unknown
+    >;
+    /**
+     * Emitted when a filter is removed.
+     */
+    const onRemoved: EventDispatcher<(filter: Filter) => unknown>;
+    /**
      * Removes one or multiple filters. The filters will no longer have
      * any effect and won't be returned by `filters.getUserFilters()`.
      * @param texts - The filter rules to be removed.
@@ -406,11 +430,15 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      */
     const getFlag: (
       flag: string
-    ) => Promise<boolean | string | number | strings[] | null>;
+    ) => Promise<boolean | string | number | string[] | null>;
     /**
      * Retrieves current experiment data revision ID
      */
     const getRevisionId: () => Promise<string | null>;
+    /**
+     * Emitted when experiment data has changed
+     */
+    const onChanged: EventDispatcher<(experiments: Experiment[]) => unknown>;
   }
 
   declare namespace notifications {
@@ -422,6 +450,7 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * Returns the list of ignored notification categories
      */
     const getIgnoredCategories: () => Promise<string[]>;
+    const on: (eventName: string, listener: () => unknown) => void;
   }
 
   declare namespace reporting {
@@ -458,16 +487,28 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * Returns an array of all recommended subscriptions.
      */
     const getRecommendations: () => Recommendation[];
-
     /**
      * Returns an array of all recommended subscriptions.
      */
     const getSubscriptions: () => Promise<Subscription[]>;
-
     /**
      * Enables a previously disabled subscription. Has no effect otherwise.
      */
     const enable: (url: string) => Promise<void>;
+    /**
+     * Emitted when a new subscription is added.
+     */
+    const onAdded: EventDispatcher<(subscription: Subscription) => unknown>;
+    /**
+     * Emitted when any property of the subscription has changed. The name of the specific property is provided as a string, except when the subscription has been updated, where it will be null.
+     */
+    const onChanged: EventDispatcher<
+      (subscription: Subscription, property: string) => unknown
+    >;
+    /**
+     * Emitted when a subscription is removed.
+     */
+    const onRemoved: EventDispatcher<(subscription: Subscription) => unknown>;
   }
 
   declare namespace cdp {
