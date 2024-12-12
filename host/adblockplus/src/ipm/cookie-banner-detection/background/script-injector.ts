@@ -75,13 +75,14 @@ export async function executeFunction(
 ): Promise<unknown> {
   // Prefer new API, if available
   if (browser.scripting?.executeScript) {
-    return await browser.scripting.executeScript({
+    const injection = {
       target: { tabId, frameIds: [frameId] },
       world: "MAIN",
       injectImmediately: true,
       func,
       args
-    });
+    };
+    return await browser.scripting.executeScript(injection);
   }
 
   // If not available, fall back to old API.
