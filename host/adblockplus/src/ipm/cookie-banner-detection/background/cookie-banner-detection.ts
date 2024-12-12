@@ -44,7 +44,10 @@ async function injectDetectionScript(
   }
 }
 
-function informIPMAboutDetection(): void {}
+function informIPMAboutDetection(): void {
+  // Roundtrip complete.
+  // Next: Let the IPM system know we found a cookie banner.
+}
 
 /**
  * Starts the cookie banner detection feature
