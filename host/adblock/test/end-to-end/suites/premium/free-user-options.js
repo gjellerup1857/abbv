@@ -3,7 +3,7 @@
 import { expect } from "expect";
 import { By } from "selenium-webdriver";
 
-import { getOptionsHandle } from "../../utils/hook.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import {
   getUserIdFromStorage,
   initOptionsPremiumTab,
@@ -18,7 +18,7 @@ import {
   getDisplayedElement,
   clickAndCloseNewTab,
   clickAndNavigateBack,
-} from "../../utils/driver.js";
+} from "@eyeo/test-utils/driver";
 
 export default () => {
   let fullPremiumUrl;

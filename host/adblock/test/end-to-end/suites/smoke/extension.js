@@ -17,7 +17,8 @@
 
 import { expect } from "expect";
 
-import { findUrl, openNewTab, isCheckboxEnabled } from "../../utils/driver.js";
+import { findUrl, openNewTab, isCheckboxEnabled } from "@eyeo/test-utils/driver";
+import { blockHideUrl } from "@eyeo/test-utils/urls";
 import {
   initOptionsFiltersTab,
   installUrl,
@@ -25,10 +26,9 @@ import {
   getSubscriptionInfo,
   clickFilterlist,
   reloadExtension,
-  blockHideUrl,
   waitForAdsBlockedToBeInRange,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "../../utils/hook.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import { getDefaultFilterLists } from "../../utils/dataset.js";
 
 export default () => {

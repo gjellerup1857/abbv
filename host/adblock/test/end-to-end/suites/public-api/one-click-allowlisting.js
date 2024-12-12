@@ -1,14 +1,15 @@
 import { expect } from "expect";
+
+import { openNewTab } from "@eyeo/test-utils/driver";
+import { blockHideUrl } from "@eyeo/test-utils/urls";
 import { sendExtCommand, updateExtPrefAPIKey } from "./shared/helpers.js";
 import {
-  blockHideUrl,
   checkBlockHidePage,
   reloadExtension,
   removeFilter,
   sendExtMessage,
   allowlistingFilter,
 } from "../../utils/page.js";
-import { openNewTab } from "../../utils/driver.js";
 
 /**
  * Validates the filter metadata.

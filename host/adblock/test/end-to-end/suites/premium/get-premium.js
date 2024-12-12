@@ -26,17 +26,17 @@ import {
   waitForNotDisplayed,
   scrollToBottom,
   clickOnDisplayedElement,
-} from "../../utils/driver.js";
+} from "@eyeo/test-utils/driver";
+import { localTestPageUrl, dcTestPageUrl } from "@eyeo/test-utils/urls";
+
 import {
   initOptionsGeneralTab,
   initOptionsPremiumTab,
   initPopupPage,
   premiumUrl,
   enableTemporaryPremium,
-  localTestPageUrl,
-  dcTestPageUrl,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "../../utils/hook.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import { premiumPopupToggleItems } from "../../utils/dataset.js";
 
 export default () => {
