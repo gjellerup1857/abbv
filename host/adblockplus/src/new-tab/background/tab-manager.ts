@@ -327,6 +327,6 @@ async function handleCommand(ipmId: string): Promise<void> {
  */
 export async function start(): Promise<void> {
   logger.debug("[new-tab]: tab manager start");
-  /* eslint-disable @typescript-eslint/no-misused-promises */
+  /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
   setNewTabCommandHandler(handleCommand);
 }
