@@ -91,7 +91,7 @@ const DataCollectionV2 = (function getDataCollectionV2() {
       details.url &&
       details.type === "main_frame" &&
       !adblockIsPaused() &&
-      !isTabTemporaryAllowlisted({ url: details.url, id: details.id })
+      !isTabTemporaryAllowlisted(details.id)
     ) {
       const domain = parseUri(details.url).host;
       if (!dataCollectionCache.domains[domain]) {

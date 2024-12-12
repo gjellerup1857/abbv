@@ -29,6 +29,7 @@ import {
 } from "../utils.js";
 
 async function pauseOnce() {
+  console.log("pause once");
   sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "domain_pause_clicked" });
 
   if (!this.pageInfo.url) {
@@ -38,8 +39,8 @@ async function pauseOnce() {
   const pageUrl = new URL(this.pageInfo.url);
   const { href } = pageUrl;
   await browser.runtime.sendMessage({
-    command: "addTemporaryAllowlistForTab",
-    activeTab: { url: href, id: this.pageInfo.id },
+    command: "allowlistTab",
+    url: href,
   });
   await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
   browser.tabs.reload();
@@ -48,17 +49,11 @@ async function pauseOnce() {
 
 async function resumeThisPage() {
   sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "enable_adblock_clicked" });
-  const { id, url } = this.pageInfo;
+  const { id } = this.pageInfo;
 
-  if (!url) {
-    return;
-  }
-
-  const pageUrl = new URL(url);
   const response = await browser.runtime.sendMessage({
-    command: "tryToUnwhitelist",
-    url: pageUrl.href,
-    id,
+    command: "removeAllAllowlistRulesForTab",
+    tabId: id,
   });
 
   if (response) {

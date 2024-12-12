@@ -507,8 +507,8 @@ const start = async function () {
     sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "domain_unpause_clicked" });
     if (pageInfo.url) {
       await browser.runtime.sendMessage({
-        command: "removeTemporaryAllowlistForTab",
-        tab: { url: pageInfo.url.href, id: pageInfo.id },
+        command: "removeAllAllowlistRulesForTab",
+        tabId: pageInfo.id,
       });
       await browser.runtime.sendMessage({ command: "updateButtonUIAndContextMenus" });
       closePopup();

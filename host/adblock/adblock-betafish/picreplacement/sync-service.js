@@ -32,11 +32,6 @@ import { EventEmitter } from "../../adblockplusui/adblockpluschrome/lib/events";
 // eslint-disable-next-line import/no-cycle
 import { License } from "./check";
 import { channelsNotifier } from "./channels";
-import {
-  addTemporaryAllowlistForTab,
-  isTabTemporaryAllowlisted,
-  removeTemporaryAllowlistForTab,
-} from "./pause/background";
 import SubscriptionAdapter from "../subscriptionadapter";
 import { getSettings, setSetting, settingsNotifier, settings } from "../prefs/background";
 import postData from "../fetch-util";
@@ -309,7 +304,7 @@ const SyncService = (function getSyncService() {
   const isTemporaryAllowlistFilter = async function (filterText) {
     if (isAllowlistFilter(filterText)) {
       const metadata = await ewe.filters.getMetadata(filterText);
-      return typeof metadata.expiresByTabId !== "undefined";
+      return typeof metadata?.expiresByTabId !== "undefined";
     }
     return false;
   };
@@ -417,11 +412,12 @@ const SyncService = (function getSyncService() {
     }
 
     // Remove the temporary, allowlist rules
-    for (const i = 0; i < filters.length; i++) {
-      const filterText = filters[i];
+    for (let index = 0; index < filters.length; index++) {
+      const filterText = filters[index];
       if (filterText.startsWith("@@||") && filterText.indexOf("$document") > 0) {
+        // eslint-disable-next-line no-await-in-loop
         const metadata = await ewe.filters.getMetadata(filterText);
-        if (metadata.expiresByTabId === tab.id) {
+        if (typeof metadata?.expiresByTabId !== "undefined") {
           filters.splice(index, 1);
         }
       }

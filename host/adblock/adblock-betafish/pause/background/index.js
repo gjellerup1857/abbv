@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, updateButtonUIAndContextMenus, isAllowlistFilter */
+/* global browser */
 
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import { FilterOrigin } from "../../../src/filters/shared";
@@ -27,8 +27,6 @@ import ServerMessages from "~/servermessages";
 
 import {
   chromeStorageSetHelper,
-  isEmptyObject,
-  parseUri,
   sessionStorageGet,
   sessionStorageSet,
 } from "~/utilities/background/bg-functions";
@@ -67,43 +65,57 @@ const adblockIsPaused = function (newValue) {
   return undefined;
 };
 
-// Adds a temporary, allowlist rule for the specified tab
-// Inputs:  Tab: the tab to be allowlisted paused tab
-//          origin(string): the origin of the allowlist rule
-const addTemporaryAllowlistForTab = async (tab, origin = FilterOrigin.popup) => {
-  // add a temporary allowlist rule for the tab
+/**
+ * Adds an allowlist rule for the specified URL
+ * @param {string} origin - a String representing the method that
+ *                 user or event that added the filter rule
+ */
+const allowlistTab = async (tabURL, origin = FilterOrigin.popup) => {
   const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
   const metadata = {
     ...createFilterMetaData(origin),
     expiresAt: Date.now() + autoExtendMs,
     autoExtendMs,
-    expiresByTabId: tab.id,
   };
-  const domain = parseUri(tab.url).host;
-  await ewe.filters.add(createDomainAllowlistRule(domain), metadata);
+
+  const url = new URL(tabURL);
+  const host = url.hostname.replace(/^www\./, "");
+  await ewe.filters.add(createDomainAllowlistRule(host), metadata);
 };
 
-// Removes a temporary, allowlist rule for the specified tab
-// Inputs:  Tab: the tab to be allowlisted paused tab
-const removeTemporaryAllowlistForTab = async (tab) => {
-  const filters = await ewe.filters.getAllowingFilters(tab.id);
-  for (const i = 0; i < filters.length; i++) {
-    const filter = filters[i];
-    const metadata = await namespace.getMetadata(filter.text);
-    if (metadata.expiresByTabId === tab.id) {
-      await ewe.filters.remove(filter.text);
-    }
+/**
+ * Removes all allowlist rules for the specified tab
+ * @param {number} tabId - the id of the tab that should have all
+ *                         allowing filters removed
+ * @return {boolean} true, if the rule(s) were removed
+ *                   false, if no allowlist rules were found
+ */
+const removeAllAllowlistRulesForTab = async (tabId) => {
+  const filters = await ewe.filters.getAllowingFilters(tabId);
+  let removedFilters = false;
+  for (let i = 0; i < filters.length; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    await ewe.filters.remove(filters[i]);
+    removedFilters = true;
   }
+  return removedFilters;
 };
 
+/**
+ * Determines if the tab temporarily allowlisted
+ * @param {number} tabId - the id of the tab that should have all
+ *                         allowing filters removed
+ * @return {boolean} true, if the  tab is temporarily allowlisted
+ *                   false, if the tab is not temporarily allowlisted
+ */
 // return a boolean indicating whether the tab is paused
-const isTabTemporaryAllowlisted = async (tab) => {
-  const filters = await ewe.filters.getAllowingFilters(tab.id);
-  const metaDataMatch = false;
-  for (const i = 0; i < filters.length && !metaDataMatch; i++) {
-    const filter = filters[i];
-    const metadata = await namespace.getMetadata(filter.text);
-    metaDataMatch = metadata.expiresByTabId === tab.id;
+const isTabTemporaryAllowlisted = async (tabId) => {
+  const filters = await ewe.filters.getAllowingFilters(tabId);
+  let metaDataMatch = false;
+  for (let i = 0; i < filters.length && !metaDataMatch; i++) {
+    // eslint-disable-next-line no-await-in-loop
+    const metadata = await ewe.filters.getMetadata(filters[i]);
+    metaDataMatch = metadata?.expiresByTabId === tabId;
   }
   return metaDataMatch;
 };
@@ -128,9 +140,9 @@ browser.commands.onCommand.addListener((command) => {
 });
 
 export {
-  addTemporaryAllowlistForTab,
+  allowlistTab,
   isTabTemporaryAllowlisted,
-  removeTemporaryAllowlistForTab,
+  removeAllAllowlistRulesForTab,
   adblockIsPaused,
   pausedFilterText1,
   pausedFilterText2,

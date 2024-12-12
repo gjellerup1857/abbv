@@ -16,7 +16,7 @@
  */
 
 /* For ESLint: List any global identifiers used in this file below */
-/* global browser, isTrustedSender,  tryToUnwhitelist, getUserFilters,
+/* global browser, isTrustedSender,  getUserFilters,
    addCustomFilter, countCache, checkUpdateProgress,
    adblockIsPaused, pageIsWhitelisted, getCurrentTabInfo,
    openTab, updateFilterLists, isTrustedSenderDomain, updateButtonUIAndContextMenus,
@@ -47,11 +47,7 @@ import { getReadyState } from "../testing/ready-state/background/index.ts";
 import { getInfoCommand, injectionOrigins } from "../../src/info-injector/shared";
 import { getInjectionInfo } from "../../src/info-injector/background";
 import { getUserId } from "~/id/background/index";
-import {
-  addTemporaryAllowlistForTab,
-  isTabTemporaryAllowlisted,
-  removeTemporaryAllowlistForTab,
-} from "./pause/background";
+import { allowlistTab, removeAllAllowlistRulesForTab } from "../pause/background/index";
 
 export const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
@@ -188,17 +184,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse(isPaused);
       return Promise.resolve(isPaused);
     }
-    case "addTemporaryAllowlistForTab": {
+    case "allowlistTab": {
       sendResponse({});
-      return addTemporaryAllowlistForTab(message.tab);
-    }
-    case "isTabTemporaryAllowlisted": {
-      sendResponse({});
-      return isTabTemporaryAllowlisted(message.tab);
-    }
-    case "removeTemporaryAllowlistForTab": {
-      sendResponse({});
-      return removeTemporaryAllowlistForTab(message.activeTab);
+      return allowlistTab(message.url);
     }
     case "getPausedFilterText":
       return processMessageResponse(sendResponse, { pausedFilterText1, pausedFilterText2 });
@@ -226,9 +214,9 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case "getUserFilters":
       sendResponse({ response: getUserFilters() });
       return;
-    case "tryToUnwhitelist":
+    case "removeAllAllowlistRulesForTab":
       sendResponse({});
-      return tryToUnwhitelist(message.url, message.id).then((results) => results);
+      return removeAllAllowlistRulesForTab(message.tabId).then((results) => results);
     case "getDebugInfo":
       sendResponse({});
       return getDebugInfo();
