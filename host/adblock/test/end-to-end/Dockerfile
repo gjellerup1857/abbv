@@ -7,6 +7,7 @@ COPY *.json .npmrc extensions/
 COPY host/adblock/*.json extensions/host/adblock/
 COPY host/adblockplus/*.json extensions/host/adblockplus/
 COPY ui-components/*.json extensions/ui-components/
+COPY test-utils/*.json extensions/test-utils/
 RUN cd extensions && npm ci
 
 COPY . extensions/

@@ -20,12 +20,8 @@ import fs from "fs";
 import path from "path";
 import AdmZip from "adm-zip";
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
-import {
-  findProjectRoot,
-  sleep,
-  testPagesPort,
-  changeExtensionVersion
-} from "@eyeo/test-utils";
+import { findProjectRoot, sleep, testPagesPort } from "@eyeo/test-utils";
+import { changeExtensionVersion } from "@eyeo/test-utils/extension";
 import { reloadExtension } from "../helpers.js";
 
 /**

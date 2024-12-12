@@ -30,9 +30,10 @@
     "sentry:release-finalize": "sentry-cli releases finalize $VERSION --org eyeo --project adblock-plus",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org eyeo --project adblock-plus ./dist/release/sourcemaps-mv3 && sentry-cli sourcemaps upload --release=$VERSION --org eyeo --project adblock-plus ./dist/release/sourcemaps-mv3",
     "test": "npm run $ test.unit",
-    "test:end-to-end": "npm run $ test.end-to-end",
+    "test:end-to-end": "echo 'ERROR: There is no single command to run all E2E ABP tests at the same time. Please look at the README' && exit 1",
     "test:end-to-end:build": "node test/end-to-end/helper-extension/build.mjs",
-    "test:end-to-end-local": "npm run test:end-to-end:build && cd test/end-to-end && node runTests.mjs"
+    "test:end-to-end-wdio": "npm run test:end-to-end:build && cd test/end-to-end && node runTests.mjs",
+    "test:end-to-end-selenium": "node test/end-to-end-selenium/runTests.js"
   },
   "$": {
     "build": {

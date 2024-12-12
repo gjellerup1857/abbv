@@ -1,0 +1,14 @@
+{
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "globals": {
+    "driver": true,
+    "extension": true,
+    "browserDetails": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}

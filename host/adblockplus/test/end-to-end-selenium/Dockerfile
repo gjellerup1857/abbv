@@ -15,4 +15,4 @@ WORKDIR /extensions/
 
 ENV MANIFEST_VERSION=3
 ENV BROWSER=chromium
-ENTRYPOINT npm run --workspace host/adblockplus test:end-to-end-wdio
+ENTRYPOINT npm run --workspace host/adblockplus test:end-to-end-selenium

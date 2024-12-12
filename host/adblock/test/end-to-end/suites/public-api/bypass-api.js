@@ -16,16 +16,17 @@
  */
 
 import { expect } from "expect";
+
+import { openNewTab } from "@eyeo/test-utils/driver";
+import { blockHideUrl } from "@eyeo/test-utils/urls";
 import { sendExtCommand, updateExtPrefAPIKey } from "./shared/helpers.js";
 import {
   addFilter,
   removeFilter,
-  blockHideUrl,
   checkBlockHidePage,
   reloadExtension,
   allowlistingFilter,
 } from "../../utils/page.js";
-import { openNewTab } from "../../utils/driver.js";
 
 export default () => {
   before(async function () {

@@ -2,14 +2,11 @@
 /* eslint-disable import/extensions */
 import { expect } from "expect";
 
-import { getOptionsHandle } from "../../utils/hook.js";
-import {
-  getUserIdFromStorage,
-  initPopupPage,
-  localTestPageUrl,
-  premiumUrl,
-} from "../../utils/page.js";
-import { getDisplayedElement, getTabId, openNewTab, findUrl } from "../../utils/driver.js";
+import { getDisplayedElement, getTabId, openNewTab, findUrl } from "@eyeo/test-utils/driver";
+import { localTestPageUrl } from "@eyeo/test-utils/urls";
+
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+import { getUserIdFromStorage, initPopupPage, premiumUrl } from "../../utils/page.js";
 
 export default () => {
   const premiumFeatures = [
