@@ -1,6 +1,7 @@
 /* eslint-disable-next-line no-console */
 import {
   changeHandler,
+  toggleAdvancedOptions,
   toggleDataCollectionOptOut,
   togglePrefs,
   toggleSettings,
@@ -60,17 +61,17 @@ export const optionsData = [
   },
   {
     name: "show_statsinicon",
-    onChange: togglePrefs.bind(null, "show_statsinicon"),
+    onChange: togglePrefs,
     textKey: "show_on_adblock_button",
   },
   {
     name: "display_menu_stats",
-    onChange: toggleSettings.bind(null, "display_menu_stats"),
+    onChange: toggleSettings,
     textKey: "show_on_adblock_menu",
   },
   {
     name: "show_devtools_panel",
-    onChange: togglePrefs.bind(null, "show_devtools_panel"),
+    onChange: togglePrefs,
     textKey: "show_devtools_panel",
   },
   {
@@ -87,26 +88,40 @@ export const optionsData = [
       },
       {
         name: "send_ad_wall_messages",
-        onChange: togglePrefs.bind(null, "send_ad_wall_messages"),
+        onChange: togglePrefs,
         textKey: "allow_ad_wall_messages",
         helpLink: "https://helpcenter.getadblock.com/hc/en-us/articles/22696374171027/",
       },
       {
         name: "onpageMessages",
-        onChange: toggleSettings.bind(null, "onpageMessages"),
+        onChange: toggleSettings,
         textKey: "onpage_messages",
       },
     ],
   },
   {
     name: "show_advanced_options",
-    onChange: changeHandler,
+    onChange: toggleAdvancedOptions,
     textKey: "advanced_options2",
-  },
-  {
-    name: "debug_logging",
-    onChange: toggleSettings.bind(null, "debug_logging"),
-    textKey: "debuginlogoption2",
-    extraInfo: "slows_down_extension",
+    subOptions: [
+      {
+        name: "debug_logging",
+        onChange: toggleSettings,
+        textKey: "debuginlogoption2",
+        extraInfo: "slows_down_extension",
+      },
+    ],
   },
 ];
+
+const flattenEvents = ({ name, onChange, subOptions }) => {
+  let flattenedSubs = [];
+
+  if (subOptions) {
+    flattenedSubs = subOptions.flatMap(flattenEvents);
+  }
+
+  return [[name, onChange], ...flattenedSubs];
+};
+
+export const eventsList = Object.fromEntries(optionsData.flatMap(flattenEvents));

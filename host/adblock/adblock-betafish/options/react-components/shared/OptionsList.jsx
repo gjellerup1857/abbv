@@ -3,7 +3,7 @@ import { translate } from "./utils";
 
 const OptionItem = ({
   name,
-  onChange,
+  onChangeFn,
   textKey,
   extraInfo,
   helpLink,
@@ -21,12 +21,19 @@ const OptionItem = ({
   const innerDivClasses = ["flex", alignementClasses].join(" ");
 
   const [Selector, selectorOptions = {}] = selector;
+  const optionChecked = isChecked(name);
+  const onItemChange = (evt) => onChangeFn(name, evt);
 
   return (
     <li key={name} className={itemClasses}>
       <div className={outerDivClasses}>
         <div className={innerDivClasses}>
-          <Selector id={name} onChange={onChange} checked={isChecked(name)} {...selectorOptions} />
+          <Selector
+            id={name}
+            onChange={onItemChange}
+            checked={optionChecked}
+            {...selectorOptions}
+          />
           <label className="ml-4" for={name}>
             {translate(textKey)}
           </label>
@@ -53,13 +60,14 @@ const OptionItem = ({
         {extraInfo && <span className="text-base italic pl-8">{translate(extraInfo)}</span>}
       </div>
       <div>
-        {subOptions && (
+        {subOptions && optionChecked && (
           <ul>
             {subOptions.map((option) => (
               <OptionItem
+                {...option}
                 isSubOption
                 selector={[ToggleSwitch, { kind: "inline" }]}
-                {...option}
+                onChangeFn={onChangeFn}
                 isChecked={isChecked}
               />
             ))}
@@ -70,12 +78,12 @@ const OptionItem = ({
   );
 };
 
-export const OptionsList = ({ items, isChecked }) => {
+export const OptionsList = ({ items, isChecked, onItemChange }) => {
   return (
     <>
       <ul>
         {items.map((item) => (
-          <OptionItem {...item} isChecked={isChecked} />
+          <OptionItem {...item} isChecked={isChecked} onChangeFn={onItemChange} />
         ))}
       </ul>
     </>

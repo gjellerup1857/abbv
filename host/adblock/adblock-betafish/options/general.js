@@ -241,12 +241,14 @@ function addUIChangeListeners() {
     // options page -- after a moment so we have time to save the option.
     // Also, disable all advanced options, so that non-advanced users will
     // not end up with debug/beta/test options enabled.
+    // ✅
     if (!this.checked) {
       $(".advanced input[type='checkbox']:checked").each(function forEachAdvancedOption() {
         settings[this.id.substr(7)] = false;
       });
     }
 
+    // ❌ no longer needed
     window.setTimeout(() => {
       autoReloadingPage = true;
       window.location.reload();

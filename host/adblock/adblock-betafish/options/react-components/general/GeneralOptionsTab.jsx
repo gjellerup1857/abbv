@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { translate } from "../shared/utils";
 import { globalPrefs as Prefs } from "../shared/globals";
 import { OptionsList } from "../shared/OptionsList";
-import { optionsData } from "./data";
+import { optionsData, eventsList } from "./data";
 
 const getCheckedFn = (data) => (name) => {
   const dataOptOutKey = "data_collection_opt_out";
@@ -25,14 +26,22 @@ export function GeneralOptionsTab({ subs, settings, prefs }) {
   const prefsIntoObject = Object.fromEntries(prefs.map((el) => [el, Prefs[el]]));
   const unifiedSettingsData = { ...acceptableAdsData, ...settings, ...prefsIntoObject };
 
-  const isChecked = getCheckedFn(unifiedSettingsData);
+  const [checkedItems, setCheckedItems] = useState(unifiedSettingsData);
+  const isChecked = getCheckedFn(checkedItems);
 
-  console.log("👾", unifiedSettingsData);
+  const updateItem = (name, evt) => {
+    eventsList[name]({ name, evt }, setCheckedItems);
+  };
 
   return (
     <div className="option-page-content">
       <h1>{translate("generaloptions2")}</h1>
-      <OptionsList className="option-page-content" items={optionsData} isChecked={isChecked} />
+      <OptionsList
+        className="option-page-content"
+        items={optionsData}
+        isChecked={isChecked}
+        onItemChange={updateItem}
+      />
     </div>
   );
 }
