@@ -109,4 +109,7 @@ async function bootstrap(): Promise<void> {
   }
 }
 
+// Adding a comment in this file so that the `--since origin/main` flag on
+// the `npm run lint` command picks it up.
+
 void bootstrap();
