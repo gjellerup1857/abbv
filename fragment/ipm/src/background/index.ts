@@ -25,4 +25,3 @@ export * from "./license";
 export * from "./param-validator";
 export * from "./param-validator.types";
 export * from "./url";
-export { sendPing, start as startTelemetry } from "./telemetry";

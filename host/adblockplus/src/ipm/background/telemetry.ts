@@ -15,21 +15,20 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// import {
-//   ScheduleType,
-//   setListener,
-//   setSchedule,
-//   hasSchedule
-// } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommands } from "./command-library";
-import { getPayload, clearEvents } from "./data-collection";
+import { Prefs } from "../../../adblockpluschrome/lib/prefs";
 import {
-  type EventEmitter,
-  intervalKey,
-  serverUrlKey,
-  scheduleName,
-} from "./telemetry.types";
-import { logger, prefs } from "./context";
+  ScheduleType,
+  setListener,
+  setSchedule,
+  hasSchedule
+} from "../../core/scheduled-event-emitter/background";
+import {
+  executeIPMCommands,
+  getPayload,
+  clearEvents
+} from "@eyeo-fragments/ipm/background";
+import { error as logError } from "../../logger/background";
+import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
 
 /**
  * Processes a response from the IPM server. Will request command execution
@@ -39,8 +38,8 @@ import { logger, prefs } from "./context";
  */
 async function processResponse(response: Response): Promise<void> {
   if (!response.ok) {
-    logger.error(
-      `[Telemetry]: Bad response status from IPM server: ${response.status}`,
+    logError(
+      `[Telemetry]: Bad response status from IPM server: ${response.status}`
     );
     return;
   }
@@ -65,7 +64,7 @@ async function processResponse(response: Response): Promise<void> {
 
     executeIPMCommands(commands);
   } catch (error) {
-    logger.error("[Telemetry]: Error parsing IPM response.", error);
+    logError("[Telemetry]: Error parsing IPM response.", error);
   }
 }
 
@@ -74,7 +73,7 @@ async function processResponse(response: Response): Promise<void> {
  */
 export async function sendPing(): Promise<void> {
   // Disable IPM when user opted out of data collection.
-  if (prefs.get("data_collection_opt_out") === true) {
+  if (Prefs.get("data_collection_opt_out") === true) {
     return;
   }
 
@@ -84,7 +83,7 @@ export async function sendPing(): Promise<void> {
   // successful or not.
   void clearEvents();
 
-  const url = prefs.get(serverUrlKey);
+  const url = Prefs.get(serverUrlKey);
   if (typeof url !== "string") {
     return;
   }
@@ -93,11 +92,11 @@ export async function sendPing(): Promise<void> {
     method: "POST",
     cache: "no-cache",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(payload)
   })
     .then(processResponse)
     .catch((error) => {
-      logger.error("[Telemetry]: Ping sending failed with error:", error);
+      logError("[Telemetry]: Ping sending failed with error:", error);
     });
 }
 
@@ -106,19 +105,19 @@ export async function sendPing(): Promise<void> {
  *
  * Will schedule pings.
  */
-export async function start(eventEmitter: EventEmitter): Promise<void> {
-  void eventEmitter.setListener(scheduleName, () => {
+export async function start(): Promise<void> {
+  void setListener(scheduleName, () => {
     void sendPing();
   });
 
-  if (!eventEmitter.hasSchedule(scheduleName)) {
-    await prefs.untilLoaded;
-    const intervalTime = prefs.get(intervalKey);
+  if (!hasSchedule(scheduleName)) {
+    await Prefs.untilLoaded;
+    const intervalTime = Prefs.get(intervalKey);
     if (typeof intervalTime !== "number") {
       return;
     }
 
     void sendPing();
-    void eventEmitter.setRepeatedSchedule(scheduleName, intervalTime);
+    void setSchedule(scheduleName, intervalTime, ScheduleType.interval);
   }
 }

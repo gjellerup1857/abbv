@@ -17,3 +17,4 @@
 
 export { initialize as initializeCDP } from "./cdp";
 export { initialize as initializeEyeometryMACCounting } from "./eyeometry-mac-counting";
+export { sendPing, start as startTelemetry } from "./telemetry";

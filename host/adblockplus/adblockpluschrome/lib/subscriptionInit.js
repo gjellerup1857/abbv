@@ -38,12 +38,6 @@ import { initNotifications } from "./notificationHelper.js";
 import { Prefs } from "./prefs.js";
 import { start as startUnloadCleanup } from "../../src/unload-cleanup/background/index.ts";
 import { start as startIPMPingListener } from "../../src/testing/ping-ipm/background";
-import {
-  hasSchedule,
-  ScheduleType,
-  setListener,
-  setSchedule
-} from "~/core/scheduled-event-emitter/background";
 
 let firstRun;
 let userNotificationCallback = null;
@@ -229,17 +223,7 @@ export async function start() {
   await initNotifications(firstRun);
   premium.start();
   startOptionLinkListener();
-  void startTelemetry({
-    async setListener(scheduleName, f) {
-      setListener(scheduleName, f);
-    },
-    hasSchedule(scheduleName) {
-      return hasSchedule(scheduleName);
-    },
-    setOneShotSchedule(scheduleName, interval) {
-      return setSchedule(scheduleName, interval, ScheduleType.interval);
-    }
-  });
+  void startTelemetry();
   void initializeCDP();
   void initializeEyeometryMACCounting();
   startUnloadCleanup();

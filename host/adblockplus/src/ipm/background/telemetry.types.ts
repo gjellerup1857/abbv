@@ -27,15 +27,3 @@ export const intervalKey = "ipm_ping_interval";
  * The name for the Prefs storage key of the IPM server URL.
  */
 export const serverUrlKey = "ipm_server_url";
-/**
- * Contextual functions needed by telemetry to start.
- * This is a temporary solution to dependency injection.
- */
-export interface EventEmitter {
-  setListener: (scheduleName: string, f: () => void) => Promise<void>;
-  setRepeatedSchedule: (
-    scheduleName: string,
-    interval: number,
-  ) => Promise<void>;
-  hasSchedule: (scheduleName: string) => boolean;
-}
