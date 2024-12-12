@@ -60,7 +60,10 @@ function reportAndLogError(e: Error): void {
   logError(e);
 }
 
+function noop(): void {}
+
 async function bootstrap(): Promise<void> {
+  noop();
   startErrorReporting();
   try {
     startPages();
@@ -108,5 +111,8 @@ async function bootstrap(): Promise<void> {
     reportError(error as Error);
   }
 }
+
+// Adding a comment in this file so that the `--since origin/main` flag on
+// the `npm run lint` command picks it up.
 
 void bootstrap();
