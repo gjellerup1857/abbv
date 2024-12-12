@@ -86,6 +86,12 @@
       "js": ["public-api.preload.js"],
       "matches": ["https://ext-bridge.eyeo.com/"],
       "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "js": ["cookie-banner-detection.preload.js"],
+      "matches": ["http://*/*", "https://*/*"],
+      "run_at": "document_start"
     }
   ],
   "name": "__MSG_name_releasebuild__",
