@@ -163,6 +163,7 @@ const initialize = async function init() {
 
     // if the user enables/disable data collection
     // start or end the data collection process
+    // ✅
     if (name === "data_collection_v2") {
       if (isEnabled) {
         DataCollectionV2.start();
@@ -212,6 +213,7 @@ const initialize = async function init() {
 
     // if the user enables/disable Twitch Channel allow listing
     // add or remove listners
+    // ✅
     if (name === "twitch_channel_allowlist") {
       if (isEnabled) {
         send("addTwitchAllowlistListeners");

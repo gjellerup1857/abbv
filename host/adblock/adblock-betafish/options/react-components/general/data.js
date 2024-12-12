@@ -2,10 +2,13 @@
 import {
   changeHandler,
   toggleAdvancedOptions,
+  toggleDataCollection,
   toggleDataCollectionOptOut,
   togglePrefs,
   toggleSettings,
   toggleShowContextMenus,
+  toggleTwitchAllowlist,
+  toggleYoutubeChannelWhitelist,
 } from "./events";
 
 export const optionsData = [
@@ -27,13 +30,13 @@ export const optionsData = [
   },
   {
     name: "youtube_channel_whitelist",
-    onChange: changeHandler,
+    onChange: toggleYoutubeChannelWhitelist,
     textKey: "allow_whitelisting_youtube_channels2",
     extraInfo: "require_restart_browser",
     subOptions: [
       {
         name: "youtube_manage_subscribed",
-        onChange: changeHandler,
+        onChange: toggleSettings,
         textKey: "youtube_manage_subscribed",
         helpLink:
           "https://helpcenter.getadblock.com/hc/en-us/articles/9738459986707-About-Acceptable-Ads-and-Third-Party-Tracking",
@@ -48,7 +51,7 @@ export const optionsData = [
   },
   {
     name: "twitch_channel_allowlist",
-    onChange: changeHandler,
+    onChange: toggleTwitchAllowlist,
     textKey: "allowlisting_twitch_channels",
     extraInfo: "require_restart_browser",
     helpLink:
@@ -81,7 +84,7 @@ export const optionsData = [
     subOptions: [
       {
         name: "data_collection_v2",
-        onChange: changeHandler,
+        onChange: toggleDataCollection,
         textKey: "datacollectionoption",
         helpLink:
           "https://helpcenter.getadblock.com/hc/en-us/articles/9738517370259-About-AdBlock-s-opt-in-anonymous-filter-list-usage-and-data-collection",

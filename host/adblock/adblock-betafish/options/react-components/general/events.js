@@ -9,11 +9,11 @@ const evtObjWrapper = (checkedVal) => ({
   target: { checked: checkedVal },
 });
 
-const toggleDataCollectionOptPref = function (value) {
+const toggleDataCollectionOptPref = function (value, setCheckedItems) {
   DataCollectionV2.end();
-  togglePrefs({ name: "send_ad_wall_messages", evt: evtObjWrapper(!value) });
-  toggleSettings({ name: "onpageMessages", evt: evtObjWrapper(!value) });
-  toggleSettings({ name: "data_collection_v2", evt: evtObjWrapper(false) });
+  togglePrefs({ name: "send_ad_wall_messages", evt: evtObjWrapper(!value) }, setCheckedItems);
+  toggleSettings({ name: "onpageMessages", evt: evtObjWrapper(!value) }, setCheckedItems);
+  toggleSettings({ name: "data_collection_v2", evt: evtObjWrapper(false) }, setCheckedItems);
 };
 
 /* eslint-disable-next-line no-console */
@@ -40,6 +40,18 @@ export const toggleAdvancedOptions = ({ evt }, setCheckedItems) => {
   }));
 };
 
+export const toggleDataCollection = ({ evt }, setCheckedItems) => {
+  const isEnabled = evt.target.checked;
+
+  if (isEnabled) {
+    DataCollectionV2.start();
+  } else {
+    DataCollectionV2.end();
+  }
+
+  toggleSettings({ name: "data_collection_v2", evt }, setCheckedItems);
+};
+
 export const toggleDataCollectionOptOut = async ({ evt }, setCheckedItems) => {
   const isEnabled = evt.target.checked;
 
@@ -47,8 +59,13 @@ export const toggleDataCollectionOptOut = async ({ evt }, setCheckedItems) => {
     await send("dataCollectionOptOut");
   }
 
-  toggleDataCollectionOptPref(isEnabled);
-  togglePrefs("dataCollectionOptOut", evt);
+  toggleDataCollectionOptPref(isEnabled, setCheckedItems);
+  togglePrefs({ name: "data_collection_opt_out", evt }, setCheckedItems);
+
+  setCheckedItems((prevCheckedItems) => ({
+    ...prevCheckedItems,
+    data_collection_opt_out: evt.target.checked,
+  }));
 };
 
 export const togglePrefs = ({ name, evt }, setCheckedItems) => {
@@ -67,12 +84,44 @@ export const toggleSettings = ({ name, evt }, setCheckedItems) => {
   }));
 };
 
-export const toggleShowContextMenus = (evt, setCheckedItems) => {
+export const toggleShowContextMenus = ({ evt }, setCheckedItems) => {
   send("updateButtonUIAndContextMenus");
-  togglePrefs("shouldShowBlockElementMenu", evt);
+  togglePrefs({ name: "shouldShowBlockElementMenu", evt }, setCheckedItems);
 
   setCheckedItems((prevCheckedItems) => ({
     ...prevCheckedItems,
     shouldShowBlockElementMenu: evt.target.checked,
+  }));
+};
+
+export const toggleTwitchAllowlist = ({ evt }, setCheckedItems) => {
+  const isEnabled = evt.target.checked;
+
+  if (isEnabled) {
+    send("addTwitchAllowlistListeners");
+  } else {
+    send("removeTwitchAllowlistListeners");
+  }
+
+  toggleSettings({ name: "twitch_channel_allowlist", evt }, setCheckedItems);
+};
+
+export const toggleYoutubeChannelWhitelist = ({ evt }, setCheckedItems) => {
+  const isEnabled = evt.target.checked;
+  const updates = {
+    youtube_channel_whitelist: isEnabled,
+  };
+
+  if (isEnabled) {
+    send("addYTChannelListeners");
+  } else {
+    updates.youtube_manage_subscribed = false;
+    send("removeYTChannelListeners");
+  }
+
+  toggleSettings({ name: "youtube_channel_whitelist", evt }, setCheckedItems);
+  setCheckedItems((prevCheckedItems) => ({
+    ...prevCheckedItems,
+    ...updates,
   }));
 };
