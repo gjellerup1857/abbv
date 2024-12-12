@@ -15,19 +15,15 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env node */
-
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 const srcPath = path.dirname(fileURLToPath(import.meta.url));
 
 export async function buildHelperExtension(manifestVersion, destPath) {
   if (manifestVersion !== "2" && manifestVersion !== "3")
-    throw new Error(
-      'manifestVersion must be "2" or "3". ' + `Current: "${manifestVersion}"`,
-    );
+    throw new Error('manifestVersion must be "2" or "3". ' + `Current: "${manifestVersion}"`);
 
   await fs.promises.rm(destPath, { recursive: true, force: true });
   await fs.promises.mkdir(destPath, { recursive: true });

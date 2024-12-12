@@ -19,6 +19,8 @@ import { expect } from "expect";
 
 import { findUrl, openNewTab, isCheckboxEnabled } from "@eyeo/test-utils/driver";
 import { blockHideUrl } from "@eyeo/test-utils/urls";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
 import {
   initOptionsFiltersTab,
   installUrl,
@@ -28,7 +30,6 @@ import {
   reloadExtension,
   waitForAdsBlockedToBeInRange,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import { getDefaultFilterLists } from "../../utils/dataset.js";
 
 export default () => {
@@ -49,7 +50,7 @@ export default () => {
       const navigatorText = await driver.executeScript(() => {
         return navigator.userAgent;
       });
-      browserVersion = navigatorText.match(/(?<=rv:)(\d|\.)+/)[0];
+      [browserVersion] = navigatorText.match(/(?<=rv:)(\d|\.)+/);
     }
 
     const base = {

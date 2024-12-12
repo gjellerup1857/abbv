@@ -20,14 +20,11 @@ export const ABP_DELETE_COMMANDS = "deletecommandsABP";
 export const ABP_CTA_OPD_NAVIGATION = "opdnavigationctaABP";
 export const ABP_MULTIPLE_CAMPAIGNS_NAVIGATION = "opdmultiplenavigationABP";
 export const ABP_MULTIPLE_CAMPAIGNS_NEWTAB = "opdmultiplenewtabABP";
-export const ABP_TRIGGERS_OPD_NAVIGATION_CLICKED =
-  "opdnavigationclickedtriggerABP";
-export const ABP_TRIGGERS_OPD_NAVIGATION_IGNORED =
-  "opdnavigationignoredtriggerABP";
+export const ABP_TRIGGERS_OPD_NAVIGATION_CLICKED = "opdnavigationclickedtriggerABP";
+export const ABP_TRIGGERS_OPD_NAVIGATION_IGNORED = "opdnavigationignoredtriggerABP";
 export const ABP_TRIGGERS_NEWTAB = "newtabtriggerABP";
 export const ABP_FREE_USER_OPD_NAVIGATION = "opdnavigationfreeuserABP";
-export const ABP_FREE_USER_OPD_NAVIGATION_SUBDOMAIN =
-  "opdnavigationsubdomainABP";
+export const ABP_FREE_USER_OPD_NAVIGATION_SUBDOMAIN = "opdnavigationsubdomainABP";
 export const ABP_FREE_USER_OPD_PREMIUM = "opdnavigationpremiumfreeuserABP";
 export const ABP_FREE_USER_OPD_EXCLUSION = "opdnavigationexclusionfreeuserABP";
 export const ABP_FREE_USER_NEWTAB = "newtabfreefreeuserABP";
@@ -35,8 +32,7 @@ export const ABP_NEWTAB_SUBDOMAIN = "newtabsubdomainABP";
 export const ABP_FREE_USER_NEWTAB_PREMIUM = "newtabpremiumfreeuserABP";
 export const ABP_FREE_USER_NEWTAB_FORCE = "newtabforcefreeuserABP";
 export const ABP_PREMIUM_USER_NEWTAB_PREMIUM = "newtabpremiumpremiumuserABP";
-export const ABP_PREMIUM_USER_NAVIGATION_FREE =
-  "opdnavigationfreepremiumuserABP";
+export const ABP_PREMIUM_USER_NAVIGATION_FREE = "opdnavigationfreepremiumuserABP";
 export const ABP_PREMIUM_USER_NEWTAB = "newtabpremiumuserABP";
 export const ABP_MULTIPLE_COMMANDS = "multiplecommandsABP";
 
@@ -45,10 +41,8 @@ export const AB_DELETE_COMMANDS = "deletecommandsAB";
 export const AB_OPD_NAVIGATION_CTA = "opdnavigationctaAB";
 export const AB_MULTIPLE_CAMPAIGNS_NAVIGATION = "opdmultiplenavigationAB";
 export const AB_MULTIPLE_CAMPAIGNS_NEWTAB = "opdmultiplenewtabAB";
-export const AB_TRIGGERS_OPD_NAVIGATION_CLICKED =
-  "opdnavigationclickedtriggerAB";
-export const AB_TRIGGERS_OPD_NAVIGATION_IGNORED =
-  "opdnavigationignoredtriggerAB";
+export const AB_TRIGGERS_OPD_NAVIGATION_CLICKED = "opdnavigationclickedtriggerAB";
+export const AB_TRIGGERS_OPD_NAVIGATION_IGNORED = "opdnavigationignoredtriggerAB";
 export const AB_TRIGGERS_NEWTAB = "newtabtriggerAB";
 export const AB_FREE_USER_OPD_NAVIGATION = "opdnavigationfreeuserAB";
 export const AB_FREE_USER_OPD_NAVIGATION_SUBDOMAIN = "opdnavigationsubdomainAB";

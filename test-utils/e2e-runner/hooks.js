@@ -21,7 +21,7 @@ import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 
 import { findUrl, screenshot } from "./driver.js";
 import { setOptionsHandle, extractExtension, getExtensionInfo } from "./extension.js";
-import { sleep } from "../helpers.js"
+import { sleep } from "../helpers.js";
 
 /**
  * Hook to set the E2E tests global options

@@ -5,6 +5,12 @@ import { By } from "selenium-webdriver";
 
 import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import {
+  getDisplayedElement,
+  clickAndCloseNewTab,
+  clickAndNavigateBack,
+} from "@eyeo/test-utils/driver";
+
+import {
   getUserIdFromStorage,
   initOptionsPremiumTab,
   initOptionsThemesTab,
@@ -14,11 +20,6 @@ import {
   checkPremiumPageHeader,
   premiumUrl,
 } from "../../utils/page.js";
-import {
-  getDisplayedElement,
-  clickAndCloseNewTab,
-  clickAndNavigateBack,
-} from "@eyeo/test-utils/driver";
 
 export default () => {
   let fullPremiumUrl;
