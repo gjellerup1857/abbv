@@ -17,7 +17,12 @@
 
 /* eslint-disable @typescript-eslint/unbound-method */
 
-import { type Experiment } from "@eyeo/webext-ad-filtering-solution";
+import {
+  type Experiment,
+  type Filter,
+  type Recommendation,
+  type Subscription
+} from "@eyeo/webext-ad-filtering-solution";
 
 const mockEventDispatcher = {
   addListener: jest.fn()
@@ -238,7 +243,9 @@ describe("uninstall", () => {
     const { setUninstallURL } = await import("./uninstall");
 
     // Variants: 0x01
-    ewe.experiments.getExperiments = async () => getExperiments([1]);
+    jest
+      .spyOn(ewe.experiments, "getExperiments")
+      .mockResolvedValue(getExperiments([1]));
     await setUninstallURL();
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
       createExpectedUninstallUrl({
@@ -247,7 +254,9 @@ describe("uninstall", () => {
     );
 
     // Variants: 0x05
-    ewe.experiments.getExperiments = async () => getExperiments([1, 3]);
+    jest
+      .spyOn(ewe.experiments, "getExperiments")
+      .mockResolvedValue(getExperiments([1, 3]));
     await setUninstallURL();
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
       createExpectedUninstallUrl({
@@ -256,7 +265,9 @@ describe("uninstall", () => {
     );
 
     // Variants: 0x0200
-    ewe.experiments.getExperiments = async () => getExperiments([10]);
+    jest
+      .spyOn(ewe.experiments, "getExperiments")
+      .mockResolvedValue(getExperiments([10]));
     await setUninstallURL();
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
       createExpectedUninstallUrl({
@@ -265,11 +276,36 @@ describe("uninstall", () => {
     );
 
     // Variants: 0x0214
-    ewe.experiments.getExperiments = async () => getExperiments([3, 5, 10]);
+    jest
+      .spyOn(ewe.experiments, "getExperiments")
+      .mockResolvedValue(getExperiments([3, 5, 10]));
     await setUninstallURL();
     expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
       createExpectedUninstallUrl({
         ev: "AhQ="
+      })
+    );
+
+    // Variants bitmap that is larger than 32 bits supported by Number type
+    const manyVariantsExperiments: Experiment[] = [
+      {
+        id: "a",
+        variants: [...new Array(100)].map((value, idx) => {
+          return {
+            assigned: true,
+            id: `${idx}`
+          };
+        })
+      }
+    ];
+
+    jest
+      .spyOn(ewe.experiments, "getExperiments")
+      .mockResolvedValue(manyVariantsExperiments);
+    await setUninstallURL();
+    expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
+      createExpectedUninstallUrl({
+        ev: "D////////////////w=="
       })
     );
   });
@@ -278,7 +314,7 @@ describe("uninstall", () => {
     const firstVersion = "123";
 
     const ewe = await import("@eyeo/webext-ad-filtering-solution");
-    ewe.reporting.getFirstVersion = () => firstVersion;
+    jest.spyOn(ewe.reporting, "getFirstVersion").mockReturnValue(firstVersion);
 
     const { setUninstallURL } = await import("./uninstall");
     await setUninstallURL();
@@ -297,7 +333,9 @@ describe("uninstall", () => {
       downloadCount: number,
       expected: string
     ): Promise<void> {
-      ewe.notifications.getDownloadCount = () => downloadCount;
+      jest
+        .spyOn(ewe.notifications, "getDownloadCount")
+        .mockResolvedValue(downloadCount);
       await setUninstallURL();
       expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
         createExpectedUninstallUrl({
@@ -349,17 +387,23 @@ describe("uninstall", () => {
       enabled: false
     };
 
-    ewe.subscriptions.ACCEPTABLE_ADS_URL = allowingSubscriptionUrl;
-    ewe.subscriptions.getRecommendations = () => [
-      allowingSubscription,
-      adsSubscription
-    ];
+    Object.defineProperty(ewe.subscriptions, "ACCEPTABLE_ADS_URL", {
+      value: allowingSubscriptionUrl
+    });
+    jest
+      .spyOn(ewe.subscriptions, "getRecommendations")
+      .mockReturnValue([
+        allowingSubscription,
+        adsSubscription
+      ] as any as Recommendation[]);
 
     async function expectSubscriptions(
-      subscriptions: Array<Record<string, unknown>>,
+      subscriptions: any,
       expected: string
     ): Promise<void> {
-      ewe.subscriptions.getSubscriptions = async () => subscriptions;
+      jest
+        .spyOn(ewe.subscriptions, "getSubscriptions")
+        .mockResolvedValue(subscriptions as Subscription[]);
 
       await setUninstallURL();
       expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(
@@ -397,12 +441,16 @@ describe("uninstall", () => {
     const { setUninstallURL } = await import("./uninstall");
 
     async function expectFilterCount(
-      filters: Array<Record<string, unknown>>,
-      metadata: Array<Record<string, unknown>>,
+      filters: any,
+      metadata: any,
       expected: string
     ): Promise<void> {
-      ewe.filters.getUserFilters = async () => filters;
-      ewe.filters.getMetadata = async () => metadata.shift();
+      jest
+        .spyOn(ewe.filters, "getUserFilters")
+        .mockResolvedValue(filters as Filter[]);
+      jest
+        .spyOn(ewe.filters, "getMetadata")
+        .mockImplementation(async () => metadata.shift());
 
       await setUninstallURL();
       expect(browser.runtime.setUninstallURL).toHaveBeenCalledWith(

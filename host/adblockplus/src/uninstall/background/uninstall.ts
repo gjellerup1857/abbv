@@ -80,13 +80,13 @@ function getAdsSubscriptions(): Set<string> {
 }
 
 /**
- * Converts BigInt number to bytes array
+ * Converts number to bytes array
  *
- * @param bn - Number
+ * @param num - Number
  * @returns bytes array
  */
-function bnToBytes(bn: bigint): Uint8Array {
-  let hex = bn.toString(16);
+function bnToBytes(num: bigint): Uint8Array {
+  let hex = num.toString(16);
   if (hex.length % 2) {
     hex = `0${hex}`;
   }
@@ -109,16 +109,19 @@ function bnToBytes(bn: bigint): Uint8Array {
  * @returns split experiments assignments
  */
 async function getExperiments(): Promise<string> {
-  let variantsBitmap = 0n;
+  // TypeScript only supports *n notation when targeting es2020, but we still
+  // support older browser versions that don't support all those features
+  // (e.g. optional chaining). Therefore we're using BigInt() notation instead.
+  let variantsBitmap = BigInt(0);
 
   const experiments = await ewe.experiments.getExperiments();
   for (const experiment of [...experiments].reverse()) {
     for (const variant of [...experiment.variants].reverse()) {
-      variantsBitmap |= variant.assigned ? 1n : 0n;
-      variantsBitmap <<= 1n;
+      variantsBitmap |= variant.assigned ? BigInt(1) : BigInt(0);
+      variantsBitmap <<= BigInt(1);
     }
   }
-  variantsBitmap >>= 1n;
+  variantsBitmap >>= BigInt(1);
 
   const bytes = bnToBytes(variantsBitmap);
   const base64 = btoa(String.fromCharCode(...bytes));
@@ -176,8 +179,8 @@ export async function setUninstallURL(): Promise<void> {
   const adsSubscriptions = getAdsSubscriptions();
   const isAcceptableAdsActive = await isAnySubscriptionActive(aaSubscriptions);
   const isAdBlockingActive = await isAnySubscriptionActive(adsSubscriptions);
-  console.log(isAdBlockingActive, isAcceptableAdsActive);
-  params.subscriptions = (isAcceptableAdsActive << 1) | isAdBlockingActive;
+  params.subscriptions =
+    (Number(isAcceptableAdsActive) << 1) | Number(isAdBlockingActive);
   const premiumState = getPremiumState();
   params.premiumStatus = premiumState.isActive ? 1 : 0;
   params.webAllowlistingFilterCount = await getWebAllowlistingFilterCount();
