@@ -15,11 +15,19 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { runE2ETests } from "@eyeo/test-utils";
+import { findUrl } from "@eyeo/test-utils/driver";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+import { installUrl, checkInstallUninstallUrl } from "../../utils/page.js";
 
-import { runnerConfig } from "./runners/config.js";
+export default () => {
+  it("opens the install url", async function () {
+    const { url } = await findUrl(installUrl, 10000);
 
-runE2ETests(runnerConfig).catch((error) => {
-  console.error("Error running tests:", error);
-  process.exit(1);
-});
+    await driver.switchTo().window(getOptionsHandle());
+    const appVersion = await driver.executeScript(() => {
+      return browser.runtime.getManifest().version;
+    });
+
+    await checkInstallUninstallUrl(url, appVersion);
+  });
+};

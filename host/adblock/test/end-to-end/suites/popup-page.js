@@ -1,13 +1,6 @@
-import { By } from "selenium-webdriver";
-
-import { clickOnDisplayedElement, findUrl, openNewTab } from "../utils/driver.js";
-import {
-  addFiltersToAdBlock,
-  blockHideUrl,
-  checkBlockHidePage,
-  setPausedStateFromPopup,
-  initPopupPage,
-} from "../utils/page.js";
+import { clickOnDisplayedElement, findUrl, openNewTab } from "@eyeo/test-utils/driver";
+import { blockHideUrl } from "@eyeo/test-utils/urls";
+import { checkBlockHidePage, setPausedStateFromPopup, initPopupPage } from "../utils/page.js";
 
 export default () => {
   it("opens the settings page", async function () {

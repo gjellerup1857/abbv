@@ -1,6 +1,8 @@
 import crypto from "crypto";
+
 import { arrayBufferToBase64 } from "@eyeo/test-utils";
-import { blockHideUrl, updatePrefs } from "../../../utils/page.js";
+import { blockHideUrl } from "@eyeo/test-utils/urls";
+import { updatePrefs } from "../../../utils/page.js";
 
 const algorithm = {
   name: "RSASSA-PKCS1-v1_5",

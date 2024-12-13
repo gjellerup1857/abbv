@@ -15,16 +15,9 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { openNewTab } from "@eyeo/test-utils/driver";
+import { getOptionsHandle, setOptionsHandle } from "@eyeo/test-utils/extension";
 import { installUrl } from "./page.js";
-import { openNewTab } from "./driver.js";
-
-let optionsHandle;
-export function setOptionsHandle(handle) {
-  optionsHandle = handle;
-}
-export function getOptionsHandle() {
-  return optionsHandle;
-}
 
 async function cleanupOpenTabs() {
   for (const handle of await driver.getAllWindowHandles()) {
@@ -35,7 +28,7 @@ async function cleanupOpenTabs() {
       url = await driver.getCurrentUrl();
     } catch (e) {}
 
-    if (handle !== optionsHandle && !url.includes(installUrl)) {
+    if (handle !== getOptionsHandle() && !url.includes(installUrl)) {
       driver.close();
     }
   }
@@ -44,12 +37,12 @@ async function cleanupOpenTabs() {
 export async function beforeEachTasks() {
   // If the options page handle is not valid anymore, then restore it
   try {
-    await driver.switchTo().window(optionsHandle);
+    await driver.switchTo().window(getOptionsHandle());
   } catch (e) {
     await openNewTab(`${extension.origin}/options.html`);
-    optionsHandle = await driver.getWindowHandle();
+    setOptionsHandle(await driver.getWindowHandle());
   }
 
   await cleanupOpenTabs();
-  await driver.switchTo().window(optionsHandle);
+  await driver.switchTo().window(getOptionsHandle());
 }

@@ -34,7 +34,7 @@ global.runnerId = "currentBuild";
 const rootPath = findProjectRoot();
 const releaseBuildsDirPath = path.join(rootPath, "dist", "release");
 
-describe("Adblock Plus end-to-end tests", function () {
+describe("Adblock Plus end-to-end tests (webdriverIO)", function () {
   before(async function () {
     // This section downloads the browser, which could take a long time
     // depending on the internet connection speed. Best to disable the normal

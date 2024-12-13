@@ -1,20 +1,22 @@
 /*
- * This file is part of AdBlock  <https://getadblock.com/>,
- * Copyright (C) 2024-present  Adblock, Inc.
+ * This file is part of Web Extensions Core Utilities (Web Extensions CU),
+ * Copyright (C) 2024-present eyeo GmbH
  *
- * AdBlock is free software: you can redistribute it and/or modify
+ * Web Extensions CU is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
- * AdBlock is distributed in the hope that it will be useful,
+ * Web Extensions CU is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import fs from "fs";
+import path from "path";
 import { By } from "selenium-webdriver";
 import { expect } from "expect";
 
@@ -282,4 +284,19 @@ export function getFromStorage(storage, key) {
     },
     { storage, key },
   );
+}
+
+/**
+ * Takes a screenshot of the current page
+ *
+ * @param {string} title - The title of the screenshot image without the extension
+ */
+export async function screenshot(title) {
+  const data = await driver.takeScreenshot();
+  const base64Data = data.replace(/^data:image\/png;base64,/, "");
+  const { screenshotsPath } = global.config;
+
+  // ensure screenshots directory exists and write the screenshot to a file
+  await fs.promises.mkdir(screenshotsPath, { recursive: true });
+  await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
 }

@@ -1,11 +1,17 @@
 {
   "name": "@eyeo/test-utils",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./driver": "./e2e-runner/driver.js",
+    "./extension": "./e2e-runner/extension.js",
+    "./hooks": "./e2e-runner/hooks.js",
+    "./urls": "./test-server/urls.js"
+  },
   "devDependencies": {
     "express": "^4.17.1"
   },
   "scripts": {
-    "start-server": "node start-server.js"
+    "start-server": "node test-server/start.js"
   }
 }

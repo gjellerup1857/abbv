@@ -18,8 +18,8 @@
 import { expect } from "expect";
 import { By } from "selenium-webdriver";
 
-import { openNewTab } from "../utils/driver.js";
-import { localTestPageUrl } from "../utils/page.js";
+import { openNewTab } from "@eyeo/test-utils/driver";
+import { localTestPageUrl } from "@eyeo/test-utils/urls";
 
 export default () => {
   it("loads a test server page", async function () {

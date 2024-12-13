@@ -21,13 +21,13 @@ import {
   isCheckboxEnabled,
   getDisplayedElement,
   clickOnDisplayedElement,
-} from "../../utils/driver.js";
+} from "@eyeo/test-utils/driver";
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   setAADefaultState,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "../../utils/hook.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 export default () => {
   after(async function () {

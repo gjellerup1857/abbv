@@ -17,7 +17,7 @@
 
 import { expect } from "expect";
 
-import { getFromStorage } from "../../utils/driver.js";
+import { getFromStorage } from "@eyeo/test-utils/driver";
 
 export default () => {
   // 10 seconds is a safe number to assume telemetry is not enabled
