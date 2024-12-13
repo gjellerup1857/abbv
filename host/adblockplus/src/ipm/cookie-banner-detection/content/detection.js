@@ -94,15 +94,15 @@ export function setupDetection() {
    * Starts the cookie banner detection feature
    */
   function start() {
-    detectionPoints.forEach((delay) => {
-      const timerId = setTimeout(() => {
+    const timerIds = detectionPoints.map((delay) =>
+      setTimeout(() => {
         if (isSetupComplete) {
+          timerIds.forEach((timerId) => clearTimeout(timerId));
           return;
         }
         detectCookieBanners();
-        clearTimeout(timerId);
-      }, delay);
-    });
+      }, delay)
+    );
   }
 
   start();
