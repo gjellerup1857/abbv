@@ -35,19 +35,14 @@ async function cleanupOpenTabs() {
 }
 
 export async function beforeEachTasks() {
-  console.log('before each')
   // If the options page handle is not valid anymore, then restore it
   try {
     await driver.switchTo().window(getOptionsHandle());
   } catch (e) {
-    console.log('before each task error', e)
     await openNewTab(`${extension.origin}/options.html`);
     setOptionsHandle(await driver.getWindowHandle());
   }
-  console.log('before each 2')
 
   await cleanupOpenTabs();
-  console.log('before each 3')
   await driver.switchTo().window(getOptionsHandle());
-  console.log('before each end')
 }
