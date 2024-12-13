@@ -80,6 +80,8 @@ export default () => {
       responseEventName: "flattr-payload",
     });
 
+    console.log('extensionInfo', extensionInfo)
+
     const expectedExtensionInfo = {
       name: extension.name.toLowerCase(),
       version: extension.version,
