@@ -17,6 +17,7 @@
 
 import { type WebNavigation } from "webextension-polyfill";
 import { addTrustedMessageTypes, port } from "~/core/messaging/background";
+// Intentionally importing a content script:
 import { setupDetection } from "../content/detection";
 import { detectionMessage } from "../shared";
 import { executeFunction } from "./script-injector";
@@ -27,7 +28,7 @@ import { executeFunction } from "./script-injector";
  *
  * @param details The navigation details
  */
-async function injectDetectionScript(
+export async function injectDetectionScript(
   details: WebNavigation.OnCommittedDetailsType
 ): Promise<void> {
   const { tabId, frameId } = details;
@@ -44,9 +45,21 @@ async function injectDetectionScript(
   }
 }
 
-function informIPMAboutDetection(): void {
+/**
+ * A sync wrapper for our async handler.
+ *
+ * @param details The navigation details object
+ */
+export function navigationListener(
+  details: WebNavigation.OnCommittedDetailsType
+): void {
+  void injectDetectionScript(details);
+}
+
+export function informIPMAboutDetection(): void {
   // Roundtrip complete.
   // Next: Let the IPM system know we found a cookie banner.
+  console.log("🍪 Cookie banner detected.");
 }
 
 /**
@@ -55,8 +68,5 @@ function informIPMAboutDetection(): void {
 export function start(): void {
   addTrustedMessageTypes(null, [detectionMessage]);
   port.on(detectionMessage, informIPMAboutDetection);
-
-  browser.webNavigation.onCommitted.addListener((details) => {
-    void injectDetectionScript(details);
-  });
+  browser.webNavigation.onCommitted.addListener(navigationListener);
 }

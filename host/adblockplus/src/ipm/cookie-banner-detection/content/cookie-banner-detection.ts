@@ -22,14 +22,14 @@ import { detectionEventName, detectionMessage } from "../shared";
  * Forwards a cookie banner detection event to the ServiceWorker (or background
  * script).
  */
-function forwardDetectionEvent(): void {
+export function forwardDetectionEvent(): void {
   void browser.runtime.sendMessage({ type: detectionMessage });
 }
 
 /**
  * Starts the content script of the cookie banner detection feature.
  */
-function start(): void {
+export function start(): void {
   document.addEventListener(detectionEventName, forwardDetectionEvent);
 }
 

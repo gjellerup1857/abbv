@@ -15,4 +15,4 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./cookie-banner-detection";
+export { start } from "./cookie-banner-detection";
