@@ -45,6 +45,7 @@ async function injectDetectionScript(details: WebNavigation.OnCommittedDetailsTy
 function informIPMAboutDetection(): void {
   // Roundtrip complete.
   // Next: Let the IPM system know we found a cookie banner.
+  console.log("🍪 Cookie banner detected.");
 }
 
 /**
