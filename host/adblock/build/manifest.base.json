@@ -74,6 +74,12 @@
       "js": ["public-api.preload.js"],
       "matches": ["https://ext-bridge.eyeo.com/"],
       "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "js": ["cookie-banner-detection.preload.js"],
+      "matches": ["http://*/*", "https://*/*"],
+      "run_at": "document_start"
     }
   ],
   "content_security_policy": "default-src 'self'; img-src 'self' data: blob: https://cdn.adblockcdn.com; style-src 'self' 'unsafe-inline'; connect-src *; frame-src 'self' https://getadblock.com",
