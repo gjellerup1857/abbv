@@ -23,6 +23,7 @@ function validateFilterMetadata(debugInfo, expiresAt = null) {
   expect(debugInfo.otherInfo.customRuleMetaData).not.toBeNull();
 
   const rulesMetadata = debugInfo.otherInfo.customRuleMetaData;
+  console.log('rulesMetadata', rulesMetadata)
   const expectedMetadata = {
     created: expect.any(Number),
     origin: "web",
@@ -63,6 +64,7 @@ export default () => {
       triggerEventName: "domain_allowlisting_request",
       responseEventName: "domain_allowlisting_success",
     });
+    console.log('allowlisted', allowlisted)
 
     // verify that the page received the allowlisting successfully event
     expect(allowlisted).not.toBeNull();
