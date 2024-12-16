@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "@eyeo/ext-ui-components";
+import { Link, LockableList } from "@eyeo/ext-ui-components";
 import * as messaging from "~/core/messaging/front/index.ts";
 import { translate } from "./shared/utils";
 import GeneralFeatureItem from "./GeneralFeatureItem";
@@ -7,32 +7,47 @@ import GeneralFeatureItem from "./GeneralFeatureItem";
 const freeFeatures = [
   {
     titleI18nKey: "common_feature_privacy_title",
-    descriptionI18nKey: "options_recommended_privacy_description"
+    textKey: "common_feature_privacy_title",
+    extraInfo: "options_recommended_privacy_description",
+    descriptionI18nKey: "options_recommended_privacy_description",
   },
   {
     titleI18nKey: "common_feature_notifications_title",
-    descriptionI18nKey: "options_recommended_notifications_description"
+    textKey: "common_feature_notifications_title",
+    extraInfo: "options_recommended_notifications_description",
+    descriptionI18nKey: "options_recommended_notifications_description",
   },
   {
     titleI18nKey: "common_feature_social_title",
-    descriptionI18nKey: "options_recommended_social_description"
+    textKey: "common_feature_social_title",
+    extraInfo: "options_recommended_social_description",
+    descriptionI18nKey: "options_recommended_social_description",
   }
 ];
 
 const premiumFeatures = [
   {
     titleI18nKey: "common_feature_cookies_premium_title",
+    textKey: "common_feature_cookies_premium_title",
+    extraInfo: "options_recommended_cookies_premium_description",
     descriptionI18nKey: "options_recommended_cookies_premium_description",
     isNew: true
   },
   {
     titleI18nKey: "common_feature_annoyances_title",
-    descriptionI18nKey: "options_recommended_annoyances_description"
+    textKey: "common_feature_annoyances_title",
+    extraInfo: "options_recommended_annoyances_description",
+    descriptionI18nKey: "options_recommended_annoyances_description",
   }
 ];
 
 export default function GeneralFeaturesContainer({ user }) {
   const [upgradeUrl, setUpgradeUrl] = useState("");
+
+  const premiumFeaturesWithLocks = premiumFeatures.map((item) => ({
+    ...item,
+    isLocked: !user.hasPremium
+  }));
 
   useEffect(() => {
     (async () => {
@@ -63,6 +78,12 @@ export default function GeneralFeaturesContainer({ user }) {
             </Link>
           )}
         </div>
+        <LockableList
+        	items={premiumFeaturesWithLocks}
+        	translate={translate}
+        	isChecked={() => true}
+        	onItemChange={() => console.log("🦁")}
+        />
         {premiumFeatures.map((featureProps, index) => (
           <GeneralFeatureItem
             key={featureProps.titleI18nKey}
@@ -77,6 +98,12 @@ export default function GeneralFeaturesContainer({ user }) {
             {translate("options_free_filters_header")}
           </h2>
         </div>
+        <LockableList
+        	items={freeFeatures}
+        	translate={translate}
+        	isChecked={() => true}
+        	onItemChange={() => console.log("🦁🦁")}
+        />
         {freeFeatures.map((featureProps, index) => (
           <GeneralFeatureItem
             key={featureProps.titleI18nKey}

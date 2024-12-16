@@ -1,5 +1,18 @@
 import { Checkbox, Icon, Link, ToggleSwitch } from "../";
 
+const IconSelector = [Icon, {
+  className: "text-theme-accent-light",
+  name: "premium-lock",
+  size: "md",
+  ariaLabel: "locked",
+}];
+
+const NewIcon = ({ translate }) => (
+  <span className="bg-theme-button-primary text-white text-xs px-1 py-0.5 mx-1 rounded">
+    {translate("options_new_label")}
+  </span>
+);
+
 const OptionItem = ({
   name,
   onChangeFn,
@@ -10,6 +23,8 @@ const OptionItem = ({
   subOptions,
   isChecked,
   translate,
+  isLocked = false,
+  isNew = false,
   isSubOption = false,
   selector = [Checkbox],
 }) => {
@@ -20,7 +35,7 @@ const OptionItem = ({
   const outerDivClasses = ["flex justify-between py-2", alignementClasses].join(" ");
   const innerDivClasses = ["flex", alignementClasses].join(" ");
 
-  const [Selector, selectorOptions = {}] = selector;
+  const [Selector, selectorOptions = {}] = isLocked ? IconSelector : selector;
   const optionChecked = isChecked(name);
   const onItemChange = (evt) => onChangeFn(name, evt);
 
@@ -37,6 +52,7 @@ const OptionItem = ({
           <label className="ml-4" htmlFor={name}>
             {translate(textKey)}
           </label>
+          {isNew && <NewIcon translate={translate}/>}
         </div>
         <div className="flex items-center">
           {additionalInfoLink && (
@@ -62,9 +78,9 @@ const OptionItem = ({
       <div>
         {subOptions && optionChecked && (
           <ul>
-            {subOptions.map((option, i) => (
+            {subOptions.map((option) => (
               <OptionItem
-              	key={i}
+                key={option.name}
                 {...option}
                 isSubOption
                 selector={[ToggleSwitch, { kind: "inline" }]}
@@ -87,11 +103,11 @@ export const LockableList = ({ items, isChecked, onItemChange, translate }) => {
       <ul>
         {items.map((item) => (
           <OptionItem
-          	key={item.name}
-          	{...item}
-          	isChecked={isChecked}
-          	onChangeFn={onItemChange}
-          	translate={translate} />
+            key={item.name}
+            {...item}
+            isChecked={isChecked}
+            onChangeFn={onItemChange}
+            translate={translate} />
         ))}
       </ul>
     </>
