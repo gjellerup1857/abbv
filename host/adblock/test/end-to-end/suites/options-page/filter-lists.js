@@ -25,6 +25,8 @@ import {
   waitForNotDisplayed,
   clickOnDisplayedElement,
 } from "@eyeo/test-utils/driver";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
@@ -32,7 +34,6 @@ import {
   clickFilterlist,
   waitForSubscribed,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import { getDefaultFilterLists, languageFilterLists } from "../../utils/dataset.js";
 
 async function setFilterListUrl(url) {

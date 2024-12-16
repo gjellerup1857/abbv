@@ -27,6 +27,8 @@ import {
   clickOnDisplayedElement,
 } from "@eyeo/test-utils/driver";
 import { blockHideLocalhostUrl, aaTestPageUrl } from "@eyeo/test-utils/urls";
+import { getOptionsHandle, upgradeExtension } from "@eyeo/test-utils/extension";
+
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
@@ -42,7 +44,6 @@ import {
   waitForAdsBlockedToBeInRange,
   reloadExtension,
 } from "../utils/page.js";
-import { getOptionsHandle, upgradeExtension } from "@eyeo/test-utils/extension";
 import {
   getDefaultFilterLists,
   premiumFilterLists,

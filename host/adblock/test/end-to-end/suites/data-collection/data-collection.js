@@ -18,8 +18,9 @@
 import { expect } from "expect";
 
 import { isCheckboxEnabled, waitForNotDisplayed } from "@eyeo/test-utils/driver";
-import { initOptionsGeneralTab } from "../../utils/page.js";
 import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
+import { initOptionsGeneralTab } from "../../utils/page.js";
 
 export default () => {
   it("does not collect data for Firefox", async function () {

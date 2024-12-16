@@ -25,6 +25,8 @@ import {
   waitForNotDisplayed,
 } from "@eyeo/test-utils/driver";
 import { blockHideUrl, aaTestPageUrl, snippetTestPageUrl } from "@eyeo/test-utils/urls";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
 import {
   addFiltersToAdBlock,
   checkBlockHidePage,
@@ -35,7 +37,6 @@ import {
   setAADefaultState,
   allowlistingFilter,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 export default () => {
   after(async function () {

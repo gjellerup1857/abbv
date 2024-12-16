@@ -15,6 +15,8 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
+
 import { createServer } from "http";
 import { createReadStream } from "fs";
 import { getResponseData } from "./response-data.js";
@@ -68,9 +70,7 @@ function start(hostname) {
   // checks if the reponse should be a legacy single command object
   if (argv.includes(singleObjectKey)) {
     singleObjectMode = true;
-    console.log(
-      "Legacy command server response as a single object is activated"
-    );
+    console.log("Legacy command server response as a single object is activated");
   }
 
   server.listen(port, hostname, () => {
@@ -80,7 +80,7 @@ function start(hostname) {
 
 export function startIpmServer(hostname) {
   start(hostname);
-};
+}
 
 export function stopIpmServer() {
   server.close(function (err) {

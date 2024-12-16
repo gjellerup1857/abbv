@@ -15,8 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import path from "path";
-
 import {
   cleanupHook,
   setGlobalOptionsHook,
