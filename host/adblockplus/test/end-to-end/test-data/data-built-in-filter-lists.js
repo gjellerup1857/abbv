@@ -136,7 +136,7 @@ const defaultFilterLists = [
   },
   {
     flName: "Indian Easylist",
-    flId: "IndianList+EasyList (অসমীয়া, বাংলা (ভারত), ગુજરાતી (ભારત), भारतीय, ಕನ್ನಡ, undefined, മലയാളം, मराठी, नेपाली, ଓଡ଼ିଆ, ਪੰਜਾਬੀ (ਭਾਰਤ), සිංහල, தமிழ், తెలుగు + English)",
+    flId: "IndianList+EasyList (অসমীয়া, বাংলা (ভারত), ગુજરાતી (ભારત), भारतीय, ಕನ್ನಡ, മലയാളം, मराठी, नेपाली, ଓଡ଼ିଆ, ਪੰਜਾਬੀ (ਭਾਰਤ), සිංහල, தமிழ், తెలుగు + English)",
     flStatus: "present"
   },
   {
