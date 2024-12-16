@@ -15,8 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable no-console */
-
 import path from "path";
 
 import { findProjectRoot } from "@eyeo/test-utils";

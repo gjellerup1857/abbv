@@ -18,8 +18,9 @@
 import { expect } from "expect";
 
 import { getDisplayedElement, openNewTab, getTabId } from "@eyeo/test-utils/driver";
-import { initOptionsGeneralTab, initPopupPage } from "../utils/page.js";
 import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
+import { initOptionsGeneralTab, initPopupPage } from "../utils/page.js";
 
 export default () => {
   it("should auto-allowlist YouTube", async function () {

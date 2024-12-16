@@ -15,7 +15,6 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env node */
 /* eslint-disable no-console */
 
 import http from "http";
@@ -51,7 +50,7 @@ const server = http.createServer((req, res) => {
         res.end(
           JSON.stringify({
             message: "server error",
-          })
+          }),
         );
       }
       if (u === VALID_USER_ID) {
@@ -61,7 +60,7 @@ const server = http.createServer((req, res) => {
             lv: 1,
             status: "active",
             code: "license_code",
-          })
+          }),
         );
       } else if (u === EXPIRED_USER_ID) {
         res.statusCode = 200;
@@ -70,34 +69,32 @@ const server = http.createServer((req, res) => {
             lv: 1,
             status: "expired",
             code: "",
-          })
+          }),
         );
       } else if (u === SERVER_ERROR_302) {
         res.statusCode = 302;
         res.end(
           JSON.stringify({
             message: "server error 302",
-          })
+          }),
         );
       } else if (u === SERVER_ERROR_418) {
         res.statusCode = 418;
         res.end(
           JSON.stringify({
             message: "server error 418",
-          })
+          }),
         );
       } else if (u === SERVER_ERROR_500) {
         res.statusCode = 500;
         res.end(
           JSON.stringify({
             message: "server error 500",
-          })
+          }),
         );
       } else if (u === NON_JSON_RESPONSE) {
         res.statusCode = 200;
-        res.end(
-          NON_JSON_RESPONSE
-        );
+        res.end(NON_JSON_RESPONSE);
       } else if (u === WRONG_LICENSE_VERSION) {
         res.statusCode = 200;
         res.end(
@@ -105,7 +102,7 @@ const server = http.createServer((req, res) => {
             lv: 2,
             status: "active",
             code: "license_code",
-          })
+          }),
         );
       } else if (u === WRONG_LICENSE_STATUS) {
         res.statusCode = 200;
@@ -114,14 +111,14 @@ const server = http.createServer((req, res) => {
             lv: 1,
             status: "wrong_status",
             code: "license_code",
-          })
+          }),
         );
       } else {
         res.statusCode = 401;
         res.end(
           JSON.stringify({
             message: "invalid user",
-          })
+          }),
         );
       }
     } catch (error) {

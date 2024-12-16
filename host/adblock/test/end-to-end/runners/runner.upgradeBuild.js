@@ -17,8 +17,6 @@
 
 /* eslint-disable no-console */
 
-import path from "path";
-
 import { downloadLatestReleaseBuilds } from "@eyeo/test-utils";
 import {
   setGlobalOptionsHook,

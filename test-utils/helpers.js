@@ -1,3 +1,22 @@
+/*
+ * This file is part of Web Extensions Core Utilities (Web Extensions CU),
+ * Copyright (C) 2024-present eyeo GmbH
+ *
+ * Web Extensions CU is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as
+ * published by the Free Software Foundation.
+ *
+ * Web Extensions CU is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* eslint-disable no-console */
+
 import fs from "fs";
 import path from "path";
 import { pipeline } from "stream/promises";
@@ -61,7 +80,12 @@ async function downloadFile(url, outputPath) {
  * @param {string} outputDirPath - The path to the directory to save the builds
  * @returns {Promise<void>}
  */
-export async function downloadLatestReleaseBuilds({ extName, browserName = "chrome", manifestVersion = 3, outputDirPath }) {
+export async function downloadLatestReleaseBuilds({
+  extName,
+  browserName = "chrome",
+  manifestVersion = 3,
+  outputDirPath,
+}) {
   // make sure that the output directory exists
   await fs.promises.mkdir(outputDirPath, { recursive: true });
 

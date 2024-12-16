@@ -9,9 +9,13 @@
     "./urls": "./test-server/urls.js"
   },
   "devDependencies": {
-    "express": "^4.17.1"
+    "eslint": "8.34.0",
+    "express": "^4.17.1",
+    "prettier": "3.3.3"
   },
   "scripts": {
+    "lint": "npx eslint . && npx prettier --check .",
+    "prettier-fix": "npx prettier --write .",
     "start-server": "node test-server/start.js"
   }
 }

@@ -1,1 +1,2 @@
-document.getElementById("script-id-dc").innerHTML = "Distraction Control blocking filter not applied";
+document.getElementById("script-id-dc").innerHTML =
+  "Distraction Control blocking filter not applied";
