@@ -15,6 +15,8 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable no-console */
+
 import { spawn } from "child_process";
 import fs from "fs";
 
@@ -53,7 +55,7 @@ async function runMochaTests(config) {
 }
 
 export async function runE2ETests(config) {
-  const {screenshotsPath, helperExtensionPath} = config;
+  const { screenshotsPath, helperExtensionPath } = config;
 
   await buildHelperExtension(process.env.MANIFEST_VERSION, helperExtensionPath);
   console.log(`Helper extension built to ${helperExtensionPath}`);

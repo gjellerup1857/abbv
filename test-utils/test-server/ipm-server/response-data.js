@@ -65,11 +65,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationfreeuserABP",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           license_state_list: "free",
           button_target: "/premium",
@@ -87,8 +85,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationsubdomainABP",
           upper_body:
             "Should only be shown to FREE users, button target is https://new.adblockplus.org/, CTA button should be clicked",
@@ -109,8 +106,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationctaABP",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA button should be clicked",
@@ -131,11 +127,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationduplicateABP",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -152,8 +146,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationclickedtriggerABP",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA button should be clicked",
@@ -174,8 +167,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationignoredtriggerABP",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA should be ignored",
@@ -196,11 +188,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationfreepremiumuserABP",
-          upper_body:
-            "Should only be shown to FREE users, button target it /premium",
+          upper_body: "Should only be shown to FREE users, button target it /premium",
           button_label: "CTA button",
           button_target: "/premium",
           license_state_list: "free",
@@ -218,11 +208,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationpremiumfreeuserABP",
-          upper_body:
-            "Should only be shown to PREMIUM users, button target it /premium",
+          upper_body: "Should only be shown to PREMIUM users, button target it /premium",
           button_label: "CTA button",
           button_target: "/premium",
           license_state_list: "premium",
@@ -240,11 +228,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdmultiplenavigationABP",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -264,8 +250,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           sub_title:
             "OPD was created after navigation to any site THAT IS NOT: google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationexclusionABP",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -386,11 +371,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: multiplecommandsABP",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           license_state_list: "free",
           button_target: "/premium",
@@ -433,11 +416,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationfreeuserAB",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           license_state_list: "free",
           button_target: "/premium",
@@ -455,8 +436,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationsubdomainAB",
           upper_body:
             "Should only be shown to FREE users, button target is https://vpn.getadblock.com",
@@ -480,8 +460,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           sub_title:
             "OPD was created after navigation to any site THAT IS NOT: google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationexclusionAB",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -498,11 +477,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationpremiumfreeuserAB",
-          upper_body:
-            "Should only be shown to PREMIUM users, button target it /premium",
+          upper_body: "Should only be shown to PREMIUM users, button target it /premium",
           button_label: "CTA button",
           button_target: "/premium",
           license_state_list: "premium",
@@ -520,8 +497,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationctaAB",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA button should be clicked",
@@ -542,11 +518,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationduplicateAB",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -563,11 +537,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdmultiplenavigationAB",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           button_target: "/premium",
           display_duration: 1,
@@ -584,8 +556,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationclickedtriggerAB",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA button should be clicked",
@@ -606,8 +577,7 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationignoredtriggerAB",
           upper_body:
             "Should only be shown to FREE users, button target is /premium, CTA should be ignored",
@@ -628,11 +598,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: opdnavigationfreepremiumuserAB",
-          upper_body:
-            "Should only be shown to FREE users, button target it /premium",
+          upper_body: "Should only be shown to FREE users, button target it /premium",
           button_label: "CTA button",
           button_target: "/premium",
           license_state_list: "free",
@@ -754,11 +722,9 @@ export function getResponseData(userId, singleObjectMode = false) {
           timing: "after_navigation",
           version: 4,
           domain_list: "google.com,wikipedia.org,example.com",
-          sub_title:
-            "OPD was created after navigation to google.com, example.com, wikipedia.org",
+          sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
           lower_body: "deviceID: multiplecommandsAB",
-          upper_body:
-            "Should only be shown to FREE users, button target is /premium",
+          upper_body: "Should only be shown to FREE users, button target is /premium",
           button_label: "CTA button",
           license_state_list: "free",
           button_target: "/premium",
@@ -823,10 +789,7 @@ export function getResponseData(userId, singleObjectMode = false) {
     case supportedIds.TOO_MANY_COMMANDS:
       statusCode = 200;
       // the extensions are currently limited to receive at maximum 100 commands
-      bodyData = getMultipleOPDCommands(
-        100 + 1,
-        supportedIds.TOO_MANY_COMMANDS
-      );
+      bodyData = getMultipleOPDCommands(100 + 1, supportedIds.TOO_MANY_COMMANDS);
       break;
     case supportedIds.NO_CAMPAIGN:
       statusCode = 200;

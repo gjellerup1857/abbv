@@ -28,6 +28,7 @@ import {
   clickOnDisplayedElement,
 } from "@eyeo/test-utils/driver";
 import { localTestPageUrl, dcTestPageUrl } from "@eyeo/test-utils/urls";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 import {
   initOptionsGeneralTab,
@@ -36,7 +37,6 @@ import {
   premiumUrl,
   enableTemporaryPremium,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
 import { premiumPopupToggleItems } from "../../utils/dataset.js";
 
 export default () => {

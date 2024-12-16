@@ -16,8 +16,6 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-env node */
-
-import {runTestServer} from "./test-server-manager.js";
+import { runTestServer } from "./test-server-manager.js";
 
 runTestServer();

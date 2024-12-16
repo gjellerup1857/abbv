@@ -22,12 +22,13 @@ import {
   getDisplayedElement,
   clickOnDisplayedElement,
 } from "@eyeo/test-utils/driver";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
 import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   setAADefaultState,
 } from "../../utils/page.js";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 export default () => {
   after(async function () {

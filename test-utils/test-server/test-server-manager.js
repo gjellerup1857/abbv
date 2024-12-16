@@ -15,9 +15,9 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {startTestPagesServer, stopTestPagesServer} from "./test-pages-server.js";
-import {startLicenseServer, stopLicenseServer} from "./test-license-server.js";
-import {startIpmServer, stopIpmServer} from "./ipm-server/test-ipm-server.js";
+import { startTestPagesServer, stopTestPagesServer } from "./test-pages-server.js";
+import { startLicenseServer, stopLicenseServer } from "./test-license-server.js";
+import { startIpmServer, stopIpmServer } from "./ipm-server/test-ipm-server.js";
 
 const hostname = "localhost";
 
@@ -33,5 +33,5 @@ export async function killTestServer() {
   stopIpmServer();
 
   // Sleep to allow stop server messages to be logged
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise((r) => setTimeout(r, 2000));
 }

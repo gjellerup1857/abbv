@@ -24,9 +24,7 @@
  */
 export function getMultipleOPDCommands(amountOfDialogs, userId) {
   if (amountOfDialogs <= 0) {
-    throw new Error(
-      "The amount of dialogs to generate should be greater than zero."
-    );
+    throw new Error("The amount of dialogs to generate should be greater than zero.");
   }
 
   if (!userId) {
@@ -38,8 +36,7 @@ export function getMultipleOPDCommands(amountOfDialogs, userId) {
     timing: "after_navigation",
     version: 4,
     domain_list: "google.com,wikipedia.org,example.com",
-    sub_title:
-      "OPD was created after navigation to google.com, example.com, wikipedia.org",
+    sub_title: "OPD was created after navigation to google.com, example.com, wikipedia.org",
     upper_body:
       "Should only be shown to FREE users, button target is /premium, CTA button should be clicked",
     button_label: "CTA CLICK ME",

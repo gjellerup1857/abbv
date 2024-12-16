@@ -18,8 +18,9 @@
 import { expect } from "expect";
 
 import { findUrl } from "@eyeo/test-utils/driver";
-import { getUserIdFromInstallPage, initOptionsGeneralTab } from "../../utils/page.js";
 import { getOptionsHandle } from "@eyeo/test-utils/extension";
+
+import { getUserIdFromInstallPage, initOptionsGeneralTab } from "../../utils/page.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
