@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { LockableList } from "@eyeo/ext-ui-components";
 import { translate } from "../shared/utils";
 import { globalPrefs as Prefs } from "../shared/globals";
-import { OptionsList } from "../shared/OptionsList";
 import { optionsData, eventsList } from "./data";
 
 const getCheckedFn = (data) => (name) => {
@@ -36,11 +36,12 @@ export function GeneralOptionsTab({ subs, settings, prefs }) {
   return (
     <div className="option-page-content">
       <h1>{translate("generaloptions2")}</h1>
-      <OptionsList
+      <LockableList
         className="option-page-content"
         items={optionsData}
         isChecked={isChecked}
         onItemChange={updateItem}
+        translate={translate}
       />
     </div>
   );
