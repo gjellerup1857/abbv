@@ -53,6 +53,7 @@ export default () => {
         firstPing: expect.any(String),
         lastPing: expect.any(String),
         lastPingTag: expect.any(String),
+        ucid: expect.any(String),
       }),
     );
   });
