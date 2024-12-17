@@ -73,7 +73,7 @@ const OptionItem = ({
         </div>
       </div>
       <div className="mb-2 -mt-2.5">
-        {extraInfo && <span className="text-base italic pl-8">{translate(extraInfo)}</span>}
+        {extraInfo && <p className="text-base italic pl-8">{translate(extraInfo)}</p>}
       </div>
       <div>
         {subOptions && optionChecked && (
