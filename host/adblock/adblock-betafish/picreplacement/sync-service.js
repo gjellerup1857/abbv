@@ -73,6 +73,7 @@ const SyncService = (function getSyncService() {
     "cookies-premium",
     "turkish",
     "japanese",
+    "free_distraction_control",
   ];
   const { flavor } = getUserAgentInfo();
   const { os } = getUserAgentInfo();

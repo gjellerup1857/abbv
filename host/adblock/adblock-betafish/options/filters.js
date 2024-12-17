@@ -195,9 +195,13 @@ FilterListUtil.sortFilterListArrays = (newFilters) => {
 
   // Move new filters to top of Other Filters section
   const otherSection = filterListSections.otherFilterList.array;
-  const newFilterArray = newFilters.map((filterId) => otherSection.find(({ adblockId }) => adblockId === filterId));
-  const filteredSection = otherSection.filter(({ adblockId }) => !newFilters.includes({ adblockId }));
-  filterListSections.otherFilterList.array = [...newFilterArray, ...filteredSection]
+  const newFilterArray = newFilters.map((filterId) =>
+    otherSection.find(({ adblockId }) => adblockId === filterId),
+  );
+  const filteredSection = otherSection.filter(
+    ({ adblockId }) => !newFilters.includes({ adblockId }),
+  );
+  filterListSections.otherFilterList.array = [...newFilterArray, ...filteredSection];
 };
 
 // Prepare filterListSections.
@@ -214,7 +218,7 @@ FilterListUtil.getFilterListType = (filterList) => {
     "warning_removal",
     "idcac",
     "fb_notifications",
-    // TODO: Add adblockIds for new lists here
+    "free_distraction_control",
   ];
 
   if (adblockFilters.includes(adblockId)) {
@@ -1164,8 +1168,7 @@ $(async () => {
   // Initialize page using subscriptions from the background.
   // Copy from update subscription list + setsubscriptionlist
   // Move highlighted filters to top of Other Filters section
-  // TODO: Swap these with correct IDs when ready
-  const otherFiltersToHightlight = ['idcac', 'antisocial'];
+  const otherFiltersToHightlight = ["free_distraction_control"];
   FilterListUtil.prepareSubscriptions(subs, otherFiltersToHightlight);
 
   for (const adblockId in filterListSections) {
