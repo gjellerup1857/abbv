@@ -2205,6 +2205,14 @@
     "message": "blocks cookie notifications, which means that you waive your right to be notified about cookie usage on the websites you visit",
     "description": "A filter list explanation"
   },
+  "filter_free_distraction_control": {
+  	 "message": "Basic Distraction Control",
+	 "description": "A filter list"
+  },
+  "filter_free_distraction_control_explained": {
+    "message":"Block corner video boxes and prompts asking you to pay/subscribe, install, shop recommended items and more.",
+    "description": "A filter list explanation"
+  },
   "filterlistsrock2": {
     "message": "The filter lists block most ads on the web. You can also...",
     "description": "Header text on the Customize tab"
