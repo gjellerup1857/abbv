@@ -21,15 +21,12 @@
 
 /** @module subscriptionInit */
 
-import { Prefs } from "./prefs";
 import * as info from "info";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
 import rulesIndex from "@adblockinc/rules/adblock";
+import { Prefs } from "./prefs";
 import { port } from "../../adblockplusui/adblockpluschrome/lib/messaging/port.js";
-import {
-  setReadyState,
-  ReadyState,
-} from "../../adblock-betafish/testing/ready-state/background/index.ts";
+import { setReadyState, ReadyState } from "../testing/ready-state/background/index.ts";
 import ServerMessages from "~/servermessages";
 
 let firstRun;
@@ -47,10 +44,12 @@ let dataCorrupted = false;
  * and therefore will be reinitialized.
  */
 async function detectFirstRun(foundSubscriptions, foundStorage) {
-  let userFilters = await ewe.filters.getUserFilters();
+  const userFilters = await ewe.filters.getUserFilters();
   firstRun = !foundSubscriptions && !userFilters.length;
 
-  if (firstRun && (foundStorage || Prefs.currentVersion)) reinitialized = true;
+  if (firstRun && (foundStorage || Prefs.currentVersion)) {
+    reinitialized = true;
+  }
 
   Prefs.currentVersion = info.addonVersion;
 }
@@ -79,7 +78,7 @@ function removeSubscriptions() {
     if ("managed" in browser.storage) {
       browser.storage.managed.get(null).then(
         async (items) => {
-          for (let key in items) {
+          for (const key in items) {
             if (key === "remove_subscriptions" && Array.isArray(items[key]) && items[key].length) {
               for (let inx = 0; inx < items[key].length; inx++) {
                 await ewe.subscriptions.remove(items[key][inx]);
@@ -154,7 +153,7 @@ async function addSubscriptions() {
 
   // Remove "acceptable ads" if Gecko
   if (firstRun) {
-    for (let url of Prefs.additional_subscriptions) {
+    for (const url of Prefs.additional_subscriptions) {
       try {
         await ewe.subscriptions.add(url);
       } catch (ex) {
@@ -176,21 +175,22 @@ async function addSubscriptions() {
  * before we start relying on it for storing preferences.
  */
 async function testStorage() {
-  let testKey = "readwrite_test";
-  let testValue = Math.random();
+  const testKey = "readwrite_test";
+  const testValue = Math.random();
 
   try {
     await browser.storage.local.set({ [testKey]: testValue });
-    let result = await browser.storage.local.get(testKey);
-    if (result[testKey] != testValue)
+    const result = await browser.storage.local.get(testKey);
+    if (result[testKey] != testValue) {
       throw new Error("Storage test: Failed to read and write value");
+    }
   } finally {
     await browser.storage.local.remove(testKey);
   }
 }
 
 const start = async function () {
-  let addonInfo = {
+  const addonInfo = {
     bundledSubscriptions: rulesIndex,
     bundledSubscriptionsPath: "/data/rules/abp",
     name: info.addonName,
@@ -200,10 +200,11 @@ const start = async function () {
     },
     featureFlags: {
       inlineCss: false,
+      eyeometryUcid: true,
     },
   };
 
-  let cdp = {
+  const cdp = {
     pingUrl: webpackDotenvPlugin.CDP_PING_URL,
     publicKeyUrl: webpackDotenvPlugin.CDP_PUBLIC_KEY_URL,
     bearer: webpackDotenvPlugin.CDP_BEARER,
@@ -212,7 +213,7 @@ const start = async function () {
   if (cdp.pingUrl && cdp.publicKeyUrl && cdp.bearer) {
     addonInfo.cdp = cdp;
   }
-  let telemetry = {
+  const telemetry = {
     url: webpackDotenvPlugin.EYEOMETRY_URL,
     bearer: webpackDotenvPlugin.EYEOMETRY_BEARER,
   };

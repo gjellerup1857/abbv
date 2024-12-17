@@ -177,7 +177,8 @@ export async function start() {
       url: "https://easylist-downloads.adblockplus.org/ab-testing/experiments.json"
     },
     featureFlags: {
-      inlineCss: false
+      inlineCss: false,
+      eyeometryUcid: true
     }
   };
 
