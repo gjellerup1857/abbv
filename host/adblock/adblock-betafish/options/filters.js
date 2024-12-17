@@ -211,14 +211,14 @@ FilterListUtil.getFilterListType = (filterList) => {
   const { adblockId } = filterList;
   const adblockFilters = ["easylist", "anticircumvent", "acceptable_ads", "acceptable_ads_privacy"];
   const otherFilters = [
-    "easyprivacy",
-    "antisocial",
     "annoyances",
+    "antisocial",
     "bitcoin_mining_protection",
-    "warning_removal",
-    "idcac",
+    "easyprivacy",
     "fb_notifications",
     "free_distraction_control",
+    "idcac",
+    "warning_removal",
   ];
 
   if (adblockFilters.includes(adblockId)) {
