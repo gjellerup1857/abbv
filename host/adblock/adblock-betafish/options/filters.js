@@ -617,6 +617,7 @@ function getDefaultFilterUI(filterList, checkboxID, filterListType) {
   const $extraInformation = $("<div>")
     .addClass("extra-info")
     .addClass("italic")
+    .addClass("lowercase")
     .text(translate(`filter_${filterList.adblockId}_explained`));
 
   const $filterInfo = $("<div>").append($filterHeader).append($extraInformation);
