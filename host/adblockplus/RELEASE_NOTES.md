@@ -1,5 +1,7 @@
 # Unreleased
 
+- Added UCID to telemetry ping (DATA-2841)
+
 # 4.10.0 - 2024-12-10
 
 - Updated webext-ad-filtering-solution to 1.22.0
