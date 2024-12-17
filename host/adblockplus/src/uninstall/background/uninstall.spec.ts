@@ -184,7 +184,6 @@ describe("uninstall", () => {
     expect(ewe.subscriptions.onChanged.addListener).toHaveBeenCalled();
     expect(ewe.subscriptions.onRemoved.addListener).toHaveBeenCalled();
   });
-  // TODO: test triggering of listeners
 
   it("generates uninstall URL", async () => {
     const { setUninstallURL } = await import("./uninstall");

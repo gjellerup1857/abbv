@@ -22,7 +22,10 @@ import { isDataCorrupted } from "../../../adblockpluschrome/lib/subscriptionInit
 import { info } from "~/info/background";
 import { getPremiumState } from "~/premium/background";
 
-// TODO: add documentation
+/**
+ * List of URL parameters containing their shortened name (used in the URL to
+ * save space) and their expanded name (used in the code for legibility).
+ */
 const abbreviations = [
   ["an", "addonName"],
   ["ap", "application"],
@@ -203,7 +206,9 @@ export async function setUninstallURL(): Promise<void> {
   );
 }
 
-// TODO: add documentation
+/**
+ * Initializes the uninstall module
+ */
 export function start(): void {
   ewe.experiments.onChanged.addListener(setUninstallURL);
 
