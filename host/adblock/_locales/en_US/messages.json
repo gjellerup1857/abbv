@@ -2206,7 +2206,7 @@
     "description": "A filter list explanation"
   },
   "filter_free_distraction_control": {
-  	 "message": "Basic Distraction Control",
+  	"message": "Basic Distraction Control",
 	 "description": "A filter list"
   },
   "filter_free_distraction_control_explained": {
@@ -3679,6 +3679,10 @@
     "message": "Distraction Control",
     "description": "Name of a Premium option"
   },
+  "enhanced_distraction_control": {
+    "message": "Enhanced Distraction Control",
+    "description": "Name of a Premium option"
+  },
   "premium_filters": {
     "message": "Premium Filters",
     "description": "Name of a Premium Filters tab"
@@ -3695,13 +3699,9 @@
     "message": "Premium filter lists are maintained by our team and offer exclusive benefits above and beyond our standard filters.",
     "description": "Description of the Premium filter lists"
   },
-  "distraction_control_description_I": {
-    "message": "Take control of your browser and browse the way you want to!",
-    "description": "Description of the Premium filter lists"
-  },
-  "distraction_control_description_II": {
-    "message": "Say goodbye to newsletter pop-ups, floating videos, site notifications survey requests with Distraction Control.",
-    "description": "Description of the Premium filter lists"
+  "enhanced_distraction_control_description": {
+  	"message": "Take control of your browser and browse the way you want to! Say goodbye to newsletter pop-ups, floating videos, site notifications and survey requests with Enhanced Distraction Control.",
+  	"description": "Description of the Premium filter lists"
   },
   "cookie_consent_cutter_title": {
     "message": "Cookie Consent Cutter",
