@@ -25,7 +25,7 @@ import {
   allowlistTab,
   isTabTemporaryAllowlisted,
   removeAllAllowlistRulesForTab,
-} from "./pause/background";
+} from "../src/pause/background";
 import { setBadge } from "../adblockplusui/adblockpluschrome/lib/browserAction";
 import ServerMessages from "./servermessages";
 import { log } from "./utilities/background/bg-functions";

@@ -32,7 +32,7 @@ import {
   adblockIsPaused,
   pausedFilterText1,
   pausedFilterText2,
-} from "./pause/background";
+} from "../src/pause/background";
 import { start as startContentFiltering } from "./alias/contentFiltering";
 import { NEW_BADGE_REASONS, getNewBadgeTextReason, showIconBadgeCTA } from "./alias/icon";
 

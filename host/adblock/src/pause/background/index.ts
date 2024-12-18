@@ -15,21 +15,18 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* For ESLint: List any global identifiers used in this file below */
-/* global browser */
-
+import * as browser from "webextension-polyfill";
 import * as ewe from "@eyeo/webext-ad-filtering-solution";
-import { FilterOrigin } from "../../../src/filters/shared";
-import { createFilterMetaData } from "../../utilities/background/bg-functions";
-import { Prefs } from "~/alias/prefs";
-import { initialize } from "~/alias/subscriptionInit";
-import ServerMessages from "~/servermessages";
-
+import { FilterOrigin } from "../../filters/shared";
 import {
+  createFilterMetaData,
   chromeStorageSetHelper,
   sessionStorageGet,
   sessionStorageSet,
 } from "~/utilities/background/bg-functions";
+import { Prefs } from "~/alias/prefs";
+import { initialize } from "~/alias/subscriptionInit";
+import ServerMessages from "~/servermessages";
 
 const pausedKey = "paused";
 // white-list all blocking requests regardless of frame / document, but still allows element hiding
@@ -37,7 +34,7 @@ const pausedFilterText1 = "@@*";
 // white-list all documents, which prevents element hiding
 const pausedFilterText2 = "@@*$document";
 
-const createDomainAllowlistRule = function (domain) {
+const createDomainAllowlistRule = function (domain: string): string {
   return `@@||${domain}^$document`;
 };
 
@@ -46,20 +43,20 @@ const createDomainAllowlistRule = function (domain) {
 // false, AdBlock will not be paused.
 // Returns: undefined if newValue was specified, otherwise it returns true
 // if paused, false otherwise.
-const adblockIsPaused = function (newValue) {
+const adblockIsPaused = function (newValue?: boolean): boolean | undefined {
   if (newValue === undefined) {
     return sessionStorageGet(pausedKey) === true;
   }
 
-  if (newValue === true) {
-    chromeStorageSetHelper(pausedKey, true, () => {
-      ewe.filters.add([pausedFilterText1]);
-      ewe.filters.add([pausedFilterText2]);
+  if (newValue) {
+    chromeStorageSetHelper(pausedKey, true, async () => {
+      await ewe.filters.add([pausedFilterText1]);
+      await ewe.filters.add([pausedFilterText2]);
     });
   } else {
-    ewe.filters.remove([pausedFilterText1]);
-    ewe.filters.remove([pausedFilterText2]);
-    browser.storage.local.remove(pausedKey);
+    void ewe.filters.remove([pausedFilterText1]);
+    void ewe.filters.remove([pausedFilterText2]);
+    void browser.storage.local.remove(pausedKey);
   }
   sessionStorageSet(pausedKey, newValue);
   return undefined;
@@ -70,7 +67,7 @@ const adblockIsPaused = function (newValue) {
  * @param {string} origin - a String representing the method that
  *                 user or event that added the filter rule
  */
-const allowlistTab = async (tabURL, origin = FilterOrigin.popup) => {
+const allowlistTab = async (tabURL: string, origin = FilterOrigin.popup): Promise<void> => {
   const autoExtendMs = Prefs.get("allowlisting_auto_extend_ms");
   const metadata = {
     ...createFilterMetaData(origin),
@@ -90,7 +87,7 @@ const allowlistTab = async (tabURL, origin = FilterOrigin.popup) => {
  * @return {boolean} true, if the rule(s) were removed
  *                   false, if no allowlist rules were found
  */
-const removeAllAllowlistRulesForTab = async (tabId) => {
+const removeAllAllowlistRulesForTab = async (tabId: number): Promise<boolean> => {
   const filters = await ewe.filters.getAllowingFilters(tabId);
   let removedFilters = false;
   for (let i = 0; i < filters.length; i++) {
@@ -109,28 +106,28 @@ const removeAllAllowlistRulesForTab = async (tabId) => {
  *                   false, if the tab is not temporarily allowlisted
  */
 // return a boolean indicating whether the tab is paused
-const isTabTemporaryAllowlisted = async (tabId) => {
+const isTabTemporaryAllowlisted = async (tabId: number): Promise<boolean> => {
   const filters = await ewe.filters.getAllowingFilters(tabId);
   let metaDataMatch = false;
   for (let i = 0; i < filters.length && !metaDataMatch; i++) {
-    // eslint-disable-next-line no-await-in-loop
     const metadata = await ewe.filters.getMetadata(filters[i]);
-    metaDataMatch = metadata && metadata.expiresByTabId === tabId;
+    metaDataMatch = metadata?.expiresByTabId === tabId;
   }
   return metaDataMatch;
 };
 
 // If AdBlock was paused on shutdown (adblock_is_paused is true), then
 // unpause / remove the white-list all entry at startup.
-browser.storage.local.get(pausedKey).then((response) => {
+async function start(): Promise<void> {
+  const response = await browser.storage.local.get(pausedKey);
   if (response[pausedKey]) {
-    initialize.then(() => {
-      ewe.filters.remove([pausedFilterText1]);
-      ewe.filters.remove([pausedFilterText2]);
-      browser.storage.local.remove(pausedKey);
-    });
+    await initialize.then();
+    await ewe.filters.remove([pausedFilterText1]);
+    await ewe.filters.remove([pausedFilterText2]);
+    await browser.storage.local.remove(pausedKey);
   }
-});
+}
+void start();
 
 browser.commands.onCommand.addListener((command) => {
   if (command === "toggle_pause") {

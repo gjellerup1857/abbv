@@ -47,7 +47,7 @@ import { getReadyState } from "../testing/ready-state/background/index.ts";
 import { getInfoCommand, injectionOrigins } from "../../src/info-injector/shared";
 import { getInjectionInfo } from "../../src/info-injector/background";
 import { getUserId } from "~/id/background/index";
-import { allowlistTab, removeAllAllowlistRulesForTab } from "../pause/background/index";
+import { allowlistTab, removeAllAllowlistRulesForTab } from "../../src/pause/background/index";
 
 export const processMessageResponse = (sendResponse, responseData) => {
   sendResponse({});
