@@ -1,5 +1,7 @@
 # Unreleased
 
+- Added UCID to telemetry ping (DATA-2841)
+
 # 6.13.0 - 2024-12-10
 
 - Removed "Always allow ads on this site" from kebab menu (EXT-595)

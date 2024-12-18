@@ -200,6 +200,7 @@ const start = async function () {
     },
     featureFlags: {
       inlineCss: false,
+      eyeometryUcid: true,
     },
   };
 
