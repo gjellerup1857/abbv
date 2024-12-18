@@ -18,9 +18,10 @@
 import { expect } from "expect";
 
 import { findUrl } from "@eyeo/test-utils/driver";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
+import { uninstallExtension } from "@eyeo/test-utils/extension";
 
 import { getUserIdFromInstallPage, initOptionsGeneralTab } from "../../utils/page.js";
+import { uninstallUrl } from "../../utils/urls.js";
 
 export default () => {
   it("uninstalls the extension", async function () {
@@ -30,31 +31,22 @@ export default () => {
       bc: expect.any(Number),
       lt: expect.any(Number),
       t: expect.any(Number),
-      wafc: "0",
-      ps: expect.any(Number),
-      aa: expect.any(String),
+      wafc: "0", // always 0 as we don't do that anymore
+      aa: expect.stringMatching(/(u|0|1|2)/),
+      ps: expect.stringMatching(/(0|1)/),
+      er: expect.stringMatching(/^[a-zA-Z0-9]{8}/), // experiments revision ID. Example: ietbCO3H
+      ev: expect.stringMatching(/^[a-zA-Z0-9+/]+=*/), // experiments variants. Example: AQ%3D%3
     };
 
-    await initOptionsGeneralTab(getOptionsHandle());
-
-    await driver.executeScript(() => {
-      browser.management.uninstallSelf();
-    });
-
-    const { url } = await findUrl("getadblock.com/en/uninstall");
+    await uninstallExtension(initOptionsGeneralTab);
+    const { url } = await findUrl(uninstallUrl);
 
     const params = new URLSearchParams(new URL(url).search);
     const actualParams = Object.fromEntries(params);
     actualParams.bc = parseInt(actualParams.bc, 10);
     actualParams.lt = parseInt(actualParams.lt, 10);
     actualParams.t = parseInt(actualParams.t, 10);
-    actualParams.ps = parseInt(actualParams.ps, 10);
-    actualParams.aa = actualParams.aa;
 
-    expect(actualParams).toEqual(expect.objectContaining(expectedParams));
-    expect(["u", "0", "1", "2"].includes(actualParams.aa)).toEqual(true);
-    expect([1, 0].includes(actualParams.ps)).toEqual(true);
-    expect(/^[a-z0-9]{8}$/i.test(actualParams.er)).toEqual(true);
-    expect(/^[a-z0-9+/]+=*$/i.test(actualParams.ev)).toEqual(true);
+    expect(actualParams).toEqual(expectedParams);
   });
 };

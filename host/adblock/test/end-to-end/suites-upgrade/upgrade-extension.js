@@ -42,7 +42,7 @@ import {
   initOptionsPremiumFlTab,
   getCustomFilters,
   waitForAdsBlockedToBeInRange,
-  reloadExtension,
+  expectAAEnabled,
 } from "../utils/page.js";
 import {
   getDefaultFilterLists,
@@ -104,7 +104,7 @@ export default () => {
 
     // acceptable ads (off), easyList (off), easyprivacy (on)
     await initOptionsFiltersTab(getOptionsHandle());
-    const lists = getDefaultFilterLists().filter((list) =>
+    const lists = getDefaultFilterLists(expectAAEnabled).filter((list) =>
       ["easyprivacy", "acceptable_ads", "easylist"].includes(list.name),
     );
     for (const list of lists) {
@@ -148,7 +148,7 @@ export default () => {
 
     // upgrade extension
     const prevExtVersion = extension.version;
-    await upgradeExtension(reloadExtension);
+    await upgradeExtension(initOptionsGeneralTab);
 
     // check the extension version has changed
     expect(extension.version).not.toEqual(prevExtVersion);

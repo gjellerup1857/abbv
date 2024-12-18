@@ -15,7 +15,7 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { beforeEachTasks } from "../utils/hook.js";
+import { beforeEachTasks } from "@eyeo/test-utils/hooks";
 import dataCollection from "./data-collection/data-collection.js";
 import extension from "./smoke/extension.js";
 import adFiltering from "./smoke/ad-filtering.js";

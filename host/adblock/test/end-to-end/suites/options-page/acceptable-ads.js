@@ -28,6 +28,7 @@ import {
   initOptionsGeneralTab,
   initOptionsFiltersTab,
   setAADefaultState,
+  expectAAEnabled,
 } from "../../utils/page.js";
 
 export default () => {
@@ -36,8 +37,6 @@ export default () => {
   });
 
   it("displays AA default state", async function () {
-    const { expectAAEnabled } = browserDetails;
-
     await initOptionsGeneralTab(getOptionsHandle());
     await driver.wait(
       async () => {

@@ -15,24 +15,23 @@
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { beforeEachTasks } from "@eyeo/test-utils/hooks";
-import testServer from "./test-server.js";
-import extension from "./smoke/extension.js";
-import adFiltering from "./smoke/ad-filtering.js";
-import uninstallDefault from "./smoke/uninstall-default.js";
+import { findUrl } from "@eyeo/test-utils/driver";
+import {
+  checkInstallUninstallUrl,
+  initOptionsGeneralTab
+} from "../../utils/page.js";
+import { uninstallExtension } from "@eyeo/test-utils/extension";
+import { uninstallUrl } from "../../utils/urls.js";
 
 export default () => {
-  beforeEach(async function () {
-    await beforeEachTasks();
+  it("uninstalls the extension with default settings", async function () {
+    const appVersion = await driver.executeScript(() => {
+      return browser.runtime.getManifest().version;
+    });
+
+    await uninstallExtension(initOptionsGeneralTab);
+    const { url } = await findUrl(uninstallUrl);
+
+    await checkInstallUninstallUrl({ url, appVersion, uninstall: true });
   });
-
-  describe("Test Server", testServer);
-
-  describe("Smoke Tests - Main", function () {
-    describe("Extension", extension);
-    describe("Ad Filtering", adFiltering);
-  });
-
-  // Needs to be the last suite to run because the extension gets uninstalled
-  describe("Smoke Tests - Uninstall", uninstallDefault);
 };

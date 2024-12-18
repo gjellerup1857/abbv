@@ -18,8 +18,8 @@ import {
   initOptionsBackupSyncTab,
   initOptionsPremiumFlTab,
   checkPremiumPageHeader,
-  premiumUrl,
 } from "../../utils/page.js";
+import { premiumUrl } from "../../utils/urls.js";
 
 export default () => {
   let fullPremiumUrl;
