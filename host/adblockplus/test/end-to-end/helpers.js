@@ -637,25 +637,6 @@ async function uninstallExtension() {
 }
 
 /**
- * Adds filters to the extension using the filters.importRaw message
- * @param {string} filters - Filters text to add
- * @returns {Promise<void>}
- */
-async function addFiltersToABP(filters) {
-  const error = await browser.executeAsync(async (filtersToAdd, callback) => {
-    const [errors] = await browser.runtime.sendMessage({
-      type: "filters.importRaw",
-      text: filtersToAdd
-    });
-    if (typeof errors != "undefined" && errors[0]) callback(errors[0]);
-
-    callback();
-  }, filters);
-
-  if (error) throw new Error(error);
-}
-
-/**
  * Sends a message to the extension from the options page.
  *
  * @param {object} message The message to be sent to the extension
@@ -781,7 +762,6 @@ module.exports = {
   isFirefox,
   isEdge,
   uninstallExtension,
-  addFiltersToABP,
   addFilter,
   removeFilter,
   reloadExtension,

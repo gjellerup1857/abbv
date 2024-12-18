@@ -15,14 +15,6 @@
  * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable no-console */
-import { beforeEachTasks } from "@eyeo/test-utils/hooks";
-import upgradeExtensionScenario from "./upgrade-extension.js";
-
-export default () => {
-  beforeEach(async function () {
-    await beforeEachTasks();
-  });
-
-  describe("Upgrade Extension", upgradeExtensionScenario);
-};
+export const installUrl = "https://getadblock.com/en/installed";
+export const premiumUrl = "https://getadblock.com/en/premium";
+export const uninstallUrl = "https://getadblock.com/en/uninstall";

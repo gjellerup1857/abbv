@@ -88,10 +88,6 @@ class TestPages extends BasePage {
     return $("#search-ad");
   }
 
-  get snippetFilterDiv() {
-    return $("#snippet-filter");
-  }
-
   get subscribeLink() {
     return $("//*[@id='subscription-link']/a");
   }
@@ -217,10 +213,6 @@ class TestPages extends BasePage {
     return await (await this.testRegexScriptIdFilter).isDisplayed();
   }
 
-  async isHiddenBySnippetTextDisplayed() {
-    return await (await this.hiddenBySnippetText).isDisplayed();
-  }
-
   async isSearchAdDivDisplayed() {
     return await (await this.searchAdDiv).isDisplayed();
   }
@@ -231,10 +223,6 @@ class TestPages extends BasePage {
 
   async isSubscriptionHidingIdDisplayed() {
     return await (await this.subscriptionHidingId).isDisplayed();
-  }
-
-  async isSnippetFilterDivDisplayed() {
-    return await (await this.snippetFilterDiv).isDisplayed();
   }
 
   async checkPage({ expectAllowlisted = false }) {

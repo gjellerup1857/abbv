@@ -19,8 +19,13 @@
 
 import { BROWSERS, getMajorVersion } from "@eyeo/get-browser-binary";
 
-import { findUrl, screenshot } from "./driver.js";
-import { setOptionsHandle, extractExtension, getExtensionInfo } from "./extension.js";
+import { findUrl, openNewTab, screenshot } from "./driver.js";
+import {
+  getOptionsHandle,
+  setOptionsHandle,
+  extractExtension,
+  getExtensionInfo,
+} from "./extension.js";
 import { sleep } from "../helpers.js";
 
 /**
@@ -106,7 +111,6 @@ export async function setupBrowserHook(buildsDirPath, unpackedDirPath) {
   global.driver = driver;
 
   global.browserDetails = {
-    expectAAEnabled: browserName !== "firefox",
     browserName,
     fullBrowserVersion,
     majorBrowserVersion,
@@ -158,4 +162,34 @@ export async function cleanupHook() {
   if (driver) {
     await driver.quit();
   }
+}
+
+async function cleanupOpenTabs() {
+  const { installUrl } = global.config;
+
+  for (const handle of await driver.getAllWindowHandles()) {
+    await driver.switchTo().window(handle);
+
+    let url = "";
+    try {
+      url = await driver.getCurrentUrl();
+    } catch (e) {}
+
+    if (handle !== getOptionsHandle() && !url.includes(installUrl) && !url.includes("data:")) {
+      driver.close();
+    }
+  }
+}
+
+export async function beforeEachTasks() {
+  // If the options page handle is not valid anymore, then restore it
+  try {
+    await driver.switchTo().window(getOptionsHandle());
+  } catch (e) {
+    await openNewTab(`${extension.origin}/options.html`);
+    setOptionsHandle(await driver.getWindowHandle());
+  }
+
+  await cleanupOpenTabs();
+  await driver.switchTo().window(getOptionsHandle());
 }

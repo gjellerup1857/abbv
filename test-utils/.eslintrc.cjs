@@ -5,6 +5,7 @@ module.exports = {
   },
   globals: {
     driver: true,
+    extension: true,
   },
   rules: {
     "no-console": ["error", { allow: ["warn", "error"] }],

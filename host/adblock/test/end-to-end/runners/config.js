@@ -1,4 +1,5 @@
 import path from "path";
+import { installUrl } from "../utils/urls.js";
 
 // Path to end to end test code
 const endToEndPath = path.join(process.cwd(), "test", "end-to-end");
@@ -26,4 +27,5 @@ export const runnerConfig = {
   unpackedUpgradeDirPath: path.join(liveBuildsDirPath, "adblock-upgrade-unpacked"),
   // Name of the host extension folder in /hosts
   hostname: "adblock",
+  installUrl,
 };

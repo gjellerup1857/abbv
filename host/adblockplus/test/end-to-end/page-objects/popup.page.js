@@ -379,26 +379,6 @@ class PopupPage extends BasePage {
     );
   }
 
-  async waitForNumberOfAdsBlockedToBeInRange(min, max) {
-    const timeout = 8000;
-    let adsBlocked;
-    try {
-      await this.numberOfAdsBlockedInTotal.waitUntil(
-        async function () {
-          adsBlocked = parseInt(await this.getText(), 10);
-          return adsBlocked > min && adsBlocked <= max;
-        },
-        { timeout }
-      );
-    } catch (err) {
-      throw new Error(
-        `Unexpected ads blocked count after ${timeout}ms. ` +
-          `Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`
-      );
-    }
-    return adsBlocked;
-  }
-
   async clickThisDomainToggle() {
     await this.waitForEnabledThenClick(this.thisDomainToggle);
   }

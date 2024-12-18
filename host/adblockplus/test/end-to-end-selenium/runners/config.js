@@ -16,6 +16,7 @@
  */
 
 import path from "path";
+import { installUrl } from "../utils/urls.js";
 
 // Path to end to end test code
 const endToEndPath = path.join(process.cwd(), "test", "end-to-end-selenium");
@@ -42,5 +43,6 @@ export const runnerConfig = {
   // Path to the unpacked extension
   unpackedDirPath: path.join(buildsDirPath, "adblock-unpacked"),
   // Name of the host extension folder in /hosts
-  hostname: "adblockplus"
+  hostname: "adblockplus",
+  installUrl
 };
