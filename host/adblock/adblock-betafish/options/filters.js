@@ -198,9 +198,7 @@ FilterListUtil.sortFilterListArrays = (newFilters) => {
   const newFilterArray = newFilters.map((filterId) =>
     otherSection.find(({ adblockId }) => adblockId === filterId),
   );
-  const filteredSection = otherSection.filter(
-    ({ adblockId }) => !newFilters.includes(adblockId),
-  );
+  const filteredSection = otherSection.filter(({ adblockId }) => !newFilters.includes(adblockId));
 
   filterListSections.otherFilterList.array = [...newFilterArray, ...filteredSection];
 };

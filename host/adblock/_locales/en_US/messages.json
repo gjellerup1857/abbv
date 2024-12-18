@@ -2206,11 +2206,11 @@
     "description": "A filter list explanation"
   },
   "filter_free_distraction_control": {
-  	"message": "Basic Distraction Control",
-	 "description": "A filter list"
+    "message": "Basic Distraction Control",
+    "description": "A filter list"
   },
   "filter_free_distraction_control_explained": {
-    "message":"Block corner video boxes and prompts asking you to pay/subscribe, install, shop recommended items and more.",
+    "message": "Block corner video boxes and prompts asking you to pay/subscribe, install, shop recommended items and more.",
     "description": "A filter list explanation"
   },
   "filterlistsrock2": {
@@ -3700,8 +3700,8 @@
     "description": "Description of the Premium filter lists"
   },
   "enhanced_distraction_control_description": {
-  	"message": "Take control of your browser and browse the way you want to! Say goodbye to newsletter pop-ups, floating videos, site notifications and survey requests with Enhanced Distraction Control.",
-  	"description": "Description of the Premium filter lists"
+    "message": "Take control of your browser and browse the way you want to! Say goodbye to newsletter pop-ups, floating videos, site notifications and survey requests with Enhanced Distraction Control.",
+    "description": "Description of the Premium filter lists"
   },
   "cookie_consent_cutter_title": {
     "message": "Cookie Consent Cutter",
