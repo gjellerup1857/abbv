@@ -110,8 +110,12 @@ port.on("filters.add", (message, sender) => {
  * @returns {object[]}
  */
 port.on("filters.get", async (message, sender) => {
+  console.log('filters.get')
   let filters = await ewe.filters.getUserFilters();
-  return filters.map(toPlainFilter);
+  console.log('filters', filters)
+  let resp = filters.map(toPlainFilter);
+  console.log('resp', resp)
+  return resp;
 });
 
 /**
