@@ -29,7 +29,6 @@ import {
 } from "../utils.js";
 
 async function pauseOnce() {
-  console.log("pause once");
   sendMessageWithNoResponse({ command: "recordGeneralMessage", msg: "domain_pause_clicked" });
 
   if (!this.pageInfo.url) {
