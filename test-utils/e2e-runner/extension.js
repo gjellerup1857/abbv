@@ -15,10 +15,12 @@
  * along with Web Extensions CU.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable no-console */
 import path from "path";
 import fs from "fs";
 import AdmZip from "adm-zip";
+
+import { openNewTab } from "./driver.js";
+import { localTestPageUrl } from "../test-server/urls.js";
 
 let optionsHandle;
 
@@ -83,11 +85,11 @@ export async function getExtensionInfo() {
       const { shortName, version, permissions, optionsUrl } = await browser.management.getSelf();
       const origin = optionsUrl ? location.origin : null;
       const manifest = await browser.runtime.getManifest();
-      const popupPath =
-        manifest.manifest_version == "3"
-          ? manifest.action.default_popup
-          : manifest.browser_action.default_popup;
-      const popupUrl = manifest.applications?.gecko ? popupPath : `${origin}/${popupPath}`;
+      const popupUrl = manifest.applications?.gecko
+        ? await browser.action.getPopup({})
+        : manifest.manifest_version == "3"
+          ? `${location.origin}/${manifest.action.default_popup}`
+          : `${location.origin}/${manifest.browser_action.default_popup}`;
       callback({ name: shortName, version, origin, permissions, popupUrl });
     } else {
       callback({});
@@ -128,13 +130,102 @@ export async function changeExtensionVersion(unpackedDirPath, patch = "9999") {
 }
 
 /**
- * Replaces the extension files with the current build files, and reloads the extension
- * @param {Function} reloadExtensionFn - Function that reloads the extension, specific to each host
+ * Sends a message to the extension from the options page.
+ *
+ * @param {Function} initOptionsFn - Function that initialises the options page, specific to each host
+ * @param {object} message - The message to be sent to the extension
+ */
+export async function sendExtMessage(initOptionsFn, message) {
+  const currentHandle = await driver.getWindowHandle();
+  const optionsHandle = getOptionsHandle();
+  if (currentHandle !== optionsHandle) {
+    await initOptionsFn(getOptionsHandle());
+  }
+
+  const extResponse = await driver.executeAsyncScript(async (params, callback) => {
+    const result = await browser.runtime.sendMessage(params);
+    callback(result);
+  }, message);
+
+  // go back to prev page
+  await driver.switchTo().window(currentHandle);
+  return extResponse;
+}
+
+/**
+ * Changes a setting by sending a message to the extension on the settings page.
+ *
+ * @param {Function} initOptionsFn - Function that initialises the options page, specific to each host
+ * @param {string} name - The setting key name
+ * @param {boolean} isEnabled - The settings value
+ */
+async function updateSettings(initOptionsFn, name, isEnabled) {
+  return sendExtMessage(initOptionsFn, {
+    command: "setSetting",
+    name,
+    isEnabled,
+  });
+}
+
+/**
+ * Reload the extension and wait for the options page to be displayed
+ *
+ * @param {Function} initOptionsFn - Function that initialises the options page, specific to each host
+ * @param {boolean} [suppressUpdatePage=true] - Whether to suppress
+ *   the update page or not before reloading
  * @returns {Promise<void>}
  */
-export async function upgradeExtension(reloadExtensionFn) {
+export async function reloadExtension(initOptionsFn, suppressUpdatePage = true) {
+  // Extension pages will be closed during reload,
+  // create a new tab to avoid the "target window already closed" error
+  const safeHandle = await openNewTab(localTestPageUrl);
+
+  // Suppress page or not
+  await updateSettings(initOptionsFn, "suppress_update_page", suppressUpdatePage);
+
+  // reload the extension
+  await initOptionsFn(getOptionsHandle());
+  await driver.executeScript(() => browser.runtime.reload());
+  // Workaround for `target window already closed`
+  await driver.switchTo().window(safeHandle);
+
+  // Wait until the current option page is closed by the reload
+  // otherwise the next step will fail
+  await driver.wait(
+    async () => {
+      const handlers = await driver.getAllWindowHandles();
+      return !handlers.includes(getOptionsHandle());
+    },
+    5000,
+    "Current option page was not closed in time",
+  );
+
+  // wait for the extension to be ready and the options page to be displayed
+  await driver.wait(
+    async () => {
+      try {
+        await driver.navigate().to(`${extension.origin}/options.html`);
+        setOptionsHandle(await driver.getWindowHandle());
+        // The timeout parameter is only used by ABP
+        await initOptionsFn(getOptionsHandle(), 10000);
+        return true;
+      } catch (e) {
+        await driver.navigate().refresh();
+      }
+    },
+    20000,
+    "Options page not found after reload",
+    1000,
+  );
+}
+
+/**
+ * Replaces the extension files with the current build files, and reloads the extension
+ * @param {Function} initOptionsFn - Function that initialises the options page, specific to each host
+ * @returns {Promise<void>}
+ */
+export async function upgradeExtension(initOptionsFn) {
   const { buildsDirPath, unpackedUpgradeDirPath } = global.config;
-  console.log({ buildsDirPath, unpackedUpgradeDirPath });
 
   // replace the contents of the extension with the files from the current builds
   await extractExtension(buildsDirPath, unpackedUpgradeDirPath);
@@ -143,10 +234,11 @@ export async function upgradeExtension(reloadExtensionFn) {
   await changeExtensionVersion(unpackedUpgradeDirPath);
 
   // reload the extension
-  await reloadExtensionFn();
+  await reloadExtension(initOptionsFn);
 
   // update the extension info on global
   const { name, version, manifestVersion, origin, popupUrl } = await getExtensionInfo();
+  // eslint-disable-next-line no-console
   console.log(`Upgraded extension: ${name} ${version} MV${manifestVersion}`);
 
   // Reset global extension properties for the tests. Needs to be in sync with `setupBrowserHook`
@@ -157,4 +249,17 @@ export async function upgradeExtension(reloadExtensionFn) {
     version,
     popupUrl,
   };
+}
+
+/**
+ * Uninstalls the extension
+ * @param {Function} initOptionsFn - Function that initialises the options page, specific to each host
+ * @returns {Promise<void>}
+ */
+export async function uninstallExtension(initOptionsFn) {
+  await initOptionsFn(getOptionsHandle());
+
+  await driver.executeScript(() => {
+    browser.management.uninstallSelf();
+  });
 }

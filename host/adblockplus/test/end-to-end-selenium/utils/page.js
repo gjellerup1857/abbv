@@ -16,24 +16,59 @@
  */
 
 import { expect } from "expect";
+import moment from "moment";
 
-export const installUrl = "https://welcome.adblockplus.org/en/installed";
+import { localTestPageUrl } from "@eyeo/test-utils/urls";
+import {
+  getDisplayedElement,
+  waitForNotDisplayed,
+  isCheckboxEnabled,
+  clickOnDisplayedElement,
+  openNewTab,
+  getTabId
+} from "@eyeo/test-utils/driver";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
-export async function checkInstallUninstallUrl(url, appVersion) {
+export const allowlistedWebsite = "testpages.eyeo.com";
+export const snippetFilter =
+  "testpages.eyeo.com#$#hide-if-contains 'filter not applied' p[id]";
+
+const optionsPageSleep = 2000;
+
+export async function checkInstallUninstallUrl({ url, appVersion, uninstall }) {
   const { browserName, majorBrowserVersion } = browserDetails;
+  const platformVersion = majorBrowserVersion.toString();
 
-  const base = {
-    av: appVersion,
-    pv: majorBrowserVersion.toString(),
-    apv: majorBrowserVersion.toString()
+  let base = {
+    av: appVersion, // application version (=extension version)
+    pv: platformVersion, // same as application platform version
+    apv: platformVersion // application platform version (=browser version)
   };
+
+  if (uninstall) {
+    const todaysDate = moment().utc().format("YYYYMMDD");
+
+    base = {
+      ...base,
+      c: "0", // corrupted - should be 0
+      s: expect.stringMatching(/(0|1|2|3)/), // default subscriptions enabled
+      wafc: "0", // always 0 as we don't do that anymore
+      link: "uninstalled",
+      lang: "en-US",
+      ndc: "0",
+      ps: "0",
+      er: expect.stringMatching(/^[a-zA-Z0-9]{8}/), // experiments revision ID. Example: ietbCO3H
+      ev: expect.stringMatching(/^[a-zA-Z0-9+/]+=*/), // experiments variants. Example: AQ%3D%3
+      fv: expect.stringMatching(new RegExp(`(0|${todaysDate})`)) // filter version. Example: 20241216
+    };
+  }
 
   const expectedParams = {
     chromium: {
       ...base,
-      an: "adblockpluschrome",
-      ap: "chrome",
-      p: "chromium"
+      an: "adblockpluschrome", // application name
+      ap: "chrome", // application
+      p: "chromium" // platform
     },
     edge: {
       ...base,
@@ -57,4 +92,227 @@ export async function checkInstallUninstallUrl(url, appVersion) {
   const actualParams = Object.fromEntries(params);
 
   expect(actualParams).toEqual(expectedParams);
+}
+
+export async function checkBlockHidePage(expectAllowlisted) {
+  const timeout = 1000;
+
+  // we want to wait until the extension starts applying EasyList before continuing with the other checks
+  await driver.wait(
+    async () => {
+      try {
+        if (expectAllowlisted) {
+          await getDisplayedElement("#script-id-full-path", {
+            timeout,
+            forceRefresh: false
+          });
+        } else {
+          await waitForNotDisplayed("#script-id-full-path", timeout);
+        }
+        return true;
+      } catch (e) {
+        // the extension might not be applying EasyList yet, so we need to reload the page
+        await driver.navigate().refresh();
+      }
+    },
+    9000,
+    `filters were not applied on page when expectAllowlisted=${expectAllowlisted}`
+  );
+
+  await getDisplayedElement("#control-element", {
+    timeout,
+    forceRefresh: false
+  });
+
+  if (expectAllowlisted) {
+    await getDisplayedElement("#test-element-class", {
+      timeout,
+      forceRefresh: false
+    });
+    await getDisplayedElement("#test-element-id", {
+      timeout,
+      forceRefresh: false
+    });
+    await getDisplayedElement("#script-id-regex", {
+      timeout,
+      forceRefresh: false
+    });
+  } else {
+    await waitForNotDisplayed("#test-element-class", timeout);
+    await waitForNotDisplayed("#test-element-id", timeout);
+    await waitForNotDisplayed("#script-id-regex", timeout);
+  }
+}
+
+async function loadOptionsTab(optionsHandle, id, timeout = 5000) {
+  await driver.switchTo().window(optionsHandle);
+
+  await driver.wait(
+    async () => {
+      try {
+        await driver.switchTo().frame("content");
+        await clickOnDisplayedElement(`#${id}`, { timeout: 1000 });
+        return true;
+      } catch (err) {
+        if (
+          err.name !== "NoSuchElementError" &&
+          err.name !== "StaleElementReferenceError"
+        ) {
+          throw err;
+        }
+        // The options page has stale elements, reloading as a workaround
+        await driver.navigate().refresh();
+        await driver.sleep(optionsPageSleep); // https://eyeo.atlassian.net/browse/EXT-335
+      }
+      return false;
+    },
+    timeout,
+    `Couldn't click on "${id}" options tab`
+  );
+}
+
+// This function assumes initOptionsGeneralTab() being called beforehand
+export async function clickCheckbox(checkboxId, enabledAfterClick) {
+  await clickOnDisplayedElement(`#${checkboxId}`);
+  const text = enabledAfterClick ? "enabled" : "disabled";
+  await driver.wait(
+    async () => {
+      return (await isCheckboxEnabled(checkboxId)) === enabledAfterClick;
+    },
+    1000,
+    `The filterlist "${checkboxId}" was not ${text} after clicking`
+  );
+}
+
+export async function initPopupPage(tabId) {
+  const tabIdParam = tabId ? `?testTabId=${tabId}` : "";
+  const url = `${extension.popupUrl}${tabIdParam}`;
+  const handle = await openNewTab(url);
+  await getDisplayedElement(".popup-header", { timeout: 5000 });
+  return handle;
+}
+
+export async function initOptionsGeneralTab(optionsHandle, timeout = 5000) {
+  await loadOptionsTab(optionsHandle, "tab-general", timeout);
+  await getDisplayedElement("#free-list-table", { timeout });
+}
+
+export async function initOptionsAllowlistTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "tab-allowlist");
+  await getDisplayedElement("#content-allowlist", { timeout: 5000 });
+}
+
+export async function initOptionsAdvancedTab(optionsHandle) {
+  await loadOptionsTab(optionsHandle, "tab-advanced");
+  await getDisplayedElement("#customize", { timeout: 5000 });
+}
+
+export async function getPopupBlockedAdsTotalCount() {
+  // The popup page needs any tabId to show total ads blocked. The test page
+  // is used for that, since it doesn't have any blocking elements
+  const websiteHandle = await openNewTab(localTestPageUrl);
+  const tabId = await getTabId(getOptionsHandle());
+  const popupHandle = await initPopupPage(tabId);
+
+  const elem = await getDisplayedElement("#stats-total .amount", {
+    timeout: 2000,
+    forceRefresh: false
+  });
+
+  const totalCount = await elem.getText();
+
+  // cleanup
+  await driver.switchTo().window(popupHandle);
+  await driver.close();
+  await driver.switchTo().window(websiteHandle);
+  await driver.close();
+  await driver.switchTo().window(getOptionsHandle());
+
+  return parseInt(totalCount, 10);
+}
+
+export async function setAADefaultState() {
+  const checkboxId = "acceptable-ads-allow";
+
+  await initOptionsGeneralTab(getOptionsHandle());
+  const aaEnabled = await isCheckboxEnabled(checkboxId);
+  if (!aaEnabled) {
+    await clickCheckbox(checkboxId, true);
+  }
+}
+
+export async function setCustomFilters(filters) {
+  await initOptionsAdvancedTab(getOptionsHandle());
+
+  const customFiltersInput = await getDisplayedElement("#custom-filters input");
+
+  for (const filter of filters) {
+    await customFiltersInput.sendKeys(filter);
+    await waitForNotDisplayed("#custom-filters button[disabled]");
+    await clickOnDisplayedElement("#custom-filters button");
+  }
+}
+
+export async function addAllowlistFilters(filters) {
+  await initOptionsAllowlistTab(getOptionsHandle());
+
+  const allowlistFiltersInput = await getDisplayedElement(
+    "#allowlisting-textbox"
+  );
+
+  for (const filter of filters) {
+    await allowlistFiltersInput.sendKeys(filter);
+    await clickOnDisplayedElement("#allowlisting-add-button");
+  }
+}
+
+export async function deleteFirstAllowlistFilter() {
+  await initOptionsAllowlistTab(getOptionsHandle());
+  await clickOnDisplayedElement("#allowlisting-table button");
+}
+
+export async function programaticallyAddFilters(filters) {
+  const err = await driver.executeAsyncScript(
+    async (filtersToAdd, callback) => {
+      let errors = null;
+      errors = await browser.runtime.sendMessage({
+        type: "filters.importRaw",
+        text: filtersToAdd
+      });
+      if (typeof errors != "undefined") errors = errors[0];
+      // ABP changed the return of filters.importRaw to [errors, filterTexts]
+      // https://gitlab.com/adblockinc/ext/adblockplus/adblockplus/-/merge_requests/1064
+      if (
+        typeof errors != "undefined" &&
+        errors[0] &&
+        errors[0].constructor === Array
+      )
+        errors = errors[0];
+
+      if (typeof errors != "undefined") callback(errors[0]);
+      else callback();
+    },
+    filters
+  );
+
+  if (err) {
+    throw new Error(err);
+  }
+}
+
+export async function waitForAdsBlockedToBeInRange(min, max) {
+  const timeout = 5000;
+
+  let adsBlocked;
+  try {
+    await driver.wait(async () => {
+      adsBlocked = await getPopupBlockedAdsTotalCount();
+      return adsBlocked > min && adsBlocked <= max;
+    }, timeout);
+  } catch (err) {
+    throw new Error(
+      `Unexpected ads blocked count after ${timeout}ms. Expected: ${min} < value <= ${max}. Actual: ${adsBlocked}`
+    );
+  }
+  return adsBlocked;
 }

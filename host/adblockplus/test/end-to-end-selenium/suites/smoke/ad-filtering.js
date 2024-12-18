@@ -1,43 +1,46 @@
 /*
- * This file is part of AdBlock  <https://getadblock.com/>,
- * Copyright (C) 2024-present  Adblock, Inc.
+ * This file is part of Adblock Plus <https://adblockplus.org/>,
+ * Copyright (C) 2024-present eyeo GmbH
  *
- * AdBlock is free software: you can redistribute it and/or modify
+ * Adblock Plus is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as
  * published by the Free Software Foundation.
  *
- * AdBlock is distributed in the hope that it will be useful,
+ * Adblock Plus is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AdBlock.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { expect } from "expect";
 import { By } from "selenium-webdriver";
 
 import {
-  getDisplayedElement,
   openNewTab,
-  isCheckboxEnabled,
-  waitForNotDisplayed,
+  getDisplayedElement,
+  waitForNotDisplayed
 } from "@eyeo/test-utils/driver";
-import { blockHideUrl, aaTestPageUrl, snippetTestPageUrl } from "@eyeo/test-utils/urls";
-import { getOptionsHandle } from "@eyeo/test-utils/extension";
-
 import {
+  aaTestPageUrl,
+  blockHideUrl,
+  snippetTestPageUrl
+} from "@eyeo/test-utils/urls";
+import {
+  initOptionsGeneralTab,
   programaticallyAddFilters,
   checkBlockHidePage,
-  setCustomFilters,
-  initOptionsFiltersTab,
-  clickFilterlist,
   setAADefaultState,
-  allowlistingFilter,
+  allowlistedWebsite,
   snippetFilter,
-  expectAAEnabled,
+  clickCheckbox,
+  setCustomFilters,
+  addAllowlistFilters,
+  deleteFirstAllowlistFilter
 } from "../../utils/page.js";
+import { getOptionsHandle } from "@eyeo/test-utils/extension";
 
 export default () => {
   after(async function () {
@@ -64,11 +67,16 @@ export default () => {
 
     const programaticallyRemoveAllFilters = async () => {
       return driver.executeAsyncScript(async (callback) => {
-        const filters = await browser.runtime.sendMessage({ type: "filters.get" });
+        const filters = await browser.runtime.sendMessage({
+          type: "filters.get"
+        });
         await Promise.all(
           filters.map((filter) =>
-            browser.runtime.sendMessage({ type: "filters.remove", text: filter.text }),
-          ),
+            browser.runtime.sendMessage({
+              type: "filters.remove",
+              text: filter.text
+            })
+          )
         );
 
         callback();
@@ -120,10 +128,10 @@ export default () => {
   });
 
   it("allowlists websites", async function () {
-    await setCustomFilters([allowlistingFilter]);
+    await addAllowlistFilters([allowlistedWebsite]);
     const websiteHandle = await openNewTab(blockHideUrl);
     await checkBlockHidePage(true);
-    await setCustomFilters([]);
+    await deleteFirstAllowlistFilter();
     await driver.switchTo().window(websiteHandle);
     await checkBlockHidePage(false);
   });
@@ -131,43 +139,27 @@ export default () => {
   it("displays acceptable ads", async function () {
     const visibleSelector = "#control-element";
     const hiddenSelector = "#test-aa";
-    const aaFLButtonId = "adblockFilterList_0";
 
-    await initOptionsFiltersTab(getOptionsHandle());
-    await driver.wait(
-      // https://eyeo.atlassian.net/browse/EXT-446
-      async () => {
-        return (await isCheckboxEnabled(aaFLButtonId)) === expectAAEnabled;
-      },
-      2000,
-      `Acceptable Ads is not in the default state. Expected state: ${expectAAEnabled}`,
-    );
+    await setAADefaultState();
+
     const websiteHandle = await openNewTab(aaTestPageUrl);
-    if (expectAAEnabled) {
-      await getDisplayedElement(hiddenSelector);
-    } else {
-      await waitForNotDisplayed(hiddenSelector);
-    }
+    await getDisplayedElement(hiddenSelector);
     await getDisplayedElement(visibleSelector);
 
-    await initOptionsFiltersTab(getOptionsHandle());
-    await clickFilterlist("acceptable_ads", aaFLButtonId, !expectAAEnabled);
+    await initOptionsGeneralTab(getOptionsHandle());
+    await clickCheckbox("acceptable-ads-allow", false);
     await driver.switchTo().window(websiteHandle);
     await driver.wait(
       async () => {
         await driver.navigate().refresh();
         try {
           await getDisplayedElement(visibleSelector);
-          if (!expectAAEnabled) {
-            await getDisplayedElement(hiddenSelector);
-          } else {
-            await waitForNotDisplayed(hiddenSelector, 500);
-          }
+          await waitForNotDisplayed(hiddenSelector, 500);
           return true;
         } catch (e) {}
       },
       8000,
-      "The AA element is still in unexpected state after 8000 ms",
+      "The AA element is still in unexpected state after 8000 ms"
     );
   });
 };

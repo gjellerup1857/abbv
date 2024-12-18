@@ -19,19 +19,21 @@ import { expect } from "expect";
 
 import { openNewTab } from "@eyeo/test-utils/driver";
 import { blockHideUrl } from "@eyeo/test-utils/urls";
+import { reloadExtension } from "@eyeo/test-utils/extension";
+
 import { sendExtCommand, updateExtPrefAPIKey } from "./shared/helpers.js";
 import {
   addFilter,
   removeFilter,
   checkBlockHidePage,
-  reloadExtension,
   allowlistingFilter,
+  initOptionsGeneralTab,
 } from "../../utils/page.js";
 
 export default () => {
   before(async function () {
     await updateExtPrefAPIKey("bypass_authorizedKeys");
-    await reloadExtension();
+    await reloadExtension(initOptionsGeneralTab);
   });
 
   afterEach(async function () {

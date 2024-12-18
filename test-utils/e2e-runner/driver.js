@@ -143,7 +143,7 @@ export function waitForNotDisplayed(cssText, timeout = 1000) {
   );
 }
 
-export async function waitForNotNullAttribute(id, attribute, timeout = 1000) {
+export async function waitForNotNullAttribute(cssSelector, attribute, timeout = 1000) {
   let value;
   await driver.wait(
     async () => {
@@ -151,23 +151,23 @@ export async function waitForNotNullAttribute(id, attribute, timeout = 1000) {
         // The attribute value of hidden elements is not always returned by
         // element.getAttribute(). Using a script as a workaround
         value = await driver.executeScript(
-          (elemId, attr) => {
-            return document.getElementById(elemId)[attr];
+          (selector, attr) => {
+            return document.querySelector(selector)[attr];
           },
-          id,
+          cssSelector,
           attribute,
         );
         return value !== null;
       } catch (e) {}
     },
     timeout,
-    `Attribute "${attribute}" of element "${id}" was still null after ${timeout}ms`,
+    `Null attribute "${attribute}" for element "${cssSelector}"`,
   );
   return value;
 }
 
 export function isCheckboxEnabled(inputId) {
-  return waitForNotNullAttribute(inputId, "checked");
+  return waitForNotNullAttribute(`#${inputId}`, "checked");
 }
 
 export async function clickOnDisplayedElement(
