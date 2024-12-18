@@ -300,3 +300,14 @@ export async function screenshot(title) {
   await fs.promises.mkdir(screenshotsPath, { recursive: true });
   await fs.promises.writeFile(path.join(screenshotsPath, `${title}.png`), base64Data, "base64");
 }
+
+export async function getCSSProperty(element, cssProperty, pseudoElement) {
+  return driver.executeScript(
+    (elem, cssProp, pseudoElem) => {
+      return window.getComputedStyle(elem, pseudoElem).getPropertyValue(cssProp);
+    },
+    element,
+    cssProperty,
+    pseudoElement,
+  );
+}
