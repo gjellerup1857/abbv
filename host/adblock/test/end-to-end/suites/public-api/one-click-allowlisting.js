@@ -23,8 +23,6 @@ function validateFilterMetadata(debugInfo, expiresAt = null) {
   expect(debugInfo.otherInfo.customRuleMetaData).not.toBeNull();
 
   const rulesMetadata = debugInfo.otherInfo.customRuleMetaData;
-  // eslint-disable-next-line no-console
-  console.log('rulesMetadata', rulesMetadata)
   const expectedMetadata = {
     created: expect.any(Number),
     origin: "web",

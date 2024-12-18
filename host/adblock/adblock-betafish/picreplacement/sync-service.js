@@ -304,7 +304,7 @@ const SyncService = (function getSyncService() {
   const isTemporaryAllowlistFilter = async function (filterText) {
     if (isAllowlistFilter(filterText)) {
       const metadata = await ewe.filters.getMetadata(filterText);
-      return (metadata && typeof metadata.expiresByTabId !== "undefined");
+      return metadata && typeof metadata.expiresByTabId !== "undefined";
     }
     return false;
   };
