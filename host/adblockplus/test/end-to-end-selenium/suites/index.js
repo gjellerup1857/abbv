@@ -20,6 +20,7 @@ import testServer from "./test-server.js";
 import extension from "./smoke/extension.js";
 import adFiltering from "./smoke/ad-filtering.js";
 import uninstallDefault from "./smoke/uninstall-default.js";
+import freeUser from "./premium/free-user.js";
 
 export default () => {
   beforeEach(async function () {
@@ -31,6 +32,10 @@ export default () => {
   describe("Smoke Tests - Main", function () {
     describe("Extension", extension);
     describe("Ad Filtering", adFiltering);
+  });
+
+  describe("Premium", function () {
+    describe("Free user", freeUser);
   });
 
   // Needs to be the last suite to run because the extension gets uninstalled
