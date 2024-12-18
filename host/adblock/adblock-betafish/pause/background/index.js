@@ -115,7 +115,7 @@ const isTabTemporaryAllowlisted = async (tabId) => {
   for (let i = 0; i < filters.length && !metaDataMatch; i++) {
     // eslint-disable-next-line no-await-in-loop
     const metadata = await ewe.filters.getMetadata(filters[i]);
-    metaDataMatch = metadata?.expiresByTabId === tabId;
+    metaDataMatch = metadata && metadata.expiresByTabId === tabId;
   }
   return metaDataMatch;
 };

@@ -304,7 +304,7 @@ const SyncService = (function getSyncService() {
   const isTemporaryAllowlistFilter = async function (filterText) {
     if (isAllowlistFilter(filterText)) {
       const metadata = await ewe.filters.getMetadata(filterText);
-      return typeof metadata?.expiresByTabId !== "undefined";
+      return (metadata && typeof metadata.expiresByTabId !== "undefined");
     }
     return false;
   };
@@ -417,7 +417,7 @@ const SyncService = (function getSyncService() {
       if (filterText.startsWith("@@||") && filterText.indexOf("$document") > 0) {
         // eslint-disable-next-line no-await-in-loop
         const metadata = await ewe.filters.getMetadata(filterText);
-        if (typeof metadata?.expiresByTabId !== "undefined") {
+        if (metadata && typeof metadata.expiresByTabId !== "undefined") {
           filters.splice(index, 1);
         }
       }
