@@ -34,9 +34,7 @@ const eventEmitter = new EventEmitter();
 
 export async function addFilter(filterText, origin) {
   const data = { created: Date.now() };
-  if (origin) {
-    data.origin = origin;
-  }
+  if (origin) data.origin = origin;
 
   try {
     await ewe.filters.add([filterText], data);
@@ -78,17 +76,15 @@ export async function askConfirmSubscription(details) {
 }
 
 function parseFilter(text) {
-  const filterText = text.trim() || null;
+  let filterText = text.trim() || null;
   let error = null;
 
   if (filterText) {
     if (filterText[0] == "[") {
       error = { type: "unexpected_filter_list_header" };
     } else {
-      const filterError = ewe.filters.validate(filterText);
-      if (filterError) {
-        error = toPlainFilterError(filterError);
-      }
+      let filterError = ewe.filters.validate(filterText);
+      if (filterError) error = toPlainFilterError(filterError);
     }
   }
 
@@ -114,9 +110,8 @@ port.on("filters.add", (message, sender) => {
  * @returns {object[]}
  */
 port.on("filters.get", async (message, sender) => {
-  const filters = await ewe.filters.getUserFilters();
-  const resp = filters.map(toPlainFilter);
-  return resp;
+  let filters = await ewe.filters.getUserFilters();
+  return filters.map(toPlainFilter);
 });
 
 /**
@@ -138,14 +133,12 @@ port.on("filters.getTypes", (message, sender) => Array.from(filterTypes));
  * @returns {string[]} errors
  */
 port.on("filters.importRaw", async (message, sender) => {
-  const [filterTexts, errors] = filtersValidate(message.text);
+  let [filterTexts, errors] = filtersValidate(message.text);
 
   if (errors.length == 0) {
     for (const filterText of filterTexts) {
       const error = await addFilter(filterText, message.origin);
-      if (error) {
-        errors.push(error);
-      }
+      if (error) errors.push(error);
     }
   }
 
@@ -178,10 +171,8 @@ port.on("filters.remove", (message, sender) => filtersRemove(message));
  * @returns {string[]} errors
  */
 port.on("filters.replace", async (message, sender) => {
-  const errors = await filtersAdd(message.new, message.origin);
-  if (errors.length) {
-    return errors;
-  }
+  let errors = await filtersAdd(message.new, message.origin);
+  if (errors.length) return errors;
   await filtersRemove({ text: message.old });
   return [];
 });
@@ -194,11 +185,8 @@ port.on("filters.replace", async (message, sender) => {
  * @property {boolean} disabled - True to disable the filter, false to enable.
  */
 port.on("filters.toggle", async (message, sender) => {
-  if (message.disabled) {
-    await ewe.filters.disable([message.text]);
-  } else {
-    await ewe.filters.enable([message.text]);
-  }
+  if (message.disabled) await ewe.filters.disable([message.text]);
+  else await ewe.filters.enable([message.text]);
 });
 
 /**
@@ -209,7 +197,7 @@ port.on("filters.toggle", async (message, sender) => {
  * @returns {string[]} errors
  */
 port.on("filters.validate", (message, sender) => {
-  const [, errors] = filtersValidate(message.text);
+  let [, errors] = filtersValidate(message.text);
   return errors;
 });
 
@@ -277,15 +265,13 @@ port.on("subscriptions.enableAllFilters", async (message, sender) => {
  * @returns {object[]} subscriptions
  */
 port.on("subscriptions.get", async (message, sender) => {
-  const subscriptions = [];
-  for (const s of await ewe.subscriptions.getSubscriptions()) {
-    if (message.ignoreDisabled && !s.enabled) {
-      continue;
-    }
+  let subscriptions = [];
+  for (let s of await ewe.subscriptions.getSubscriptions()) {
+    if (message.ignoreDisabled && !s.enabled) continue;
 
-    const subscription = toPlainSubscription(s);
+    let subscription = toPlainSubscription(s);
     if (message.disabledFilters) {
-      const filters = (await ewe.subscriptions.getFilters(s.url)) || [];
+      let filters = (await ewe.subscriptions.getFilters(s.url)) || [];
       subscription.disabledFilters = filters.filter((f) => f.enabled === false).map((f) => f.text);
     }
     subscriptions.push(subscription);
@@ -340,7 +326,7 @@ port.on("subscriptions.remove", async (message, sender) => {
 port.on("subscriptions.toggle", async (message, sender) => {
   if (await ewe.subscriptions.has(message.url)) {
     let subscription;
-    for (const s of await ewe.subscriptions.getSubscriptions()) {
+    for (let s of await ewe.subscriptions.getSubscriptions()) {
       if (s.url == message.url) {
         subscription = s;
         break;
@@ -349,11 +335,8 @@ port.on("subscriptions.toggle", async (message, sender) => {
 
     if (subscription) {
       if (!subscription.enabled || message.keepInstalled) {
-        if (subscription.enabled) {
-          await ewe.subscriptions.disable(message.url);
-        } else {
-          await ewe.subscriptions.enable(message.url);
-        }
+        if (subscription.enabled) await ewe.subscriptions.disable(message.url);
+        else await ewe.subscriptions.enable(message.url);
       } else {
         await ewe.subscriptions.remove(subscription.url);
       }
@@ -379,20 +362,18 @@ port.on("subscriptions.update", async (message, sender) => {
 async function filtersAdd(text, origin) {
   let [filterText, error] = parseFilter(text);
 
-  if (!error && filterText) {
-    error = await addFilter(filterText, origin);
-  }
+  if (!error && filterText) error = await addFilter(filterText, origin);
 
   return error ? [error] : [];
 }
 
 function filtersValidate(text) {
-  const filterTexts = [];
-  const errors = [];
+  let filterTexts = [];
+  let errors = [];
 
-  const lines = text.split("\n");
+  let lines = text.split("\n");
   for (let i = 0; i < lines.length; i++) {
-    const [filterText, error] = parseFilter(lines[i]);
+    let [filterText, error] = parseFilter(lines[i]);
 
     if (error) {
       // We don't treat filter headers like invalid filters,
@@ -400,13 +381,9 @@ function filtersValidate(text) {
       // in order to allow pasting complete filter lists.
       // If there are no filters, we do treat it as an invalid filter
       // to inform users about it and to give them a chance to edit it.
-      if (error.type === "unexpected_filter_list_header" && lines.length > 1) {
-        continue;
-      }
+      if (error.type === "unexpected_filter_list_header" && lines.length > 1) continue;
 
-      if (lines.length > 1) {
-        error.lineno = i + 1;
-      }
+      if (lines.length > 1) error.lineno = i + 1;
 
       errors.push(error);
     } else if (filterText) {
@@ -429,9 +406,7 @@ export async function initDisabledFilterCounters() {
     let count = 0;
 
     for (const filter of await ewe.subscriptions.getFilters(subscription.url)) {
-      if (filter.enabled === false) {
-        count++;
-      }
+      if (filter.enabled === false) count++;
     }
 
     if (count > 0) {
@@ -449,11 +424,8 @@ async function updateCounters(filterText, enabled) {
     const oldCount = disabledFilterCounters.get(subscription.url) || 0;
     const newCount = enabled ? oldCount - 1 : oldCount + 1;
 
-    if (newCount === 0) {
-      disabledFilterCounters.delete(subscription.url);
-    } else {
-      disabledFilterCounters.set(subscription.url, newCount);
-    }
+    if (newCount === 0) disabledFilterCounters.delete(subscription.url);
+    else disabledFilterCounters.set(subscription.url, newCount);
 
     if (oldCount === 0 || newCount === 0) {
       eventEmitter.emit("filtersDisabled", subscription, newCount > 0, oldCount > 0);
@@ -462,9 +434,7 @@ async function updateCounters(filterText, enabled) {
 }
 
 ewe.filters.onChanged.addListener(async (filter, property) => {
-  if (property !== "enabled") {
-    return;
-  }
+  if (property !== "enabled") return;
 
   await updateCounters(filter.text, filter.enabled);
 });
