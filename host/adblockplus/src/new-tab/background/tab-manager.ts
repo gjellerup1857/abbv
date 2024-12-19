@@ -107,10 +107,13 @@ export function compareNewTabRequestsByPriority(
     return 1;
   }
 
-  if (newTabA.ipmId < newTabB.ipmId) {
+  const ipmIdA = newTabA.ipmId.toUpperCase();
+  const ipmIdB = newTabB.ipmId.toUpperCase();
+
+  if (ipmIdA < ipmIdB) {
     return -1;
   }
-  if (newTabA.ipmId > newTabB.ipmId) {
+  if (ipmIdA > ipmIdB) {
     return 1;
   }
 
