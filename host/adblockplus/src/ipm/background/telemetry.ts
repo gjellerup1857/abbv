@@ -22,8 +22,11 @@ import {
   setSchedule,
   hasSchedule
 } from "../../core/scheduled-event-emitter/background";
-import { executeIPMCommands } from "./command-library";
-import { getPayload, clearEvents } from "./data-collection";
+import {
+  executeIPMCommands,
+  getPayload,
+  clearEvents
+} from "@eyeo-fragments/ipm/background";
 import { error as logError } from "../../logger/background";
 import { intervalKey, serverUrlKey, scheduleName } from "./telemetry.types";
 
