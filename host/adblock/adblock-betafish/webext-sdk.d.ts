@@ -126,14 +126,14 @@ declare module "@eyeo/webext-ad-filtering-solution" {
      * @param text - Filter text
      * @param metadata - Metadata to set
      */
-    const add: (text: string|[string], metadata?: FilterMetadata) => Promise<void>;
+    const add: (text: string | [string], metadata?: FilterMetadata) => Promise<void>;
 
     /**
      * remove filter(s)
      *
      * @param text - Filter text
      */
-    const remove: (text: string|[string]) => Promise<void>;
+    const remove: (text: string | [string]) => Promise<void>;
   }
 
   declare namespace experiments {
