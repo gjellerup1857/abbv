@@ -19,8 +19,11 @@ import { beforeEachTasks } from "@eyeo/test-utils/hooks";
 import testServer from "./test-server.js";
 import extension from "./smoke/extension.js";
 import adFiltering from "./smoke/ad-filtering.js";
+import optionsPageAA from "./options-page/acceptable-ads.js";
+import popupPage from "./popup-page.js";
 import uninstallDefault from "./smoke/uninstall-default.js";
 import freeUser from "./premium/free-user.js";
+import getPremium from "./premium/get-premium.js";
 
 export default () => {
   beforeEach(async function () {
@@ -34,8 +37,15 @@ export default () => {
     describe("Ad Filtering", adFiltering);
   });
 
+  describe("Popup Page", popupPage);
+
+  describe("Options Page", function () {
+    describe("Acceptable Ads", optionsPageAA);
+  });
+
   describe("Premium", function () {
     describe("Free user", freeUser);
+    describe("Premium user", getPremium);
   });
 
   // Needs to be the last suite to run because the extension gets uninstalled

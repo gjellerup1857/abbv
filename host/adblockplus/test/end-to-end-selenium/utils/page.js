@@ -22,6 +22,7 @@ import { localTestPageUrl } from "@eyeo/test-utils/urls";
 import {
   getDisplayedElement,
   waitForNotDisplayed,
+  waitForNotNullProperty,
   isCheckboxEnabled,
   clickOnDisplayedElement,
   openNewTab,
@@ -56,7 +57,7 @@ export async function checkInstallUninstallUrl({ url, appVersion, uninstall }) {
       link: "uninstalled",
       lang: "en-US",
       ndc: "0",
-      ps: "0",
+      ps: expect.stringMatching(/(0|1)/), // premium subscription
       er: expect.stringMatching(/^[a-zA-Z0-9]{8}/), // experiments revision ID. Example: ietbCO3H
       ev: expect.stringMatching(/^[a-zA-Z0-9+/]+=*/), // experiments variants. Example: AQ%3D%3
       fv: expect.stringMatching(new RegExp(`(0|${todaysDate})`)) // filter version. Example: 20241216
@@ -192,6 +193,12 @@ export async function initPopupPage(tabId) {
   return handle;
 }
 
+export async function initPopupWithLocalPage() {
+  await openNewTab(localTestPageUrl);
+  const tabId = await getTabId(getOptionsHandle());
+  await initPopupPage(tabId);
+}
+
 export async function initOptionsGeneralTab(optionsHandle, timeout = 5000) {
   await loadOptionsTab(optionsHandle, "tab-general", timeout);
   await getDisplayedElement("#free-list-table", { timeout });
@@ -210,22 +217,14 @@ export async function initOptionsAdvancedTab(optionsHandle) {
 export async function getPopupBlockedAdsTotalCount() {
   // The popup page needs any tabId to show total ads blocked. The test page
   // is used for that, since it doesn't have any blocking elements
-  const websiteHandle = await openNewTab(localTestPageUrl);
-  const tabId = await getTabId(getOptionsHandle());
-  const popupHandle = await initPopupPage(tabId);
+  await initPopupWithLocalPage();
 
   const elem = await getDisplayedElement("#stats-total .amount", {
     timeout: 2000,
     forceRefresh: false
   });
-
   const totalCount = await elem.getText();
 
-  // cleanup
-  await driver.switchTo().window(popupHandle);
-  await driver.close();
-  await driver.switchTo().window(websiteHandle);
-  await driver.close();
   await driver.switchTo().window(getOptionsHandle());
 
   return parseInt(totalCount, 10);
@@ -251,6 +250,39 @@ export async function setCustomFilters(filters) {
     await waitForNotDisplayed("#custom-filters button[disabled]");
     await clickOnDisplayedElement("#custom-filters button");
   }
+}
+
+export async function setPausedStateFromPopup(url, paused = true) {
+  const websiteAllowlistBtnSelector = `#page-status > div:first-of-type > io-circle-toggle`;
+  const websiteHandle = await openNewTab(url);
+  const tabId = await getTabId(getOptionsHandle());
+
+  await initPopupPage(tabId);
+  // Clicking right after the popup is loaded may be ineffective, sleeping as a workaround
+  await driver.sleep(1000);
+  await clickOnDisplayedElement(websiteAllowlistBtnSelector, {
+    timeout: 5000
+  });
+  // Check that the refresh message is shown
+  await getDisplayedElement("#page-refresh", {
+    forceRefresh: false,
+    timeout: 1000
+  });
+
+  await getDisplayedElement(websiteAllowlistBtnSelector, {
+    timeout: 5000,
+    forceRefresh: false
+  });
+  const isToggleSelected = await waitForNotNullProperty(
+    websiteAllowlistBtnSelector,
+    "checked"
+  );
+  expect(isToggleSelected).not.toEqual(paused);
+  await driver.close();
+
+  await driver.switchTo().window(websiteHandle);
+  await driver.close();
+  await driver.switchTo().window(getOptionsHandle());
 }
 
 export async function addAllowlistFilters(filters) {
@@ -315,4 +347,45 @@ export async function waitForAdsBlockedToBeInRange(min, max) {
     );
   }
   return adsBlocked;
+}
+
+export async function checkPremiumActivated() {
+  await driver.switchTo().window(getOptionsHandle());
+  await driver.navigate().refresh();
+  await initOptionsGeneralTab(getOptionsHandle());
+
+  // Premium has been activated
+  const premiumSelectors = [
+    ".button.premium-label",
+    ".premium-banner-container",
+    'a[data-i18n="options_premium_manage"]'
+  ];
+  for (const selector of premiumSelectors) {
+    await getDisplayedElement(selector);
+  }
+}
+
+export async function enablePremiumProgrammatically() {
+  await initOptionsGeneralTab(getOptionsHandle());
+
+  const error = await driver.executeAsyncScript(async (callback) => {
+    try {
+      await browser.runtime.sendMessage({
+        type: "prefs.set",
+        key: "premium_license_check_url",
+        value: "http://localhost:3006"
+      });
+      await browser.runtime.sendMessage({
+        type: "premium.activate",
+        userId: "valid_user_id"
+      });
+    } catch (err) {
+      callback(err);
+    }
+    callback();
+  });
+
+  if (error) throw new Error(error);
+
+  await checkPremiumActivated();
 }
