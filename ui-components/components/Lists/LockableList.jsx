@@ -8,7 +8,7 @@ const IconSelector = [Icon, {
 }];
 
 const NewIcon = ({ translate }) => (
-  <span className="bg-theme-button-primary text-white text-xs px-1 py-0.5 mx-1 rounded">
+  <span className="bg-theme-button-primary font-bold text-white text-xs px-1 py-0.5 mx-1 rounded">
     {translate("options_new_label")}
   </span>
 );
@@ -27,9 +27,19 @@ const OptionItem = ({
   isNew = false,
   isSubOption = false,
   selector = [Checkbox],
+  styles = {}
 }) => {
-  const subOptionLiClasses = isSubOption ? "pl-6" : "first-of-type:border-none";
-  const itemClasses = ["text-lg  border-t border-theme-accent-light", subOptionLiClasses].join(" ");
+
+  const {
+    descriptions = [],
+    items = [],
+    labels = [],
+  } = styles;
+
+  const subOptionLiClasses = isSubOption ? ["pl-6"] : ["first-of-type:border-none"];
+  const itemClasses = [...subOptionLiClasses, ...items].join(" ");
+  const labelClasses = [...labels].join(" ");
+  const descriptionClasses = ["pl-8", ...descriptions].join(" ");
 
   const alignementClasses = isSubOption ? "items-baseline" : "items-center";
   const outerDivClasses = ["flex justify-between py-2", alignementClasses].join(" ");
@@ -49,7 +59,7 @@ const OptionItem = ({
             checked={optionChecked}
             {...selectorOptions}
           />
-          <label className="ml-4" htmlFor={name}>
+          <label className={labelClasses} htmlFor={name}>
             {translate(textKey)}
           </label>
           {isNew && <NewIcon translate={translate}/>}
@@ -73,7 +83,7 @@ const OptionItem = ({
         </div>
       </div>
       <div className="mb-2 -mt-2.5">
-        {extraInfo && <p className="text-base italic pl-8">{translate(extraInfo)}</p>}
+        {extraInfo && <p className={descriptionClasses}>{translate(extraInfo)}</p>}
       </div>
       <div>
         {subOptions && optionChecked && (
@@ -86,6 +96,7 @@ const OptionItem = ({
                 selector={[ToggleSwitch, { kind: "inline" }]}
                 onChangeFn={onChangeFn}
                 isChecked={isChecked}
+                styles={styles}
                 translate={translate}
               />
             ))}
@@ -97,7 +108,7 @@ const OptionItem = ({
 };
 
 // Add translate fn as argument
-export const LockableList = ({ items, isChecked, onItemChange, translate }) => {
+export const LockableList = ({ items, isChecked, onItemChange, styles, translate }) => {
   return (
     <>
       <ul>
@@ -107,6 +118,7 @@ export const LockableList = ({ items, isChecked, onItemChange, translate }) => {
             {...item}
             isChecked={isChecked}
             onChangeFn={onItemChange}
+            styles={styles}
             translate={translate} />
         ))}
       </ul>

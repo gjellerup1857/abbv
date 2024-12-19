@@ -33,6 +33,12 @@ export function GeneralOptionsTab({ subs, settings, prefs }) {
     eventsList[name]({ name, evt }, setCheckedItems);
   };
 
+  const listStyles = {
+    items: ["text-lg", "border-t", "border-theme-accent-light"],
+    labels: ["ml-4"],
+    descriptions: ["text-base", "italic"],
+  };
+
   return (
     <div className="option-page-content">
       <h1>{translate("generaloptions2")}</h1>
@@ -41,6 +47,7 @@ export function GeneralOptionsTab({ subs, settings, prefs }) {
         items={optionsData}
         isChecked={isChecked}
         onItemChange={updateItem}
+        styles={listStyles}
         translate={translate}
       />
     </div>

@@ -41,6 +41,11 @@ const premiumFeatures = [
   }
 ];
 
+const listStyles = {
+  labels: ['font-bold', 'ml-2'],
+  descriptions: ['text-sm'],
+};
+
 export default function GeneralFeaturesContainer({ user }) {
   const [upgradeUrl, setUpgradeUrl] = useState("");
 
@@ -83,6 +88,7 @@ export default function GeneralFeaturesContainer({ user }) {
         	translate={translate}
         	isChecked={() => true}
         	onItemChange={() => console.log("🦁")}
+          styles={listStyles}
         />
         {premiumFeatures.map((featureProps, index) => (
           <GeneralFeatureItem
@@ -103,6 +109,7 @@ export default function GeneralFeaturesContainer({ user }) {
         	translate={translate}
         	isChecked={() => true}
         	onItemChange={() => console.log("🦁🦁")}
+          styles={listStyles}
         />
         {freeFeatures.map((featureProps, index) => (
           <GeneralFeatureItem
