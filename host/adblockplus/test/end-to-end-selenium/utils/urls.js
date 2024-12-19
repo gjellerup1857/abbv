@@ -17,3 +17,4 @@
 
 export const installUrl = "https://welcome.adblockplus.org/en/installed";
 export const uninstallUrl = "https://adblockplus.org/en/uninstalled";
+export const premiumUrl = "https://accounts.adblockplus.org/en/premium";

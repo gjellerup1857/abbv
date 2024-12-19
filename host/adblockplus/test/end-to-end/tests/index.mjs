@@ -20,7 +20,6 @@ import advancedTabFL from "./test-advanced-tab-filter-lists.mjs";
 import flDropdown from "./test-built-in-filter-list-dropdown.mjs";
 import optionsPageAA from "./test-options-page-acceptable-ads.mjs";
 import popupMain from "./test-popup-main.mjs";
-import freeUser from "./test-abp-premium-ui-free-user.mjs";
 import publicAPI from "./public-api/index.mjs";
 import unlockPremium from "./test-unlock-premium.mjs";
 import eyeometry from "./test-eyeometry.mjs";
@@ -49,7 +48,6 @@ export default () => {
     describe("Options Page - General Tab Acceptable Ads", optionsPageAA);
     describe("Popup Tests - Main", popupMain);
     describe("Public API", publicAPI);
-    describe("Premium - Free User", freeUser);
     describe("Premium - Unlock Premium", unlockPremium);
     describe("Eyeometry", eyeometry);
     describe("YouTube Auto-allowlist", youtubeAutoAllowlist);
