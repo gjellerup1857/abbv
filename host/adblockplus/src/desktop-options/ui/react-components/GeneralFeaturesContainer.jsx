@@ -2,42 +2,31 @@ import { useEffect, useState } from "react";
 import { Link, LockableList } from "@eyeo/ext-ui-components";
 import * as messaging from "~/core/messaging/front/index.ts";
 import { translate } from "./shared/utils";
-import GeneralFeatureItem from "./GeneralFeatureItem";
 
 const freeFeatures = [
   {
-    titleI18nKey: "common_feature_privacy_title",
     textKey: "common_feature_privacy_title",
     extraInfo: "options_recommended_privacy_description",
-    descriptionI18nKey: "options_recommended_privacy_description",
   },
   {
-    titleI18nKey: "common_feature_notifications_title",
     textKey: "common_feature_notifications_title",
     extraInfo: "options_recommended_notifications_description",
-    descriptionI18nKey: "options_recommended_notifications_description",
   },
   {
-    titleI18nKey: "common_feature_social_title",
     textKey: "common_feature_social_title",
     extraInfo: "options_recommended_social_description",
-    descriptionI18nKey: "options_recommended_social_description",
   }
 ];
 
 const premiumFeatures = [
   {
-    titleI18nKey: "common_feature_cookies_premium_title",
     textKey: "common_feature_cookies_premium_title",
     extraInfo: "options_recommended_cookies_premium_description",
-    descriptionI18nKey: "options_recommended_cookies_premium_description",
     isNew: true
   },
   {
-    titleI18nKey: "common_feature_annoyances_title",
     textKey: "common_feature_annoyances_title",
     extraInfo: "options_recommended_annoyances_description",
-    descriptionI18nKey: "options_recommended_annoyances_description",
   }
 ];
 
@@ -90,13 +79,6 @@ export default function GeneralFeaturesContainer({ user }) {
         	onItemChange={() => console.log("🦁")}
           styles={listStyles}
         />
-        {premiumFeatures.map((featureProps, index) => (
-          <GeneralFeatureItem
-            key={featureProps.titleI18nKey}
-            isLocked={!user.hasPremium}
-            {...featureProps}
-          />
-        ))}
       </div>
       <div className="w-1/2">
         <div className="flex items-center gap-5 h-14">
@@ -111,12 +93,6 @@ export default function GeneralFeaturesContainer({ user }) {
         	onItemChange={() => console.log("🦁🦁")}
           styles={listStyles}
         />
-        {freeFeatures.map((featureProps, index) => (
-          <GeneralFeatureItem
-            key={featureProps.titleI18nKey}
-            {...featureProps}
-          />
-        ))}
       </div>
     </section>
   );
