@@ -18,8 +18,7 @@
 /* For ESLint: List any global identifiers used in this file below */
 /* global browser, channels,
    getUserFilters, Prefs, abpPrefPropertyNames,
-   adblockIsDomainPaused, adblockIsPaused,
-   pausedFilterText1, pausedFilterText2,
+   adblockIsPaused, pausedFilterText1, pausedFilterText2,
    isAllowlistFilter */
 
 /** @module SyncService */
@@ -45,7 +44,6 @@ import {
 } from "../utilities/background/index";
 
 const SyncService = (function getSyncService() {
-  let storedSyncDomainPauses = [];
   let syncCommitVersion = 0;
   let currentExtensionName = "";
   const syncSchemaVersion = 1;
@@ -303,14 +301,10 @@ const SyncService = (function getSyncService() {
     return aKeys.every((key) => objectComparison(a[key], b[key]));
   }
 
-  const isDomainPauseFilter = function (filterText) {
+  const isTemporaryAllowlistFilter = async function (filterText) {
     if (isAllowlistFilter(filterText)) {
-      const domains = adblockIsDomainPaused();
-      for (const domain in domains) {
-        if (`@@${domain}$document` === filterText) {
-          return true;
-        }
-      }
+      const metadata = await ewe.filters.getMetadata(filterText);
+      return metadata && typeof metadata.expiresByTabId !== "undefined";
     }
     return false;
   };
@@ -404,7 +398,7 @@ const SyncService = (function getSyncService() {
     addSyncLogText(`sync.data.getting.error.initial.fail: ${errorCode}`);
   };
 
-  function cleanCustomFilter(filters) {
+  async function cleanCustomFilter(filters) {
     // Remove the global pause white-list item if adblock is paused
     if (adblockIsPaused()) {
       let index = filters.indexOf(pausedFilterText1);
@@ -417,12 +411,15 @@ const SyncService = (function getSyncService() {
       }
     }
 
-    // Remove the domain pause white-list items
-    const domainPauses = adblockIsDomainPaused();
-    for (const aDomain in domainPauses) {
-      const index = filters.indexOf(`@@${aDomain}$document`);
-      if (index >= 0) {
-        filters.splice(index, 1);
+    // Remove the temporary, allowlist rules
+    for (let index = 0; index < filters.length; index++) {
+      const filterText = filters[index];
+      if (filterText.startsWith("@@||") && filterText.indexOf("$document") > 0) {
+        // eslint-disable-next-line no-await-in-loop
+        const metadata = await ewe.filters.getMetadata(filterText);
+        if (metadata && typeof metadata.expiresByTabId !== "undefined") {
+          filters.splice(index, 1);
+        }
       }
     }
     return filters;
@@ -508,7 +505,7 @@ const SyncService = (function getSyncService() {
       await Promise.all(results);
       results = [];
       if (currentUserFilters && currentUserFilters.length) {
-        currentUserFilters = cleanCustomFilter(currentUserFilters);
+        currentUserFilters = await cleanCustomFilter(currentUserFilters);
         // Delete / remove filters the user removed...
         if (currentUserFilters) {
           for (let i = 0; i < currentUserFilters.length; i++) {
@@ -770,7 +767,7 @@ const SyncService = (function getSyncService() {
     }
     const userFilters = await getUserFilters();
     const userFiltersTexts = userFilters.map((filter) => filter.text).sort();
-    payload.customFilterRules = cleanCustomFilter(userFiltersTexts);
+    payload.customFilterRules = await cleanCustomFilter(userFiltersTexts);
     const metaDataArr = await getCustomFilterMetaData(userFilters);
     if (metaDataArr && metaDataArr.length) {
       const ruleMetaData = {};
@@ -885,7 +882,7 @@ const SyncService = (function getSyncService() {
   const postDataSyncHandler = debounced(debounceWaitTime, postDataSync);
 
   // Sync Listeners
-  function onFilterAdded(filter, subscription, position, calledPreviously) {
+  async function onFilterAdded(filter, subscription, position, calledPreviously) {
     // a delay is added to allow the domain pause filters time to be saved to storage
     // otherwise the domain pause filter check below would always fail
     if (calledPreviously === undefined) {
@@ -897,20 +894,17 @@ const SyncService = (function getSyncService() {
     if (isPauseFilter(filter.text)) {
       return;
     }
-    if (isDomainPauseFilter(filter.text)) {
-      storedSyncDomainPauses.push(filter.text);
+    if (await isTemporaryAllowlistFilter(filter.text)) {
       return;
     }
     postDataSyncHandler();
   }
 
-  function onFilterRemoved(filter) {
+  async function onFilterRemoved(filter) {
     if (isPauseFilter(filter.text)) {
       return;
     }
-    if (isDomainPauseFilter(filter.text)) {
-      const filterTextIndex = storedSyncDomainPauses.indexOf(filter.text);
-      storedSyncDomainPauses = storedSyncDomainPauses.slice(filterTextIndex);
+    if (await isTemporaryAllowlistFilter(filter.text)) {
       return;
     }
     postDataSyncHandler();
@@ -918,7 +912,7 @@ const SyncService = (function getSyncService() {
 
   // a delay is added to allow the domain pause filters time to be saved to storage
   // otherwise the domain pause filter check below would always fail
-  const onFilterListsSubAdded = function (sub, calledPreviously) {
+  const onFilterListsSubAdded = async function (sub, calledPreviously) {
     log("onFilterListsSubAdded", sub);
     if (calledPreviously === undefined) {
       setTimeout(() => {
@@ -932,9 +926,9 @@ const SyncService = (function getSyncService() {
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
         containsPauseFilter = isPauseFilter(filter);
-        if (!containsPauseFilter && isDomainPauseFilter(filter)) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!containsPauseFilter && (await isTemporaryAllowlistFilter(filter))) {
           containsPauseFilter = true;
-          storedSyncDomainPauses.push(filter.text);
         }
       }
     }
@@ -944,17 +938,16 @@ const SyncService = (function getSyncService() {
     postDataSyncHandler();
   };
 
-  const onFilterListsSubRemoved = function (sub) {
+  const onFilterListsSubRemoved = async function (sub) {
     let containsPauseFilter = false;
     if (sub.url && sub.url.startsWith("~user~") && sub._filterText.length) {
       const arrayLength = sub._filterText.length;
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
         containsPauseFilter = isPauseFilter(filter);
-        if (!containsPauseFilter && isDomainPauseFilter(filter.text)) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!containsPauseFilter && (await isTemporaryAllowlistFilter(filter.text))) {
           containsPauseFilter = true;
-          const filterTextIndex = storedSyncDomainPauses.indexOf(filter.text);
-          storedSyncDomainPauses = storedSyncDomainPauses.slice(filterTextIndex);
           return;
         }
       }
@@ -1094,7 +1087,6 @@ const SyncService = (function getSyncService() {
       Prefs.off(name, postDataSyncHandler);
     }
 
-    storedSyncDomainPauses = [];
     if (removeName) {
       removeCurrentExtensionName();
 
