@@ -882,7 +882,7 @@ const SyncService = (function getSyncService() {
   const postDataSyncHandler = debounced(debounceWaitTime, postDataSync);
 
   // Sync Listeners
-  function onFilterAdded(filter, subscription, position, calledPreviously) {
+  async function onFilterAdded(filter, subscription, position, calledPreviously) {
     // a delay is added to allow the domain pause filters time to be saved to storage
     // otherwise the domain pause filter check below would always fail
     if (calledPreviously === undefined) {
@@ -894,17 +894,17 @@ const SyncService = (function getSyncService() {
     if (isPauseFilter(filter.text)) {
       return;
     }
-    if (isTemporaryAllowlistFilter(filter.text)) {
+    if (await isTemporaryAllowlistFilter(filter.text)) {
       return;
     }
     postDataSyncHandler();
   }
 
-  function onFilterRemoved(filter) {
+  async function onFilterRemoved(filter) {
     if (isPauseFilter(filter.text)) {
       return;
     }
-    if (isTemporaryAllowlistFilter(filter.text)) {
+    if (await isTemporaryAllowlistFilter(filter.text)) {
       return;
     }
     postDataSyncHandler();
@@ -912,7 +912,7 @@ const SyncService = (function getSyncService() {
 
   // a delay is added to allow the domain pause filters time to be saved to storage
   // otherwise the domain pause filter check below would always fail
-  const onFilterListsSubAdded = function (sub, calledPreviously) {
+  const onFilterListsSubAdded = async function (sub, calledPreviously) {
     log("onFilterListsSubAdded", sub);
     if (calledPreviously === undefined) {
       setTimeout(() => {
@@ -926,7 +926,8 @@ const SyncService = (function getSyncService() {
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
         containsPauseFilter = isPauseFilter(filter);
-        if (!containsPauseFilter && isTemporaryAllowlistFilter(filter)) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!containsPauseFilter && (await isTemporaryAllowlistFilter(filter))) {
           containsPauseFilter = true;
         }
       }
@@ -937,14 +938,15 @@ const SyncService = (function getSyncService() {
     postDataSyncHandler();
   };
 
-  const onFilterListsSubRemoved = function (sub) {
+  const onFilterListsSubRemoved = async function (sub) {
     let containsPauseFilter = false;
     if (sub.url && sub.url.startsWith("~user~") && sub._filterText.length) {
       const arrayLength = sub._filterText.length;
       for (let i = 0; i < arrayLength; i++) {
         const filter = sub._filterText[i];
         containsPauseFilter = isPauseFilter(filter);
-        if (!containsPauseFilter && isTemporaryAllowlistFilter(filter.text)) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!containsPauseFilter && (await isTemporaryAllowlistFilter(filter.text))) {
           containsPauseFilter = true;
           return;
         }

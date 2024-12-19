@@ -117,7 +117,7 @@ const isTabTemporaryAllowlisted = async (tabId: number): Promise<boolean> => {
 };
 
 // If AdBlock was paused on shutdown (adblock_is_paused is true), then
-// unpause / remove the white-list all entry at startup.
+// unpause / remove the global allow-list rules at startup.
 async function start(): Promise<void> {
   const response = await browser.storage.local.get(pausedKey);
   if (response[pausedKey]) {
@@ -126,6 +126,9 @@ async function start(): Promise<void> {
     await ewe.filters.remove([pausedFilterText2]);
     await browser.storage.local.remove(pausedKey);
   }
+  // Remove all old domain pauses
+  const domainPausedKey = "domainPaused";
+  void browser.storage.local.remove(domainPausedKey);
 }
 void start();
 
