@@ -1,5 +1,8 @@
 @layer base {
-  [data-extension="abp"] {
+  /* Specify theme so it is not overwritten when in Storybook */
+  [data-extension="abp"],
+  [data-extension="abp"][data-theme="default"],
+  [data-extension="abp"] [data-theme="default"] {
     --extension-font-family: "Source Sans Pro", Arial, sans-serif;
 
     --abp-blue: rgb(7 151 225);

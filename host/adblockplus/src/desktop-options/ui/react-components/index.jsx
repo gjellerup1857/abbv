@@ -7,7 +7,8 @@ import GeneralFeaturesContainer from "./GeneralFeaturesContainer";
   const showNewUI = url.searchParams.has("newUi");
 
   // kill switch for react app
-  if (!showNewUI) {
+  // TODO: Remember to reverse
+  if (showNewUI) {
     return;
   }
 
