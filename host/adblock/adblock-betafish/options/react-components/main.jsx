@@ -1,12 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import {
+  globalAbpPrefPropertyNames as abpPrefPropertyNames,
+  globalSettings as settings,
+} from "./shared/globals";
 import { App } from "./app.jsx";
 
 const checkAndAddApp = (data) => {
+  console.log("🦕 app init called", data);
   const url = new URL(window.top.location.href);
   const showNewUI = url.searchParams.has("newUi");
 
-  if (!showNewUI) {
+  // TODO: Flip again before opening MR
+  if (showNewUI) {
     return;
   }
 
@@ -20,8 +26,7 @@ const checkAndAddApp = (data) => {
 
 const fetchData = async () => {
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
-  // TODO: Import these from a globals file and also name them better
-  return { subs, settings, prefsNames: abpPrefPropertyNames };
+  return { subs, settings, prefs: abpPrefPropertyNames };
 };
 
 const initializeApp = async () => {

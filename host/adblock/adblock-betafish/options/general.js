@@ -48,29 +48,36 @@ function setDataCollectionOptionsVisibility(visibility) {
 // Check or uncheck each loaded DOM option checkbox according to the
 // user's saved settings.
 const initialize = async function init() {
+  // ✅ imported in main
   const subs = await SubscriptionAdapter.getSubscriptionsMinusText();
   setDataCollectionOptionsVisibility(!Prefs.data_collection_opt_out);
 
   // if the user is currently subscribed to AA
   // then 'check' the acceptable ads button.
   if ("acceptable_ads" in subs && subs.acceptable_ads.subscribed) {
+    // ⚠️ need to add conditional text
     updateAcceptableAdsUIFN(true, false);
   }
 
   if ("acceptable_ads_privacy" in subs && subs.acceptable_ads_privacy.subscribed) {
+    // ⚠️ need to add conditional text
     updateAcceptableAdsUIFN(true, true);
   }
 
+  // ✅
   for (const name in settings) {
     $(`#enable_${name}`).prop("checked", settings[name]);
   }
 
   if (!settings.youtube_manage_subscribed) {
+    // ⛔️ ok to skip, people should see what page we mean even if not enabled
     $("#youtube_manage_subscribed_link").removeClass("link-text-color");
     $("#youtube_manage_subscribed_link").removeClass("pointer");
     $("#youtube_manage_subscribed_link").addClass("disabled-link-text-color");
   }
 
+  // ✅
+  console.log("😬", abpPrefPropertyNames, Prefs);
   for (const inx in abpPrefPropertyNames) {
     const name = abpPrefPropertyNames[inx];
     $(`#prefs__${name}`).prop("checked", Prefs[name]);
@@ -132,10 +139,12 @@ const initialize = async function init() {
     const name = this.id.substring(7); // TODO: hack
     // if the user enables/disables the context menu
     // update the pages
+    // ✅
     if (name === "shouldShowBlockElementMenu") {
       send("updateButtonUIAndContextMenus");
     }
 
+    // ✅
     // need to check for opt-out here before we set the pref
     // in order to send goodbye message before we shutdown channels
     if (name === "data_collection_opt_out") {
@@ -145,6 +154,7 @@ const initialize = async function init() {
       }
     }
 
+    // ✅
     if (abpPrefPropertyNames.indexOf(name) >= 0) {
       Prefs[name] = isEnabled;
       return;
@@ -153,6 +163,7 @@ const initialize = async function init() {
 
     // if the user enables/disable data collection
     // start or end the data collection process
+    // ✅
     if (name === "data_collection_v2") {
       if (isEnabled) {
         DataCollectionV2.start();
@@ -202,6 +213,7 @@ const initialize = async function init() {
 
     // if the user enables/disable Twitch Channel allow listing
     // add or remove listners
+    // ✅
     if (name === "twitch_channel_allowlist") {
       if (isEnabled) {
         send("addTwitchAllowlistListeners");
@@ -231,12 +243,14 @@ function addUIChangeListeners() {
     // options page -- after a moment so we have time to save the option.
     // Also, disable all advanced options, so that non-advanced users will
     // not end up with debug/beta/test options enabled.
+    // ✅
     if (!this.checked) {
       $(".advanced input[type='checkbox']:checked").each(function forEachAdvancedOption() {
         settings[this.id.substr(7)] = false;
       });
     }
 
+    // ❌ no longer needed
     window.setTimeout(() => {
       autoReloadingPage = true;
       window.location.reload();
